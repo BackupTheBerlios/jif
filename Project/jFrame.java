@@ -49,7 +49,8 @@ import java.awt.geom.*;
 import java.awt.datatransfer.*;
 import javax.swing.border.*;
 //import com.sun.java.swing.plaf.*;
-import com.jgoodies.plaf.*;
+//import com.jgoodies.plaf.*;
+import com.jgoodies.looks.*;
 
 
 /*
@@ -4942,9 +4943,11 @@ public class jFrame extends JFrame {
             //	* com.jgoodies.plaf.plastic.PlasticXPLookAndFeel
             System.out.println(System.getProperty("os.name"));
             System.out.println(UIManager.getSystemLookAndFeelClassName());
+            /*
             if(System.getProperty("os.name").indexOf("Windows")!=-1){
                 //PlasticXPLookAndFeel.setMyCurrentTheme(new SkyBlue());
-                UIManager.setLookAndFeel("com.jgoodies.plaf.plastic.PlasticXPLookAndFeel");
+                //UIManager.setLookAndFeel("com.jgoodies.plaf.plastic.PlasticXPLookAndFeel");
+            	
             }
             else{
                 if(System.getProperty("os.name").indexOf("Linux")!=-1){
@@ -4953,6 +4956,17 @@ public class jFrame extends JFrame {
                 else{
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 }
+            }
+            */
+            String lafName =
+                LookUtils.IS_OS_WINDOWS_XP
+                    ? Options.getCrossPlatformLookAndFeelClassName()
+                    : Options.getSystemLookAndFeelClassName();
+
+            try {
+                UIManager.setLookAndFeel(lafName);
+            } catch (Exception e) {
+                System.err.println("Can't set look & feel:" + e);
             }
             System.out.println(UIManager.getLookAndFeel().getName());
         }
@@ -5780,15 +5794,15 @@ public class jFrame extends JFrame {
                     makeConfig.append("# Jif Configuration"+"\n");
                     makeConfig.append("######################################################"+"\n");
                     makeConfig.append("\n");
-                    makeConfig.append("libPath="+workingDir+java.util.ResourceBundle.getBundle("JIF").getString("DEFAULT_LIB_DIRECTORY")+"\n");
+                    makeConfig.append("libPath="+workingDir+"lib"+file.separator+java.util.ResourceBundle.getBundle("JIF").getString("DEFAULT_LIB_DIRECTORY")+"\n");
                     makeConfig.append("libPathSecondary=\n");
                     makeConfig.append("gamesDir="+workingDir+"games\n");
                     makeConfig.append("interpreter="+workingDir+"interpreter"+Constants.SEP+"WindowsFrotz2002"+Constants.SEP+"Frotz.exe"+"\n");
                     makeConfig.append("glulx="+workingDir+"interpreter"+Constants.SEP+"Glulxe"+Constants.SEP+"Glulxe.exe"+"\n");
                     makeConfig.append("compiler="+workingDir+"compiler"+Constants.SEP+"inform.exe"+"\n");
                     makeConfig.append("defaultBrowser=\n");
-                    makeConfig.append("BRESLOCATION="+workingDir+"glulx\\BRES.EXE\n");
-                    makeConfig.append("BLCLOCATION="+workingDir+"glulx\\BLC.EXE\n");
+                    makeConfig.append("BRESLOCATION="+workingDir+"glulx"+file.separator+"BRES.EXE\n");
+                    makeConfig.append("BLCLOCATION="+workingDir+"glulx"+file.separator+"BLC.EXE\n");
 
                     //salvo il file default
                     PrintStream ps;
