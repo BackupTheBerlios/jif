@@ -6064,23 +6064,23 @@ public class jFrame extends JFrame {
 
                     //controllo se la riga inizia con [keyword]=
                     if (riga.startsWith("[keyword]=")){
-                        keywords.put ( riga.substring(10),dummyObject);
+                        keywords.put ( riga.substring(10).toLowerCase(),dummyObject);
                         //System.out.println("Ho inserito in Keyword= "+riga.substring(10));
                     }
                     if (riga.startsWith("[attribute]=")){
-                        attributes.put ( riga.substring(12),dummyObject);
+                        attributes.put ( riga.substring(12).toLowerCase(),dummyObject);
                         //System.out.println("Ho inserito in attribute= "+riga.substring(12));
                     }
                     if (riga.startsWith("[property]=")){
-                        properties.put ( riga.substring(11),dummyObject);
+                        properties.put ( riga.substring(11).toLowerCase(),dummyObject);
                         //System.out.println("Ho inserito in properties= "+riga.substring(11));
                     }
                     if (riga.startsWith("[routine]=")){
-                        routines.put ( riga.substring(10),dummyObject);
+                        routines.put ( riga.substring(10).toLowerCase(),dummyObject);
                         //System.out.println("Ho inserito in routines= "+riga.substring(10));
                     }
                     if (riga.startsWith("[verb]=")){
-                        verbs.put ( riga.substring(7),dummyObject);
+                        verbs.put ( riga.substring(7).toLowerCase(),dummyObject);
                         //System.out.println("Ho inserito in verbs= "+riga.substring(7));
                     }
 
@@ -6167,10 +6167,11 @@ public class jFrame extends JFrame {
                             // ! prima del pattern
         int pos = 0;
         objTree = new Vector(); // serve per l'ordinamento
-        while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
+        //while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
+        while ((pos = Utils.IgnoreCaseIndexOf(testo,pattern, pos)) >= 0)       {        
             //ignoro le righe con commenti
             appoggio = getCurrentJIFTextPane().getRowAt(pos);
-            appoggio = appoggio.substring(0, appoggio.indexOf(pattern));
+            appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
             if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
                 sttok = new StringTokenizer(testo.substring(pos+pattern.length())," ;=");
                 //category1.add(new DefaultMutableTreeNode( new Inspect(sttok.nextToken(),pos,pos+pattern.length())));
@@ -6186,10 +6187,11 @@ public class jFrame extends JFrame {
         pattern = "Constant ";
         pos = 0;
         objTree = new Vector();
-        while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
+        //while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
+        while ((pos = Utils.IgnoreCaseIndexOf(testo,pattern, pos)) >= 0)       {
             //ignoro le righe con commenti
             appoggio = getCurrentJIFTextPane().getRowAt(pos);
-            appoggio = appoggio.substring(0, appoggio.indexOf(pattern));
+            appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
             if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
                 sttok = new StringTokenizer(testo.substring(pos+pattern.length())," ;=");
                 //category2.add(new DefaultMutableTreeNode( new Inspect(sttok.nextToken(),pos,pos+pattern.length())));
@@ -6208,13 +6210,13 @@ public class jFrame extends JFrame {
         pos = 0;
         Vector objvett = new Vector();
         objTree = new Vector();
-        while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
-
+        //while ((pos = testo.indexOf(pattern, pos)) >= 0){
+        while ((pos = Utils.IgnoreCaseIndexOf(testo,pattern, pos)) >= 0){        
             //ignoro le righe con commenti
             appoggio = getCurrentJIFTextPane().getRowAt(pos);
             int posizione_freccia=0;
             posizione_freccia = appoggio.lastIndexOf("->");
-            appoggio = appoggio.substring(0, appoggio.indexOf(pattern));
+            appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
             appoggio = appoggio.trim();
             if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
                 if (posizione_freccia==-1) {
@@ -6249,7 +6251,8 @@ public class jFrame extends JFrame {
         pos = 0;
         objTree = new Vector();
         tmp="";
-        while ((pos = testo.indexOf(pattern, pos)) >= 0) {
+        //while ((pos = testo.indexOf(pattern, pos)) >= 0){
+        while ((pos = Utils.IgnoreCaseIndexOf(testo,pattern, pos)) >= 0){        
             //ignoro le righe con commenti
             appoggio = getCurrentJIFTextPane().getRowAt(pos);
             //appoggio = appoggio.substring(0, appoggio.indexOf(pattern));
@@ -6272,11 +6275,12 @@ public class jFrame extends JFrame {
         Vector classi_locali= new Vector();
         pattern = "Class ";
         pos = 0;
-        while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
+        //while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
+        while ((pos = Utils.IgnoreCaseIndexOf(testo,pattern, pos)) >= 0){        
             //ignoro le righe con commenti
             appoggio = getCurrentJIFTextPane().getRowAt(pos);
 
-            appoggio = appoggio.substring(0, appoggio.indexOf(pattern));
+            appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
             appoggio = appoggio.trim();
 
             if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
@@ -6593,11 +6597,12 @@ public class jFrame extends JFrame {
         String target;
         StringTokenizer sttok;
         int pos=0;
-        while ((pos = testo.indexOf(pattern, pos)) >= 0){
+        //while ((pos = testo.indexOf(pattern, pos)) >= 0){
+        while ((pos = Utils.IgnoreCaseIndexOf(testo,pattern, pos)) >= 0){        
             //gestione -> freccia
             String appoggio = getCurrentJIFTextPane().getRowAt(pos);
             // if appoggio starts with a comment ! has to be ignored
-            if (!appoggio.trim().startsWith("!")){
+            if (!appoggio.trim().startsWith("!") && appoggio.trim().startsWith(nome) ){
                 int posizione_freccia=0;
                 posizione_freccia = appoggio.lastIndexOf("->");
                 if (posizione_freccia==-1) {
@@ -6614,7 +6619,9 @@ public class jFrame extends JFrame {
                 }
                 target = sttok.nextToken();
                 // se la riga corrente non contiene la word "Class "
-                if ( (getCurrentJIFTextPane().getRowAt(pos)).indexOf("Class ")==-1){
+                //if ( (getCurrentJIFTextPane().getRowAt(pos)).indexOf("Class ")==-1){
+                if ( Utils.IgnoreCaseIndexOf(getCurrentJIFTextPane().getRowAt(pos),"Class ")==-1){
+                    
                     //System.out.println("RIGA="+getCurrentJIFTextPane().getRowAt(pos));
 
                     // Add the node only if the char at pos-1 is

@@ -235,25 +235,25 @@ import javax.swing.event.*;
                     }
 
                     private boolean isKeyword(String token){
-                            Object o = jframe.keywords.get( token );
+                            Object o = jframe.keywords.get( token.toLowerCase() );
                             return o == null ? false : true;
                     }
 
 
                     private boolean isAttribute(String token){
-                                    Object o = jframe.attributes.get( token );
+                                    Object o = jframe.attributes.get( token.toLowerCase());
                                     return o == null ? false : true;
                             }
                     private boolean isProperty(String token){
-                                    Object o = jframe.properties.get( token );
+                                    Object o = jframe.properties.get( token.toLowerCase() );
                                     return o == null ? false : true;
                             }
                     private boolean isRoutine(String token){
-                                    Object o = jframe.routines.get( token );
+                                    Object o = jframe.routines.get( token.toLowerCase() );
                                     return o == null ? false : true;
                             }
                     private boolean isVerb(String token){
-                                    Object o = jframe.verbs.get( token );
+                                    Object o = jframe.verbs.get( token.toLowerCase() );
                                     return o == null ? false : true;
                             }
 

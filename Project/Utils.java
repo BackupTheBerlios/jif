@@ -292,10 +292,16 @@ public class Utils {
 
 
 
-  public static int IgnoreCaseIndexOf(String mainString, String str, int fromIndex) {
+public static int IgnoreCaseIndexOf(String mainString, String str, int fromIndex) {
 	String s1 = mainString.toLowerCase();
 	String t1 = str.toLowerCase();
 	return s1.indexOf(t1, fromIndex);
+}
+
+  public static int IgnoreCaseIndexOf(String mainString, String str) {
+	String s1 = mainString.toLowerCase();
+	String t1 = str.toLowerCase();
+	return s1.indexOf(t1);
 }
 
 
