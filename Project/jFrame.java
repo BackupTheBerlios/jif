@@ -5921,7 +5921,7 @@ public class jFrame extends JFrame {
         //HELPED CODE
         // apro il file helpedcode.ini e imposto la helpcode
         try{
-            file = new File(workingDir+"config"+Constants.SEP+"helpedcode.ini");
+        	file = new File(workingDir+"config"+Constants.SEP+java.util.ResourceBundle.getBundle("JIF").getString("HELPED_FILE"));
             if (!(file.exists())){
                     System.out.println(java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE4"));
                 return;
