@@ -1,0 +1,24 @@
+____________________________________
+
+Leggimi.txt		2003-11-13
+____________________________________
+
+
+Questo file spiega in modo sintetico cosa sono e che tipo di dati sono memorizzati nei seguenti files:
+
+config.ini			= contiene la configurazione generale del programma
+functionalKeys.ini		= contiene l'elenco delle stringhe mappate dai tasti funzione F1-F12
+helpcode.ini			= contiene l'elenco di codice assistito (es. if -> if () {})
+mapping.ini			= contiene l'elenco dei tasti rimappati (es. è->@`e)
+
+
+
+switches.ini			= contiene l'elenco dei possibili switches usati dal compilatore
+symbols.ini			= elenco dei simboli che possono essere inseriti via lista, da JIF
+syntax.ini			= elenco di keywords riconosciute da JIF per la syntax highlight	
+
+
+
+in tutti questi file, sono considerate righe di commento
+a) le righe vuote
+b) le righe che iniziano con il primo carattere = "#" (cancelletto)
