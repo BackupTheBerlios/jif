@@ -4504,7 +4504,9 @@ public class jFrame extends JFrame {
                 JIFTextPane jif = getCurrentJIFTextPane();
                 jif.getHlighter().highlightFromTo(jif, insp.Iposition , insp.IpositionEnd);
                 el = jif.getDocument().getDefaultRootElement();
-                jif.scrollRectToVisible(this.getRectForLine(el.getElementIndex(insp.Iposition)));
+                //jif.scrollRectToVisible(this.getRectForLine(el.getElementIndex(insp.Iposition)));
+				jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
+                jif.scrollRectToVisible(jif.modelToView(insp.Iposition));
             }
         }catch(Exception e){
             //System.out.println(e.getMessage());
@@ -4947,7 +4949,7 @@ public class jFrame extends JFrame {
             if(System.getProperty("os.name").indexOf("Windows")!=-1){
                 //PlasticXPLookAndFeel.setMyCurrentTheme(new SkyBlue());
                 //UIManager.setLookAndFeel("com.jgoodies.plaf.plastic.PlasticXPLookAndFeel");
-            	
+
             }
             else{
                 if(System.getProperty("os.name").indexOf("Linux")!=-1){
