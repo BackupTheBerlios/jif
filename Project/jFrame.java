@@ -6547,7 +6547,7 @@ public class jFrame extends JFrame {
 
         if (result==0){
             //salva ed esci
-	    //it must save the project file [ Bug #2997 ] 
+	    //it must save the project file [ Bug #2997 ]
             saveAll();
             saveJifIni();
 	    saveProject();
@@ -7579,6 +7579,7 @@ public class jFrame extends JFrame {
                 ps = new PrintStream( fos );
                 ps.println("# Jif CONFIGURATION");
                 ps.println("# DO NOT EDIT");
+                ps.println("WRAPLINES="+ jCheckBoxWrapLines.isSelected());
                 ps.println("SYNTAX="+ jCheckBoxSyntax.isSelected());
                 ps.println("HELPEDCODE="+ jCheckBoxHelpedCode.isSelected());
                 ps.println("BACKUP="+ jCheckBoxBackup.isSelected());
@@ -7650,6 +7651,11 @@ public class jFrame extends JFrame {
                 while ((riga = br.readLine())!=null){
                     // salto le righe commentate o vuote
                     if (!(riga.startsWith(Constants.TOKENCOMMENT))&&!(riga.equals(""))){
+						// wrap line on
+                        if (riga.indexOf("WRAPLINES=")!=-1){
+                           this.jCheckBoxWrapLines.setSelected(
+                                riga.substring(riga.indexOf("WRAPLINES=")+10).equals("true")?true:false);
+                        }
                         // syntax highlight
                         if (riga.indexOf("SYNTAX=")!=-1){
                            this.jCheckBoxSyntax.setSelected(
@@ -7992,7 +7998,11 @@ public class jFrame extends JFrame {
                 if (jCheckBoxProjectOpenAllFiles.isSelected()){
                 	for(int i=0;i<fileToOpen.size();i++){
                 	auxFile=(String)fileToOpen.elementAt(i);
-                    openFile(auxFile);
+
+                	// don't open automatically *.h files
+                	if (!auxFile.endsWith(".h")){
+						openFile(auxFile);
+					}
                     //in OpenFile riga is seted to null
                 	}
                 	jTabbedPane1.setSelectedIndex(0);
@@ -8081,6 +8091,7 @@ public class jFrame extends JFrame {
                 ps.println("# ********************* #");
                 ps.println("# PROJECT CONFIGURATION #");
                 ps.println("# ********************* #");
+                ps.println("WRAPLINES="+ jCheckBoxWrapLines.isSelected());
                 ps.println("SYNTAX="+ jCheckBoxSyntax.isSelected());
                 ps.println("HELPEDCODE="+ jCheckBoxHelpedCode.isSelected());
                 ps.println("BACKUP="+ jCheckBoxBackup.isSelected());
@@ -8182,7 +8193,7 @@ public class jFrame extends JFrame {
         makeConfig.append("interpreter="+jTextFieldPathInterpreter.getText()+"\n");
         makeConfig.append("glulx="+jTextFieldPathGlulx.getText()+"\n");
         makeConfig.append("compiler="+jTextFieldPathCompiler.getText()+"\n");
-        makeConfig.append("defaultBrowser="+ jTextFieldPathBrowser.getText()+"\n");        
+        makeConfig.append("defaultBrowser="+ jTextFieldPathBrowser.getText()+"\n");
         makeConfig.append("BRESLOCATION="+ jTextFieldBres.getText()+"\n");
         makeConfig.append("BLCLOCATION="+ jTextFieldBlc.getText()+"\n");
 
@@ -8581,6 +8592,7 @@ public class jFrame extends JFrame {
         jCheckBoxNumberLines.setSelected(true);
         jCheckBoxScanProjectFiles.setSelected(true);
         jCheckBoxSyntax.setSelected(true);
+        jCheckBoxWrapLines.setSelected(false);
         jCheckBoxProjectCloseAll.setSelected(true);
         jCheckBoxQuoteString.setSelected(false);
     }
