@@ -1,5 +1,5 @@
 JIF - a java editor for Inform
-Copyright (C) 2003/2004 - Alessandro Schillaci (silver.slade@tiscalinet.it)
+Copyright (C) 2003-2005 - Alessandro Schillaci (silver.slade@tiscalinet.it)
 
 Jif is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
