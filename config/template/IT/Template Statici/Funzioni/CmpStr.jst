@@ -1,0 +1,48 @@
+# **** MADE BY JIF ****
+
+# ---- DO NOT EDIT ----- 
+
+[JIF TEMPLATE]
+
+[TYPE]=static
+
+[NAME]=CmpStr
+
+[AUTHOR]=Vincenzo Scarpa
+
+[DATE]=2003.10.24
+
+[VERSION]=1.0
+
+[DESCRIPTION]=compara due stringhe restituendo 1 se sono uguali, viceversa 0
+
+[BEGIN]
+
+! ----------------------------------------------------------------------------------
+
+!   Questa funzione compara due stringhe restituendo 1 se sono uguali, viceversa 0
+
+! ----------------------------------------------------------------------------------
+
+[ CmpStr temp1 temp2 i c;
+
+  i=2; c=0;
+
+  !se le stringhe non hanno la stessa lunghezza
+
+  if (temp1->1 ~= temp2->1) return 0;
+
+  
+
+  .Compare;
+
+  if(temp1->i == temp2->i) {i++; c++;} else return 0;
+
+  if(c==temp2->1) return 1; else jump Compare;
+
+];
+
+[END]
+
+# ---- DO NOT EDIT ----- 
+

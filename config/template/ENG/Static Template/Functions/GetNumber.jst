@@ -1,0 +1,42 @@
+# **** MADE BY JIF ****
+
+# ---- DO NOT EDIT ----- 
+
+[JIF TEMPLATE]
+[TYPE]=static
+[NAME]=GetNumber
+[AUTHOR]=Vincenzo Scarpa
+[DATE]=2003.10.24
+[VERSION]=1.0
+[DESCRIPTION]=read a numeric input in the range 0-32767
+[BEGIN]
+! ----------------------------------------------------------------------------------
+!   This function accepts in input a numeric value in the range 0-32767
+! ----------------------------------------------------------------------------------
+Array input->8;
+
+[ GetNumber n k;
+    if (n>5) n=5;
+    if (n<1) n=1;
+    
+    for (k=0: k<8: k++) input->k=0; 
+    input->0=n;
+    read input 0;
+    
+    if (input->2<48 || input->2>57) rfalse; ! se non è stato inserito un numero esce
+    if (input->3<48 || input->3>57)
+        return input->2-48;
+    if (input->4<48 || input->4>57) 
+        return ((input->2-48)*10) + (input->3-48); 
+    if (input->5<48 || input->5>57)
+        return ((input->2-48)*100) + ((input->3-48)*10) + (input->4-48); 
+    if (input->6<48 || input->6>57)
+        return ((input->2-48)*1000) + ((input->3-48)*100) + ((input->4-48)*10) + (input->5-48); 
+    if ((input->2>51) || (input->3>50) || (input->4>55) || (input->5>54) || (input->6>55)) 
+       rfalse; !se è stato inserito un numero maggiore di 32767 
+    return ((input->2-48)*10000) + ((input->3-48)*1000) + ((input->4-48)*100) + ((input->5-48)*10) + (input->6-48);
+];
+[END]
+# ---- DO NOT EDIT ----- 
+
+
