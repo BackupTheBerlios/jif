@@ -3288,8 +3288,8 @@ public class jFrame extends JFrame {
         jMenuGlulx.setText("Glulx");
         jMenuGlulx.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemBuildAllGlulx.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemBuildAllGlulx.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILD_ALL"));
-        jMenuItemBuildAllGlulx.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILD_ALL_TOOLTIP"));
+        jMenuItemBuildAllGlulx.setText("Build All");
+        jMenuItemBuildAllGlulx.setToolTipText("Make Res, Compile and make BLB file");
         jMenuItemBuildAllGlulx.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemBuildAllGlulxActionPerformed(evt);
@@ -3301,7 +3301,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jSeparator18);
 
         jMenuItemMakeResource.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemMakeResource.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_MAKE_RES"));
+        jMenuItemMakeResource.setText("Make resource file");
         jMenuItemMakeResource.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemMakeResourceActionPerformed(evt);
@@ -3311,7 +3311,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jMenuItemMakeResource);
 
         jMenuItemCompile.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCompile.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_COMPILE_INF"));
+        jMenuItemCompile.setText("Compile inf File");
         jMenuItemCompile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemCompileActionPerformed(evt);
@@ -3321,7 +3321,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jMenuItemCompile);
 
         jMenuItemMakeBlb.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemMakeBlb.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_MAKE_BLB"));
+        jMenuItemMakeBlb.setText("Make blb");
         jMenuItemMakeBlb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemMakeBlbActionPerformed(evt);
@@ -3333,7 +3333,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jSeparator15);
 
         jMenuItemRunUlx.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemRunUlx.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_ULX"));
+        jMenuItemRunUlx.setText("Run ULX file");
         jMenuItemRunUlx.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemRunUlxActionPerformed(evt);
@@ -3343,7 +3343,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jMenuItemRunUlx);
 
         jMenuItemRunBlb.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemRunBlb.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_BLB"));
+        jMenuItemRunBlb.setText("Run BLB file");
         jMenuItemRunBlb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemRunBlbActionPerformed(evt);
@@ -5780,13 +5780,15 @@ public class jFrame extends JFrame {
                     makeConfig.append("# Jif Configuration"+"\n");
                     makeConfig.append("######################################################"+"\n");
                     makeConfig.append("\n");
-                    makeConfig.append("libPath="+workingDir+"lib\n");
+                    makeConfig.append("libPath="+workingDir+java.util.ResourceBundle.getBundle("JIF").getString("DEFAULT_LIB_DIRECTORY")+"\n");
                     makeConfig.append("libPathSecondary=\n");
                     makeConfig.append("gamesDir="+workingDir+"games\n");
                     makeConfig.append("interpreter="+workingDir+"interpreter"+Constants.SEP+"WindowsFrotz2002"+Constants.SEP+"Frotz.exe"+"\n");
                     makeConfig.append("glulx="+workingDir+"interpreter"+Constants.SEP+"Glulxe"+Constants.SEP+"Glulxe.exe"+"\n");
                     makeConfig.append("compiler="+workingDir+"compiler"+Constants.SEP+"inform.exe"+"\n");
                     makeConfig.append("defaultBrowser=\n");
+                    makeConfig.append("BRESLOCATION="+workingDir+"glulx\\BRES.EXE\n");
+                    makeConfig.append("BLCLOCATION="+workingDir+"glulx\\BLC.EXE\n");
 
                     //salvo il file default
                     PrintStream ps;
@@ -5819,6 +5821,9 @@ public class jFrame extends JFrame {
                     if (riga.indexOf("glulx=")!=-1){glulx=riga.substring(riga.indexOf("glulx=")+6);}
                     if (riga.indexOf("compiler=")!=-1){compiler=riga.substring(riga.indexOf("compiler=")+9);}
                     if (riga.indexOf("defaultBrowser=")!=-1){defaultBrowser=riga.substring(riga.indexOf("defaultBrowser=")+15);}
+
+                    if (riga.indexOf("BRESLOCATION=")!=-1){jTextFieldBres.setText(riga.substring(riga.indexOf("BRESLOCATION=")+13));}
+                    if (riga.indexOf("BLCLOCATION=")!=-1) {jTextFieldBlc.setText( riga.substring(riga.indexOf("BLCLOCATION=")+12));}
                 }
             }
             br.close();
@@ -7604,8 +7609,8 @@ public class jFrame extends JFrame {
                 ps.println("[colorBackground]="+colorBackground.getRed()+","+colorBackground.getGreen()+","+colorBackground.getBlue());
                 ps.println("[defaultFont]="+ defaultFont.getName()+","+defaultFont.getStyle()+","+defaultFont.getSize());
                 // Informazioni sul GLULX MODE
-                ps.println("BRESLOCATION="+ jTextFieldBres.getText());
-                ps.println("BLCLOCATION="+ jTextFieldBlc.getText());
+//                ps.println("BRESLOCATION="+ jTextFieldBres.getText());
+//                ps.println("BLCLOCATION="+ jTextFieldBlc.getText());
                 ps.println("CHECKBOXMAKERESOURCE="+ jCheckBoxMakeResource.isSelected());
 
                 ps.close();
@@ -7734,17 +7739,17 @@ public class jFrame extends JFrame {
                             jCheckBoxAutomaticCheckBrackets.setSelected(
                             riga.substring(riga.indexOf("AUTOMATICBRACKETSCHECK=")+23).equals("true")?true:false);
                         }
-                        // Informazioni sul GLULX MODE
-                        if (riga.indexOf("BRESLOCATION=")!=-1){
-                            jTextFieldBres.setText(
-                            riga.substring(riga.indexOf("BRESLOCATION=")+13)
-                        );
-                        }
-                        if (riga.indexOf("BLCLOCATION=")!=-1){
-                            jTextFieldBlc.setText(
-                            riga.substring(riga.indexOf("BLCLOCATION=")+12)
-                        );
-                        }
+//                        // Informazioni sul GLULX MODE
+//                        if (riga.indexOf("BRESLOCATION=")!=-1){
+//                            jTextFieldBres.setText(
+//                            riga.substring(riga.indexOf("BRESLOCATION=")+13)
+//                        );
+//                        }
+//                        if (riga.indexOf("BLCLOCATION=")!=-1){
+//                            jTextFieldBlc.setText(
+//                            riga.substring(riga.indexOf("BLCLOCATION=")+12)
+//                        );
+//                        }
                         if (riga.indexOf("CHECKBOXMAKERESOURCE=")!=-1){
                             jCheckBoxMakeResource.setSelected(
                             riga.substring(riga.indexOf("CHECKBOXMAKERESOURCE=")+21).equals("true")?true:false);
@@ -8096,8 +8101,8 @@ public class jFrame extends JFrame {
                 ps.println("[colorComment]="+colorComment.getRed()+","+colorComment.getGreen()+","+colorComment.getBlue());
                 ps.println("[colorBackground]="+colorBackground.getRed()+","+colorBackground.getGreen()+","+colorBackground.getBlue());
                 ps.println("[defaultFont]="+ defaultFont.getName()+","+defaultFont.getStyle()+","+defaultFont.getSize());
-                ps.println("BRESLOCATION="+ jTextFieldBres.getText());
-                ps.println("BLCLOCATION="+ jTextFieldBlc.getText());
+//                ps.println("BRESLOCATION="+ jTextFieldBres.getText());
+//                ps.println("BLCLOCATION="+ jTextFieldBlc.getText());
                 ps.println("CHECKBOXMAKERESOURCE="+ jCheckBoxMakeResource.isSelected());
 
                 ps.println("");
@@ -8171,7 +8176,9 @@ public class jFrame extends JFrame {
         makeConfig.append("interpreter="+jTextFieldPathInterpreter.getText()+"\n");
         makeConfig.append("glulx="+jTextFieldPathGlulx.getText()+"\n");
         makeConfig.append("compiler="+jTextFieldPathCompiler.getText()+"\n");
-        makeConfig.append("defaultBrowser="+ jTextFieldPathBrowser.getText()+"\n");
+        makeConfig.append("defaultBrowser="+ jTextFieldPathBrowser.getText()+"\n");        
+        makeConfig.append("BRESLOCATION="+ jTextFieldBres.getText()+"\n");
+        makeConfig.append("BLCLOCATION="+ jTextFieldBlc.getText()+"\n");
 
         File file = new File(workingDir+"config"+Constants.SEP+"config.ini");
         //salvo il file default
