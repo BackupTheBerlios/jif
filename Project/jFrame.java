@@ -6887,6 +6887,7 @@ public class jFrame extends JFrame {
                 boolean trovato = false;
 
                 while ( ( (pos = text.indexOf(pattern, pos)) >= 0) && (!trovato)){
+                //while ( ( (pos = Utils.IgnoreCaseIndexOf(text,pattern, pos)) >= 0) && (!trovato)){                
                     getCurrentJIFTextPane().requestFocus();
                     getCurrentJIFTextPane().setCaretPosition(pos);
                     getCurrentJIFTextPane().setSelectionStart(pos);

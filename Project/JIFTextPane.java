@@ -565,7 +565,8 @@ public class JIFTextPane extends JTextPane{
                 String text = getDocument().getText(0, getDocument().getLength());
                 boolean found = false;
 
-                while ( ( (pos = text.indexOf(pattern, pos)) >= 0) && (!found))       {
+                //while ( ( (pos = text.indexOf(pattern, pos)) >= 0) && (!found)) {
+                while ( ( (pos = Utils.IgnoreCaseIndexOf(text,pattern, pos)) >= 0)  && (!found)) {
                     hlighter.highlightFromTo(this, pos, pos + pattern.length());
                     pos += pattern.length();
                     setCaretPosition(pos);
