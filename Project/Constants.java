@@ -41,7 +41,7 @@ public class Constants {
     /**
      * JIF Version
      */
-    public static final String JIFVERSION = "1.5 RC 20041218";
+    public static final String JIFVERSION = "1.5 Final 20041222";
 
     /**
      * File Separator, depending on which Operative System is executing JIF

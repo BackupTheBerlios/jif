@@ -7455,9 +7455,13 @@ public class jFrame extends JFrame {
         JFileChooser chooser;
         if (lastDir!=null && !lastDir.equals("")){
               chooser  = new JFileChooser(lastDir);
+              chooser.setDialogTitle(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEAS"));
+              chooser.setApproveButtonText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
         }
         else {
              chooser = new JFileChooser(this.gamesDir);
+              chooser.setDialogTitle(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEAS"));
+              chooser.setApproveButtonText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
         }
 
         // Selezione Multipla
