@@ -4505,7 +4505,7 @@ public class jFrame extends JFrame {
                 jif.getHlighter().highlightFromTo(jif, insp.Iposition , insp.IpositionEnd);
                 el = jif.getDocument().getDefaultRootElement();
                 //jif.scrollRectToVisible(this.getRectForLine(el.getElementIndex(insp.Iposition)));
-				jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
+                jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                 jif.scrollRectToVisible(jif.modelToView(insp.Iposition));
             }
         }catch(Exception e){
@@ -4569,6 +4569,8 @@ public class jFrame extends JFrame {
 
                 // Highlight the line which has product the error during compiling
                 getCurrentJIFTextPane().getHlighter().highlightFromTo(getCurrentJIFTextPane(),el.getStartOffset(),el.getEndOffset() );
+                getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getDocument().getLength()));                
+                getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(el.getStartOffset()));
             }
             else return;
         } catch (BadLocationException e){}
