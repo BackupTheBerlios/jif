@@ -6068,13 +6068,18 @@ public class jFrame extends JFrame {
             }
             br = new BufferedReader(new FileReader(file));
 
-            keywords= new Hashtable();
-            attributes = new Hashtable();
-            properties= new Hashtable();
-            routines= new Hashtable();
-            verbs= new Hashtable();
-            //userDefined = new Hashtable();
-            Object dummyObject = new Object();
+            keywords= new HashSet();
+            attributes = new HashSet();
+            properties= new HashSet();
+            routines= new HashSet();
+            verbs= new HashSet();
+
+            keywords_cs= new HashSet();
+            attributes_cs = new HashSet();
+            properties_cs= new HashSet();
+            routines_cs= new HashSet();
+            verbs_cs= new HashSet();
+
 
             while ((riga = br.readLine())!=null){
                 //salto le righe di commento che iniziano per Constants.TOKENCOMMENT=#
@@ -6083,23 +6088,28 @@ public class jFrame extends JFrame {
 
                     //controllo se la riga inizia con [keyword]=
                     if (riga.startsWith("[keyword]=")){
-                        keywords.put ( riga.substring(10).toLowerCase(),dummyObject);
+                        keywords.add( riga.substring(10).toLowerCase());
+                        keywords_cs.add( riga.substring(10));
                         //System.out.println("Ho inserito in Keyword= "+riga.substring(10));
                     }
                     if (riga.startsWith("[attribute]=")){
-                        attributes.put ( riga.substring(12).toLowerCase(),dummyObject);
+                        attributes.add ( riga.substring(12).toLowerCase());
+                        attributes_cs.add ( riga.substring(12));                        
                         //System.out.println("Ho inserito in attribute= "+riga.substring(12));
                     }
                     if (riga.startsWith("[property]=")){
-                        properties.put ( riga.substring(11).toLowerCase(),dummyObject);
+                        properties.add ( riga.substring(11).toLowerCase());
+                        properties_cs.add ( riga.substring(11));
                         //System.out.println("Ho inserito in properties= "+riga.substring(11));
                     }
                     if (riga.startsWith("[routine]=")){
-                        routines.put ( riga.substring(10).toLowerCase(),dummyObject);
+                        routines.add ( riga.substring(10).toLowerCase());
+                        routines_cs.add ( riga.substring(10));                        
                         //System.out.println("Ho inserito in routines= "+riga.substring(10));
                     }
                     if (riga.startsWith("[verb]=")){
-                        verbs.put ( riga.substring(7).toLowerCase(),dummyObject);
+                        verbs.add ( riga.substring(7).toLowerCase());
+                        verbs_cs.add ( riga.substring(7));
                         //System.out.println("Ho inserito in verbs= "+riga.substring(7));
                     }
 
@@ -9527,11 +9537,18 @@ public class jFrame extends JFrame {
      private DefaultMutableTreeNode tmp_nodo;
 
     // Syntax highlight
-    public Hashtable attributes;
-    public Hashtable properties;
-    public Hashtable routines;
-    public Hashtable verbs;
-    public Hashtable keywords;
+    public HashSet attributes;
+    public HashSet properties;
+    public HashSet routines;
+    public HashSet verbs;
+    public HashSet keywords;
+    
+    // Gestione Case Sensitive
+    public HashSet attributes_cs;
+    public HashSet properties_cs;
+    public HashSet routines_cs;
+    public HashSet verbs_cs;
+    public HashSet keywords_cs;    
 
     //per contare l'attuale numero usato per i nomi dei file nuovi
     private int countNewFile=0;

@@ -235,27 +235,80 @@ import javax.swing.event.*;
                     }
 
                     private boolean isKeyword(String token){
-                            Object o = jframe.keywords.get( token.toLowerCase() );
-                            return o == null ? false : true;
+                        if (jframe.keywords_cs.contains(token)){
+                            return true;
+                        }
+                        else if (
+                                //jframe.keywords_cs.contains(token)
+                                jframe.attributes_cs.contains(token) ||
+                                jframe.properties_cs.contains(token) ||
+                                jframe.routines_cs.contains(token) ||
+                                jframe.verbs_cs.contains(token) 
+                                ){
+                            return false;
+                        }
+                        else return jframe.keywords.contains( token.toLowerCase() );
                     }
-
-
                     private boolean isAttribute(String token){
-                                    Object o = jframe.attributes.get( token.toLowerCase());
-                                    return o == null ? false : true;
-                            }
+                        if (jframe.attributes_cs.contains(token)){
+                            return true;
+                        }
+                        else if (
+                                jframe.keywords_cs.contains(token) ||
+                                //jframe.attributes_cs.contains(token) ||
+                                jframe.properties_cs.contains(token) ||
+                                jframe.routines_cs.contains(token) ||
+                                jframe.verbs_cs.contains(token) 
+                                ){
+                            return false;
+                        }                        
+                        else return jframe.attributes.contains( token.toLowerCase() );                        
+                    }
                     private boolean isProperty(String token){
-                                    Object o = jframe.properties.get( token.toLowerCase() );
-                                    return o == null ? false : true;
-                            }
+                        if (jframe.properties_cs.contains(token)){
+                            return true;
+                        }
+                        else if (
+                                jframe.keywords_cs.contains(token) ||
+                                jframe.attributes_cs.contains(token) ||
+                                //jframe.properties_cs.contains(token) ||
+                                jframe.routines_cs.contains(token) ||
+                                jframe.verbs_cs.contains(token) 
+                                ){
+                            return false;
+                        }                        
+                        else return jframe.properties.contains( token.toLowerCase() );   
+                    }
                     private boolean isRoutine(String token){
-                                    Object o = jframe.routines.get( token.toLowerCase() );
-                                    return o == null ? false : true;
-                            }
+                        if (jframe.routines_cs.contains(token)){
+                            return true;
+                        }
+                        else if (
+                                jframe.keywords_cs.contains(token) ||
+                                jframe.attributes_cs.contains(token) ||
+                                jframe.properties_cs.contains(token) ||
+                                //jframe.routines_cs.contains(token) ||
+                                jframe.verbs_cs.contains(token) 
+                                ){
+                            return false;
+                        }                        
+                        else return jframe.routines.contains( token.toLowerCase() );    
+                    }
                     private boolean isVerb(String token){
-                                    Object o = jframe.verbs.get( token.toLowerCase() );
-                                    return o == null ? false : true;
-                            }
+                        if (jframe.verbs_cs.contains(token)){
+                            return true;
+                        }
+                        else if (
+                                jframe.keywords_cs.contains(token) ||
+                                jframe.attributes_cs.contains(token) ||
+                                jframe.properties_cs.contains(token) ||
+                                jframe.routines_cs.contains(token) 
+                                //jframe.verbs_cs.contains(token) 
+                                ){
+                            return false;
+                        }                        
+                        else return jframe.verbs.contains( token.toLowerCase() );                          
+                    }
 
 
 		private int getQuoteToken(String content, int startOffset, int endOffset){
