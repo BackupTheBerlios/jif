@@ -6547,8 +6547,10 @@ public class jFrame extends JFrame {
 
         if (result==0){
             //salva ed esci
+	    //it must save the project file [ Bug #2997 ] 
             saveAll();
             saveJifIni();
+	    saveProject();
             System.exit(0);
         }
         if (result==1){
