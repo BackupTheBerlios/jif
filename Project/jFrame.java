@@ -131,7 +131,7 @@ public class jFrame extends JFrame {
     //JWindowObjects.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("STR_OBJECTS"));
     //JWindowObjects.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/TREE_objects.png")));
     JWindowObjects.setUndecorated(true);
-    
+
     // Events management in the object list
     jListObjects.addKeyListener(new java.awt.event.KeyAdapter(){
         public void keyPressed(java.awt.event.KeyEvent ke){
@@ -192,7 +192,7 @@ public class jFrame extends JFrame {
     //JWindowSymbols.setName(java.util.ResourceBundle.getBundle("JIF").getString("STR_SYMBOLS"));
     //JWindowSymbols.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("STR_SYMBOLS"));
     JWindowSymbols.setUndecorated(true);
-    
+
     jListSymbols.addKeyListener(new java.awt.event.KeyAdapter(){
         public void keyPressed(java.awt.event.KeyEvent ke){
             if ((ke.getKeyCode()==ke.VK_ENTER)){
@@ -255,7 +255,7 @@ public class jFrame extends JFrame {
     //JWindowFunctions.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("STR_FUNCTIONS"));
     //JWindowFunctions.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/TREE_objects.png")));
     JWindowFunctions.setUndecorated(true);
-    
+
     jListFunctions.addKeyListener(new java.awt.event.KeyAdapter(){
         public void keyPressed(java.awt.event.KeyEvent ke){
             if ((ke.getKeyCode()==ke.VK_ENTER)){
@@ -2237,7 +2237,7 @@ public class jFrame extends JFrame {
         jToolBarInform.setBorder(new javax.swing.border.EtchedBorder());
         jToolBarInform.setFloatable(false);
         jToolBarInform.setPreferredSize(new java.awt.Dimension(400, 34));
-        jButtonCommentSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/comment.gif")));
+        jButtonCommentSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/comment.png")));
         jButtonCommentSelection.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_COMMENT_SELECTION"));
         jButtonCommentSelection.setBorderPainted(false);
         jButtonCommentSelection.setMaximumSize(new java.awt.Dimension(29, 29));
@@ -2259,7 +2259,7 @@ public class jFrame extends JFrame {
 
         jToolBarInform.add(jButtonCommentSelection);
 
-        jButtonUncommentSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/uncomment.gif")));
+        jButtonUncommentSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/uncomment.png")));
         jButtonUncommentSelection.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_UNCOMMENT_SELECTION"));
         jButtonUncommentSelection.setBorderPainted(false);
         jButtonUncommentSelection.setMaximumSize(new java.awt.Dimension(29, 29));
@@ -2281,7 +2281,7 @@ public class jFrame extends JFrame {
 
         jToolBarInform.add(jButtonUncommentSelection);
 
-        jButtonLeftTab.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/leftIndent.gif")));
+        jButtonLeftTab.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/leftIndent.png")));
         jButtonLeftTab.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_LEFTTAB_SELECTION"));
         jButtonLeftTab.setBorderPainted(false);
         jButtonLeftTab.setMaximumSize(new java.awt.Dimension(29, 29));
@@ -2303,7 +2303,7 @@ public class jFrame extends JFrame {
 
         jToolBarInform.add(jButtonLeftTab);
 
-        jButtonRightTab.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/rightIndent.gif")));
+        jButtonRightTab.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/rightIndent.png")));
         jButtonRightTab.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_RIGHTTAB_SELECTION"));
         jButtonRightTab.setBorderPainted(false);
         jButtonRightTab.setMaximumSize(new java.awt.Dimension(29, 29));
@@ -2673,7 +2673,7 @@ public class jFrame extends JFrame {
         jPanelControl.setMaximumSize(new java.awt.Dimension(150, 35));
         jPanelControl.setMinimumSize(new java.awt.Dimension(150, 35));
         jPanelControl.setPreferredSize(new java.awt.Dimension(150, 35));
-        RefreshTreeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/tree_menu.gif")));
+        RefreshTreeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/tree_menu.png")));
         RefreshTreeButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENUITEM_REFRESHTREE"));
         RefreshTreeButton.setBorderPainted(false);
         RefreshTreeButton.setMaximumSize(new java.awt.Dimension(22, 22));
@@ -2696,7 +2696,7 @@ public class jFrame extends JFrame {
         jPanelControl.add(RefreshTreeButton);
 
         jButtonExpand.setFont(new java.awt.Font("Dialog", 0, 10));
-        jButtonExpand.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/plus.gif")));
+        jButtonExpand.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/plus.png")));
         jButtonExpand.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EXPAND"));
         jButtonExpand.setBorderPainted(false);
         jButtonExpand.setMaximumSize(new java.awt.Dimension(22, 22));
@@ -2719,7 +2719,7 @@ public class jFrame extends JFrame {
         jPanelControl.add(jButtonExpand);
 
         jButtonImplode.setFont(new java.awt.Font("Dialog", 0, 10));
-        jButtonImplode.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/minus.gif")));
+        jButtonImplode.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/minus.png")));
         jButtonImplode.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_COLLAPSE"));
         jButtonImplode.setBorderPainted(false);
         jButtonImplode.setMaximumSize(new java.awt.Dimension(22, 22));
@@ -3837,9 +3837,9 @@ public class jFrame extends JFrame {
             }
         });
         jListProject.setListData(projectFiles);
-        
+
         // Update and save the project
-        saveProject();           
+        saveProject();
     }//GEN-LAST:event_jMenuItemAddNewToProjectActionPerformed
 
     private void jMenuItemPopupAddNewToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupAddNewToProjectActionPerformed
@@ -4939,27 +4939,27 @@ public class jFrame extends JFrame {
             //  * com.jgoodies.plaf.windows.ExtWindowsLookAndFeel Parecido a win98
             //	* com.jgoodies.plaf.plastic.PlasticLookAndFeel win98 mejorado
             //	* com.jgoodies.plaf.plastic.Plastic3DLookAndFeel xp pero cuadradito
-            //	* com.jgoodies.plaf.plastic.PlasticXPLookAndFeel 
+            //	* com.jgoodies.plaf.plastic.PlasticXPLookAndFeel
             System.out.println(System.getProperty("os.name"));
             System.out.println(UIManager.getSystemLookAndFeelClassName());
             if(System.getProperty("os.name").indexOf("Windows")!=-1){
                 //PlasticXPLookAndFeel.setMyCurrentTheme(new SkyBlue());
-                UIManager.setLookAndFeel("com.jgoodies.plaf.plastic.PlasticXPLookAndFeel");    
-            }            
+                UIManager.setLookAndFeel("com.jgoodies.plaf.plastic.PlasticXPLookAndFeel");
+            }
             else{
                 if(System.getProperty("os.name").indexOf("Linux")!=-1){
-                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");    
-                }                
+                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+                }
                 else{
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());    
-                }                
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                }
             }
             System.out.println(UIManager.getLookAndFeel().getName());
         }
         catch(Exception e){
           System.out.println("ERRORE: "+e.getMessage());
           System.err.println(e.getMessage());
-          
+
         }
         if (args.length > 0)  {
             new jFrame(args[0]).show();
@@ -5423,7 +5423,7 @@ public class jFrame extends JFrame {
   private void openFile(String nomefile){
 
         File file = new File(nomefile);
-        
+
         //controllo che il file esista ancora.
         if (!file.exists()){
             //JOptionPane.showMessageDialog(this, "File inesistente");
@@ -5433,7 +5433,7 @@ public class jFrame extends JFrame {
         if (checkOpenFile(file.getAbsoluteFile().toString())) return;
 
         //riga="";
-        
+
         JIFTextPane jtp;
         if (jCheckBoxWrapLines.isSelected()){
             jtp = new JIFTextPane(this, file);
@@ -5474,9 +5474,9 @@ public class jFrame extends JFrame {
 
         //refresh tree
         refreshTree();
-        
+
         lastFile = file.getAbsolutePath();
-        
+
   }
 
   private void newAdventure(){
@@ -5569,26 +5569,26 @@ public class jFrame extends JFrame {
                 // di livello 2 lo aggiungo
                 int length = subMenues.length;
                 for (int count=0; count < length; count++){
-                    // Add menu                    
+                    // Add menu
                     if (!(subMenues[count].getName().equalsIgnoreCase("CVS"))){
                         menu = new JMenu(subMenues[count].getName());
                         menu.setFont(new Font("Dialog",Font.PLAIN,11));
                         jMenuInsertNew.add(menu);
                         // adding a sub-menu
-                        
+
                         File inifile = null;
                         boolean completed = false;
                         int i = 0 ;
-                        
+
                         // taking the menu.ini file, ignoring the other files and CVS directory
-                        while (!completed){                                                        
+                        while (!completed){
                             inifile = subMenues[count].listFiles()[i];
                             if (inifile != null && inifile.getAbsolutePath().indexOf(".ini")!=-1){
                                 completed = true;
-                            }                            
+                            }
                             i++;
                         }
-                        
+
                         if (inifile != null){
                             br = new BufferedReader(new FileReader(inifile));
                             while ((riga = br.readLine())!=null){
@@ -5611,9 +5611,9 @@ public class jFrame extends JFrame {
                                     operations.put((String)id,(String) name);
                                 }
                             }
-                            br.close();  
+                            br.close();
                         }
-                    }                    
+                    }
                 }
 
             } catch(Exception e){
@@ -6192,7 +6192,7 @@ public class jFrame extends JFrame {
             posizione_freccia = appoggio.lastIndexOf("->");
             appoggio = appoggio.substring(0, appoggio.indexOf(pattern));
             appoggio = appoggio.trim();
-            if (appoggio.indexOf("!")==-1 && appoggio.equals("")){            
+            if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
                 if (posizione_freccia==-1) {
                     posizione_freccia=0;
                 } else posizione_freccia -=3;
@@ -6202,7 +6202,7 @@ public class jFrame extends JFrame {
                     sttok = new StringTokenizer(tmp.trim(),"\"");
                 }
                 else{
-                    sttok = new StringTokenizer(tmp," ;");                    
+                    sttok = new StringTokenizer(tmp," ;");
                 }
                 hang = sttok.nextToken();
                 //category4.add(new DefaultMutableTreeNode( new Inspect(hang,pos,pos+pattern.length()-1)));
@@ -6251,12 +6251,12 @@ public class jFrame extends JFrame {
         while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
             //ignoro le righe con commenti
             appoggio = getCurrentJIFTextPane().getRowAt(pos);
-            
+
             appoggio = appoggio.substring(0, appoggio.indexOf(pattern));
             appoggio = appoggio.trim();
-            
-            if (appoggio.indexOf("!")==-1 && appoggio.equals("")){ 
-//            if (appoggio.indexOf("!")==-1 && appoggio.startsWith("Class")){             
+
+            if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
+//            if (appoggio.indexOf("!")==-1 && appoggio.startsWith("Class")){
                 sttok = new StringTokenizer(testo.substring(pos+pattern.length())," ;\n");
                 String nome = sttok.nextToken();
                 classi_locali.add((String) nome);
@@ -6325,9 +6325,9 @@ public class jFrame extends JFrame {
         if (explode) expandAll(jTree1, true);
     }
 
-    
-   
-    
+
+
+
     public void sortNodes(Vector vettore, DefaultMutableTreeNode nodo ){
         // Sorting nodes
         Collections.sort(vettore,new Comparator(){
@@ -6584,7 +6584,7 @@ public class jFrame extends JFrame {
                     sttok = new StringTokenizer(tmp.trim(),"\"");
                 }
                 else{
-                    sttok = new StringTokenizer(tmp," ;");                    
+                    sttok = new StringTokenizer(tmp," ;");
                 }
                 target = sttok.nextToken();
                 // se la riga corrente non contiene la word "Class "
@@ -6605,10 +6605,10 @@ public class jFrame extends JFrame {
                     if (test.equals(" ") || test.equals("\t") || test.equals("\n")){
                         nodo.add(new DefaultMutableTreeNode( new Inspect(target.toLowerCase(),pos,pos+pattern.length())));
                     }
-                }                
+                }
             }
             pos += pattern.length();
-        }    
+        }
     }
 
 
@@ -7446,14 +7446,14 @@ public class jFrame extends JFrame {
     public void saveAs(){
         // recupero il nuovo nome del file e lo salvo....
         // String result = JOptionPane.showInputDialog(this , java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE1")+gamesDir, java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE2"), JOptionPane.OK_CANCEL_OPTION);
-        
+
         JFileChooser chooser;
         if (lastDir!=null && !lastDir.equals("")){
               chooser  = new JFileChooser(lastDir);
         }
         else {
              chooser = new JFileChooser(this.gamesDir);
-        }        
+        }
 
         // Selezione Multipla
         chooser.setMultiSelectionEnabled(false);
@@ -7466,8 +7466,8 @@ public class jFrame extends JFrame {
         File file = chooser.getSelectedFile();
         String result = file.getAbsolutePath();
         lastDir = result.substring(0,result.lastIndexOf(Constants.SEP));
-        
-        
+
+
         // se il file non ha estensione: gliela inserisco io INF
         if (result.lastIndexOf(".")==-1){
             result = result+".inf";
@@ -7552,9 +7552,9 @@ public class jFrame extends JFrame {
         });
         jListProject.setListData(projectFiles);
         }
-        
+
         // Update and save the project
-        saveProject();   
+        saveProject();
     }
 
 
@@ -7923,9 +7923,9 @@ public class jFrame extends JFrame {
                             }
                             // provo ad aprire il file, se il checkbox relativo è impostato
                             // a TRUE
-                            
+
                             	fileToOpen.add(riga.substring(riga.indexOf("[FILE]=")+7));
-                            
+
                  /*           if (jCheckBoxProjectOpenAllFiles.isSelected()){
                             	auxFile=riga;
                                 openFile(riga.substring(riga.indexOf("[FILE]=")+7));
@@ -8114,8 +8114,8 @@ public class jFrame extends JFrame {
 
             JOptionPane.showMessageDialog(
             jDialogConfigFiles,
-            currentProject +" " +java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE4"), 
-            java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE2") , 
+            currentProject +" " +java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE4"),
+            java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE2") ,
             JOptionPane.INFORMATION_MESSAGE);
       //  }
     }
@@ -8142,9 +8142,9 @@ public class jFrame extends JFrame {
             });
 
             jListProject.setListData(projectFiles);
-            
+
             // Update and save the project
-            saveProject();            
+            saveProject();
         }
     }
 
@@ -8996,7 +8996,7 @@ public class jFrame extends JFrame {
      */
     public javax.swing.JFrame getJWindowFunctions() {
         return JWindowFunctions;
-    }    
+    }
 
     /**
      * Setter for property JWindowFunctions.
@@ -9005,7 +9005,7 @@ public class jFrame extends JFrame {
     public void setJWindowFunctions(javax.swing.JFrame JWindowFunctions) {
         this.JWindowFunctions = JWindowFunctions;
     }
-    
+
     /**
      * Getter for property JWindowObjects.
      * @return Value of property JWindowObjects.
@@ -9013,7 +9013,7 @@ public class jFrame extends JFrame {
     public javax.swing.JFrame getJWindowObjects() {
         return JWindowObjects;
     }
-    
+
     /**
      * Setter for property JWindowObjects.
      * @param JWindowObjects New value of property JWindowObjects.
@@ -9021,7 +9021,7 @@ public class jFrame extends JFrame {
     public void setJWindowObjects(javax.swing.JFrame JWindowObjects) {
         this.JWindowObjects = JWindowObjects;
     }
-    
+
     /**
      * Getter for property JWindowSymbols.
      * @return Value of property JWindowSymbols.
@@ -9029,7 +9029,7 @@ public class jFrame extends JFrame {
     public javax.swing.JFrame getJWindowSymbols() {
         return JWindowSymbols;
     }
-    
+
     /**
      * Setter for property JWindowSymbols.
      * @param JWindowSymbols New value of property JWindowSymbols.
@@ -9037,7 +9037,7 @@ public class jFrame extends JFrame {
     public void setJWindowSymbols(javax.swing.JFrame JWindowSymbols) {
         this.JWindowSymbols = JWindowSymbols;
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem About;
     private javax.swing.JButton AboutButton;

@@ -351,7 +351,7 @@ public class TemplateManager extends javax.swing.JFrame {
         jPanel8.setPreferredSize(new java.awt.Dimension(150, 100));
         jPanel8.setMinimumSize(new java.awt.Dimension(150, 100));
         jPanel8.setMaximumSize(new java.awt.Dimension(0, 0));
-        jButtonRefreshTree.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/tree.gif")));
+        jButtonRefreshTree.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/tree.png")));
         jButtonRefreshTree.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("TEMPLATE_MANAGER_REFRESHTREE_TOOLTIP"));
         jButtonRefreshTree.setPreferredSize(new java.awt.Dimension(30, 27));
         jButtonRefreshTree.addActionListener(new java.awt.event.ActionListener() {
@@ -373,7 +373,7 @@ public class TemplateManager extends javax.swing.JFrame {
 
         jPanel8.add(jButtonNewDirectory);
 
-        jButtonNewStatic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/newTemplateStatic.gif")));
+        jButtonNewStatic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/newTemplateStatic.png")));
         jButtonNewStatic.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("TEMPLATE_MANAGER_NEW_STATIC_TEMPLATE_TOOLTIP"));
         jButtonNewStatic.setPreferredSize(new java.awt.Dimension(30, 27));
         jButtonNewStatic.setEnabled(false);
@@ -385,7 +385,7 @@ public class TemplateManager extends javax.swing.JFrame {
 
         jPanel8.add(jButtonNewStatic);
 
-        jButtonNewDynamic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/newTemplateDynamic.gif")));
+        jButtonNewDynamic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/newTemplateDynamic.png")));
         jButtonNewDynamic.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("TEMPLATE_MANAGER_NEW_DYNAMIC_TEMPLATE_TOOLTIP"));
         jButtonNewDynamic.setPreferredSize(new java.awt.Dimension(30, 27));
         jButtonNewDynamic.setEnabled(false);
@@ -397,7 +397,7 @@ public class TemplateManager extends javax.swing.JFrame {
 
         jPanel8.add(jButtonNewDynamic);
 
-        jButtonDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/delete.gif")));
+        jButtonDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/delete.png")));
         jButtonDelete.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("TEMPLATE_MANAGER_DELETE_SELECTED_TEMPLATE_TOOLTIP"));
         jButtonDelete.setPreferredSize(new java.awt.Dimension(30, 27));
         jButtonDelete.addActionListener(new java.awt.event.ActionListener() {

@@ -485,7 +485,7 @@
                 <Component class="javax.swing.JButton" name="jButtonRefreshTree">
                   <Properties>
                     <Property name="icon" type="javax.swing.Icon" editor="org.openide.explorer.propertysheet.editors.IconEditor">
-                      <Image iconType="3" name="/images/tree.gif"/>
+                      <Image iconType="3" name="/images/tree.png"/>
                     </Property>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="JIF.properties" key="TEMPLATE_MANAGER_REFRESHTREE_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -517,7 +517,7 @@
                 <Component class="javax.swing.JButton" name="jButtonNewStatic">
                   <Properties>
                     <Property name="icon" type="javax.swing.Icon" editor="org.openide.explorer.propertysheet.editors.IconEditor">
-                      <Image iconType="3" name="/images/newTemplateStatic.gif"/>
+                      <Image iconType="3" name="/images/newTemplateStatic.png"/>
                     </Property>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="JIF.properties" key="TEMPLATE_MANAGER_NEW_STATIC_TEMPLATE_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -534,7 +534,7 @@
                 <Component class="javax.swing.JButton" name="jButtonNewDynamic">
                   <Properties>
                     <Property name="icon" type="javax.swing.Icon" editor="org.openide.explorer.propertysheet.editors.IconEditor">
-                      <Image iconType="3" name="/images/newTemplateDynamic.gif"/>
+                      <Image iconType="3" name="/images/newTemplateDynamic.png"/>
                     </Property>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="JIF.properties" key="TEMPLATE_MANAGER_NEW_DYNAMIC_TEMPLATE_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -551,7 +551,7 @@
                 <Component class="javax.swing.JButton" name="jButtonDelete">
                   <Properties>
                     <Property name="icon" type="javax.swing.Icon" editor="org.openide.explorer.propertysheet.editors.IconEditor">
-                      <Image iconType="3" name="/images/delete.gif"/>
+                      <Image iconType="3" name="/images/delete.png"/>
                     </Property>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="JIF.properties" key="TEMPLATE_MANAGER_DELETE_SELECTED_TEMPLATE_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>

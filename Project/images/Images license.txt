@@ -41,21 +41,21 @@ These images are under the GNU GPL license
 ==========================================
 
 about.png
-comment.gif
-delete.gif
+comment.png
+delete.png
 Jif.png
-leftIndent.gif
-minus.gif
-newTemplateDynamic.gif
-newTemplateStatic.gif
-plus.gif
-rightIndent.gif
+leftIndent.png
+minus.png
+newTemplateDynamic.png
+newTemplateStatic.png
+plus.png
+rightIndent.png
 splash.png
-tree.gif
+tree.png
 TREE_dynamic.png
-tree_menu.gif
+tree_menu.png
 TREE_objects.png
 TREE_static.png
-uncomment.gif
+uncomment.png
 
 
