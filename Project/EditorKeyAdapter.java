@@ -158,23 +158,38 @@ public class EditorKeyAdapter extends KeyAdapter {
 
 
             // Assistant code
-            if (jframe.jCheckBoxHelpedCode.isSelected()&&(ke.getKeyCode()==ke.VK_SPACE) ){
+            if (jframe.jCheckBoxHelpedCode.isSelected()&&(ke.getKeyCode()==ke.VK_SPACE && ke.isControlDown() ) ){
                 el = doc.getDefaultRootElement();
                 int ind = el.getElementIndex(jif.getCaretPosition());
                 el = doc.getDefaultRootElement().getElement(ind);
-                ultima = jif.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset()-2);
+                ultima = jif.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset()-1);
+                int position = jif.getCaretPosition();
 
+//System.out.println("ultima riga =["+ultima+"]");
                 if (ultima.indexOf(" ")!=-1){
-                    ultima_word=ultima.trim().substring(ultima.lastIndexOf(" "));
+                    ultima_word=ultima.substring(ultima.lastIndexOf(" ")).trim();
                 }
                 else {
+                    //TODO : calcolo il numero di spazi o di tab prima della word
                     ultima_word = ultima;
                 }
                 ultima_word = ultima_word.trim();
-
-                comando = (String)jframe.getHelpCode().get(ultima_word.trim());
+//System.out.println("ultima_word =["+ultima_word+"]");                
+                comando = (String)jframe.getHelpCode().get(ultima_word);
+                int positionCaret = comando.indexOf("@");
+                comando = Utils.assistCode(comando);
+                
                 if (comando !=null){
-                    doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
+                    //doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
+                    //jif.(jif.getCaretPosition() , comando , jframe.getAttr());                    
+                    jif.setSelectionStart(jif.getCaretPosition()-ultima_word.trim().length());
+                    jif.setSelectionEnd(jif.getCaretPosition());
+                    jif.replaceSelection(comando);
+                    
+                    // updates the caret position
+                    if (positionCaret >0){
+                        jif.setCaretPosition(position-ultima_word.trim().length()+positionCaret);
+                    }
                 }
             }
 
@@ -282,4 +297,5 @@ public class EditorKeyAdapter extends KeyAdapter {
             System.out.println(ble.getMessage());
         }
    }
- }
+    
+}

@@ -292,17 +292,29 @@ public class Utils {
 
 
 
-public static int IgnoreCaseIndexOf(String mainString, String str, int fromIndex) {
-	String s1 = mainString.toLowerCase();
-	String t1 = str.toLowerCase();
-	return s1.indexOf(t1, fromIndex);
-}
+    public static int IgnoreCaseIndexOf(String mainString, String str, int fromIndex) {
+            String s1 = mainString.toLowerCase();
+            String t1 = str.toLowerCase();
+            return s1.indexOf(t1, fromIndex);
+    }
 
-  public static int IgnoreCaseIndexOf(String mainString, String str) {
-	String s1 = mainString.toLowerCase();
-	String t1 = str.toLowerCase();
-	return s1.indexOf(t1);
-}
+      public static int IgnoreCaseIndexOf(String mainString, String str) {
+            String s1 = mainString.toLowerCase();
+            String t1 = str.toLowerCase();
+            return s1.indexOf(t1);
+    }
 
-
+  
+     /**
+     * Return the code assistant
+     * @param code
+     */
+    public static String assistCode(String code){
+        //	[ret] = return
+        //	[tab] = tab char
+        code = replace(code,"[ret]","\n");
+        code = replace(code,"[tab]","\t");
+        code = replace(code,"@","");
+        return code;
+    }
 }
