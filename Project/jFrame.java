@@ -608,6 +608,8 @@ public class jFrame extends JFrame {
         jButtonTemplateManager = new javax.swing.JButton();
         jButtonImportFromWeb = new javax.swing.JButton();
         jButtonImportFromFile = new javax.swing.JButton();
+        jSeparator20 = new javax.swing.JSeparator();
+        jTextFieldRowCol = new javax.swing.JTextField();
         jSplitPane3 = new javax.swing.JSplitPane();
         jSplitPane1 = new javax.swing.JSplitPane();
         jSplitPane2 = new javax.swing.JSplitPane();
@@ -2639,6 +2641,21 @@ public class jFrame extends JFrame {
 
         jToolBarInform.add(jButtonImportFromFile);
 
+        jSeparator20.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        jSeparator20.setPreferredSize(new java.awt.Dimension(0, 34));
+        jSeparator20.setRequestFocusEnabled(false);
+        jToolBarInform.add(jSeparator20);
+
+        jTextFieldRowCol.setBackground(null);
+        jTextFieldRowCol.setEditable(false);
+        jTextFieldRowCol.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jTextFieldRowCol.setBorder(null);
+        jTextFieldRowCol.setDisabledTextColor(new java.awt.Color(212, 208, 200));
+        jTextFieldRowCol.setMaximumSize(new java.awt.Dimension(160, 160));
+        jTextFieldRowCol.setMinimumSize(new java.awt.Dimension(20, 22));
+        jTextFieldRowCol.setPreferredSize(new java.awt.Dimension(80, 29));
+        jToolBarInform.add(jTextFieldRowCol);
+
         jPanel22.add(jToolBarInform, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel22, java.awt.BorderLayout.NORTH);
@@ -2649,6 +2666,7 @@ public class jFrame extends JFrame {
         jSplitPane1.setDividerSize(3);
         jSplitPane1.setDoubleBuffered(true);
         jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
+        jTabbedPane1.setFont(new java.awt.Font("Courier New", 1, 12));
         jTabbedPane1.setMinimumSize(new java.awt.Dimension(350, 350));
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(700, 450));
         jTabbedPane1.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -2794,16 +2812,17 @@ public class jFrame extends JFrame {
 
         jTabbedPane2.setBorder(new javax.swing.border.EtchedBorder());
         jTabbedPane2.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
+        jTabbedPane2.setAutoscrolls(true);
+        jTabbedPane2.setFont(new java.awt.Font("Courier New", 1, 12));
         jTabbedPane2.setMinimumSize(new java.awt.Dimension(31, 100));
         jTabbedPane2.setPreferredSize(new java.awt.Dimension(30, 150));
-        jTabbedPane2.setAutoscrolls(true);
         jScrollPane2.setAutoscrolls(true);
         jTextAreaOutput.setEditable(false);
         jTextAreaOutput.setFont(new java.awt.Font("Tahoma", 0, 11));
         jTextAreaOutput.setTabSize(4);
         jTextAreaOutput.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_OUTPUT"));
-        jTextAreaOutput.setMinimumSize(new java.awt.Dimension(0, 45));
         jTextAreaOutput.setAutoscrolls(false);
+        jTextAreaOutput.setMinimumSize(new java.awt.Dimension(0, 45));
         jTextAreaOutput.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTextAreaOutputMouseClicked(evt);
@@ -2812,7 +2831,7 @@ public class jFrame extends JFrame {
 
         jScrollPane2.setViewportView(jTextAreaOutput);
 
-        jTabbedPane2.addTab("Output", jScrollPane2);
+        jTabbedPane2.addTab("Compiler Output", jScrollPane2);
         jScrollPane2.getAccessibleContext().setAccessibleParent(jTabbedPane2);
 
         jSplitPane3.setBottomComponent(jTabbedPane2);
@@ -9405,6 +9424,7 @@ public class jFrame extends JFrame {
     private javax.swing.JSeparator jSeparator18;
     private javax.swing.JSeparator jSeparator19;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator20;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
@@ -9436,6 +9456,7 @@ public class jFrame extends JFrame {
     private javax.swing.JTextField jTextFieldPathLibSecondary;
     private javax.swing.JTextField jTextFieldReplace;
     private javax.swing.JTextField jTextFieldReplaceFind;
+    protected javax.swing.JTextField jTextFieldRowCol;
     private javax.swing.JTextField jTextFieldSpellCheckFile;
     private static final javax.swing.JToolBar jToolBarCommon = new javax.swing.JToolBar();
     private static final javax.swing.JToolBar jToolBarInform = new javax.swing.JToolBar();

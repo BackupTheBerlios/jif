@@ -67,7 +67,6 @@ public class JIFTextPane extends JTextPane{
         hlighterBrackets = new HighlightText(this,Color.pink);
         hlighter = new HighlightText(this,Color.pink);
 
-
         setBackground(jframe.colorBackground);
         setCaretColor(jframe.colorNormal);
         getCaret().setBlinkRate(200);
@@ -180,6 +179,17 @@ public class JIFTextPane extends JTextPane{
 
         // Add Mouse Listener for the right-mouse popup
         addMouseListener(popupListener);
+        
+        addCaretListener(new CaretListener(){
+		public void caretUpdate(CaretEvent ce){
+			int pos = getCaretPosition();
+			Element map = getDocument().getDefaultRootElement();
+			int row = map.getElementIndex(pos);
+			Element lineElem = map.getElement(row);
+			int col = pos - lineElem.getStartOffset();
+			jframe.jTextFieldRowCol.setText((row+1)+" | "+(col+1));
+		}
+	});
     }
 
 
