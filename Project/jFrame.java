@@ -81,10 +81,10 @@ public class jFrame extends JFrame {
         Properties props = System.getProperties();
 
         // Enumerate all system properties
-        Enumeration enum = props.propertyNames();
-        for (; enum.hasMoreElements(); ) {
+        Enumeration enumerator = props.propertyNames();
+        for (; enumerator.hasMoreElements(); ) {
             // Get property name
-            String propName = (String)enum.nextElement();
+            String propName = (String)enumerator.nextElement();
             // Get property value
             String propValue = (String)props.get(propName);
             System.err.println(propName+"="+propValue);
@@ -4960,17 +4960,18 @@ public class jFrame extends JFrame {
                 }
             }
             */
-            String lafName =
-                LookUtils.IS_OS_WINDOWS_XP
-                    ? Options.getCrossPlatformLookAndFeelClassName()
-                    : Options.getSystemLookAndFeelClassName();
-
             try {
+                // test if looks.jar library is present
+                Class.forName("com.jgoodies.looks.LookUtils");
+                String lafName =
+                LookUtils.IS_OS_WINDOWS_XP
+                ? Options.getCrossPlatformLookAndFeelClassName()
+                : Options.getSystemLookAndFeelClassName();
                 UIManager.setLookAndFeel(lafName);
             } catch (Exception e) {
                 System.err.println("Can't set look & feel:" + e);
             }
-            System.out.println(UIManager.getLookAndFeel().getName());
+            System.out.println("Setting Look and Feel: "+UIManager.getLookAndFeel().getName());
         }
         catch(Exception e){
           System.out.println("ERRORE: "+e.getMessage());
