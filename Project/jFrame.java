@@ -4473,7 +4473,7 @@ public class jFrame extends JFrame {
 
     private void jMenuItemSyntaxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSyntaxActionPerformed
         try{
-            loadConfigFiles(workingDir+"config"+Constants.SEP+"syntax.ini");
+            loadConfigFiles(workingDir+"config"+Constants.SEP+java.util.ResourceBundle.getBundle("JIF").getString("SYNTAX_FILE"));
         }
         catch (Exception e){
             System.out.println(e.getMessage());
@@ -6023,7 +6023,7 @@ public class jFrame extends JFrame {
         // SYNTAX CODE
         // apro il file syntax.ini e imposto le hashtable
         try{
-            file = new File(workingDir+"config"+Constants.SEP+"syntax.ini");
+            file = new File(workingDir+"config"+Constants.SEP+java.util.ResourceBundle.getBundle("JIF").getString("SYNTAX_FILE"));
             if (!(file.exists())){
                     System.out.println(java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE8"));
                 return;
@@ -6071,7 +6071,7 @@ public class jFrame extends JFrame {
             }
             br.close();
         } catch(Exception e){
-            System.err.println("ERROR WHILE LOADING "+ workingDir+"config"+Constants.SEP+"syntax.ini");
+            System.err.println("ERROR WHILE LOADING "+ workingDir+"config"+Constants.SEP+java.util.ResourceBundle.getBundle("JIF").getString("SYNTAX_FILE"));
             System.err.println(e.getMessage());
         }
    }
