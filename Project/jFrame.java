@@ -30,27 +30,75 @@
  *
  */
 
-import java.io.*;
-import javax.swing.text.*;
-import java.util.*;
-import java.text.*;
-import javax.swing.JTree.*;
-import javax.swing.tree.*;
-import java.awt.event.*;
-import java.util.zip.*;
-import java.awt.*;
-import javax.swing.undo.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.print.*;
+import java.awt.Checkbox;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JColorChooser;
 import javax.swing.JDialog;
-import java.net.*;
-import java.awt.geom.*;
-import java.awt.datatransfer.*;
-import javax.swing.border.*;
-//import com.sun.java.swing.plaf.*;
-//import com.jgoodies.plaf.*;
-import com.jgoodies.looks.*;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTree;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Element;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyledEditorKit;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+
+import com.jgoodies.looks.LookUtils;
+import com.jgoodies.looks.Options;
 
 
 /*
@@ -465,7 +513,7 @@ public class jFrame extends JFrame {
         jTextFieldPathBrowser = new javax.swing.JTextField();
         jButton22 = new javax.swing.JButton();
         jPanel42 = new javax.swing.JPanel();
-        jCheckBoxQuoteString = new javax.swing.JCheckBox();
+        //jCheckBoxQuoteString = new javax.swing.JCheckBox();
         jPanel15 = new javax.swing.JPanel();
         jPanelSource = new javax.swing.JPanel();
         jPanel39 = new javax.swing.JPanel();
@@ -1403,8 +1451,8 @@ public class jFrame extends JFrame {
 
         jPanel14.add(jPanel25);
 
-        jCheckBoxQuoteString.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_QUOTE_STRINGS"));
-        jPanel42.add(jCheckBoxQuoteString);
+        //jCheckBoxQuoteString.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_QUOTE_STRINGS"));
+        //jPanel42.add(jCheckBoxQuoteString);
 
         jPanel14.add(jPanel42);
 
@@ -3636,7 +3684,8 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jMenuItemSetMainClassActionPerformed
 
     private void jMenuItemBuildAllGlulxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBuildAllGlulxActionPerformed
-        saveFile();
+        //saveFile();
+    	saveAll(); //FIXED BUG save all files in project
         // Run 3 steps
         // 1) Make Resource: if the option has been checked
         // bres source
@@ -3660,7 +3709,8 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jMenuItemRunUlxActionPerformed
 
     private void jMenuItemCompileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCompileActionPerformed
-        saveFile();
+        //saveFile();
+    	saveAll(); //FIXED BUG save all files in project
         rebuildAll();
     }//GEN-LAST:event_jMenuItemCompileActionPerformed
 
@@ -4889,7 +4939,8 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_ExitButtonActionPerformed
 
     private void RunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunButtonActionPerformed
-        saveFile();
+        //saveFile();
+    	saveAll();
         rebuildAll();
         runAdventure();
     }//GEN-LAST:event_RunButtonActionPerformed
@@ -4921,13 +4972,15 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_SaveButtonActionPerformed
 
     private void RebuildButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RebuildButtonActionPerformed
-        saveFile();
+        //saveFile();
+    	saveAll();//FIXED BUG save all files in project
         rebuildAll();
     }//GEN-LAST:event_RebuildButtonActionPerformed
 
     private void RunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunActionPerformed
         clearOutput();
-        saveFile();
+        //saveFile();
+        saveAll();//FIXED BUG save all files in project
         rebuildAll();
         runAdventure();
     }//GEN-LAST:event_RunActionPerformed
@@ -4942,7 +4995,8 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_SaveActionPerformed
 
     private void BuildAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuildAllActionPerformed
-        saveFile();
+        //saveFile();
+    	saveAll();//FIXED BUG save all files in project
         rebuildAll();
     }//GEN-LAST:event_BuildAllActionPerformed
 
@@ -5098,13 +5152,16 @@ public class jFrame extends JFrame {
         int componenti = jTabbedPane1.getTabCount();
         for (int count=0; count < componenti; count++){
             jTabbedPane1.setSelectedIndex(count);
-            saveFile();
+            if (getCurrentFilename().indexOf("*")!=-1)
+            	saveFile(); //Only save modified files
         }
     }
 
 
     public void rebuildAll() {
-
+    	String process_string[];
+    	Vector auxV=new Vector(6);
+    	String switchString[];
         // controllo che esista il compilatore con il path  inserito nella config.ini
         // se non esiste visualizzo un messaggio di warning
         File test = new File(compiler);
@@ -5150,7 +5207,7 @@ public class jFrame extends JFrame {
         String fileOut = fileInf.substring(0,fileInf.lastIndexOf(".")) + estensione;
 
         jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
-        String process_string;
+//        String process_string;
         String lib;
 
         // recupero la directory corrente del file che sto compilando e la includo in fase di compilazione
@@ -5163,31 +5220,27 @@ public class jFrame extends JFrame {
         else{
             lib = dir+","+libPath;
         }
-
-
-        // Quotate le stringhe
-        if (jCheckBoxQuoteString.isSelected()){
-            process_string = compiler +" " +makeSwitches() + " +include_path=\""+lib+"\" \""+fileInf+"\" \""+fileOut+"\"\n";
-        }
-        else{
-            process_string = compiler +" " +makeSwitches() + " +include_path="+lib+" "+fileInf+" "+fileOut+"\n";
-        }
-
+        
+        switchString=makeSwitches().split(" ");
+        
+        auxV.add(compiler);
+        for(int i=1;i<switchString.length;i++) //i=1 to avoid the first " "
+        	auxV.add(switchString[i]);
         //se è attivo checkboxmapping cambio il nome del file da usare come source
         if (jCheckBoxMapping.isSelected()){
             fileOut = fileInf_withmapping.substring(0,fileInf_withmapping.lastIndexOf(".")) + estensione;
-            // Quotate le stringhe
-            if (jCheckBoxQuoteString.isSelected()){
-                process_string = compiler+" "+makeSwitches()+" +include_path=\""+lib+"\" \""+fileInf_withmapping+"\" \""+fileOut+"\"\n";
-            }
-            else{
-                process_string = compiler+" "+makeSwitches()+" +include_path="+lib+" "+fileInf_withmapping+" "+fileOut+"\n";
-            }
         }
-
-
-        jTextAreaOutput.append(process_string);
-
+        auxV.add("+include_path="+lib);
+        auxV.add(fileInf);
+        auxV.add(fileOut);
+        
+        process_string=new String[auxV.size()];
+        for(int i=0;i<auxV.size();i++){
+        	process_string[i]=new String((String)auxV.get(i));
+        	jTextAreaOutput.append(process_string[i]+" ");	
+        }
+        jTextAreaOutput.append("\n");
+ 
         try{
         Runtime rt = Runtime.getRuntime();
         Process proc = rt.exec(process_string, null, new File(gamesDir));
@@ -5256,7 +5309,7 @@ public class jFrame extends JFrame {
 
         try{
         Runtime rt = Runtime.getRuntime();
-        String command="";
+        String command[]=new String[2];
 
         // in base al tipo di file di uscita, scelgo l'estensione del file da passare all'interprete
         String estensione ="";
@@ -5272,29 +5325,19 @@ public class jFrame extends JFrame {
 
         // se il mapping è abilitato, devo recuperare il nome del file giusto
         if (jCheckBoxMapping.isSelected()){
-            //command = interpreter+" "+ fileInf_withmapping.substring(0,fileInf_withmapping.indexOf(".inf"))+estensione+"\n";
-            //XXX command = interpreter+" \""+fileInf_withmapping.substring(0,fileInf_withmapping.indexOf(".inf"))+estensione+"\"\n";
-            if (jCheckBoxQuoteString.isSelected()){
-                command = inter+" \""+fileInf_withmapping.substring(0,fileInf_withmapping.indexOf(".inf"))+estensione+"\"\n";
-            }
-            else{
-                command = inter+" "+ fileInf_withmapping.substring(0,fileInf_withmapping.indexOf(".inf"))+estensione+"\n";
-            }
+        		command[0]= new String(inter);
+        		command[1]= new String(fileInf_withmapping.substring(0,fileInf_withmapping.indexOf(".inf"))+estensione);
         }
         else {
-            if (jCheckBoxQuoteString.isSelected()){
-                command = inter+" \""+ fileInf.substring(0,fileInf.indexOf(".inf"))+estensione+"\"\n";
-            }
-            else{
-                command = inter+" "+ fileInf.substring(0,fileInf.indexOf(".inf"))+estensione+"\n";
-            }
+    			command[0]= new String(inter);
+    			command[1]= new String(fileInf.substring(0,fileInf.indexOf(".inf"))+estensione);
 
         }
         //XXX else command = interpreter+" \""+ fileInf.substring(0,fileInf.indexOf(".inf"))+estensione+"\"\n";
         //stampo nella JTextArea, il comando lanciato per eseguire l'interprete,
         // così da vedere chiaramente quale file è stato passato all'interprete
 
-        jTextAreaOutput.append(command);
+        jTextAreaOutput.append(command[0]+" "+command[1]+"\n");
 
         Process proc = rt.exec(command);
         String line="";
@@ -5786,7 +5829,10 @@ public class jFrame extends JFrame {
                                 checkBrowser();
 
                                 Runtime rt = Runtime.getRuntime();
-                                Process proc = rt.exec(defaultBrowser+" "+ testo);
+                                String auxBrowser[]=new String[2];
+                                auxBrowser[0]=defaultBrowser;
+								auxBrowser[1]=testo;
+                                Process proc = rt.exec(auxBrowser);
 
                             } catch(Exception e){
                                 System.out.println(e.getMessage());
@@ -5885,7 +5931,6 @@ public class jFrame extends JFrame {
 
             br = new BufferedReader(new FileReader(file));
             String nomefile;
-
             while ((riga = br.readLine())!=null){
                 //aggiungo gli ultimi file aperti
                 if (riga.indexOf("recentfile=")!=-1){
@@ -7647,7 +7692,7 @@ public class jFrame extends JFrame {
                 ps.println("PROJECTOPENALLFILE="+ jCheckBoxProjectOpenAllFiles.isSelected());
                 ps.println("PROJECTCLOSEALLFILE="+ jCheckBoxProjectCloseAll.isSelected());
                 // Flag per quotare le stringhe prima di passarle al compilatore...
-                ps.println("QUOTESTRING="+ jCheckBoxQuoteString.isSelected());
+                //ps.println("QUOTESTRING="+ jCheckBoxQuoteString.isSelected());
                 // Flag per aprire l'ultimo file aperto e progetto aperto
                 ps.println("OPENLASTFILE="+ jCheckBoxOpenLastFile.isSelected());
                 // Flag per creare un nuovo file all'apertura di JIF
@@ -7763,10 +7808,10 @@ public class jFrame extends JFrame {
                                 riga.substring(riga.indexOf("PROJECTCLOSEALLFILE=")+20).equals("true")?true:false);
                         }
                         // Quota le stringhe prima di passarle al compilatore...
-                        if (riga.indexOf("QUOTESTRING=")!=-1){
-                            this.jCheckBoxQuoteString.setSelected(
-                            riga.substring(riga.indexOf("QUOTESTRING=")+12).equals("true")?true:false);
-                        }
+                        //if (riga.indexOf("QUOTESTRING=")!=-1){
+                        //    this.jCheckBoxQuoteString.setSelected(
+                        //    riga.substring(riga.indexOf("QUOTESTRING=")+12).equals("true")?true:false);
+                        //}
                         // OPEN LAST FILE
                         if (riga.indexOf("OPENLASTFILE=")!=-1){
                            this.jCheckBoxOpenLastFile.setSelected(
@@ -8158,7 +8203,7 @@ public class jFrame extends JFrame {
                 ps.println("SCANPROJECTFILESFORCLASSES="+ jCheckBoxScanProjectFiles.isSelected());
                 ps.println("PROJECTOPENALLFILE="+ jCheckBoxProjectOpenAllFiles.isSelected());
                 ps.println("PROJECTCLOSEALLFILE="+ jCheckBoxProjectCloseAll.isSelected());
-                ps.println("QUOTESTRING="+ jCheckBoxQuoteString.isSelected());
+                //ps.println("QUOTESTRING="+ jCheckBoxQuoteString.isSelected());
                 ps.println("OPENLASTFILE="+ jCheckBoxOpenLastFile.isSelected());
                 ps.println("CREATENEWFILE="+ jCheckBoxCreateNewFile.isSelected());
                 ps.println("SPELLCHECK="+ jCheckBoxSpellCheck.isSelected());
@@ -8303,14 +8348,16 @@ public class jFrame extends JFrame {
    public void runGlulxInterpreter(){
         // controllo che esista l'interprete con il path  inserito nella config.ini
         // se non esiste visualizzo un messaggio di warning
+   		String auxGlux[]=new String[1];
         File test = new File(glulx);
         if (!test.exists()){
             JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1")+interpreter+java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
             return;
         }
         try{
+        	auxGlux[0]=new String(glulx);
             Runtime rt = Runtime.getRuntime();
-            Process proc = rt.exec(glulx);
+            Process proc = rt.exec(auxGlux);
         } catch(IOException e){
             System.err.println(e.getMessage());
         }
@@ -8321,14 +8368,16 @@ public class jFrame extends JFrame {
     public void runInformInterpreter(){
         // controllo che esista l'interprete con il path  inserito nella config.ini
         // se non esiste visualizzo un messaggio di warning
-        File test = new File(interpreter);
+    	String auxInter[]=new String[1];
+    	File test = new File(interpreter);
 //        if (!test.exists()){
 //            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1")+interpreter+java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
 //            return;
 //        }
         try{
+        	auxInter[0]=new String(interpreter);
             Runtime rt = Runtime.getRuntime();
-            Process proc = rt.exec(interpreter);
+            Process proc = rt.exec(auxInter);
         } catch(IOException e){
             System.err.println(e.getMessage());
         }
@@ -8392,9 +8441,11 @@ public class jFrame extends JFrame {
                                         try{
                                             // controllo l'esistenza del browser
                                             checkBrowser();
-
+                                    		String auxBrowser[]=new String[2];
+                                    		auxBrowser[0]=defaultBrowser;
+                                    		auxBrowser[1]=(String)tutorialtarget.get(evt.getSource());
                                             Runtime rt = Runtime.getRuntime();
-                                            Process proc = rt.exec(defaultBrowser+" "+ (String)tutorialtarget.get(evt.getSource()));
+                                            Process proc = rt.exec(auxBrowser);
                                         } catch(Exception e){
                                             System.out.println(e.getMessage());
                                             System.err.println(e.getMessage());
@@ -8650,12 +8701,12 @@ public class jFrame extends JFrame {
         jCheckBoxSyntax.setSelected(true);
         jCheckBoxWrapLines.setSelected(false);
         jCheckBoxProjectCloseAll.setSelected(true);
-        jCheckBoxQuoteString.setSelected(false);
+        //jCheckBoxQuoteString.setSelected(false);
     }
 
 
      // run BLC SOURCE.blc source.blb to make blb (GLULX MODE)
-     public void makeBlb() {
+     public void makeBlb() {//AQUI!!
 
         // controllo che esista il compilatore con il path  inserito nella config.ini
         // se non esiste visualizzo un messaggio di warning
@@ -8686,17 +8737,13 @@ public class jFrame extends JFrame {
         String source = fileInf.substring(0,fileInf.lastIndexOf("."));
         String pathForCd=fileInf.substring(0,fileInf.lastIndexOf("\\"));
         //jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
-        String process_string;
+        String process_string[]=new String[3];
 
-        // Quotate le stringhe
-        if (jCheckBoxQuoteString.isSelected()){
-            process_string = jTextFieldBlc.getText() + " \"" + source+".blc\" \""+ source +".blb\"";
-        }
-        else{
-            process_string = jTextFieldBlc.getText() + " " + source+".blc "+ source +".blb";
-        }
+            process_string[0] = jTextFieldBlc.getText(); 
+			process_string[1] =new String( source+".blc ");
+			process_string[2]=new String(source +".blb");
 
-        jTextAreaOutput.append(process_string);
+        jTextAreaOutput.append(jTextFieldBlc.getText() + " " + source+".blc "+ source +".blb\n");
 
         try{
             Runtime rt = Runtime.getRuntime();
@@ -8721,7 +8768,7 @@ public class jFrame extends JFrame {
         }
     }
 
-     // run BRE SOURCE to make resource (GLULX MODE)
+     // run BRE SOURCE to make resource (GLULX MODE) //aqui
      public void makeResources() {
 
         // controllo che esista il compilatore con il path  inserito nella config.ini
@@ -8753,17 +8800,11 @@ public class jFrame extends JFrame {
         String source = fileInf.substring(0,fileInf.lastIndexOf("."));
 
         //jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
-        String process_string;
+        String process_string[]=new String[2];
+        process_string[0] = jTextFieldBres.getText();
+        process_string[1] = source;
 
-        // Quotate le stringhe
-        if (jCheckBoxQuoteString.isSelected()){
-            process_string = jTextFieldBres.getText() + " \"" + source + "\"";
-        }
-        else{
-            process_string = jTextFieldBres.getText() + " " + source;
-        }
-
-        jTextAreaOutput.append(process_string);
+        jTextAreaOutput.append(jTextFieldBres.getText() + " " + source+"\n");
 
         try{
             Runtime rt = Runtime.getRuntime();
@@ -8804,7 +8845,7 @@ public class jFrame extends JFrame {
         jMenuItemCompile.setEnabled(false);
     }
 
-    // Set GLULK MODE
+    // Set GLUX MODE
     // Imposta i menu abilita/disabilita i menu che servono
     public void setGlulxMode(){
         jMenuGlulx.setEnabled(true);
@@ -8841,31 +8882,20 @@ public class jFrame extends JFrame {
 
         try{
         Runtime rt = Runtime.getRuntime();
-        String command="";
-
+        String command[]=new String[2];
+        command[0]=inter;
         // in base al tipo di file di uscita, scelgo l'estensione del file da passare all'interprete
         String estensione = ".blb";
 
         // se il mapping è abilitato, devo recuperare il nome del file giusto
         if (jCheckBoxMapping.isSelected()){
-            if (jCheckBoxQuoteString.isSelected()){
-                command = inter+" \""+fileInf_withmapping.substring(0,fileInf_withmapping.indexOf(".inf"))+estensione+"\"\n";
-            }
-            else{
-                command = inter+" "+ fileInf_withmapping.substring(0,fileInf_withmapping.indexOf(".inf"))+estensione+"\n";
-            }
+                command[1] = new String(fileInf_withmapping.substring(0,fileInf_withmapping.indexOf(".inf"))+estensione);
         }
         else {
-            if (jCheckBoxQuoteString.isSelected()){
-                command = inter+" \""+ fileInf.substring(0,fileInf.indexOf(".inf"))+estensione+"\"\n";
-            }
-            else{
-                command = inter+" "+ fileInf.substring(0,fileInf.indexOf(".inf"))+estensione+"\n";
-            }
-
+                command[1] = new String(fileInf.substring(0,fileInf.indexOf(".inf"))+estensione);
         }
 
-        jTextAreaOutput.append(command);
+        jTextAreaOutput.append(command[0]+" "+command[1]+"\n");
 
         Process proc = rt.exec(command);
         String line="";
@@ -9224,7 +9254,7 @@ public class jFrame extends JFrame {
     private javax.swing.JCheckBoxMenuItem jCheckBoxOutput;
     private javax.swing.JCheckBox jCheckBoxProjectCloseAll;
     private javax.swing.JCheckBox jCheckBoxProjectOpenAllFiles;
-    private javax.swing.JCheckBox jCheckBoxQuoteString;
+    //private javax.swing.JCheckBox jCheckBoxQuoteString;
     private javax.swing.JCheckBox jCheckBoxScanProjectFiles;
     public javax.swing.JCheckBox jCheckBoxSpellCheck;
     public javax.swing.JCheckBox jCheckBoxSyntax;
