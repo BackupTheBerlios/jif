@@ -3288,8 +3288,8 @@ public class jFrame extends JFrame {
         jMenuGlulx.setText("Glulx");
         jMenuGlulx.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemBuildAllGlulx.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemBuildAllGlulx.setText("Build All");
-        jMenuItemBuildAllGlulx.setToolTipText("Make Res, Compile and make BLB file");
+        jMenuItemBuildAllGlulx.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILD_ALL"));
+        jMenuItemBuildAllGlulx.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILD_ALL_TOOLTIP"));
         jMenuItemBuildAllGlulx.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemBuildAllGlulxActionPerformed(evt);
@@ -3301,7 +3301,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jSeparator18);
 
         jMenuItemMakeResource.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemMakeResource.setText("Make resource file");
+        jMenuItemMakeResource.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_MAKE_RES"));
         jMenuItemMakeResource.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemMakeResourceActionPerformed(evt);
@@ -3311,7 +3311,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jMenuItemMakeResource);
 
         jMenuItemCompile.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCompile.setText("Compile inf File");
+        jMenuItemCompile.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_COMPILE_INF"));
         jMenuItemCompile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemCompileActionPerformed(evt);
@@ -3321,7 +3321,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jMenuItemCompile);
 
         jMenuItemMakeBlb.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemMakeBlb.setText("Make blb");
+        jMenuItemMakeBlb.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_MAKE_BLB"));
         jMenuItemMakeBlb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemMakeBlbActionPerformed(evt);
@@ -3333,7 +3333,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jSeparator15);
 
         jMenuItemRunUlx.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemRunUlx.setText("Run ULX file");
+        jMenuItemRunUlx.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_ULX"));
         jMenuItemRunUlx.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemRunUlxActionPerformed(evt);
@@ -3343,7 +3343,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jMenuItemRunUlx);
 
         jMenuItemRunBlb.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemRunBlb.setText("Run BLB file");
+        jMenuItemRunBlb.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_BLB"));
         jMenuItemRunBlb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemRunBlbActionPerformed(evt);
