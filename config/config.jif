@@ -26,6 +26,4 @@ AUTOMATICBRACKETSCHECK=false
 [colorComment]=153,153,153
 [colorBackground]=255,255,255
 [defaultFont]=Courier New,0,12
-BRESLOCATION=C:\Jif\glulx\BRES.EXE
-BLCLOCATION=C:\Jif\glulx\BLC.EXE
 CHECKBOXMAKERESOURCE=true
