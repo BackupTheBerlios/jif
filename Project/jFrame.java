@@ -3288,8 +3288,8 @@ public class jFrame extends JFrame {
         jMenuGlulx.setText("Glulx");
         jMenuGlulx.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemBuildAllGlulx.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemBuildAllGlulx.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILD_ALL"));
-        jMenuItemBuildAllGlulx.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILD_ALL_TOOLTIP"));
+        jMenuItemBuildAllGlulx.setText("Build All");
+        jMenuItemBuildAllGlulx.setToolTipText("Make Res, Compile and make BLB file");
         jMenuItemBuildAllGlulx.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemBuildAllGlulxActionPerformed(evt);
@@ -3301,7 +3301,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jSeparator18);
 
         jMenuItemMakeResource.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemMakeResource.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_MAKE_RES"));
+        jMenuItemMakeResource.setText("Make resource file");
         jMenuItemMakeResource.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemMakeResourceActionPerformed(evt);
@@ -3311,7 +3311,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jMenuItemMakeResource);
 
         jMenuItemCompile.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCompile.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_COMPILE_INF"));
+        jMenuItemCompile.setText("Compile inf File");
         jMenuItemCompile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemCompileActionPerformed(evt);
@@ -3321,7 +3321,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jMenuItemCompile);
 
         jMenuItemMakeBlb.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemMakeBlb.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_MAKE_BLB"));
+        jMenuItemMakeBlb.setText("Make blb");
         jMenuItemMakeBlb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemMakeBlbActionPerformed(evt);
@@ -3333,7 +3333,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jSeparator15);
 
         jMenuItemRunUlx.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemRunUlx.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_ULX"));
+        jMenuItemRunUlx.setText("Run ULX file");
         jMenuItemRunUlx.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemRunUlxActionPerformed(evt);
@@ -3343,7 +3343,7 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jMenuItemRunUlx);
 
         jMenuItemRunBlb.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemRunBlb.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_BLB"));
+        jMenuItemRunBlb.setText("Run BLB file");
         jMenuItemRunBlb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemRunBlbActionPerformed(evt);
@@ -5569,33 +5569,51 @@ public class jFrame extends JFrame {
                 // di livello 2 lo aggiungo
                 int length = subMenues.length;
                 for (int count=0; count < length; count++){
-                    //aggiungo il menu
-                    menu = new JMenu(subMenues[count].getName());
-                    menu.setFont(new Font("Dialog",Font.PLAIN,11));
-                    jMenuInsertNew.add(menu);
-                    //per ogni menu aggiungo il sotto menu
-                    br = new BufferedReader(new FileReader(subMenues[count].listFiles()[0]));
-                    while ((riga = br.readLine())!=null){
-                        // salto le righe di commento che iniziano per Constants.TOKENCOMMENT=#
-                        if (!(riga.startsWith(Constants.TOKENCOMMENT))&&!(riga.equals(""))   ){
-                            int indicevirgola = riga.indexOf(',');
-                            id   = riga.substring(0,indicevirgola);
-                            name = riga.substring(indicevirgola+1,riga.length());
-                            JMenuItem mi = new JMenuItem(id);
-                            mi.setFont(new Font("Dialog",Font.PLAIN,11));
-
-                            // Inserimento tooltip
-                            String tmp = Utils.replace(name,"§","<br>");
-                            // limito la dimensione della preview...
-                            if (tmp.length() > 700) tmp = tmp.substring(0,600);
-                            mi.setToolTipText("<html>"+tmp+"</html>");
-                            // Inserimento tooltip
-
-                            menu.add(mi).addMouseListener(menuListener);
-                            operations.put((String)id,(String) name);
+                    // Add menu                    
+                    if (!(subMenues[count].getName().equalsIgnoreCase("CVS"))){
+                        menu = new JMenu(subMenues[count].getName());
+                        menu.setFont(new Font("Dialog",Font.PLAIN,11));
+                        jMenuInsertNew.add(menu);
+                        // adding a sub-menu
+                        
+                        File inifile = null;
+                        boolean completed = false;
+                        int i = 0 ;
+                        
+                        // taking the menu.ini file, ignoring the other files and CVS directory
+                        while (!completed){                                                        
+                            inifile = subMenues[count].listFiles()[i];
+                            if (inifile != null && inifile.getAbsolutePath().indexOf(".ini")!=-1){
+                                completed = true;
+                            }                            
+                            i++;
                         }
-                    }
-                    br.close();
+                        
+                        if (inifile != null){
+                            br = new BufferedReader(new FileReader(inifile));
+                            while ((riga = br.readLine())!=null){
+                                // salto le righe di commento che iniziano per Constants.TOKENCOMMENT=#
+                                if (!(riga.startsWith(Constants.TOKENCOMMENT))&&!(riga.equals(""))   ){
+                                    int indicevirgola = riga.indexOf(',');
+                                    id   = riga.substring(0,indicevirgola);
+                                    name = riga.substring(indicevirgola+1,riga.length());
+                                    JMenuItem mi = new JMenuItem(id);
+                                    mi.setFont(new Font("Dialog",Font.PLAIN,11));
+
+                                    // Inserimento tooltip
+                                    String tmp = Utils.replace(name,"§","<br>");
+                                    // limito la dimensione della preview...
+                                    if (tmp.length() > 700) tmp = tmp.substring(0,600);
+                                    mi.setToolTipText("<html>"+tmp+"</html>");
+                                    // Inserimento tooltip
+
+                                    menu.add(mi).addMouseListener(menuListener);
+                                    operations.put((String)id,(String) name);
+                                }
+                            }
+                            br.close();  
+                        }
+                    }                    
                 }
 
             } catch(Exception e){
