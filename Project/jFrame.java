@@ -69,6 +69,7 @@ import java.util.Vector;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
@@ -486,9 +487,11 @@ public class jFrame extends JFrame {
         jPanel14 = new javax.swing.JPanel();
         jPanel16 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
+        jCheckBoxAdventInLib=new JCheckBox();
         jTextFieldPathLib = new javax.swing.JTextField();
         jButton19 = new javax.swing.JButton();
         jPanel43 = new javax.swing.JPanel();
+        jPanelAdvent=new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         jTextFieldPathLibSecondary = new javax.swing.JTextField();
         jButton25 = new javax.swing.JButton();
@@ -1349,11 +1352,11 @@ public class jFrame extends JFrame {
                 jButton25ActionPerformed(evt);
             }
         });
-
+        
         jPanel43.add(jButton25);
 
         jPanel14.add(jPanel43);
-
+        
         jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jLabel14.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_ATPATH"));
@@ -1361,7 +1364,7 @@ public class jFrame extends JFrame {
 
         jTextFieldPathGames.setPreferredSize(new java.awt.Dimension(280, 21));
         jPanel17.add(jTextFieldPathGames);
-
+        
         jButton16.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
         jButton16.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1370,9 +1373,20 @@ public class jFrame extends JFrame {
         });
 
         jPanel17.add(jButton16);
-
         jPanel14.add(jPanel17);
 
+        
+        
+        //XXX estamos de cambios
+        jCheckBoxAdventInLib.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_ADVENT_IN_LIB"));
+        jCheckBoxAdventInLib.setSelected(true);
+        jPanelAdvent.add(jCheckBoxAdventInLib);
+        jPanel14.add(jPanelAdvent);
+        //XXX edgdf
+
+        
+        
+        
         jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jLabel15.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_COMPILERPATH"));
@@ -1432,6 +1446,7 @@ public class jFrame extends JFrame {
 
         jPanel14.add(jPanel44);
 
+        
         jPanel25.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jLabel17.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_BROWSERPATH"));
@@ -1451,11 +1466,10 @@ public class jFrame extends JFrame {
 
         jPanel14.add(jPanel25);
 
-        //jCheckBoxQuoteString.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_QUOTE_STRINGS"));
-        //jPanel42.add(jCheckBoxQuoteString);
 
-        jPanel14.add(jPanel42);
 
+        
+        
         jPanelPath.add(jPanel14, java.awt.BorderLayout.CENTER);
 
         jPanelPath.add(jPanel15, java.awt.BorderLayout.SOUTH);
@@ -5211,14 +5225,17 @@ public class jFrame extends JFrame {
         String lib;
 
         // recupero la directory corrente del file che sto compilando e la includo in fase di compilazione
-        String dir = fileInf.substring(0,fileInf.lastIndexOf(Constants.SEP));
+        //Only if checked!!
+        String dir =new String("");
+        if(jCheckBoxAdventInLib.isSelected())
+        	dir=fileInf.substring(0,fileInf.lastIndexOf(Constants.SEP))+",";
 
         // controllo se c'è una path library secondaria...
         if (!libPathSecondary.trim().equals("")){
-            lib = dir+","+libPath+","+libPathSecondary;
+            lib = dir+libPath+","+libPathSecondary;
         }
         else{
-            lib = dir+","+libPath;
+            lib = dir+libPath;
         }
         
         switchString=makeSwitches().split(" ");
@@ -7691,6 +7708,7 @@ public class jFrame extends JFrame {
                 ps.println("SCANPROJECTFILESFORCLASSES="+ jCheckBoxScanProjectFiles.isSelected());
                 ps.println("PROJECTOPENALLFILE="+ jCheckBoxProjectOpenAllFiles.isSelected());
                 ps.println("PROJECTCLOSEALLFILE="+ jCheckBoxProjectCloseAll.isSelected());
+                ps.println("ADVENTINLIBPATH="+jCheckBoxAdventInLib.isSelected());
                 // Flag per quotare le stringhe prima di passarle al compilatore...
                 //ps.println("QUOTESTRING="+ jCheckBoxQuoteString.isSelected());
                 // Flag per aprire l'ultimo file aperto e progetto aperto
@@ -7807,11 +7825,12 @@ public class jFrame extends JFrame {
                            this.jCheckBoxProjectCloseAll.setSelected(
                                 riga.substring(riga.indexOf("PROJECTCLOSEALLFILE=")+20).equals("true")?true:false);
                         }
-                        // Quota le stringhe prima di passarle al compilatore...
-                        //if (riga.indexOf("QUOTESTRING=")!=-1){
-                        //    this.jCheckBoxQuoteString.setSelected(
-                        //    riga.substring(riga.indexOf("QUOTESTRING=")+12).equals("true")?true:false);
-                        //}
+                        
+                        //Adventure path in library path
+                        if (riga.indexOf("ADVENTINLIBPATH=")!=-1){
+                             this.jCheckBoxAdventInLib.setSelected(
+                            riga.substring(riga.indexOf("ADVENTINLIBPATH=")+16).equals("true")?true:false);
+                        }
                         // OPEN LAST FILE
                         if (riga.indexOf("OPENLASTFILE=")!=-1){
                            this.jCheckBoxOpenLastFile.setSelected(
@@ -9274,6 +9293,7 @@ public class jFrame extends JFrame {
     private javax.swing.JFrame jFrameImport;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JCheckBox jCheckBoxAdventInLib;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
@@ -9382,6 +9402,7 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanelAdvent;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
