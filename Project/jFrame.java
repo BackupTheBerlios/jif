@@ -471,27 +471,30 @@ public class jFrame extends JFrame {
         jTabbedPaneOption = new javax.swing.JTabbedPane();
         jPanelGeneral = new javax.swing.JPanel();
         jPanel36 = new javax.swing.JPanel();
-        jCheckBoxOpenLastFile = new javax.swing.JCheckBox();
-        jCheckBoxCreateNewFile = new javax.swing.JCheckBox();
-        jCheckBoxAutomaticCheckBrackets = new javax.swing.JCheckBox();
-        jPanel38 = new javax.swing.JPanel();
+        jPanel42 = new javax.swing.JPanel();
         jTextFieldMaxRecentFiles = new javax.swing.JTextField();
         jLabelMaxRecentFiles = new javax.swing.JLabel();
-        jPanelMapping = new javax.swing.JPanel();
-        jPanelMappingLive = new javax.swing.JPanel();
+        jCheckBoxOpenLastFile = new javax.swing.JCheckBox();
+        jCheckBoxCreateNewFile = new javax.swing.JCheckBox();
         jCheckBoxMappingLive = new javax.swing.JCheckBox();
-        jPanelMappingTemp = new javax.swing.JPanel();
         jCheckBoxMapping = new javax.swing.JCheckBox();
         jCheckBoxMappingHFile = new javax.swing.JCheckBox();
+        jCheckBoxHelpedCode = new javax.swing.JCheckBox();
+        jCheckBoxSyntax = new javax.swing.JCheckBox();
+        jCheckBoxBackup = new javax.swing.JCheckBox();
+        jCheckBoxNumberLines = new javax.swing.JCheckBox();
+        jCheckBoxScanProjectFiles = new javax.swing.JCheckBox();
+        jCheckBoxWrapLines = new javax.swing.JCheckBox();
+        jCheckBoxAutomaticCheckBrackets = new javax.swing.JCheckBox();
+        jCheckBoxProjectOpenAllFiles = new javax.swing.JCheckBox();
+        jCheckBoxProjectCloseAll = new javax.swing.JCheckBox();
         jPanelPath = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
         jPanel16 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
-        jCheckBoxAdventInLib=new JCheckBox();
         jTextFieldPathLib = new javax.swing.JTextField();
         jButton19 = new javax.swing.JButton();
         jPanel43 = new javax.swing.JPanel();
-        jPanelAdvent=new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         jTextFieldPathLibSecondary = new javax.swing.JTextField();
         jButton25 = new javax.swing.JButton();
@@ -499,6 +502,8 @@ public class jFrame extends JFrame {
         jLabel14 = new javax.swing.JLabel();
         jTextFieldPathGames = new javax.swing.JTextField();
         jButton16 = new javax.swing.JButton();
+        jPanel9 = new javax.swing.JPanel();
+        jCheckBoxAdventInLib = new javax.swing.JCheckBox();
         jPanel18 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
         jTextFieldPathCompiler = new javax.swing.JTextField();
@@ -515,19 +520,6 @@ public class jFrame extends JFrame {
         jLabel17 = new javax.swing.JLabel();
         jTextFieldPathBrowser = new javax.swing.JTextField();
         jButton22 = new javax.swing.JButton();
-        jPanel42 = new javax.swing.JPanel();
-        //jCheckBoxQuoteString = new javax.swing.JCheckBox();
-        jPanel15 = new javax.swing.JPanel();
-        jPanelSource = new javax.swing.JPanel();
-        jPanel39 = new javax.swing.JPanel();
-        jCheckBoxHelpedCode = new javax.swing.JCheckBox();
-        jCheckBoxSyntax = new javax.swing.JCheckBox();
-        jCheckBoxBackup = new javax.swing.JCheckBox();
-        jCheckBoxNumberLines = new javax.swing.JCheckBox();
-        jCheckBoxScanProjectFiles = new javax.swing.JCheckBox();
-        jCheckBoxWrapLines = new javax.swing.JCheckBox();
-        jPanelGlulx = new javax.swing.JPanel();
-        jPanel45 = new javax.swing.JPanel();
         jPanel46 = new javax.swing.JPanel();
         jLabelBres = new javax.swing.JLabel();
         jTextFieldBres = new javax.swing.JTextField();
@@ -538,9 +530,7 @@ public class jFrame extends JFrame {
         jButtonBlc = new javax.swing.JButton();
         jPanel48 = new javax.swing.JPanel();
         jCheckBoxMakeResource = new javax.swing.JCheckBox();
-        jPanelProject = new javax.swing.JPanel();
-        jCheckBoxProjectOpenAllFiles = new javax.swing.JCheckBox();
-        jCheckBoxProjectCloseAll = new javax.swing.JCheckBox();
+        jPanel15 = new javax.swing.JPanel();
         jPanelColor = new javax.swing.JPanel();
         jPanel33 = new javax.swing.JPanel();
         jPanel26 = new javax.swing.JPanel();
@@ -606,7 +596,6 @@ public class jFrame extends JFrame {
         jPanel41 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jButton10 = new javax.swing.JButton();
-        jButton20 = new javax.swing.JButton();
         jButton23 = new javax.swing.JButton();
         jDialogInfo = new JDialog (this, "", false);
         jScrollPaneInfo = new javax.swing.JScrollPane();
@@ -1245,9 +1234,26 @@ public class jFrame extends JFrame {
         jDialogOption.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SETTING"));
         jDialogOption.setModal(true);
         jDialogOption.setResizable(false);
-        jPanelGeneral.setLayout(new java.awt.BorderLayout());
+        jTabbedPaneOption.setMinimumSize(new java.awt.Dimension(270, 400));
+        jTabbedPaneOption.setPreferredSize(new java.awt.Dimension(492, 400));
+        jPanelGeneral.setLayout(new java.awt.GridLayout());
 
-        jPanel36.setLayout(new javax.swing.BoxLayout(jPanel36, javax.swing.BoxLayout.Y_AXIS));
+        jPanelGeneral.setPreferredSize(new java.awt.Dimension(205, 400));
+        jPanel36.setLayout(new java.awt.GridLayout(15, 0));
+
+        jPanel36.setMinimumSize(new java.awt.Dimension(205, 400));
+        jPanel36.setPreferredSize(new java.awt.Dimension(205, 400));
+        jPanel42.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        jTextFieldMaxRecentFiles.setColumns(5);
+        jTextFieldMaxRecentFiles.setText("10");
+        jTextFieldMaxRecentFiles.setMinimumSize(new java.awt.Dimension(18, 21));
+        jPanel42.add(jTextFieldMaxRecentFiles);
+
+        jLabelMaxRecentFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTIONDIALOG_MAX_RECENT_FILES"));
+        jPanel42.add(jLabelMaxRecentFiles);
+
+        jPanel36.add(jPanel42);
 
         jCheckBoxOpenLastFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_LAST_OPEN_FILE"));
         jPanel36.add(jCheckBoxOpenLastFile);
@@ -1255,30 +1261,6 @@ public class jFrame extends JFrame {
         jCheckBoxCreateNewFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("OPTION_CREATE_A_NEW_FILE"));
         jPanel36.add(jCheckBoxCreateNewFile);
 
-        jCheckBoxAutomaticCheckBrackets.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_AUTOMATIC_CHECK_BRACKETS"));
-        jPanel36.add(jCheckBoxAutomaticCheckBrackets);
-
-        jPanelGeneral.add(jPanel36, java.awt.BorderLayout.CENTER);
-
-        jPanel38.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-
-        jTextFieldMaxRecentFiles.setColumns(5);
-        jTextFieldMaxRecentFiles.setText("10");
-        jTextFieldMaxRecentFiles.setMinimumSize(new java.awt.Dimension(18, 21));
-        jPanel38.add(jTextFieldMaxRecentFiles);
-
-        jLabelMaxRecentFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTIONDIALOG_MAX_RECENT_FILES"));
-        jPanel38.add(jLabelMaxRecentFiles);
-
-        jPanelGeneral.add(jPanel38, java.awt.BorderLayout.NORTH);
-
-        jTabbedPaneOption.addTab("General", jPanelGeneral);
-
-        jPanelMapping.setLayout(new java.awt.BorderLayout());
-
-        jPanelMappingLive.setLayout(new java.awt.BorderLayout());
-
-        jPanelMappingLive.setBorder(new javax.swing.border.TitledBorder(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_MAPPINGLIVE")));
         jCheckBoxMappingLive.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_MAPPINGLIVE"));
         jCheckBoxMappingLive.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1286,13 +1268,8 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanelMappingLive.add(jCheckBoxMappingLive, java.awt.BorderLayout.NORTH);
+        jPanel36.add(jCheckBoxMappingLive);
 
-        jPanelMapping.add(jPanelMappingLive, java.awt.BorderLayout.NORTH);
-
-        jPanelMappingTemp.setLayout(new javax.swing.BoxLayout(jPanelMappingTemp, javax.swing.BoxLayout.Y_AXIS));
-
-        jPanelMappingTemp.setBorder(new javax.swing.border.TitledBorder(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_MAPPING")));
         jCheckBoxMapping.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_MAPPING"));
         jCheckBoxMapping.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1300,7 +1277,7 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanelMappingTemp.add(jCheckBoxMapping);
+        jPanel36.add(jCheckBoxMapping);
 
         jCheckBoxMappingHFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_MAPPING_HEADER_FILE"));
         jCheckBoxMappingHFile.addActionListener(new java.awt.event.ActionListener() {
@@ -1309,15 +1286,82 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanelMappingTemp.add(jCheckBoxMappingHFile);
+        jPanel36.add(jCheckBoxMappingHFile);
 
-        jPanelMapping.add(jPanelMappingTemp, java.awt.BorderLayout.CENTER);
+        jCheckBoxHelpedCode.setSelected(true);
+        jCheckBoxHelpedCode.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE"));
+        jCheckBoxHelpedCode.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE_TOOLTIP"));
+        jCheckBoxHelpedCode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxHelpedCodeActionPerformed(evt);
+            }
+        });
 
-        jTabbedPaneOption.addTab("Mapping", jPanelMapping);
+        jPanel36.add(jCheckBoxHelpedCode);
+
+        jCheckBoxSyntax.setSelected(true);
+        jCheckBoxSyntax.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SYNTAX"));
+        jCheckBoxSyntax.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxSyntaxActionPerformed(evt);
+            }
+        });
+
+        jPanel36.add(jCheckBoxSyntax);
+
+        jCheckBoxBackup.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_BACKUP"));
+        jCheckBoxBackup.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_BACKUP_TOOLTIP"));
+        jCheckBoxBackup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxBackupActionPerformed(evt);
+            }
+        });
+
+        jPanel36.add(jCheckBoxBackup);
+
+        jCheckBoxNumberLines.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_NUMBEROFLINES"));
+        jCheckBoxNumberLines.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxNumberLinesActionPerformed(evt);
+            }
+        });
+
+        jPanel36.add(jCheckBoxNumberLines);
+
+        jCheckBoxScanProjectFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SCAN_PROJECT"));
+        jPanel36.add(jCheckBoxScanProjectFiles);
+
+        jCheckBoxWrapLines.setText("Wrap Lines");
+        jPanel36.add(jCheckBoxWrapLines);
+
+        jCheckBoxAutomaticCheckBrackets.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_AUTOMATIC_CHECK_BRACKETS"));
+        jPanel36.add(jCheckBoxAutomaticCheckBrackets);
+
+        jCheckBoxProjectOpenAllFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_ALL_FILES"));
+        jCheckBoxProjectOpenAllFiles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxProjectOpenAllFilesActionPerformed(evt);
+            }
+        });
+
+        jPanel36.add(jCheckBoxProjectOpenAllFiles);
+
+        jCheckBoxProjectCloseAll.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_CLOSE_ALL_FILE"));
+        jCheckBoxProjectCloseAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxProjectCloseAllActionPerformed(evt);
+            }
+        });
+
+        jPanel36.add(jCheckBoxProjectCloseAll);
+
+        jPanelGeneral.add(jPanel36);
+
+        jTabbedPaneOption.addTab("General", jPanelGeneral);
 
         jPanelPath.setLayout(new java.awt.BorderLayout());
 
-        jPanel14.setLayout(new java.awt.GridLayout(8, 1));
+        jPanel14.setLayout(new java.awt.GridLayout(12, 1));
 
         jPanel16.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1352,11 +1396,11 @@ public class jFrame extends JFrame {
                 jButton25ActionPerformed(evt);
             }
         });
-        
+
         jPanel43.add(jButton25);
 
         jPanel14.add(jPanel43);
-        
+
         jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jLabel14.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_ATPATH"));
@@ -1364,7 +1408,7 @@ public class jFrame extends JFrame {
 
         jTextFieldPathGames.setPreferredSize(new java.awt.Dimension(280, 21));
         jPanel17.add(jTextFieldPathGames);
-        
+
         jButton16.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
         jButton16.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1373,20 +1417,14 @@ public class jFrame extends JFrame {
         });
 
         jPanel17.add(jButton16);
+
         jPanel14.add(jPanel17);
 
-        
-        
-        //XXX estamos de cambios
         jCheckBoxAdventInLib.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_ADVENT_IN_LIB"));
-        jCheckBoxAdventInLib.setSelected(true);
-        jPanelAdvent.add(jCheckBoxAdventInLib);
-        jPanel14.add(jPanelAdvent);
-        //XXX edgdf
+        jPanel9.add(jCheckBoxAdventInLib);
 
-        
-        
-        
+        jPanel14.add(jPanel9);
+
         jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jLabel15.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_COMPILERPATH"));
@@ -1446,7 +1484,6 @@ public class jFrame extends JFrame {
 
         jPanel14.add(jPanel44);
 
-        
         jPanel25.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jLabel17.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_BROWSERPATH"));
@@ -1465,74 +1502,6 @@ public class jFrame extends JFrame {
         jPanel25.add(jButton22);
 
         jPanel14.add(jPanel25);
-
-
-
-        
-        
-        jPanelPath.add(jPanel14, java.awt.BorderLayout.CENTER);
-
-        jPanelPath.add(jPanel15, java.awt.BorderLayout.SOUTH);
-
-        jTabbedPaneOption.addTab("Path", jPanelPath);
-
-        jPanelSource.setLayout(new java.awt.BorderLayout());
-
-        jPanel39.setLayout(new javax.swing.BoxLayout(jPanel39, javax.swing.BoxLayout.Y_AXIS));
-
-        jCheckBoxHelpedCode.setSelected(true);
-        jCheckBoxHelpedCode.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE"));
-        jCheckBoxHelpedCode.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE_TOOLTIP"));
-        jCheckBoxHelpedCode.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxHelpedCodeActionPerformed(evt);
-            }
-        });
-
-        jPanel39.add(jCheckBoxHelpedCode);
-
-        jCheckBoxSyntax.setSelected(true);
-        jCheckBoxSyntax.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SYNTAX"));
-        jCheckBoxSyntax.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxSyntaxActionPerformed(evt);
-            }
-        });
-
-        jPanel39.add(jCheckBoxSyntax);
-
-        jCheckBoxBackup.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_BACKUP"));
-        jCheckBoxBackup.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_BACKUP_TOOLTIP"));
-        jCheckBoxBackup.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxBackupActionPerformed(evt);
-            }
-        });
-
-        jPanel39.add(jCheckBoxBackup);
-
-        jCheckBoxNumberLines.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_NUMBEROFLINES"));
-        jCheckBoxNumberLines.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxNumberLinesActionPerformed(evt);
-            }
-        });
-
-        jPanel39.add(jCheckBoxNumberLines);
-
-        jCheckBoxScanProjectFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SCAN_PROJECT"));
-        jPanel39.add(jCheckBoxScanProjectFiles);
-
-        jCheckBoxWrapLines.setText("Wrap Lines");
-        jPanel39.add(jCheckBoxWrapLines);
-
-        jPanelSource.add(jPanel39, java.awt.BorderLayout.CENTER);
-
-        jTabbedPaneOption.addTab("Source", jPanelSource);
-
-        jPanelGlulx.setLayout(new java.awt.BorderLayout());
-
-        jPanel45.setLayout(new java.awt.GridLayout(5, 1));
 
         jPanel46.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1553,7 +1522,7 @@ public class jFrame extends JFrame {
 
         jPanel46.add(jButtonBres);
 
-        jPanel45.add(jPanel46);
+        jPanel14.add(jPanel46);
 
         jPanel47.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1574,38 +1543,18 @@ public class jFrame extends JFrame {
 
         jPanel47.add(jButtonBlc);
 
-        jPanel45.add(jPanel47);
+        jPanel14.add(jPanel47);
 
         jCheckBoxMakeResource.setText(java.util.ResourceBundle.getBundle("JIF").getString("GLULX_MAKE_RESOURCE_WHEN_BUILD_ALL"));
         jPanel48.add(jCheckBoxMakeResource);
 
-        jPanel45.add(jPanel48);
+        jPanel14.add(jPanel48);
 
-        jPanelGlulx.add(jPanel45, java.awt.BorderLayout.CENTER);
+        jPanelPath.add(jPanel14, java.awt.BorderLayout.CENTER);
 
-        jTabbedPaneOption.addTab("Glulx", jPanelGlulx);
+        jPanelPath.add(jPanel15, java.awt.BorderLayout.SOUTH);
 
-        jPanelProject.setLayout(new javax.swing.BoxLayout(jPanelProject, javax.swing.BoxLayout.Y_AXIS));
-
-        jCheckBoxProjectOpenAllFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_ALL_FILES"));
-        jCheckBoxProjectOpenAllFiles.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxProjectOpenAllFilesActionPerformed(evt);
-            }
-        });
-
-        jPanelProject.add(jCheckBoxProjectOpenAllFiles);
-
-        jCheckBoxProjectCloseAll.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_CLOSE_ALL_FILE"));
-        jCheckBoxProjectCloseAll.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxProjectCloseAllActionPerformed(evt);
-            }
-        });
-
-        jPanelProject.add(jCheckBoxProjectCloseAll);
-
-        jTabbedPaneOption.addTab("Project", jPanelProject);
+        jTabbedPaneOption.addTab("Path", jPanelPath);
 
         jPanelColor.setLayout(new java.awt.BorderLayout());
 
@@ -1820,15 +1769,6 @@ public class jFrame extends JFrame {
         });
 
         jPanel3.add(jButton10);
-
-        jButton20.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_OPTION_SAVE_CONFIGURATION"));
-        jButton20.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton20ActionPerformed(evt);
-            }
-        });
-
-        jPanel3.add(jButton20);
 
         jButton23.setText("Default");
         jButton23.addActionListener(new java.awt.event.ActionListener() {
@@ -2708,7 +2648,6 @@ public class jFrame extends JFrame {
         jSeparator20.setRequestFocusEnabled(false);
         jToolBarInform.add(jSeparator20);
 
-        jTextFieldRowCol.setBackground(null);
         jTextFieldRowCol.setEditable(false);
         jTextFieldRowCol.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jTextFieldRowCol.setBorder(null);
@@ -4249,30 +4188,21 @@ public class jFrame extends JFrame {
         update = true;
     }//GEN-LAST:event_jCheckBoxSyntaxActionPerformed
 
-    private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
-        unquote();
-        saveJifConfiguration();
-        savePath();
-        maxRecentFiles = Integer.parseInt(jTextFieldMaxRecentFiles.getText());
-    }//GEN-LAST:event_jButton20ActionPerformed
-
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         // Advise message in case of modifing of settings
-        if (update){
-        JOptionPane.showMessageDialog(this.jDialogOption,
-            java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGOPTION_UPDATE"),
-            "Message",
-            JOptionPane.INFORMATION_MESSAGE);
-        }
+//        if (update){
+//        JOptionPane.showMessageDialog(this.jDialogOption,
+//            java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGOPTION_UPDATE"),
+//            "Message",
+//            JOptionPane.INFORMATION_MESSAGE);
+//        }
         jDialogOption.setVisible(false);
         // update = true => user did some changes
         update = false;
         maxRecentFiles = Integer.parseInt(jTextFieldMaxRecentFiles.getText());
         unquote();
-        libPathSecondary = jTextFieldPathLibSecondary.getText();
-        if (libPathSecondary!=jTextFieldPathLibSecondary.getText()){
-            savePath();
-        }
+        saveJifConfiguration();
+        savePath();        
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jCheckBoxMappingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMappingActionPerformed
@@ -7742,10 +7672,10 @@ public class jFrame extends JFrame {
                 ps.close();
 
                 // Segnalo il salvataggio
-                JOptionPane.showMessageDialog(this.jDialogOption,
-                java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE1"),
-                java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CONFIGURATION"),
-                JOptionPane.INFORMATION_MESSAGE);
+                //JOptionPane.showMessageDialog(this.jDialogOption,
+                //java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE1"),
+                //java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CONFIGURATION"),
+                //JOptionPane.INFORMATION_MESSAGE);
 
         } catch(Exception e){
             JOptionPane.showMessageDialog(jDialogConfigFiles, "Error", e.getMessage() , JOptionPane.INFORMATION_MESSAGE);
@@ -9198,7 +9128,6 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButton18;
     private javax.swing.JButton jButton19;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton20;
     private javax.swing.JButton jButton21;
     private javax.swing.JButton jButton22;
     private javax.swing.JButton jButton23;
@@ -9255,6 +9184,7 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButtonUncommentSelection;
     private javax.swing.JButton jButtonUndo;
     private javax.swing.JButton jButtonVerb;
+    private javax.swing.JCheckBox jCheckBoxAdventInLib;
     public javax.swing.JCheckBox jCheckBoxAutomaticCheckBrackets;
     private javax.swing.JCheckBox jCheckBoxBackup;
     private javax.swing.JCheckBox jCheckBoxCreateNewFile;
@@ -9273,7 +9203,6 @@ public class jFrame extends JFrame {
     private javax.swing.JCheckBoxMenuItem jCheckBoxOutput;
     private javax.swing.JCheckBox jCheckBoxProjectCloseAll;
     private javax.swing.JCheckBox jCheckBoxProjectOpenAllFiles;
-    //private javax.swing.JCheckBox jCheckBoxQuoteString;
     private javax.swing.JCheckBox jCheckBoxScanProjectFiles;
     public javax.swing.JCheckBox jCheckBoxSpellCheck;
     public javax.swing.JCheckBox jCheckBoxSyntax;
@@ -9293,7 +9222,6 @@ public class jFrame extends JFrame {
     private javax.swing.JFrame jFrameImport;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JCheckBox jCheckBoxAdventInLib;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
@@ -9402,7 +9330,6 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
-    private javax.swing.JPanel jPanelAdvent;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
@@ -9428,15 +9355,12 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanel35;
     private javax.swing.JPanel jPanel36;
     private javax.swing.JPanel jPanel37;
-    private javax.swing.JPanel jPanel38;
-    private javax.swing.JPanel jPanel39;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel40;
     private javax.swing.JPanel jPanel41;
     private javax.swing.JPanel jPanel42;
     private javax.swing.JPanel jPanel43;
     private javax.swing.JPanel jPanel44;
-    private javax.swing.JPanel jPanel45;
     private javax.swing.JPanel jPanel46;
     private javax.swing.JPanel jPanel47;
     private javax.swing.JPanel jPanel48;
@@ -9444,19 +9368,14 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JPanel jPanelColor;
     private javax.swing.JPanel jPanelControl;
     private javax.swing.JPanel jPanelDefaultDark;
     private javax.swing.JPanel jPanelFont;
     private javax.swing.JPanel jPanelGeneral;
-    private javax.swing.JPanel jPanelGlulx;
     private javax.swing.JPanel jPanelMainFile;
-    private javax.swing.JPanel jPanelMapping;
-    private javax.swing.JPanel jPanelMappingLive;
-    private javax.swing.JPanel jPanelMappingTemp;
     private javax.swing.JPanel jPanelPath;
-    private javax.swing.JPanel jPanelProject;
-    private javax.swing.JPanel jPanelSource;
     private javax.swing.JPanel jPanelSpellCheck;
     private javax.swing.JPanel jPanelSwitch1;
     private javax.swing.JPanel jPanelSwitch2;
