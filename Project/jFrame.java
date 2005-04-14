@@ -1236,7 +1236,7 @@ public class jFrame extends JFrame {
         jDialogOption.setResizable(false);
         jTabbedPaneOption.setMinimumSize(new java.awt.Dimension(270, 400));
         jTabbedPaneOption.setPreferredSize(new java.awt.Dimension(492, 400));
-        jPanelGeneral.setLayout(new java.awt.GridLayout());
+        jPanelGeneral.setLayout(new java.awt.GridLayout(1, 0));
 
         jPanelGeneral.setPreferredSize(new java.awt.Dimension(205, 400));
         jPanel36.setLayout(new java.awt.GridLayout(15, 0));
@@ -2667,7 +2667,7 @@ public class jFrame extends JFrame {
         jSplitPane1.setDividerSize(3);
         jSplitPane1.setDoubleBuffered(true);
         jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
-        jTabbedPane1.setFont(new java.awt.Font("Courier New", 1, 12));
+        jTabbedPane1.setFont(new java.awt.Font("Dialog", 1, 11));
         jTabbedPane1.setMinimumSize(new java.awt.Dimension(350, 350));
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(700, 450));
         jTabbedPane1.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -2769,6 +2769,11 @@ public class jFrame extends JFrame {
         jScrollPane3.setPreferredSize(new java.awt.Dimension(150, 300));
         jTree1.setFont(new java.awt.Font("Courier New", 0, 12));
         jTree1.setMaximumSize(new java.awt.Dimension(0, 0));
+        jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jTree1MouseEntered(evt);
+            }
+        });
         jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
                 jTree1ValueChanged(evt);
@@ -3538,6 +3543,10 @@ public class jFrame extends JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void jTree1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseEntered
+        refreshTree();
+    }//GEN-LAST:event_jTree1MouseEntered
 
     private void jCheckBoxGlulxModeStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jCheckBoxGlulxModeStateChanged
         // Changing state of Mode (Inform/Glulx)

@@ -4003,7 +4003,7 @@
               <Properties>
                 <Property name="tabPlacement" type="int" value="3"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Courier New" size="12" style="1"/>
+                  <Font name="Dialog" size="11" style="1"/>
                 </Property>
                 <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[350, 350]"/>
@@ -4180,6 +4180,7 @@
                             </Property>
                           </Properties>
                           <Events>
+                            <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTree1MouseEntered"/>
                             <EventHandler event="valueChanged" listener="javax.swing.event.TreeSelectionListener" parameters="javax.swing.event.TreeSelectionEvent" handler="jTree1ValueChanged"/>
                           </Events>
                           <AuxValues>
