@@ -195,16 +195,7 @@ public class EditorKeyAdapter extends KeyAdapter {
 
 
 
-            if( (ke.getKeyCode() == ke.VK_1 )&&(ke.isAltDown() ) ){
-                jframe.showJWindowSymbol();
-            }
-            else if( (ke.getKeyCode() == ke.VK_2 )&&(ke.isAltDown() ) ){
-                jframe.showJWindowObjects();
-            }
-            else if( (ke.getKeyCode() == ke.VK_3 )&&(ke.isAltDown() ) ){
-                jframe.showJWindowFunctions();
-            }
-            else if( (ke.getKeyCode() == ke.VK_F )&&(ke.isControlDown() ) ){
+            if( (ke.getKeyCode() == ke.VK_F )&&(ke.isControlDown() ) ){
                 String selezione = jif.getSelectedText();
                 if (selezione!=null){
                     jframe.jTextFieldFind.setText(selezione);
