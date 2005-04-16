@@ -401,6 +401,7 @@ public class jFrame extends JFrame {
         jMenuItemPrint1 = new javax.swing.JMenuItem();
         jMenuItemPopupClose = new javax.swing.JMenuItem();
         jMenuItemPopupCloseAllFiles = new javax.swing.JMenuItem();
+        jMenuItemJumpToSource = new javax.swing.JMenuItem();
         jDialogAbout = new JDialog (this, "", true);
         jLabel7 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
@@ -871,6 +872,15 @@ public class jFrame extends JFrame {
         });
 
         jPopupMenu1.add(jMenuItemPopupCloseAllFiles);
+
+        jMenuItemJumpToSource.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_JUMP_TO_SOURCE"));
+        jMenuItemJumpToSource.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemJumpToSourceActionPerformed(evt);
+            }
+        });
+
+        jPopupMenu1.add(jMenuItemJumpToSource);
 
         jDialogAbout.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         jDialogAbout.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_ABOUT_JIF"));
@@ -3544,6 +3554,12 @@ public class jFrame extends JFrame {
         pack();
     }//GEN-END:initComponents
 
+    private void jMenuItemJumpToSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemJumpToSourceActionPerformed
+        String key = getCurrentJIFTextPane().getSelectedText();
+        if (null == key) return;
+        checkTree(key);
+    }//GEN-LAST:event_jMenuItemJumpToSourceActionPerformed
+
     private void jTree1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseEntered
         refreshTree();
     }//GEN-LAST:event_jTree1MouseEntered
@@ -6126,6 +6142,40 @@ public class jFrame extends JFrame {
    }
 
 
+    public void checkTree(String key){
+        key = key.toLowerCase();
+        
+        // clycle on the tree's nodes
+        for (int c=0; c < top.getChildCount(); c++){
+            DefaultMutableTreeNode mainnode = (DefaultMutableTreeNode)top.getChildAt(c);
+            
+            for (int k=0; k < mainnode.getChildCount(); k++){
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode)mainnode.getChildAt(k);
+                if (node == null){
+                    continue;
+                }
+
+                Object nodo = node.getUserObject();
+                Inspect ins = (Inspect) nodo;
+                if ( ins.Ilabel.equals(key)  ){
+                    try{
+                        if (ins != null){
+                            JIFTextPane jif = getCurrentJIFTextPane();
+                            jif.getHlighter().highlightFromTo(jif, ins.Iposition , ins.IpositionEnd);
+                            el = jif.getDocument().getDefaultRootElement();
+                            jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
+                            jif.scrollRectToVisible(jif.modelToView(ins.Iposition));
+                        }
+
+                    }catch(Exception e){
+                        System.err.println(e.getMessage());
+                    }
+                }
+        }            
+        }
+    }    
+    
+   
 
     // Funzione per il refresh dell'albero
     public void refreshTree(){
@@ -9290,6 +9340,7 @@ public class jFrame extends JFrame {
     private javax.swing.JMenuItem jMenuItemInsertFromFile;
     private javax.swing.JMenuItem jMenuItemInsertSymbol;
     private javax.swing.JMenuItem jMenuItemInsertSymbol1;
+    private javax.swing.JMenuItem jMenuItemJumpToSource;
     private javax.swing.JMenuItem jMenuItemLinks;
     private javax.swing.JMenuItem jMenuItemMakeBlb;
     private javax.swing.JMenuItem jMenuItemMakeResource;

@@ -36,9 +36,9 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.swing.text.*;
-import java.awt.print.*;
 import java.awt.*;
 import java.util.*;
+import javax.swing.JTree;
 
 
 /**
@@ -51,7 +51,7 @@ public class Utils {
     public Utils() {
     }
 
-
+    
     /**
      * Calculates total number of brackets in the text
      * @param testo String Text

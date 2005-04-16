@@ -52,6 +52,8 @@ public class JIFTextPane extends JTextPane{
     String pathfile;
     private HighlightText hlighter;
     private HighlightText hlighterBrackets;
+    private HighlightBookmark hlighterBookmarks;    
+    java.util.List bookmarks;
 
 
     /**
@@ -65,8 +67,10 @@ public class JIFTextPane extends JTextPane{
         this.pathfile = (file != null ? file.getAbsolutePath() : "");
         this.popupListener = new PopupListener(this, jframe);
         hlighterBrackets = new HighlightText(this,Color.pink);
+        hlighterBookmarks = new HighlightBookmark(this,Color.blue);       
         hlighter = new HighlightText(this,Color.pink);
-
+        this.bookmarks = new ArrayList();
+        
         setBackground(jframe.colorBackground);
         setCaretColor(jframe.colorNormal);
         getCaret().setBlinkRate(200);
@@ -982,5 +986,67 @@ public class JIFTextPane extends JTextPane{
             System.err.println(e.getMessage());
         }
     }
+
+     public void nextBookmark(){
+        // position = actual row
+        int jumpto = 0;
+        
+         if(bookmarks.size()==0){
+            return;
+         }
+        
+               
+        int row = getDocument().getDefaultRootElement().getElementIndex(getCaretPosition());
+
+        for (Iterator ite=bookmarks.iterator(); ite.hasNext();){
+            Integer ind = (Integer) ite.next();
+            if (row < ind.intValue()){
+                jumpto = ind.intValue(); 
+                break;
+            }
+        }           
+
+        // last bookmark
+        if (jumpto == 0 && bookmarks.size() != 0){
+            jumpto = ( (Integer)bookmarks.get(0)).intValue();
+        }
+        
+        // Jump to the bookmark row
+        Element ele = getDocument().getDefaultRootElement().getElement(jumpto);
+        try{
+            scrollRectToVisible(modelToView(getDocument().getLength()));                
+            scrollRectToVisible(modelToView(ele.getStartOffset()));
+            setCaretPosition(ele.getStartOffset());
+        } catch (BadLocationException ble){
+            System.err.println(ble);
+        }         
+     }
+     
+    public void applyBookmarks(){
+        // Removing the hlighterBookmarks
+        if (null != this.hlighterBookmarks){
+            this.hlighterBookmarks.removeHighlights(this);
+        }        
+        // Repaint all the highlights
+        Element element;
+        for (Iterator ite=bookmarks.iterator(); ite.hasNext();){
+            Integer ind = (Integer) ite.next();
+            element = getDocument().getDefaultRootElement().getElement(ind.intValue());
+            hlighterBookmarks.highlightFromTo(this, element.getStartOffset(), element.getEndOffset());                    
+        }        
+    }
+        
+     
+    public void updateBookmark(Integer line) {
+        if (this.bookmarks.contains(line)){
+            this.bookmarks.remove(line);
+            applyBookmarks();           
+        }        
+        else{
+            this.bookmarks.add(line);    
+            applyBookmarks();            
+        }        
+    }
+
 
 }

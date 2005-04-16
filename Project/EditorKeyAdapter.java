@@ -90,6 +90,13 @@ public class EditorKeyAdapter extends KeyAdapter {
      */
     public void keyReleased(KeyEvent ke) {
         try {
+            // Automatic JUMP to object, if present into the object tree
+            if (ke.getKeyCode() == ke.VK_J && ke.isControlDown() && null != jif.getSelectedText()) {
+                String key = jif.getSelectedText();
+                jframe.checkTree(key);
+            }
+            
+            
             // Automatic right shifting
             if (ke.getKeyCode() == ke.VK_ENTER) {
                 Element root = doc.getDefaultRootElement();
@@ -180,8 +187,6 @@ public class EditorKeyAdapter extends KeyAdapter {
                 comando = Utils.assistCode(comando);
                 
                 if (comando !=null){
-                    //doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
-                    //jif.(jif.getCaretPosition() , comando , jframe.getAttr());                    
                     jif.setSelectionStart(jif.getCaretPosition()-ultima_word.trim().length());
                     jif.setSelectionEnd(jif.getCaretPosition());
                     jif.replaceSelection(comando);
@@ -218,16 +223,24 @@ public class EditorKeyAdapter extends KeyAdapter {
 
             // FUNCTION KEYS MANAGEMENT
             else if( (ke.getKeyCode() == ke.VK_F1 ) ){
-                comando = (String)jframe.getTastiFunzione().get("F1");
-                if (comando !=null){
-                    doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
-                }
+//                comando = (String)jframe.getTastiFunzione().get("F1");
+//                if (comando !=null){
+//                    doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
+//                }
+                // find current line
+                int pos = jif.getCaretPosition();
+                Element map = jif.getDocument().getDefaultRootElement();
+                int row = map.getElementIndex(pos);
+                jif.updateBookmark(new Integer(row));                
             }
             else if( (ke.getKeyCode() == ke.VK_F2 ) ){
-                comando = (String)jframe.getTastiFunzione().get("F2");
-                if (comando !=null){
-                    doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
-                }
+                jif.nextBookmark();                
+                
+//                
+//                comando = (String)jframe.getTastiFunzione().get("F2");
+//                if (comando !=null){
+//                    doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
+//                }
             }
             else if( (ke.getKeyCode() == ke.VK_F3 ) ){
                     comando = (String)jframe.getTastiFunzione().get("F3");

@@ -1,5 +1,5 @@
 /*
- * HighlightText.java
+ * HighlightBookmark.java
  *
  * This file is part of JIF.
  *
@@ -38,7 +38,7 @@ import javax.swing.*;
  * Class for Highlighting text in a JTextComponent
  * @author Alessandro Schillaci
  */
-public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter {
+public class HighlightBookmark extends DefaultHighlighter.DefaultHighlightPainter {
 
         JIFTextPane jif;
 
@@ -47,7 +47,7 @@ public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter {
          * @param jif The instance of JIFTextPane to apply the highlighting
          * @param color Color of highlighting
          */
-	public HighlightText(JIFTextPane jif, Color color) {
+	public HighlightBookmark(JIFTextPane jif, Color color) {
             super(color);
             this.jif = jif;
         }
@@ -56,7 +56,7 @@ public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter {
          * Creates an Highlighter Object for a generic JTextComponent
          * @param color Color of highlighting
          */
-	public HighlightText(Color color) {
+	public HighlightBookmark(Color color) {
             super(color);
             this.jif = null;
         }
@@ -106,7 +106,7 @@ public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter {
             Highlighter hilite = component.getHighlighter();
             Highlighter.Highlight[] hilites = hilite.getHighlights();
             for (int i = 0; i < hilites.length; i++)     {
-                if (hilites[i].getPainter() instanceof HighlightText)
+                if (hilites[i].getPainter() instanceof HighlightBookmark)
                     hilite.removeHighlight(hilites[i]);
             }
         }
