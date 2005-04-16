@@ -497,8 +497,16 @@ public class jFrame extends JFrame {
         jButton19 = new javax.swing.JButton();
         jPanel43 = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
-        jTextFieldPathLibSecondary = new javax.swing.JTextField();
+        jTextFieldPathLibSecondary1 = new javax.swing.JTextField();
         jButton25 = new javax.swing.JButton();
+        jPanel45 = new javax.swing.JPanel();
+        jLabel20 = new javax.swing.JLabel();
+        jTextFieldPathLibSecondary2 = new javax.swing.JTextField();
+        jButton27 = new javax.swing.JButton();
+        jPanel49 = new javax.swing.JPanel();
+        jLabel21 = new javax.swing.JLabel();
+        jTextFieldPathLibSecondary3 = new javax.swing.JTextField();
+        jButton28 = new javax.swing.JButton();
         jPanel17 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
         jTextFieldPathGames = new javax.swing.JTextField();
@@ -1371,7 +1379,7 @@ public class jFrame extends JFrame {
 
         jPanelPath.setLayout(new java.awt.BorderLayout());
 
-        jPanel14.setLayout(new java.awt.GridLayout(12, 1));
+        jPanel14.setLayout(new java.awt.GridLayout(13, 1));
 
         jPanel16.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1394,11 +1402,11 @@ public class jFrame extends JFrame {
 
         jPanel43.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabel18.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY"));
+        jLabel18.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY1"));
         jPanel43.add(jLabel18);
 
-        jTextFieldPathLibSecondary.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel43.add(jTextFieldPathLibSecondary);
+        jTextFieldPathLibSecondary1.setPreferredSize(new java.awt.Dimension(280, 21));
+        jPanel43.add(jTextFieldPathLibSecondary1);
 
         jButton25.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
         jButton25.addActionListener(new java.awt.event.ActionListener() {
@@ -1410,6 +1418,44 @@ public class jFrame extends JFrame {
         jPanel43.add(jButton25);
 
         jPanel14.add(jPanel43);
+
+        jPanel45.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabel20.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY2"));
+        jPanel45.add(jLabel20);
+
+        jTextFieldPathLibSecondary2.setPreferredSize(new java.awt.Dimension(280, 21));
+        jPanel45.add(jTextFieldPathLibSecondary2);
+
+        jButton27.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        jButton27.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton27ActionPerformed(evt);
+            }
+        });
+
+        jPanel45.add(jButton27);
+
+        jPanel14.add(jPanel45);
+
+        jPanel49.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabel21.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY3"));
+        jPanel49.add(jLabel21);
+
+        jTextFieldPathLibSecondary3.setPreferredSize(new java.awt.Dimension(280, 21));
+        jPanel49.add(jTextFieldPathLibSecondary3);
+
+        jButton28.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        jButton28.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton28ActionPerformed(evt);
+            }
+        });
+
+        jPanel49.add(jButton28);
+
+        jPanel14.add(jPanel49);
 
         jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -3554,6 +3600,32 @@ public class jFrame extends JFrame {
         pack();
     }//GEN-END:initComponents
 
+    private void jButton28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton28ActionPerformed
+        JFileChooser chooser = new JFileChooser(workingDir);
+        chooser.setFileSelectionMode(chooser.DIRECTORIES_ONLY);
+        int returnVal = chooser.showOpenDialog(this);
+        if(returnVal == JFileChooser.CANCEL_OPTION) {
+            return;
+        }
+        else {
+            jTextFieldPathLibSecondary3.setText(chooser.getSelectedFile().getAbsolutePath());
+            libPathSecondary3 = chooser.getSelectedFile().getAbsolutePath();
+        }
+    }//GEN-LAST:event_jButton28ActionPerformed
+
+    private void jButton27ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton27ActionPerformed
+        JFileChooser chooser = new JFileChooser(workingDir);
+        chooser.setFileSelectionMode(chooser.DIRECTORIES_ONLY);
+        int returnVal = chooser.showOpenDialog(this);
+        if(returnVal == JFileChooser.CANCEL_OPTION) {
+            return;
+        }
+        else {
+            jTextFieldPathLibSecondary2.setText(chooser.getSelectedFile().getAbsolutePath());
+            libPathSecondary2 = chooser.getSelectedFile().getAbsolutePath();
+        }
+    }//GEN-LAST:event_jButton27ActionPerformed
+
     private void jMenuItemJumpToSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemJumpToSourceActionPerformed
         String key = getCurrentJIFTextPane().getSelectedText();
         if (null == key) return;
@@ -3770,8 +3842,8 @@ public class jFrame extends JFrame {
             return;
         }
         else {
-            jTextFieldPathLibSecondary.setText(chooser.getSelectedFile().getAbsolutePath());
-            libPathSecondary = chooser.getSelectedFile().getAbsolutePath();
+            jTextFieldPathLibSecondary1.setText(chooser.getSelectedFile().getAbsolutePath());
+            libPathSecondary1 = chooser.getSelectedFile().getAbsolutePath();
         }
     }//GEN-LAST:event_jButton25ActionPerformed
 
@@ -3943,7 +4015,9 @@ public class jFrame extends JFrame {
 
     private void jButtonOptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionActionPerformed
         jTextFieldPathLib.setText(libPath);
-        jTextFieldPathLibSecondary.setText(libPathSecondary);
+        jTextFieldPathLibSecondary1.setText(libPathSecondary1);
+        jTextFieldPathLibSecondary2.setText(libPathSecondary2);
+        jTextFieldPathLibSecondary3.setText(libPathSecondary3);
         jTextFieldPathGames.setText(gamesDir);
         jTextFieldPathCompiler.setText(compiler);
         jTextFieldPathInterpreter.setText(interpreter);
@@ -4241,7 +4315,9 @@ public class jFrame extends JFrame {
 
     private void jMenuItemSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSettingsActionPerformed
         jTextFieldPathLib.setText(libPath);
-        jTextFieldPathLibSecondary.setText(libPathSecondary);
+        jTextFieldPathLibSecondary1.setText(libPathSecondary1);
+        jTextFieldPathLibSecondary2.setText(libPathSecondary2);
+        jTextFieldPathLibSecondary3.setText(libPathSecondary3);
         jTextFieldPathGames.setText(gamesDir);
         jTextFieldPathCompiler.setText(compiler);
         jTextFieldPathInterpreter.setText(interpreter);
@@ -5185,12 +5261,19 @@ public class jFrame extends JFrame {
         if(jCheckBoxAdventInLib.isSelected())
         	dir=fileInf.substring(0,fileInf.lastIndexOf(Constants.SEP))+",";
 
+        lib = dir+libPath;
+        
         // controllo se c'è una path library secondaria...
-        if (!libPathSecondary.trim().equals("")){
-            lib = dir+libPath+","+libPathSecondary;
+        if (!libPathSecondary1.trim().equals("")){
+            lib = lib+","+libPathSecondary1;
         }
-        else{
-            lib = dir+libPath;
+        
+        if (!libPathSecondary2.trim().equals("")){
+            lib = lib+","+libPathSecondary2;
+        }
+        
+        if (!libPathSecondary3.trim().equals("")){
+            lib = lib+","+libPathSecondary3;
         }
         
         switchString=makeSwitches().split(" ");
@@ -5837,7 +5920,9 @@ public class jFrame extends JFrame {
                     makeConfig.append("######################################################"+"\n");
                     makeConfig.append("\n");
                     makeConfig.append("libPath="+workingDir+"lib"+file.separator+java.util.ResourceBundle.getBundle("JIF").getString("DEFAULT_LIB_DIRECTORY")+"\n");
-                    makeConfig.append("libPathSecondary=\n");
+                    makeConfig.append("libPathSecondary1=\n");
+                    makeConfig.append("libPathSecondary2=\n");
+                    makeConfig.append("libPathSecondary3=\n");
                     makeConfig.append("gamesDir="+workingDir+"games\n");
                     makeConfig.append("interpreter="+workingDir+"interpreter"+Constants.SEP+"WindowsFrotz2002"+Constants.SEP+"Frotz.exe"+"\n");
                     makeConfig.append("glulx="+workingDir+"interpreter"+Constants.SEP+"Glulxe"+Constants.SEP+"Glulxe.exe"+"\n");
@@ -5871,7 +5956,9 @@ public class jFrame extends JFrame {
                 //salto le di commento che iniziano per Constants.TOKENCOMMENT=#
                 if (!(riga.startsWith(Constants.TOKENCOMMENT))&&!(riga.equals(""))){
                     if (riga.indexOf("libPath=")!=-1){libPath=riga.substring(riga.indexOf("libPath=")+8);}
-                    if (riga.indexOf("libPathSecondary=")!=-1){libPathSecondary=riga.substring(riga.indexOf("libPathSecondary=")+17);}
+                    if (riga.indexOf("libPathSecondary1=")!=-1){libPathSecondary1=riga.substring(riga.indexOf("libPathSecondary1=")+18);}
+                    if (riga.indexOf("libPathSecondary2=")!=-1){libPathSecondary2=riga.substring(riga.indexOf("libPathSecondary2=")+18);}
+                    if (riga.indexOf("libPathSecondary3=")!=-1){libPathSecondary3=riga.substring(riga.indexOf("libPathSecondary3=")+18);}
                     if (riga.indexOf("gamesDir=")!=-1){gamesDir=riga.substring(riga.indexOf("gamesDir=")+9);}
                     if (riga.indexOf("interpreter=")!=-1){interpreter=riga.substring(riga.indexOf("interpreter=")+12);}
                     if (riga.indexOf("glulx=")!=-1){glulx=riga.substring(riga.indexOf("glulx=")+6);}
@@ -8297,7 +8384,9 @@ public class jFrame extends JFrame {
         makeConfig.append("######################################################"+"\n");
         makeConfig.append("\n");
         makeConfig.append("libPath="+jTextFieldPathLib.getText()+"\n");
-        makeConfig.append("libPathSecondary="+this.libPathSecondary+"\n");
+        makeConfig.append("libPathSecondary1="+this.libPathSecondary1+"\n");
+        makeConfig.append("libPathSecondary2="+this.libPathSecondary2+"\n");
+        makeConfig.append("libPathSecondary3="+this.libPathSecondary3+"\n");
         makeConfig.append("gamesDir="+jTextFieldPathGames.getText()+"\n");
         makeConfig.append("interpreter="+jTextFieldPathInterpreter.getText()+"\n");
         makeConfig.append("glulx="+jTextFieldPathGlulx.getText()+"\n");
@@ -8657,7 +8746,9 @@ public class jFrame extends JFrame {
         String games = jTextFieldPathGames.getText();
         String interpreter = jTextFieldPathInterpreter.getText();
         String lib = jTextFieldPathLib.getText();
-        String libsec = jTextFieldPathLibSecondary.getText();
+        String libsec1 = jTextFieldPathLibSecondary1.getText();
+        String libsec2 = jTextFieldPathLibSecondary2.getText();
+        String libsec3 = jTextFieldPathLibSecondary3.getText();
 
         // tolgo i " e '
         browser = Utils.replace(browser , "\"", "");
@@ -8680,9 +8771,19 @@ public class jFrame extends JFrame {
         lib = Utils.replace(lib , "'", "");
         jTextFieldPathLib.setText(lib);
 
-        libsec = Utils.replace(libsec , "\"", "");
-        libsec = Utils.replace(libsec , "'", "");
-        jTextFieldPathLibSecondary.setText(libsec);
+        libsec1 = Utils.replace(libsec1 , "\"", "");
+        libsec1 = Utils.replace(libsec1 , "'", "");
+        jTextFieldPathLibSecondary1.setText(libsec1);
+
+        libsec2 = Utils.replace(libsec2 , "\"", "");
+        libsec2 = Utils.replace(libsec2 , "'", "");
+        jTextFieldPathLibSecondary2.setText(libsec2);
+
+        libsec3 = Utils.replace(libsec3 , "\"", "");
+        libsec3 = Utils.replace(libsec3 , "'", "");
+        jTextFieldPathLibSecondary3.setText(libsec3);
+
+        
     }
 
 
@@ -9193,6 +9294,8 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButton24;
     private javax.swing.JButton jButton25;
     private javax.swing.JButton jButton26;
+    private javax.swing.JButton jButton27;
+    private javax.swing.JButton jButton28;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton9;
@@ -9288,6 +9391,8 @@ public class jFrame extends JFrame {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -9421,9 +9526,11 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanel42;
     private javax.swing.JPanel jPanel43;
     private javax.swing.JPanel jPanel44;
+    private javax.swing.JPanel jPanel45;
     private javax.swing.JPanel jPanel46;
     private javax.swing.JPanel jPanel47;
     private javax.swing.JPanel jPanel48;
+    private javax.swing.JPanel jPanel49;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
@@ -9493,7 +9600,9 @@ public class jFrame extends JFrame {
     private javax.swing.JTextField jTextFieldPathGlulx;
     private javax.swing.JTextField jTextFieldPathInterpreter;
     private javax.swing.JTextField jTextFieldPathLib;
-    private javax.swing.JTextField jTextFieldPathLibSecondary;
+    private javax.swing.JTextField jTextFieldPathLibSecondary1;
+    private javax.swing.JTextField jTextFieldPathLibSecondary2;
+    private javax.swing.JTextField jTextFieldPathLibSecondary3;
     private javax.swing.JTextField jTextFieldReplace;
     private javax.swing.JTextField jTextFieldReplaceFind;
     protected javax.swing.JTextField jTextFieldRowCol;
@@ -9512,7 +9621,9 @@ public class jFrame extends JFrame {
     private String interpreter="";
     private String compiler ="";
     private String libPath="";
-    private String libPathSecondary="";
+    private String libPathSecondary1="";
+    private String libPathSecondary2="";
+    private String libPathSecondary3="";
     private String gamesDir="";
     private String projectDir="";
     private String configDir = "";
