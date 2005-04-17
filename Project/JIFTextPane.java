@@ -67,7 +67,8 @@ public class JIFTextPane extends JTextPane{
         this.pathfile = (file != null ? file.getAbsolutePath() : "");
         this.popupListener = new PopupListener(this, jframe);
         hlighterBrackets = new HighlightText(this,Color.pink);
-        hlighterBookmarks = new HighlightBookmark(this,Color.blue);       
+        //hlighterBookmarks = new HighlightBookmark(this,new Color(204, 204, 255));       
+        hlighterBookmarks = new HighlightBookmark(this, Color.gray);               
         hlighter = new HighlightText(this,Color.pink);
         this.bookmarks = new ArrayList();
         
@@ -1048,5 +1049,13 @@ public class JIFTextPane extends JTextPane{
         }        
     }
 
+    // returns the current Word using the caret Position
+    public String getCurrentWord() throws BadLocationException {
+        int start = Utilities.getWordStart(this, getCaretPosition());
+        int end = Utilities.getWordEnd(this, getCaretPosition());
+        String word = getDocument().getText(start, end-start);
+        //System.out.println( "Selected word: " + word );
+        return word;
+    }
 
 }

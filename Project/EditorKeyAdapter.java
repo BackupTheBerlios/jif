@@ -91,9 +91,8 @@ public class EditorKeyAdapter extends KeyAdapter {
     public void keyReleased(KeyEvent ke) {
         try {
             // Automatic JUMP to object, if present into the object tree
-            if (ke.getKeyCode() == ke.VK_J && ke.isControlDown() && null != jif.getSelectedText()) {
-                String key = jif.getSelectedText();
-                jframe.checkTree(key);
+            if (ke.getKeyCode() == ke.VK_J && ke.isControlDown()) {
+                jframe.checkTree(jif.getCurrentWord());
             }
             
             

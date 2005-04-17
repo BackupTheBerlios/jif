@@ -3627,9 +3627,12 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jButton27ActionPerformed
 
     private void jMenuItemJumpToSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemJumpToSourceActionPerformed
-        String key = getCurrentJIFTextPane().getSelectedText();
-        if (null == key) return;
-        checkTree(key);
+        try{
+            checkTree(getCurrentJIFTextPane().getCurrentWord());    
+        }
+        catch (BadLocationException ble){
+            System.err.println(ble);
+        }        
     }//GEN-LAST:event_jMenuItemJumpToSourceActionPerformed
 
     private void jTree1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseEntered
@@ -4078,7 +4081,7 @@ public class jFrame extends JFrame {
         updateColorEditor();
 
         // updates the font
-        jComboBoxFont.setSelectedItem("Monospaced");
+        jComboBoxFont.setSelectedItem("Courier New");
         jComboBoxFontSize.setSelectedItem("12");
         update = true;
         jTextFieldMaxRecentFiles.setText("10");
@@ -6242,22 +6245,47 @@ public class jFrame extends JFrame {
                     continue;
                 }
 
-                Object nodo = node.getUserObject();
-                Inspect ins = (Inspect) nodo;
-                if ( ins.Ilabel.equals(key)  ){
-                    try{
-                        if (ins != null){
-                            JIFTextPane jif = getCurrentJIFTextPane();
-                            jif.getHlighter().highlightFromTo(jif, ins.Iposition , ins.IpositionEnd);
-                            el = jif.getDocument().getDefaultRootElement();
-                            jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
-                            jif.scrollRectToVisible(jif.modelToView(ins.Iposition));
-                        }
+                // for the classes node
+                if(node.children().hasMoreElements()){
+                    for (int j=0; j < node.getChildCount(); j++){
+                        DefaultMutableTreeNode nodeclass = (DefaultMutableTreeNode)node.getChildAt(j);
+                        Object nodo = nodeclass.getUserObject();
+                        Inspect ins = (Inspect) nodo;
+                        if ( ins.Ilabel.equals(key)  ){
+                            try{
+                                if (ins != null){
+                                    JIFTextPane jif = getCurrentJIFTextPane();
+                                    jif.getHlighter().highlightFromTo(jif, ins.Iposition , ins.IpositionEnd);
+                                    el = jif.getDocument().getDefaultRootElement();
+                                    jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
+                                    jif.scrollRectToVisible(jif.modelToView(ins.Iposition));
+                                }
 
-                    }catch(Exception e){
-                        System.err.println(e.getMessage());
+                            }catch(Exception e){
+                                System.err.println(e.getMessage());
+                            }
+                        }  
                     }
+                    
                 }
+                else{
+                    Object nodo = node.getUserObject();
+                    Inspect ins = (Inspect) nodo;
+                    if ( ins.Ilabel.equals(key)  ){
+                        try{
+                            if (ins != null){
+                                JIFTextPane jif = getCurrentJIFTextPane();
+                                jif.getHlighter().highlightFromTo(jif, ins.Iposition , ins.IpositionEnd);
+                                el = jif.getDocument().getDefaultRootElement();
+                                jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
+                                jif.scrollRectToVisible(jif.modelToView(ins.Iposition));
+                            }
+
+                        }catch(Exception e){
+                            System.err.println(e.getMessage());
+                        }
+                    }    
+                }               
         }            
         }
     }    
