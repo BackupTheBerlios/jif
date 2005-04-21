@@ -663,10 +663,6 @@ public class jFrame extends JFrame {
         jSplitPane1 = new javax.swing.JSplitPane();
         jSplitPane2 = new javax.swing.JSplitPane();
         jPanelTreeControl = new javax.swing.JPanel();
-        jPanelControl = new javax.swing.JPanel();
-        RefreshTreeButton = new javax.swing.JButton();
-        jButtonExpand = new javax.swing.JButton();
-        jButtonImplode = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
 
         DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
@@ -1890,7 +1886,7 @@ public class jFrame extends JFrame {
         jDialogTutorial.getContentPane().add(jLabelTutorial, java.awt.BorderLayout.NORTH);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle(jifVersion);
+        setTitle(getJifVersion());
         setFont(new java.awt.Font("Dialog", 0, 12));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -2744,81 +2740,6 @@ public class jFrame extends JFrame {
         jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jPanelTreeControl.setLayout(new javax.swing.BoxLayout(jPanelTreeControl, javax.swing.BoxLayout.Y_AXIS));
 
-        jPanelControl.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-
-        jPanelControl.setMaximumSize(new java.awt.Dimension(150, 35));
-        jPanelControl.setMinimumSize(new java.awt.Dimension(150, 35));
-        jPanelControl.setPreferredSize(new java.awt.Dimension(150, 35));
-        RefreshTreeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/tree_menu.png")));
-        RefreshTreeButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENUITEM_REFRESHTREE"));
-        RefreshTreeButton.setBorderPainted(false);
-        RefreshTreeButton.setMaximumSize(new java.awt.Dimension(22, 22));
-        RefreshTreeButton.setMinimumSize(new java.awt.Dimension(22, 22));
-        RefreshTreeButton.setPreferredSize(new java.awt.Dimension(22, 22));
-        RefreshTreeButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RefreshTreeButtonActionPerformed(evt);
-            }
-        });
-        RefreshTreeButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jButtonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButtonMouseExited(evt);
-            }
-        });
-
-        jPanelControl.add(RefreshTreeButton);
-
-        jButtonExpand.setFont(new java.awt.Font("Dialog", 0, 10));
-        jButtonExpand.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/plus.png")));
-        jButtonExpand.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EXPAND"));
-        jButtonExpand.setBorderPainted(false);
-        jButtonExpand.setMaximumSize(new java.awt.Dimension(22, 22));
-        jButtonExpand.setMinimumSize(new java.awt.Dimension(22, 22));
-        jButtonExpand.setPreferredSize(new java.awt.Dimension(22, 22));
-        jButtonExpand.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonExpandActionPerformed(evt);
-            }
-        });
-        jButtonExpand.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jButtonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButtonMouseExited(evt);
-            }
-        });
-
-        jPanelControl.add(jButtonExpand);
-
-        jButtonImplode.setFont(new java.awt.Font("Dialog", 0, 10));
-        jButtonImplode.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/minus.png")));
-        jButtonImplode.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_COLLAPSE"));
-        jButtonImplode.setBorderPainted(false);
-        jButtonImplode.setMaximumSize(new java.awt.Dimension(22, 22));
-        jButtonImplode.setMinimumSize(new java.awt.Dimension(22, 22));
-        jButtonImplode.setPreferredSize(new java.awt.Dimension(22, 22));
-        jButtonImplode.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonImplodeActionPerformed(evt);
-            }
-        });
-        jButtonImplode.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jButtonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButtonMouseExited(evt);
-            }
-        });
-
-        jPanelControl.add(jButtonImplode);
-
-        jPanelTreeControl.add(jPanelControl);
-
         jScrollPane3.setBorder(null);
         jScrollPane3.setDoubleBuffered(true);
         jScrollPane3.setMinimumSize(new java.awt.Dimension(150, 200));
@@ -3644,7 +3565,7 @@ public class jFrame extends JFrame {
         if (jCheckBoxGlulxMode.isSelected()){
             setGlulxMode();
             jCheckBoxInformMode.setState(false);
-            jifVersion = "Jif "+ Constants.JIFVERSION + "     Glulx Mode";
+            setJifVersion("Jif "+ Constants.JIFVERSION + "     Glulx Mode");
             refreshTree();
         }
         else {
@@ -3659,7 +3580,7 @@ public class jFrame extends JFrame {
         if (jCheckBoxInformMode.isSelected()){
             setInformMode();
             jCheckBoxGlulxMode.setState(false);
-            jifVersion = "Jif "+ Constants.JIFVERSION + "     Inform Mode";
+            setJifVersion("Jif "+ Constants.JIFVERSION + "     Inform Mode");
             refreshTree();
         }
         else {
@@ -3812,7 +3733,7 @@ public class jFrame extends JFrame {
         if (jCheckBoxInformMode.isSelected()){
             setInformMode();
             jCheckBoxGlulxMode.setState(false);
-            jifVersion = "Jif "+ Constants.JIFVERSION + "     Inform Mode";
+            setJifVersion("Jif "+ Constants.JIFVERSION + "     Inform Mode");
             refreshTree();
         }
         else {
@@ -3827,7 +3748,7 @@ public class jFrame extends JFrame {
         if (jCheckBoxGlulxMode.isSelected()){
             setGlulxMode();
             jCheckBoxInformMode.setState(false);
-            jifVersion = "Jif "+ Constants.JIFVERSION + "     Glulx Mode";
+            setJifVersion("Jif "+ Constants.JIFVERSION + "     Glulx Mode");
             refreshTree();
         }
         else {
@@ -4043,18 +3964,6 @@ public class jFrame extends JFrame {
     private void jButton24ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton24ActionPerformed
         jDialogTutorial.setVisible(false);
     }//GEN-LAST:event_jButton24ActionPerformed
-
-    private void jButtonExpandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExpandActionPerformed
-        explode = true;
-        refreshTree();
-    }//GEN-LAST:event_jButtonExpandActionPerformed
-
-    private void jButtonImplodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonImplodeActionPerformed
-        // IMPLODES TREE
-        explode = false;
-        refreshTree();
-        explode = true;
-    }//GEN-LAST:event_jButtonImplodeActionPerformed
 
     private void jComboBoxFontSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxFontSizeActionPerformed
         jTextFieldFont.setFont(new Font((String)jComboBoxFont.getSelectedItem(),Font.PLAIN, Integer.parseInt((String)jComboBoxFontSize.getSelectedItem()) ));
@@ -4939,10 +4848,6 @@ public class jFrame extends JFrame {
           jDialogConfigFiles.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void RefreshTreeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshTreeButtonActionPerformed
-        refreshTree();
-    }//GEN-LAST:event_RefreshTreeButtonActionPerformed
-
     private void NewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NewActionPerformed
         newAdventure();
     }//GEN-LAST:event_NewActionPerformed
@@ -5187,6 +5092,8 @@ public class jFrame extends JFrame {
 
             // rendo visibile la finestra di output
             jTabbedPane2.setSelectedComponent(jScrollPane2);
+            
+            setTitle(getJifVersion() +" - " + getCurrentFilename());
 
         } catch(IOException e){
             System.out.println("ERRORE: "+e.getMessage());
@@ -5321,6 +5228,8 @@ public class jFrame extends JFrame {
         //jTextAreaOutput.append(out+"\n");
         jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
         jTextAreaOutput.append("\n");
+        
+        setTitle(getJifVersion() +" - " + getCurrentFilename());
 
         }
         catch(IOException e){
@@ -6311,7 +6220,7 @@ public class jFrame extends JFrame {
                 treeModel.reload();
                 jTextAreaOutput.setText("");    // Svuoto la textarea di output
                 disableComponents();
-                this.setTitle(jifVersion);
+                this.setTitle(getJifVersion());
                 jTree1.setEnabled(false);
                 return;
         }
@@ -6319,7 +6228,7 @@ public class jFrame extends JFrame {
         String currentName = getCurrentFilename();
 
         // imposto il titolo sulla barra in alto
-        this.setTitle(jifVersion +" - " + currentName);
+        this.setTitle(getJifVersion() +" - " + currentName);
 
         // Se il file ha estensione != da INF e H
         // svuoto l'abero ed esco
@@ -6991,7 +6900,6 @@ public class jFrame extends JFrame {
         SaveButtonAll.setEnabled(false);
         RebuildButton.setEnabled(false);
         RunButton.setEnabled(false);
-        RefreshTreeButton.setEnabled(false);
         Save.setEnabled(false);
         SaveAs.setEnabled(false);
         jMenuItemSaveAll.setEnabled(false);
@@ -7022,8 +6930,6 @@ public class jFrame extends JFrame {
         jButtonInfo.setEnabled(false);
         jButtonUndo.setEnabled(false);
         jButtonRedo.setEnabled(false);
-        jButtonImplode.setEnabled(false);
-        jButtonExpand.setEnabled(false);
         jButtonExtractStrings.setEnabled(false);
         jButtonTranslate.setEnabled(false);
         jTree1.setEnabled(false);
@@ -7036,7 +6942,6 @@ public class jFrame extends JFrame {
         SaveButtonAll.setEnabled(true);
         RebuildButton.setEnabled(true);
         RunButton.setEnabled(true);
-        RefreshTreeButton.setEnabled(true);
         Save.setEnabled(true);
         SaveAs.setEnabled(true);
         jMenuItemSaveAll.setEnabled(true);
@@ -7065,8 +6970,6 @@ public class jFrame extends JFrame {
         jButtonInfo.setEnabled(true);
         jButtonUndo.setEnabled(true);
         jButtonRedo.setEnabled(true);
-        jButtonImplode.setEnabled(true);
-        jButtonExpand.setEnabled(true);
         jButtonExtractStrings.setEnabled(true);
         jButtonTranslate.setEnabled(true);
         //jMenuGlulx.setEnabled(true);
@@ -9296,7 +9199,6 @@ public class jFrame extends JFrame {
     private javax.swing.JMenuItem Open;
     private javax.swing.JButton OpenButton;
     private javax.swing.JButton RebuildButton;
-    private javax.swing.JButton RefreshTreeButton;
     private javax.swing.JMenuItem Run;
     private javax.swing.JButton RunButton;
     private javax.swing.JMenuItem Save;
@@ -9340,10 +9242,8 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButtonCopy;
     private javax.swing.JButton jButtonCut;
     private javax.swing.JButton jButtonDefaultDark;
-    private javax.swing.JButton jButtonExpand;
     private javax.swing.JButton jButtonExtractStrings;
     private javax.swing.JButton jButtonFind;
-    private javax.swing.JButton jButtonImplode;
     private javax.swing.JButton jButtonImportCancel;
     private javax.swing.JButton jButtonImportFiles;
     private javax.swing.JButton jButtonImportFromFile;
@@ -9565,7 +9465,6 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JPanel jPanelColor;
-    private javax.swing.JPanel jPanelControl;
     private javax.swing.JPanel jPanelDefaultDark;
     private javax.swing.JPanel jPanelFont;
     private javax.swing.JPanel jPanelGeneral;
@@ -9795,4 +9694,12 @@ public class jFrame extends JFrame {
 
     // alphabetical sorting
     private Vector objTree;
+
+    public String getJifVersion() {
+        return jifVersion;
+    }
+
+    public void setJifVersion(String jifVersion) {
+        this.jifVersion = jifVersion;
+    }
 }

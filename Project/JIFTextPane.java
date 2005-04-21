@@ -120,11 +120,12 @@ public class JIFTextPane extends JTextPane{
 
         doc.addUndoableEditListener(new UndoableEditListener() {
             public void undoableEditHappened(UndoableEditEvent evt) {
-            undoF.addEdit(evt.getEdit());
-            // adding a "*" to the file name, when the file has changed but not saved
-            if (jframe.getTabbed().getComponentCount()!=0  && jframe.getCurrentFilename().indexOf("*")==-1){
-                jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), jframe.getCurrentFilename()+"*");
-            }
+                undoF.addEdit(evt.getEdit());
+                // adding a "*" to the file name, when the file has changed but not saved
+                if (jframe.getTabbed().getComponentCount()!=0  && jframe.getCurrentFilename().indexOf("*")==-1){
+                    jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), jframe.getCurrentFilename()+"*");
+                    jframe.setTitle(jframe.getJifVersion() +" - " + jframe.getCurrentFilename());                    
+                }
             }
         });
 
@@ -139,6 +140,7 @@ public class JIFTextPane extends JTextPane{
                         // adding a "*" to the file name, when the file has changed but not saved
                         if (jframe.getTabbed().getComponentCount()!=0  && jframe.getCurrentFilename().indexOf("*")==-1){
                             jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), jframe.getCurrentFilename()+"*");
+                            jframe.setTitle(jframe.getJifVersion() +" - " + jframe.getCurrentFilename());                    
                         }
                     }
                 } catch (CannotUndoException e) {
@@ -160,6 +162,7 @@ public class JIFTextPane extends JTextPane{
                         // adding a "*" to the file name, when the file has changed but not saved
                         if (jframe.getTabbed().getComponentCount()!=0  && jframe.getCurrentFilename().indexOf("*")==-1){
                             jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), jframe.getCurrentFilename()+"*");
+                            jframe.setTitle(jframe.getJifVersion() +" - " + jframe.getCurrentFilename());                                                
                         }
                     }
                 } catch (CannotRedoException e) {
