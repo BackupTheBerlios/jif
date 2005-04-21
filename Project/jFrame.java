@@ -361,7 +361,7 @@ public class jFrame extends JFrame {
 
     // load JIF ini
     loadJifIni();
-    new SplashWindow(this);
+    //new SplashWindow(this);
 
     // Opens the last file opened
     if (jCheckBoxOpenLastFile.isSelected()){
