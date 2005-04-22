@@ -45,12 +45,9 @@ comment.png
 delete.png
 Jif.png
 leftIndent.png
-minus.png
 newTemplateDynamic.png
 newTemplateStatic.png
-plus.png
 rightIndent.png
-splash.png
 tree.png
 TREE_dynamic.png
 tree_menu.png

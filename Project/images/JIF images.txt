@@ -2,14 +2,14 @@ LIST OF IMAGES USED BY JIF
 ==========================
 (see the license file for using them)
 
-2004-08-13
+2005-04-21
 
 about.png
 check.png
-comment.gif
+comment.png
 compfile.png
 configure.png
-delete.gif
+delete.png
 edit.png
 editcopy.png
 editcut.png
@@ -33,23 +33,19 @@ insertObject.png
 insertSymbol.png
 Jif.png
 launch.png
-leftIndent.gif
-minus.gif
-newTemplateDynamic.gif
+leftIndent.png
+newTemplateDynamic.png
 newTemplateStatic.gif
-plus.gif
 redo.png
 rightIndent.gif
 runInterpreter.png
-splash.png
 TemplateManagerFromFile.png
 TemplateManagerFromWeb.png
 translate.png
-tree.gif
+tree.png
 TREE_dynamic.png           
-tree_menu.gif
 TREE_objects.png
 TREE_static.png
-uncomment.gif
+uncomment.png
 undo.png
 view_sidetree.png

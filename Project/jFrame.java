@@ -5104,12 +5104,18 @@ public class jFrame extends JFrame {
 
 
     public void saveAll(){
+        // Remember the file selected
+        Component comp = jTabbedPane1.getSelectedComponent();
+        
         int componenti = jTabbedPane1.getTabCount();
         for (int count=0; count < componenti; count++){
             jTabbedPane1.setSelectedIndex(count);
             if (getCurrentFilename().indexOf("*")!=-1)
             	saveFile(); //Only save modified files
         }
+        
+        // reassign the selected component
+        jTabbedPane1.setSelectedComponent(comp);
     }
 
 
