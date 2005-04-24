@@ -1247,9 +1247,8 @@ public class jFrame extends JFrame {
 
         jDialogOption.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SETTING"));
         jDialogOption.setModal(true);
-        jDialogOption.setResizable(false);
-        jTabbedPaneOption.setMinimumSize(new java.awt.Dimension(270, 400));
-        jTabbedPaneOption.setPreferredSize(new java.awt.Dimension(492, 400));
+        jTabbedPaneOption.setMinimumSize(new java.awt.Dimension(535, 535));
+        jTabbedPaneOption.setPreferredSize(new java.awt.Dimension(535, 535));
         jPanelGeneral.setLayout(new java.awt.GridLayout(1, 0));
 
         jPanelGeneral.setPreferredSize(new java.awt.Dimension(205, 400));
