@@ -632,10 +632,13 @@ public class jFrame extends JFrame {
         jButtonPaste = new javax.swing.JButton();
         jButtonUndo = new javax.swing.JButton();
         jButtonRedo = new javax.swing.JButton();
+        jTextFieldFind = new javax.swing.JTextField();
         jButtonReplace = new javax.swing.JButton();
         jButtonFind = new javax.swing.JButton();
-        jTextFieldFind = new javax.swing.JTextField();
         jSeparator5 = new javax.swing.JSeparator();
+        jTextFieldDefinition = new javax.swing.JTextField();
+        jButtonDefinition = new javax.swing.JButton();
+        jSeparator21 = new javax.swing.JSeparator();
         AboutButton = new javax.swing.JButton();
         ExitButton = new javax.swing.JButton();
         jButtonCommentSelection = new javax.swing.JButton();
@@ -2186,6 +2189,19 @@ public class jFrame extends JFrame {
 
         jToolBarCommon.add(jButtonRedo);
 
+        jTextFieldFind.setColumns(15);
+        jTextFieldFind.setFont(new java.awt.Font("Dialog", 1, 12));
+        jTextFieldFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
+        jTextFieldFind.setMaximumSize(new java.awt.Dimension(200, 30));
+        jTextFieldFind.setPreferredSize(new java.awt.Dimension(171, 30));
+        jTextFieldFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldFindActionPerformed(evt);
+            }
+        });
+
+        jToolBarCommon.add(jTextFieldFind);
+
         jButtonReplace.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/find.png")));
         jButtonReplace.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_REPLACE"));
         jButtonReplace.setBorderPainted(false);
@@ -2230,22 +2246,33 @@ public class jFrame extends JFrame {
 
         jToolBarCommon.add(jButtonFind);
 
-        jTextFieldFind.setFont(new java.awt.Font("Dialog", 1, 12));
-        jTextFieldFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
-        jTextFieldFind.setMaximumSize(new java.awt.Dimension(200, 30));
-        jTextFieldFind.setPreferredSize(new java.awt.Dimension(200, 30));
-        jTextFieldFind.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldFindActionPerformed(evt);
-            }
-        });
-
-        jToolBarCommon.add(jTextFieldFind);
-
         jSeparator5.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        jSeparator5.setMinimumSize(new java.awt.Dimension(10, 10));
         jSeparator5.setPreferredSize(new java.awt.Dimension(0, 34));
         jSeparator5.setRequestFocusEnabled(false);
         jToolBarCommon.add(jSeparator5);
+
+        jTextFieldDefinition.setColumns(15);
+        jTextFieldDefinition.setFont(new java.awt.Font("Dialog", 1, 12));
+        jTextFieldDefinition.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldDefinitionActionPerformed(evt);
+            }
+        });
+
+        jToolBarCommon.add(jTextFieldDefinition);
+
+        jButtonDefinition.setText("Definition");
+        jButtonDefinition.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDefinitionActionPerformed(evt);
+            }
+        });
+
+        jToolBarCommon.add(jButtonDefinition);
+
+        jSeparator21.setMinimumSize(new java.awt.Dimension(10, 10));
+        jToolBarCommon.add(jSeparator21);
 
         AboutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/info.png")));
         AboutButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_ABOUT"));
@@ -3519,6 +3546,20 @@ public class jFrame extends JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void jButtonDefinitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDefinitionActionPerformed
+        // Search for definition
+        if (!jTextFieldDefinition.getText().equals("")){
+            checkTree(jTextFieldDefinition.getText());    
+        }   
+    }//GEN-LAST:event_jButtonDefinitionActionPerformed
+
+    private void jTextFieldDefinitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldDefinitionActionPerformed
+        // Search for definition
+        if (!jTextFieldDefinition.getText().equals("")){
+            checkTree(jTextFieldDefinition.getText());    
+        }        
+    }//GEN-LAST:event_jTextFieldDefinitionActionPerformed
 
     private void jButton28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton28ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
@@ -6947,6 +6988,11 @@ public class jFrame extends JFrame {
         jButtonExtractStrings.setEnabled(false);
         jButtonTranslate.setEnabled(false);
         jTree1.setEnabled(false);
+        
+        // search and definition
+        jTextFieldFind.setEnabled(false);
+        jTextFieldDefinition.setEnabled(false);
+        jButtonDefinition.setEnabled(false);
     }
 
 
@@ -6988,6 +7034,10 @@ public class jFrame extends JFrame {
         jButtonTranslate.setEnabled(true);
         //jMenuGlulx.setEnabled(true);
         jTree1.setEnabled(true);
+        
+        jTextFieldFind.setEnabled(true);
+        jTextFieldDefinition.setEnabled(true);
+        jButtonDefinition.setEnabled(true);        
     }
 
 
@@ -9124,8 +9174,200 @@ public class jFrame extends JFrame {
         }
     }
 
+    public String checkDefinitionCurrentFile(String entity){
+        
+        String file ="";
+        String main ="";
+        
+        file = getCurrentFilename();
+            
+            // check only if the file is an INF or h file
+            if ( (file.indexOf(".inf")!=-1) || (file.indexOf(".INF")!=-1)){                        
+                // open and reads the file
+                try{
+                    StringBuffer sb = new StringBuffer();
+                    String riga;
+                    sb.setLength(0);
+                    BufferedReader br = new BufferedReader(new FileReader(file));
+                    while ((riga = br.readLine())!=null){
+                        sb.append(riga).append("\n");
+                    }
+                    br.close();
+                    main = sb.toString(); 
+                    // Search for entity
+                    String pattern = "Object ";
+                    String hang="";
+                    String tmp="";
+                    String appoggio;
+                    int pos = 0;
+                    StringTokenizer sttok;
+
+                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){        
+                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                        int posizione_freccia=0;
+                        posizione_freccia = appoggio.lastIndexOf("->");
+                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                        appoggio = appoggio.trim();
+                        if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
+                            if (posizione_freccia==-1) {
+                                posizione_freccia=0;
+                            } else posizione_freccia -=3;
+
+                            tmp = main.substring(pos+pattern.length()-1+posizione_freccia);
+                            if (tmp.trim().startsWith("\"")){
+                                sttok = new StringTokenizer(tmp.trim(),"\"");
+                            }
+                            else{
+                                sttok = new StringTokenizer(tmp," ;");
+                            }
+                            hang = sttok.nextToken();
+                            //category4.add(new DefaultMutableTreeNode( new Inspect(hang,pos,pos+pattern.length()-1)));
+                            if (hang.toLowerCase().equals(entity)){
+                                return file;
+                            }                        
+                        }
+                        pos += pattern.length();
+                    }                   
+
+
+
+                    // ***************************************************
+                    pattern = "Global ";
+                    appoggio=""; 
+                    pos = 0;
+                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0)       {        
+                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                        if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
+                            sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;=");
+                            if (sttok.nextToken().toLowerCase().equals(entity)){
+                                return file;
+                            }                        
+                        }
+                        pos += pattern.length();
+                    }            
+                    // ***************************************************
+
+
+                    // ***************************************************
+                    pattern = "Constant ";
+                    pos = 0;
+                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0)       {
+                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                        if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
+                            sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;=");
+                            if (sttok.nextToken().toLowerCase().equals(entity)){
+                                return file;
+                            }   
+                        }
+                        pos += pattern.length();
+                    }
+                    // ***************************************************          
+
+
+                    // ***************************************************          
+                    pattern = "Sub";
+                    pos = 0;
+                    tmp="";
+                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){        
+                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                        if (appoggio.indexOf("!")==-1 && appoggio.indexOf('[')>=0 && appoggio.indexOf(';')>=0){
+                            tmp = main.substring(0,pos);
+                            tmp = tmp.substring(tmp.lastIndexOf('[')+1);
+                            tmp = tmp.trim();
+                            if ((tmp+pattern).toLowerCase().equals(entity)){
+                                return file;
+                            }  
+                        }
+                        pos += pattern.length();
+                    }
+                    // ***************************************************  
+
+                    // ***************************************************  
+                    pattern = "Class ";
+                    pos = 0;
+                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){        
+                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                        appoggio = appoggio.trim();
+                        if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
+                            sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;\n");
+                            String nome = sttok.nextToken();
+                            if (nome.toLowerCase().equals(entity)){
+                                return file;
+                            }                      
+                        }
+                        pos += pattern.length();
+                    }
+                    // ***************************************************  
+
+
+                    // ***************************************************  
+                    // ****** Functions
+                    pattern="[";
+                    pos=0;
+                    int lunghezza=0;
+                    tmp ="";
+                    while ((pos = main.indexOf(pattern, pos)) >= 0){
+                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                        appoggio = appoggio.trim();
+                        if (appoggio.indexOf("!")==-1  && appoggio.startsWith("[")){
+                            tmp = main.substring(pos);
+                            tmp = tmp.substring(1,tmp.indexOf(';'));
+                            tmp = tmp.trim();
+                            if (!tmp.equals("") && (tmp.indexOf('\"')==-1) && (tmp.indexOf("Sub"))==-1){
+                                sttok = new StringTokenizer(tmp," ;\n");
+                                if (sttok.hasMoreTokens()){
+                                    tmp = sttok.nextToken();
+                                }
+                                if (tmp.toLowerCase().equals(entity)){
+                                    return file;
+                                }                                                  
+                            }
+                        }
+                        pos += pattern.length();
+                    }            
+                    // ***************************************************  
+
+                    // ***************************************************  
+                    for (int j=0 ; j < projectClass.size(); j++){
+                        //String classe = (String) projectClass.get(j);
+                        //pattern = "Class ";
+                        pattern = (String) projectClass.get(j);
+//System.out.println("Classe ="+pattern);                        
+                        pos = 0;
+                        while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){        
+                            appoggio = main.substring(pos,main.indexOf("\n",pos));
+                            appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                            appoggio = appoggio.trim();
+                            if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
+                                sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;\n");
+                                String nome = sttok.nextToken();
+                                if (nome.toLowerCase().equals(entity)){
+                                    return file;
+                                }                      
+                            }
+                            pos += pattern.length();
+                        }                                                                        
+                    }
+                    // ***************************************************  
+                    
+                    
+                }catch(Exception e){
+                }
+            }                                
+        return null;
+    }    
+    
     // This method seeks for the definition of "entity" within the whole project
-    public String checkDefinition(String entity){
+    public String checkDefinition(String entity){        
+        
+        // before I'll try the current filename
+        String current = checkDefinitionCurrentFile(entity);
+        if (current != null){
+            return current;
+        }        
         
         String file ="";
         String main ="";
@@ -9133,7 +9375,8 @@ public class jFrame extends JFrame {
             file = ((FileProject)projectFiles.elementAt(i)).path;
             
             // check only if the file is an INF or h file
-            if ( (file.indexOf(".inf")!=-1) || (file.indexOf(".INF")!=-1)){                        
+            // and if isn't the current file
+            if ( (file.indexOf(".inf")!=-1) || (file.indexOf(".INF")!=-1) || !file.equals(current)){                        
                 // open and reads the file
                 try{
                     StringBuffer sb = new StringBuffer();
@@ -9447,6 +9690,7 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButtonCopy;
     private javax.swing.JButton jButtonCut;
     private javax.swing.JButton jButtonDefaultDark;
+    private javax.swing.JButton jButtonDefinition;
     private javax.swing.JButton jButtonExtractStrings;
     private javax.swing.JButton jButtonFind;
     private javax.swing.JButton jButtonImportCancel;
@@ -9704,6 +9948,7 @@ public class jFrame extends JFrame {
     private javax.swing.JSeparator jSeparator19;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator20;
+    private javax.swing.JSeparator jSeparator21;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
@@ -9723,6 +9968,7 @@ public class jFrame extends JFrame {
     private javax.swing.JTextArea jTextAreaOutput;
     private javax.swing.JTextField jTextFieldBlc;
     private javax.swing.JTextField jTextFieldBres;
+    private javax.swing.JTextField jTextFieldDefinition;
     public javax.swing.JTextField jTextFieldFind;
     private javax.swing.JTextField jTextFieldFont;
     private javax.swing.JTextField jTextFieldMaxRecentFiles;
