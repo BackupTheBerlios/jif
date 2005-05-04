@@ -9145,7 +9145,7 @@ public class jFrame extends JFrame {
                     }
                     br.close();
                     main = sb.toString(); 
-
+//System.out.println("Cerco nel file="+file);
                     // Search for entity
                     String pattern = "Object ";
                     String hang="";
@@ -9282,6 +9282,30 @@ public class jFrame extends JFrame {
                     }            
                     // ***************************************************  
 
+                    // ***************************************************  
+                    for (int j=0 ; j < projectClass.size(); j++){
+                        //String classe = (String) projectClass.get(j);
+                        //pattern = "Class ";
+                        pattern = (String) projectClass.get(j);
+//System.out.println("Classe ="+pattern);                        
+                        pos = 0;
+                        while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){        
+                            appoggio = main.substring(pos,main.indexOf("\n",pos));
+                            appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                            appoggio = appoggio.trim();
+                            if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
+                                sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;\n");
+                                String nome = sttok.nextToken();
+                                if (nome.toLowerCase().equals(entity)){
+                                    return file;
+                                }                      
+                            }
+                            pos += pattern.length();
+                        }                                                                        
+                    }
+                    // ***************************************************  
+                    
+                    
                 }catch(Exception e){
     //                System.out.println("ERR: " + e.getMessage());
     //                e.printStackTrace();
