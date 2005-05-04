@@ -9131,171 +9131,163 @@ public class jFrame extends JFrame {
         String main ="";
         for (int i=0; i<projectFiles.size();i++)  {
             file = ((FileProject)projectFiles.elementAt(i)).path;
-            // open and reads the file
-            try{
-                StringBuffer sb = new StringBuffer();
-                String riga;
-                sb.setLength(0);
-                BufferedReader br = new BufferedReader(new FileReader(file));
-                while ((riga = br.readLine())!=null){
-                    sb.append(riga).append("\n");
-                }
-                br.close();
-                main = sb.toString(); 
-
-            // Search for entity
-//System.out.println("Cerco la stringa=["+entity+"] nel file ["+file+"]");            
-            String pattern = "Object ";
-            String hang="";
-            String tmp="";
-            String appoggio;
-            int pos = 0;
-            StringTokenizer sttok;
-
-            while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){        
-                appoggio = main.substring(pos,main.indexOf("\n",pos));
-                int posizione_freccia=0;
-                posizione_freccia = appoggio.lastIndexOf("->");
-                appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
-                appoggio = appoggio.trim();
-                if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
-                    if (posizione_freccia==-1) {
-                        posizione_freccia=0;
-                    } else posizione_freccia -=3;
-
-                    tmp = main.substring(pos+pattern.length()-1+posizione_freccia);
-                    if (tmp.trim().startsWith("\"")){
-                        sttok = new StringTokenizer(tmp.trim(),"\"");
+            
+            // check only if the file is an INF or h file
+            if ( (file.indexOf(".inf")!=-1) || (file.indexOf(".INF")!=-1)){                        
+                // open and reads the file
+                try{
+                    StringBuffer sb = new StringBuffer();
+                    String riga;
+                    sb.setLength(0);
+                    BufferedReader br = new BufferedReader(new FileReader(file));
+                    while ((riga = br.readLine())!=null){
+                        sb.append(riga).append("\n");
                     }
-                    else{
-                        sttok = new StringTokenizer(tmp," ;");
-                    }
-                    hang = sttok.nextToken();
-                    //category4.add(new DefaultMutableTreeNode( new Inspect(hang,pos,pos+pattern.length()-1)));
-                    if (hang.toLowerCase().equals(entity)){
-                        return file;
-                    }                        
-                }
-                pos += pattern.length();
-            }                   
-            
-            
-            
-            // ***************************************************
-            pattern = "Global ";
-            appoggio=""; 
-            pos = 0;
-            while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0)       {        
-                appoggio = main.substring(pos,main.indexOf("\n",pos));
-                appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
-                if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
-                    sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;=");
-                    if (sttok.nextToken().toLowerCase().equals(entity)){
-                        return file;
-                    }                        
-                }
-                pos += pattern.length();
-            }            
-            // ***************************************************
-            
-            
-            // ***************************************************
-            pattern = "Constant ";
-            pos = 0;
-            while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0)       {
-                appoggio = main.substring(pos,main.indexOf("\n",pos));
-                appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
-                if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
-                    sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;=");
-                    if (sttok.nextToken().toLowerCase().equals(entity)){
-                        return file;
-                    }   
-                }
-                pos += pattern.length();
-            }
-            // ***************************************************          
-            
-            
-            // ***************************************************          
-            pattern = "Sub";
-            pos = 0;
-            tmp="";
-            while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){        
-                appoggio = main.substring(pos,main.indexOf("\n",pos));
-                if (appoggio.indexOf("!")==-1 && appoggio.indexOf('[')>=0 && appoggio.indexOf(';')>=0){
-                    tmp = main.substring(0,pos);
-                    tmp = tmp.substring(tmp.lastIndexOf('[')+1);
-                    tmp = tmp.trim();
-                    if ((tmp+pattern).toLowerCase().equals(entity)){
-                        return file;
-                    }  
-                }
-                pos += pattern.length();
-            }
-            // ***************************************************  
-            
-            // ***************************************************  
-            pattern = "Class ";
-            pos = 0;
-            while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){        
-                appoggio = main.substring(pos,main.indexOf("\n",pos));
-                appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
-                appoggio = appoggio.trim();
-                if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
-                    sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;\n");
-                    String nome = sttok.nextToken();
-                    if (nome.toLowerCase().equals(entity)){
-                        return file;
-                    }                      
-                }
-                pos += pattern.length();
-            }
-            // ***************************************************  
-            
-            
-            // ***************************************************  
-            // ****** Functions
-            pattern="[";
-            pos=0;
-            int lunghezza=0;
-            tmp ="";
-            while ((pos = main.indexOf(pattern, pos)) >= 0){
-                appoggio = main.substring(pos,main.indexOf("\n",pos));
-                appoggio = appoggio.trim();
-                if (appoggio.indexOf("!")==-1  && appoggio.startsWith("[")){
-                    tmp = main.substring(pos);
-                    tmp = tmp.substring(1,tmp.indexOf(';'));
-                    tmp = tmp.trim();
-                    if (!tmp.equals("") && (tmp.indexOf('\"')==-1) && (tmp.indexOf("Sub"))==-1){
-                        sttok = new StringTokenizer(tmp," ;\n");
-                        if (sttok.hasMoreTokens()){
-                            tmp = sttok.nextToken();
+                    br.close();
+                    main = sb.toString(); 
+
+                    // Search for entity
+                    String pattern = "Object ";
+                    String hang="";
+                    String tmp="";
+                    String appoggio;
+                    int pos = 0;
+                    StringTokenizer sttok;
+
+                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){        
+                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                        int posizione_freccia=0;
+                        posizione_freccia = appoggio.lastIndexOf("->");
+                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                        appoggio = appoggio.trim();
+                        if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
+                            if (posizione_freccia==-1) {
+                                posizione_freccia=0;
+                            } else posizione_freccia -=3;
+
+                            tmp = main.substring(pos+pattern.length()-1+posizione_freccia);
+                            if (tmp.trim().startsWith("\"")){
+                                sttok = new StringTokenizer(tmp.trim(),"\"");
+                            }
+                            else{
+                                sttok = new StringTokenizer(tmp," ;");
+                            }
+                            hang = sttok.nextToken();
+                            //category4.add(new DefaultMutableTreeNode( new Inspect(hang,pos,pos+pattern.length()-1)));
+                            if (hang.toLowerCase().equals(entity)){
+                                return file;
+                            }                        
                         }
-                        if (tmp.toLowerCase().equals(entity)){
-                            return file;
-                        }                                                  
+                        pos += pattern.length();
+                    }                   
+
+
+
+                    // ***************************************************
+                    pattern = "Global ";
+                    appoggio=""; 
+                    pos = 0;
+                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0)       {        
+                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                        if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
+                            sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;=");
+                            if (sttok.nextToken().toLowerCase().equals(entity)){
+                                return file;
+                            }                        
+                        }
+                        pos += pattern.length();
+                    }            
+                    // ***************************************************
+
+
+                    // ***************************************************
+                    pattern = "Constant ";
+                    pos = 0;
+                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0)       {
+                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                        if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
+                            sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;=");
+                            if (sttok.nextToken().toLowerCase().equals(entity)){
+                                return file;
+                            }   
+                        }
+                        pos += pattern.length();
                     }
+                    // ***************************************************          
+
+
+                    // ***************************************************          
+                    pattern = "Sub";
+                    pos = 0;
+                    tmp="";
+                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){        
+                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                        if (appoggio.indexOf("!")==-1 && appoggio.indexOf('[')>=0 && appoggio.indexOf(';')>=0){
+                            tmp = main.substring(0,pos);
+                            tmp = tmp.substring(tmp.lastIndexOf('[')+1);
+                            tmp = tmp.trim();
+                            if ((tmp+pattern).toLowerCase().equals(entity)){
+                                return file;
+                            }  
+                        }
+                        pos += pattern.length();
+                    }
+                    // ***************************************************  
+
+                    // ***************************************************  
+                    pattern = "Class ";
+                    pos = 0;
+                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){        
+                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                        appoggio = appoggio.trim();
+                        if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
+                            sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;\n");
+                            String nome = sttok.nextToken();
+                            if (nome.toLowerCase().equals(entity)){
+                                return file;
+                            }                      
+                        }
+                        pos += pattern.length();
+                    }
+                    // ***************************************************  
+
+
+                    // ***************************************************  
+                    // ****** Functions
+                    pattern="[";
+                    pos=0;
+                    int lunghezza=0;
+                    tmp ="";
+                    while ((pos = main.indexOf(pattern, pos)) >= 0){
+                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                        appoggio = appoggio.trim();
+                        if (appoggio.indexOf("!")==-1  && appoggio.startsWith("[")){
+                            tmp = main.substring(pos);
+                            tmp = tmp.substring(1,tmp.indexOf(';'));
+                            tmp = tmp.trim();
+                            if (!tmp.equals("") && (tmp.indexOf('\"')==-1) && (tmp.indexOf("Sub"))==-1){
+                                sttok = new StringTokenizer(tmp," ;\n");
+                                if (sttok.hasMoreTokens()){
+                                    tmp = sttok.nextToken();
+                                }
+                                if (tmp.toLowerCase().equals(entity)){
+                                    return file;
+                                }                                                  
+                            }
+                        }
+                        pos += pattern.length();
+                    }            
+                    // ***************************************************  
+
+                }catch(Exception e){
+    //                System.out.println("ERR: " + e.getMessage());
+    //                e.printStackTrace();
+    //                System.err.println(e.getMessage());
                 }
-                pos += pattern.length();
-            }            
-            // ***************************************************  
-            
-            
-            
-            
-            
-            
-            
-                
-                
-            }catch(Exception e){
-//                System.out.println("ERR: " + e.getMessage());
-//                e.printStackTrace();
-//                System.err.println(e.getMessage());
-            }
-            
-        
-            
+            }                                
         }   
         return null;
     }
