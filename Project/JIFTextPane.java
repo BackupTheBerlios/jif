@@ -1057,6 +1057,8 @@ public class JIFTextPane extends JTextPane{
         int start = Utilities.getWordStart(this, getCaretPosition());
         int end = Utilities.getWordEnd(this, getCaretPosition());
         String word = getDocument().getText(start, end-start);
+        if(word.indexOf(".")!=-1)
+            word=word.substring(0,word.lastIndexOf("."));
         //System.out.println( "Selected word: " + word );
         return word;
     }
