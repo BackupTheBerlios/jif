@@ -991,6 +991,14 @@ public class JIFTextPane extends JTextPane{
         }
     }
 
+     public void setBookmark(){
+        int pos = getCaretPosition();
+        Element map = getDocument().getDefaultRootElement();
+        int row = map.getElementIndex(pos);
+        updateBookmark(new Integer(row));            
+     }
+     
+     
      public void nextBookmark(){
         // position = actual row
         int jumpto = 0;

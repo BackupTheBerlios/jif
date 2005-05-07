@@ -90,6 +90,21 @@ public class EditorKeyAdapter extends KeyAdapter {
      */
     public void keyReleased(KeyEvent ke) {
         try {
+            
+            // Keyboard Mapping ALT
+            if(ke.isAltDown()){                
+                if(jframe.getAltkeys().containsKey(""+ke.getKeyChar())){
+                    doc.insertString(jif.getCaretPosition() , (String)jframe.getAltkeys().get(""+ke.getKeyChar()) , jframe.getAttr());                    
+                }
+                
+                // Commands to run
+                if(jframe.getExecutecommands().containsKey(""+ke.getKeyChar())){
+                    Runtime rt = Runtime.getRuntime();
+                    proc = rt.exec((String)jframe.getExecutecommands().get(""+ke.getKeyChar()) );
+                }                
+            }
+            
+            
             // Automatic JUMP to object, if present into the object tree
             if (ke.getKeyCode() == ke.VK_J && ke.isControlDown()) {
                 jframe.checkTree(jif.getCurrentWord());
@@ -217,83 +232,6 @@ public class EditorKeyAdapter extends KeyAdapter {
                 if (paste!=null){
                     doc.insertString(jif.getCaretPosition() , paste , jframe.getAttr());
                 }
-            }
-
-
-            // FUNCTION KEYS MANAGEMENT
-            else if( (ke.getKeyCode() == ke.VK_F1 ) ){
-//                comando = (String)jframe.getTastiFunzione().get("F1");
-//                if (comando !=null){
-//                    doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
-//                }
-                // find current line
-                int pos = jif.getCaretPosition();
-                Element map = jif.getDocument().getDefaultRootElement();
-                int row = map.getElementIndex(pos);
-                jif.updateBookmark(new Integer(row));                
-            }
-            else if( (ke.getKeyCode() == ke.VK_F2 ) ){
-                jif.nextBookmark();                
-                
-//                
-//                comando = (String)jframe.getTastiFunzione().get("F2");
-//                if (comando !=null){
-//                    doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
-//                }
-            }
-            else if( (ke.getKeyCode() == ke.VK_F3 ) ){
-                    comando = (String)jframe.getTastiFunzione().get("F3");
-                    if (comando !=null){
-                        doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
-                    }
-             }
-            else if( (ke.getKeyCode() == ke.VK_F4 ) ){
-                    comando = (String)jframe.getTastiFunzione().get("F4");
-                    if (comando !=null){
-                        doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
-                    }
-             }
-            else if( (ke.getKeyCode() == ke.VK_F5 ) ){
-                    comando = (String)jframe.getTastiFunzione().get("F5");
-                    if (comando !=null){
-                        doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
-                    }
-             }
-            else if( (ke.getKeyCode() == ke.VK_F6 ) ){
-                    comando = (String)jframe.getTastiFunzione().get("F6");
-                    if (comando !=null){
-                        doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
-                    }
-             }
-            else if( (ke.getKeyCode() == ke.VK_F7 ) ){
-                    comando = (String)jframe.getTastiFunzione().get("F8");
-                    if (comando !=null){
-                        doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
-                    }
-             }
-            else if( (ke.getKeyCode() == ke.VK_F9 ) ){
-                    comando = (String)jframe.getTastiFunzione().get("F9");
-                    if (comando !=null){
-                        doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
-                    }
-             }
-            else if( (ke.getKeyCode() == ke.VK_F10 ) ){
-                    comando = (String)jframe.getTastiFunzione().get("F10");
-                    if (comando !=null){
-                        doc.insertString(jif.getCaretPosition() , comando , jframe.getAttr());
-                    }
-             }
-
-
-
-            // F11 and F12  Keys execute external programs
-            else if( (ke.getKeyCode() == ke.VK_F11 ) ){
-                Runtime rt = Runtime.getRuntime();
-                proc = rt.exec((String)jframe.getTastiFunzione().get("F11"));
-            }
-            else if( (ke.getKeyCode() == ke.VK_F12 ) ){
-                Runtime rt = Runtime.getRuntime();
-                proc = rt.exec((String)jframe.getTastiFunzione().get("F12"));
             }
 
         } catch(Exception ble) {
