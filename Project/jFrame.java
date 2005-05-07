@@ -663,7 +663,6 @@ public class jFrame extends JFrame {
         jButtonTemplateManager = new javax.swing.JButton();
         jButtonImportFromWeb = new javax.swing.JButton();
         jButtonImportFromFile = new javax.swing.JButton();
-        jSeparator20 = new javax.swing.JSeparator();
         jTextFieldRowCol = new javax.swing.JTextField();
         jSplitPane3 = new javax.swing.JSplitPane();
         jSplitPane1 = new javax.swing.JSplitPane();
@@ -2730,16 +2729,11 @@ public class jFrame extends JFrame {
 
         jToolBarInform.add(jButtonImportFromFile);
 
-        jSeparator20.setOrientation(javax.swing.SwingConstants.VERTICAL);
-        jSeparator20.setPreferredSize(new java.awt.Dimension(0, 34));
-        jSeparator20.setRequestFocusEnabled(false);
-        jToolBarInform.add(jSeparator20);
-
         jTextFieldRowCol.setEditable(false);
         jTextFieldRowCol.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jTextFieldRowCol.setBorder(null);
         jTextFieldRowCol.setDisabledTextColor(new java.awt.Color(212, 208, 200));
-        jTextFieldRowCol.setMaximumSize(new java.awt.Dimension(160, 160));
+        jTextFieldRowCol.setMaximumSize(new java.awt.Dimension(190, 190));
         jTextFieldRowCol.setMinimumSize(new java.awt.Dimension(20, 22));
         jTextFieldRowCol.setPreferredSize(new java.awt.Dimension(80, 29));
         jToolBarInform.add(jTextFieldRowCol);
@@ -10066,7 +10060,6 @@ public class jFrame extends JFrame {
     private javax.swing.JSeparator jSeparator18;
     private javax.swing.JSeparator jSeparator19;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JSeparator jSeparator20;
     private javax.swing.JSeparator jSeparator21;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
