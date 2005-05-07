@@ -1,0 +1,10 @@
+JIF - a Java Editor For Inform
+
+Web:      http://www.slade.altervista.org/JIF/	
+Project:  http://developer.berlios.de/projects/jif/
+
+The JIF Team
+__________________________________________________
+Alessandro Schillaci (silver.slade@tiscalinet.it)
+Luis Fernandez (luisfernandez@gmail.com)
+

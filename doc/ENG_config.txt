@@ -1,0 +1,357 @@
+--------------------------------------------------------------------------------
+                                       Jif
+                                       1.5
+Configuration
+--------------------------------------------------------------------------------
+
+
+INDEX
+
+0. SHORTCUTS
+
+1. CONFIGURATION
+
+2. CONFIGURATION FILES
+
+	2.1 Menu
+	2.2 config.ini
+	2.3 helpedcode.ini	
+	2.4 mapping.ini	
+	2.5 switches.ini
+	2.6 functionKeys.ini
+	2.7 symbols.ini
+	2.8 syntax.ini
+	2.9 links.ini
+
+3. TEMPLATE MANAGER
+
+
+
+
+--------------------------------------------------------------------------------
+0. SHORTCUTS
+--------------------------------------------------------------------------------
+
+CTRL+A                  Select all
+CTRL+X                  Cut
+CTRL+C,CTRL+INS         Copy
+CTRL+V,SHIFT+INS        Paste
+
+CTRL+Z                  Undo
+CTRL+Y                  Redo
+
+ALT + ->                Right shift selected text block
+ALT + <-                Left  shift selected text block
+
+MOUSE: RIGHT BUTTON     Menu Popup 1 (if pointer is on the Text Editor)
+                        Menu Popup 2 (if pointer is on project file list)
+
+ALT+1                   Symbols Window
+ALT+2                   Objects Window  (objects currently present in the source)
+ALT+3                   Functions Window (taken from files in the LIB directory)
+
+CTRL+F                  Find selected string
+
+F1,..., F10             Customizable Characters
+F11 e F12               Run external programs (example: explorer, pdf viewers)
+
+
+
+
+--------------------------------------------------------------------------------
+1. CONFIGURATION
+--------------------------------------------------------------------------------
+
+Jif archive contains following files/directories:
+
+
+[DIRECTORY]:
+
+backup            - directory of backup-files (if backup system is ON)
+compiler          - Inform compiler path
+config            - JIF configuration directory
+doc               - docs directory
+games             - sources (*.inf) and compiled files (*.z5,*.z8)
+interpreter       - Inform interpreter path
+lib               - library directory ENGLISH
+lib\italian       - library directory ITALIAN
+lib\german        - library directory GERMAN
+lib\spanish       - library directory SPANISH
+lib\french        - library directory FRENCH
+projects          - projects directory
+tutorial          - tutorial directory (tutorials are still in italian)
+
+config/menu       - "Insert New" function
+config/template	  - templates directory
+
+
+
+[CONFIGURATION FILES]
+These files are in JIF_PATH/config directory.
+You can edit and customize all these files.
+Only "config.jif" file, should not to be changed by the user. 
+
+
+config.ini         - path settings
+config.jif         - general settings for JIF
+functionKeys.ini   - function keys (F1..F10)
+helpedcode.ini	   - commands list for "code assistant"
+links.ini          - IF WEB links
+mapping.ini        - mapping for translation of the special characters
+switches.ini       - switches list 
+symbols.ini        - symbols list 
+ENG_syntax.ini     - syntax highlight  (English)
+ITA_syntax.ini     - syntax highlight  (Italian)
+GER_syntax.ini     - syntax highlight  (German)
+SPA_syntax.ini     - syntax highlight  (Spanish)
+FRA_syntax.ini     - syntax highlight  (French)
+
+spellcheck_ENG.diz - Word list in English
+spellcheck_ES.diz  - Word list in Spanish
+spellcheck_IT.diz  - Word list in Italian
+
+
+[RUN-TIME ERRORS LOGGING]
+In case of errors, there is a logging file: JIF_PATH/err.txt
+
+
+
+
+
+
+--------------------------------------------------------------------------------
+2. CONFIGURATION FILES
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+2.1 Menu - JIF_PATH/config/menu
+--------------------------------------------------------------------------------
+
+
+It's possible to use a function like "Insert New": you can insert a new block
+of code, from a customizable list. This list starts from "JIF_PATH/config/menu"
+path and makes a "two-level" menu.
+
+Example:
+
+JIF_PATH/config/menu
+|
+|____Attribute A-O         menu.ini
+|____Attribute P-Z         menu.ini
+|____Class                 menu.ini
+|...
+|____Verb T-W              menu.ini
+
+      LEVEL 1              LEVEL2
+
+
+You can add a new directory in the "JIF_PATH/config/menu" path.
+Then it's possible to create a new "menu.ini" file, with your code.
+See the other files (menu.ini) to make your own menu.
+
+Rules for "menu.ini" files:
+
+* lines starting with "#" character and blank lines are ignored
+  (these lines are managed like comment lines)
+* "§" character is considered like a newline character
+
+
+
+
+
+--------------------------------------------------------------------------------
+2.2 config.ini
+--------------------------------------------------------------------------------
+
+It's possible to set following path (used by JIF, to compile, to run interpreter
+or run default Internet browser). "config.ini" file could be edited manually,
+but it's better using JIF configuration panel.
+
+
+
+Example (config.ini):
+
+	libPath=C:\Jif\lib
+	libPathSecondary=C:\Jif\lib1 
+	gamesDir=C:\Jif\games
+	interpreter=C:\Jif\interpreter\WindowsFrotz2002\Frotz.exe
+	compiler=C:\Jif\compiler\infrmw32.exe
+	defaultBrowser=C:\Program Files\Internet Explorer\IEXPLORE.EXE
+
+
+* Libraries
+     The "libPath" variable contains the directory pointer for inform libraries.
+     This pointer is passed to the compiler through the "+include_path" flag.
+          
+* Secondary Libraries
+     As the "libPath" variable, Jif gives the possibility to have two directory
+     where to put your inform libraries.
+     
+* Source Directory 
+     The "gamesDir" variable contains the source directory pointer.
+          
+* Compiler
+     The "compiler" variable contains the compiler path.
+     
+* Interpreter
+     The "interpreter" variable contains the interpreter path.
+     
+* Default Web Browser
+     The "defaultBrowser" variable contains the pointer to the default web 
+     browser.
+     
+
+
+
+--------------------------------------------------------------------------------
+2.3 helpedcode.ini
+--------------------------------------------------------------------------------
+This file contains all the keywords known by JIF, for the "code assistant"
+management. If his option is ON, when you insert a keyword in the editor,
+the string is completed by a text.
+
+
+Example:
+
+If you digit  -> "IF"+[SPACE]
+   you obtain -> "IF ( ){ }"
+
+"helpedcode.ini" file is customizable.
+
+
+
+
+
+--------------------------------------------------------------------------------
+2.4 mapping.ini
+--------------------------------------------------------------------------------
+By "mapping" I assume the management of special Inform characters:
+For translation of the special characters from ASCII to ZSCII user can
+choose beetween two "mode":
+
+1) Automatic mapping in editing mode
+
+If this option is set ON, translation of special characters is activated
+while user is writing the source code.
+Example:
+
+If user digits "è" character, this will be tranformed into the ZSCII format
+(i.e. "@`e").
+
+
+2) Mapping by temporary file 
+
+In this case, translation of special characters will work apart, with the
+creation of a temporary file (with the same name of the source file), in
+the "JIF_PATH/games/mapped" directory.
+
+
+Both of them, are customizable by modifing the "mapping.ini" file.
+
+
+
+
+--------------------------------------------------------------------------------
+2.5 switches.ini
+--------------------------------------------------------------------------------
+With JIF, user can create a switch list to be passed to the Inform compiler.
+Before user compiles a source file (*.inf), he can choose which switches to
+be passed to the compiler: see the "Switch manager".
+
+
+You can edit "switches.ini" by yourself (and re-start JIF to view changes).
+"switches.ini" format:
+
+
+[SWITCH],[on,off],[Comment]
+
+
+All the ON switches, are used when compiling your source code.
+
+
+
+
+--------------------------------------------------------------------------------
+2.6 functionKeys.ini
+--------------------------------------------------------------------------------
+It's possible to use function keys (F1,F2,F3,F4,F5,F6,F7,F8,F9,F10).
+This could be very useful, when using special characters, like:
+
+~,^,{,`..
+
+You can associate F1 to "~" character, F2 to "^" and so on...
+
+
+F11 and F12 keys, are used to run external program.
+
+
+Example:
+	F11,hh.exe C:\Jif\doc\dm4.chm
+	F12,explorer
+
+In this example, by typing F11 key, you can view Inform manual (in chm format).
+By typing F12 key, you can run explorer shell.
+This could be useful to associate a key to pdf viewer or other programs..
+
+
+"functionKeys.ini" file is entirely customizable.
+
+
+
+--------------------------------------------------------------------------------
+2.7 symbols.ini
+--------------------------------------------------------------------------------
+The "symbols.ini" contains symbols list that manages the "Symbols Window"
+
+
+--------------------------------------------------------------------------------
+2.8 syntax.ini
+--------------------------------------------------------------------------------
+The "syntax.ini" contains keyword list that manages the "syntax highlight". 
+
+
+--------------------------------------------------------------------------------
+2.9 links.ini
+--------------------------------------------------------------------------------
+This file contains all the links you can open from JIF toolbar.
+
+
+
+
+--------------------------------------------------------------------------------
+3 TEMPLATE MANAGER
+--------------------------------------------------------------------------------
+
+With the template manager you can create/use static/dynamic templates.
+There's an update option from WEB or from a template file.
+
+
+Static templates, are substantially a block of code (with additional information
+like version, author...)
+Dynamic templates are a block of code to customize with parameters.
+
+Dynamic template, example:
+
+Class treasure
+ with point 7,
+      after
+      [; 
+      	Take: if (location==§*room§) "Taken!";        
+      ];
+
+Text beetween "§*" and "§", is considered as a parameter, so user can insert it
+when you're using this template.
+
+
+It's possibile to export all template to a file.
+Send me your new templates, they'll be added in JIF site. 
+
+
+
+
+--------------------------------------------------------------------------------
+Send me comments, errors report, congratulations(!) to:
+
+silver.slade@tiscalinet.it
+--------------------------------------------------------------------------------
