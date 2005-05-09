@@ -164,7 +164,6 @@ public class jFrame extends JFrame {
     disableComponents();
 
     jListSymbols = new JList();
-    jListFunctions = new JList();
 
     // loading configuration
     loadConfig();
@@ -175,69 +174,6 @@ public class jFrame extends JFrame {
 
     updateProjectTitle("Project: "+
     currentProject.substring(currentProject.lastIndexOf(Constants.SEP)+1,currentProject.length()));
-
-    // Objects WINDOW
-    JWindowObjects = new JFrame();
-    jListObjects = new JList();
-    JWindowObjects.setResizable(false);
-    JWindowObjects.setName(java.util.ResourceBundle.getBundle("JIF").getString("STR_OBJECTS"));
-    //JWindowObjects.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("STR_OBJECTS"));
-    //JWindowObjects.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/TREE_objects.png")));
-    JWindowObjects.setUndecorated(true);
-
-    // Events management in the object list
-    jListObjects.addKeyListener(new java.awt.event.KeyAdapter(){
-        public void keyPressed(java.awt.event.KeyEvent ke){
-            if ((ke.getKeyCode()==ke.VK_ENTER)){
-                try{
-                    getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)jListObjects.getSelectedValue() , attr);
-                    JWindowObjects.hide();
-                } catch(BadLocationException e){
-                    System.out.println(e.getMessage());
-                    System.err.println(e.getMessage());
-                }
-            }
-
-            // ESC key
-            if ((ke.getKeyCode()==ke.VK_ESCAPE)){
-                    JWindowObjects.hide();
-            }
-        }
-
-    });
-
-
-    jListObjects.addMouseListener(new java.awt.event.MouseAdapter() {
-        public void mouseEntered(java.awt.event.MouseEvent evt) {
-            JWindowObjects.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JWINDOW_TOOLTIP"));
-        }
-
-        public void mouseExited(java.awt.event.MouseEvent evt) {
-            JWindowObjects.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("STR_OBJECTS"));
-        }
-
-        public void mouseClicked(java.awt.event.MouseEvent evt) {
-            if (evt.getClickCount()==2){
-                try{
-                    getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)jListObjects.getSelectedValue() , attr);
-                    JWindowObjects.hide();
-                } catch(BadLocationException e){
-                    System.out.println(e.getMessage());
-                    System.err.println(e.getMessage());
-                }
-            }
-        }
-    });
-
-    JScrollPane jsp = new JScrollPane();
-    jsp.setPreferredSize(new java.awt.Dimension(30, 30));
-    jsp.setMinimumSize(new java.awt.Dimension(0, 0));
-    jsp.setViewportView(jListObjects);
-    JWindowObjects.getContentPane().add(jsp);
-    JWindowObjects.toFront();
-    // END Events management in the object list
-
-
 
     // Events management in the symbols list
     JWindowSymbols = new JFrame();
@@ -301,60 +237,6 @@ public class jFrame extends JFrame {
     // END Events management in the symbols list
 
 
-    // Events management in the functions list
-    JWindowFunctions = new JFrame();
-    JWindowFunctions.setResizable(false);
-    JWindowFunctions.setName(java.util.ResourceBundle.getBundle("JIF").getString("STR_FUNCTIONS"));
-    //JWindowFunctions.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("STR_FUNCTIONS"));
-    //JWindowFunctions.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/TREE_objects.png")));
-    JWindowFunctions.setUndecorated(true);
-
-    jListFunctions.addKeyListener(new java.awt.event.KeyAdapter(){
-        public void keyPressed(java.awt.event.KeyEvent ke){
-            if ((ke.getKeyCode()==ke.VK_ENTER)){
-                try{
-                    getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)jListFunctions.getSelectedValue() , attr);
-                    JWindowFunctions.hide();
-                } catch(BadLocationException e){
-                    System.out.println(e.getMessage());
-                    System.err.println(e.getMessage());
-                }
-            }
-            // ESC key
-            if ((ke.getKeyCode()==ke.VK_ESCAPE)){
-                    JWindowFunctions.hide();
-            }
-        }
-    });
-
-    jListFunctions.addMouseListener(new java.awt.event.MouseAdapter() {
-        public void mouseEntered(java.awt.event.MouseEvent evt) {
-            JWindowFunctions.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JWINDOW_TOOLTIP"));
-        }
-
-        public void mouseExited(java.awt.event.MouseEvent evt) {
-            JWindowFunctions.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("STR_FUNCTIONS"));
-        }
-
-        public void mouseClicked(java.awt.event.MouseEvent evt) {
-            if (evt.getClickCount()==2){
-                try{
-                    getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)jListFunctions.getSelectedValue() , attr);
-                    JWindowFunctions.hide();
-                } catch(BadLocationException e){
-                    System.out.println(e.getMessage());
-                    System.err.println(e.getMessage());
-                }
-            }
-        }
-    });
-
-    JScrollPane jsp_func = new JScrollPane();
-    jsp_func.setPreferredSize(new java.awt.Dimension(30, 30));
-    jsp_func.setMinimumSize(new java.awt.Dimension(0, 0));
-    jsp_func.setViewportView(jListFunctions);
-    JWindowFunctions.getContentPane().add(jsp_func);
-    JWindowFunctions.toFront();
 
 
     attr = new SimpleAttributeSet();
@@ -600,12 +482,6 @@ public class jFrame extends JFrame {
         jComboBoxFontSize.addItem("14");
 
         jTextFieldFont = new javax.swing.JTextField();
-        jPanel40 = new javax.swing.JPanel();
-        jPanelSpellCheck = new javax.swing.JPanel();
-        jCheckBoxSpellCheck = new javax.swing.JCheckBox();
-        jTextFieldSpellCheckFile = new javax.swing.JTextField();
-        jButtonBrowseSpellCheck = new javax.swing.JButton();
-        jPanel41 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jButton10 = new javax.swing.JButton();
         jButton23 = new javax.swing.JButton();
@@ -652,8 +528,6 @@ public class jFrame extends JFrame {
         RebuildButton = new javax.swing.JButton();
         RunButton = new javax.swing.JButton();
         jButtonInsertSymbol = new javax.swing.JButton();
-        jButtonInsertObject = new javax.swing.JButton();
-        jButtonInsertFunction = new javax.swing.JButton();
         jButtonInfo = new javax.swing.JButton();
         jButtonExtractStrings = new javax.swing.JButton();
         jButtonTranslate = new javax.swing.JButton();
@@ -782,6 +656,7 @@ public class jFrame extends JFrame {
         jMenuItemAltKeys = new javax.swing.JMenuItem();
         jMenuItemSyntax = new javax.swing.JMenuItem();
         jMenuItemLinks = new javax.swing.JMenuItem();
+        jMenuItemHelpedCode = new javax.swing.JMenuItem();
         jSeparator12 = new javax.swing.JSeparator();
         jMenuItemSettings = new javax.swing.JMenuItem();
         jMenuLinks = new javax.swing.JMenu();
@@ -1788,39 +1663,6 @@ public class jFrame extends JFrame {
 
         jTabbedPaneOption.addTab("Font", jPanelFont);
 
-        jPanel40.setLayout(new java.awt.BorderLayout());
-
-        jPanelSpellCheck.setLayout(new javax.swing.BoxLayout(jPanelSpellCheck, javax.swing.BoxLayout.X_AXIS));
-
-        jPanelSpellCheck.setBorder(new javax.swing.border.TitledBorder("Spell check"));
-        jCheckBoxSpellCheck.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_SPELLCHECK"));
-        jCheckBoxSpellCheck.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxSpellCheckActionPerformed(evt);
-            }
-        });
-
-        jPanelSpellCheck.add(jCheckBoxSpellCheck);
-
-        jTextFieldSpellCheckFile.setColumns(25);
-        jTextFieldSpellCheckFile.setEditable(false);
-        jPanelSpellCheck.add(jTextFieldSpellCheckFile);
-
-        jButtonBrowseSpellCheck.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonBrowseSpellCheck.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBrowseSpellCheckActionPerformed(evt);
-            }
-        });
-
-        jPanelSpellCheck.add(jButtonBrowseSpellCheck);
-
-        jPanel40.add(jPanelSpellCheck, java.awt.BorderLayout.NORTH);
-
-        jPanel40.add(jPanel41, java.awt.BorderLayout.WEST);
-
-        jTabbedPaneOption.addTab("Spell Check", jPanel40);
-
         jDialogOption.getContentPane().add(jTabbedPaneOption, java.awt.BorderLayout.CENTER);
 
         jButton10.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_OK"));
@@ -2497,44 +2339,6 @@ public class jFrame extends JFrame {
         });
 
         jToolBarInform.add(jButtonInsertSymbol);
-
-        jButtonInsertObject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/insertObject.png")));
-        jButtonInsertObject.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_INSERT_Object"));
-        jButtonInsertObject.setBorderPainted(false);
-        jButtonInsertObject.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonInsertObjectActionPerformed(evt);
-            }
-        });
-        jButtonInsertObject.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jButtonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButtonMouseExited(evt);
-            }
-        });
-
-        jToolBarInform.add(jButtonInsertObject);
-
-        jButtonInsertFunction.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/insertFunction.png")));
-        jButtonInsertFunction.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_INSERT_FUNCTIONS"));
-        jButtonInsertFunction.setBorderPainted(false);
-        jButtonInsertFunction.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonInsertFunctionActionPerformed(evt);
-            }
-        });
-        jButtonInsertFunction.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jButtonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButtonMouseExited(evt);
-            }
-        });
-
-        jToolBarInform.add(jButtonInsertFunction);
 
         jButtonInfo.setFont(new java.awt.Font("Dialog", 0, 10));
         jButtonInfo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/infoFile.png")));
@@ -3475,7 +3279,7 @@ public class jFrame extends JFrame {
         jMenuOptions.setDelay(0);
         jMenuOptions.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemSwitch.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemSwitch.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SWITCH"));
+        jMenuItemSwitch.setText(java.util.ResourceBundle.getBundle("JIF").getString("CONFIG_SWITCHES_INI"));
         jMenuItemSwitch.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SWITCH_TOOLTIP"));
         jMenuItemSwitch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3496,7 +3300,7 @@ public class jFrame extends JFrame {
         jMenuOptions.add(jMenuItemAltKeys);
 
         jMenuItemSyntax.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemSyntax.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SYNTAX"));
+        jMenuItemSyntax.setText(java.util.ResourceBundle.getBundle("JIF").getString("SYNTAX_FILE"));
         jMenuItemSyntax.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SYNTAX_TOOLTIP"));
         jMenuItemSyntax.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3507,7 +3311,7 @@ public class jFrame extends JFrame {
         jMenuOptions.add(jMenuItemSyntax);
 
         jMenuItemLinks.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemLinks.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_LINKS"));
+        jMenuItemLinks.setText(java.util.ResourceBundle.getBundle("JIF").getString("CONFIG_LINKS"));
         jMenuItemLinks.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_LINKS_TOOLTIP"));
         jMenuItemLinks.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3516,6 +3320,16 @@ public class jFrame extends JFrame {
         });
 
         jMenuOptions.add(jMenuItemLinks);
+
+        jMenuItemHelpedCode.setFont(new java.awt.Font("Dialog", 0, 11));
+        jMenuItemHelpedCode.setText(java.util.ResourceBundle.getBundle("JIF").getString("HELPED_FILE"));
+        jMenuItemHelpedCode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemHelpedCodeActionPerformed(evt);
+            }
+        });
+
+        jMenuOptions.add(jMenuItemHelpedCode);
 
         jMenuOptions.add(jSeparator12);
 
@@ -3593,6 +3407,16 @@ public class jFrame extends JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void jMenuItemHelpedCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemHelpedCodeActionPerformed
+        try{
+            loadConfigFiles(workingDir+"config"+Constants.SEP+java.util.ResourceBundle.getBundle("JIF").getString("HELPED_FILE"));
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
+        }
+    }//GEN-LAST:event_jMenuItemHelpedCodeActionPerformed
 
     private void jMenuItemLeftShiftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLeftShiftActionPerformed
         if (null != getCurrentJIFTextPane()){
@@ -3901,20 +3725,6 @@ public class jFrame extends JFrame {
         closeAllFiles();
     }//GEN-LAST:event_jMenuItemPopupCloseAllFilesActionPerformed
 
-    private void jButtonBrowseSpellCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBrowseSpellCheckActionPerformed
-        // Deactivates the spell check
-        this.jCheckBoxSpellCheck.setSelected(false);
-        JFileChooser chooser = new JFileChooser(workingDir+"config"+Constants.SEP);
-        JifFileFilter infFilter = new JifFileFilter("diz", java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF7"));
-        infFilter.addExtension("diz");
-        chooser.setFileFilter(infFilter);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
-            return;
-        }
-        else jTextFieldSpellCheckFile.setText(chooser.getSelectedFile().getAbsolutePath());
-    }//GEN-LAST:event_jButtonBrowseSpellCheckActionPerformed
-
     private void jCheckBoxProjectCloseAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxProjectCloseAllActionPerformed
         update = true;
     }//GEN-LAST:event_jCheckBoxProjectCloseAllActionPerformed
@@ -3934,41 +3744,6 @@ public class jFrame extends JFrame {
     private void jButtonBracketCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBracketCheckActionPerformed
         getCurrentJIFTextPane().checkbrackets(this);
     }//GEN-LAST:event_jButtonBracketCheckActionPerformed
-
-    private void jCheckBoxSpellCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxSpellCheckActionPerformed
-        if (jCheckBoxSpellCheck.isSelected()){
-            try{
-                File file = new File(jTextFieldSpellCheckFile.getText());
-
-                if (!(file.exists())){
-                    System.out.println(jTextFieldSpellCheckFile.getText()+": "+java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1"));
-                    JOptionPane.showMessageDialog(this.jDialogOption,
-                    jTextFieldSpellCheckFile.getText()+": "+
-                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1") ,
-                    "Error", JOptionPane.ERROR_MESSAGE);
-                    jCheckBoxSpellCheck.setSelected(false);
-                    return;
-                }
-                BufferedReader br = new BufferedReader(new FileReader(file));
-                correttore = new Hashtable();
-                while ((riga = br.readLine())!=null){
-                    // Ignoring the comment lines
-                    if (!(riga.startsWith(Constants.TOKENCOMMENT))&&!(riga.equals(""))){
-                        correttore.put(riga.toLowerCase(),"");
-                    }
-                }
-                br.close();
-            }
-            catch (IOException e){
-                System.out.println(e.getMessage());
-                System.err.println(e.getMessage());
-                correttore.clear();
-            }
-        }
-        else {
-            correttore.clear();
-        }
-    }//GEN-LAST:event_jCheckBoxSpellCheckActionPerformed
 
     private void jCheckBoxJTreeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxJTreeActionPerformed
         if (!jCheckBoxJTree.getState()) jSplitPane1.setDividerLocation(0);
@@ -4044,14 +3819,6 @@ public class jFrame extends JFrame {
             getCurrentJIFTextPane().tabSelection();    
         }        
     }//GEN-LAST:event_jButtonRightTabActionPerformed
-
-    private void jButtonInsertFunctionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInsertFunctionActionPerformed
-        showJWindowFunctions();
-    }//GEN-LAST:event_jButtonInsertFunctionActionPerformed
-
-    private void jButtonInsertObjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInsertObjectActionPerformed
-        showJWindowObjects();
-    }//GEN-LAST:event_jButtonInsertObjectActionPerformed
 
     private void jButtonPrintTutorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPrintTutorialActionPerformed
         new Utils().printInform(this,"Jif - "+jDialogTutorial.getTitle(), jEditorPaneTutorial);
@@ -5204,15 +4971,17 @@ public class jFrame extends JFrame {
                 // a:  XXXprova.inf
                 String tmp_dir  = getCurrentFilename().substring(0,getCurrentFilename().lastIndexOf(Constants.SEP)+1);
                 String tmp_name = getCurrentFilename().substring(getCurrentFilename().lastIndexOf(Constants.SEP)+1);
-
+//System.out.println("tmp dir="+tmp_dir);
+//System.out.println("tmp name="+tmp_name);
                 // se la directory mapping non esiste la creo
-                File f = new File(gamesDir+Constants.SEP+"mapping");
+                File f = new File(tmp_dir+Constants.SEP+"mapping");
                 if (!f.exists()){
                     f.mkdir();
                 }
 
                 // CREO IL FILE MAPPING
-                fileInf_withmapping = gamesDir+Constants.SEP+"mapping"+Constants.SEP+tmp_name ;
+                fileInf_withmapping = tmp_dir+Constants.SEP+"mapping"+Constants.SEP+tmp_name ;
+//System.out.println("fileInf_withmapping="+fileInf_withmapping);                
                 fos = new FileOutputStream(new File(fileInf_withmapping));
                 ps = new PrintStream( fos );
                 String source_mappato = source;
@@ -5331,6 +5100,9 @@ public class jFrame extends JFrame {
         	auxV.add(switchString[i]);
         //se è attivo checkboxmapping cambio il nome del file da usare come source
         if (jCheckBoxMapping.isSelected()){
+            if (null == fileInf_withmapping || fileInf_withmapping.equals("")){
+                saveFile();
+            }
             fileOut = fileInf_withmapping.substring(0,fileInf_withmapping.lastIndexOf(".")) + estensione;
         }
         auxV.add("+include_path="+lib);
@@ -5969,17 +5741,17 @@ public class jFrame extends JFrame {
                     makeConfig.append("# Jif Configuration"+"\n");
                     makeConfig.append("######################################################"+"\n");
                     makeConfig.append("\n");
-                    makeConfig.append("libPath="+workingDir+"lib"+file.separator+java.util.ResourceBundle.getBundle("JIF").getString("DEFAULT_LIB_DIRECTORY")+"\n");
+                    makeConfig.append("libPath=\n");
                     makeConfig.append("libPathSecondary1=\n");
                     makeConfig.append("libPathSecondary2=\n");
                     makeConfig.append("libPathSecondary3=\n");
-                    makeConfig.append("gamesDir="+workingDir+"games\n");
-                    makeConfig.append("interpreter="+workingDir+"interpreter"+Constants.SEP+"WindowsFrotz2002"+Constants.SEP+"Frotz.exe"+"\n");
-                    makeConfig.append("glulx="+workingDir+"interpreter"+Constants.SEP+"Glulxe"+Constants.SEP+"Glulxe.exe"+"\n");
-                    makeConfig.append("compiler="+workingDir+"compiler"+Constants.SEP+"inform.exe"+"\n");
+                    makeConfig.append("gamesDir=\n");
+                    makeConfig.append("interpreter=\n");
+                    makeConfig.append("glulx=\n");
+                    makeConfig.append("compiler=\n");
                     makeConfig.append("defaultBrowser=\n");
-                    makeConfig.append("BRESLOCATION="+workingDir+"glulx"+file.separator+"BRES.EXE\n");
-                    makeConfig.append("BLCLOCATION="+workingDir+"glulx"+file.separator+"BLC.EXE\n");
+                    makeConfig.append("BRESLOCATION=\n");
+                    makeConfig.append("BLCLOCATION=\n");
 
                     //salvo il file default
                     PrintStream ps;
@@ -6167,34 +5939,6 @@ public class jFrame extends JFrame {
 
 
 
-
-        // Correttore ortografico: attivo solo se il check è selezionato
-        // apro il file spellcheck.ini e imposto il hashTable() correttore
-        try{
-            if (jCheckBoxSpellCheck.isSelected()){
-                file = new File(jTextFieldSpellCheckFile.getText());
-                if (!(file.exists())){
-                    System.out.println(java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE6"));
-                    return;
-                }
-                br = new BufferedReader(new FileReader(file));
-                correttore = new Hashtable();
-                while ((riga = br.readLine())!=null){
-                    //salto le di commento che iniziano per Constants.TOKENCOMMENT=#
-                    if (!(riga.startsWith(Constants.TOKENCOMMENT))&&!(riga.equals(""))){
-                        // lo inserisco in minuscolo
-                        correttore.put(riga.toLowerCase(),"");
-                    }
-                }
-                br.close();
-            }
-        } catch(Exception e){
-            System.err.println("ERROR WHILE LOADING "+jTextFieldSpellCheckFile.getText());
-            System.err.println(e.getMessage());
-        }
-
-
-
         // Symbol
         // apro il file symbols.ini e imposto la JListSymbol
         try{
@@ -6218,10 +5962,6 @@ public class jFrame extends JFrame {
             System.err.println("ERROR WHILE LOADING "+ workingDir+"config"+Constants.SEP+"symbols.ini");
             System.err.println(e.getMessage());
         }
-
-
-        // Carico la lista delle funzioni
-        loadjListFunctions();
 
 
         // SYNTAX CODE
@@ -6419,9 +6159,6 @@ public class jFrame extends JFrame {
         top.setUserObject(nomefile.substring(nomefile.lastIndexOf(Constants.SEP)+1));
         treeModel.reload();
 
-        // ricreo la lista degli oggetti
-        jListObjects.removeAll();
-
         String testo = getCurrentJIFTextPane().getText();
         StringTokenizer sttok;
 
@@ -6500,10 +6237,6 @@ public class jFrame extends JFrame {
             }
             pos += pattern.length();
         }
-
-        // popolo il vettore degli oggetti
-        Collections.sort(objvett);  // sort del vettore prima di inserirlo nella lista
-        jListObjects.setListData(objvett);
 
         // Sorting
         sortNodes(objTree,category4);
@@ -7081,8 +6814,6 @@ public class jFrame extends JFrame {
         jMenuEdit.setEnabled(false);
         jMenuBuild.setEnabled(false);
         jButtonInsertSymbol.setEnabled(false);
-        jButtonInsertObject.setEnabled(false);
-        jButtonInsertFunction.setEnabled(false);
         SaveAsButton.setEnabled(false);
         jButtonClose.setEnabled(false);
         jButtonCloseAll.setEnabled(false);
@@ -7126,8 +6857,6 @@ public class jFrame extends JFrame {
         jMenuEdit.setEnabled(true);
         jMenuBuild.setEnabled(true);
         jButtonInsertSymbol.setEnabled(true);
-        jButtonInsertObject.setEnabled(true);
-        jButtonInsertFunction.setEnabled(true);
         SaveAsButton.setEnabled(true);
         jButtonClose.setEnabled(true);
         jButtonCloseAll.setEnabled(true);
@@ -7711,37 +7440,6 @@ public class jFrame extends JFrame {
         }
     }
 
-    public void showJWindowFunctions(){
-        try{
-            int pointx = (int)getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getCaretPosition()).getX();
-            int pointy = (int)getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getCaretPosition()).getY();
-            JWindowFunctions.setLocation((int)getCurrentJIFTextPane().getLocationOnScreen().getX()+pointx, (int)getCurrentJIFTextPane().getLocationOnScreen().getY() +pointy+15);
-            JWindowFunctions.setSize(230,200);
-            JWindowFunctions.requestFocus();
-            JWindowFunctions.show();
-        } catch(BadLocationException e){
-            System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
-        }
-    }
-
-    public void showJWindowObjects(){
-        try{
-            int pointx = (int)getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getCaretPosition()).getX();
-            int pointy = (int)getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getCaretPosition()).getY();
-            JWindowObjects.setLocation((int)getCurrentJIFTextPane().getLocationOnScreen().getX()+pointx, (int)getCurrentJIFTextPane().getLocationOnScreen().getY() +pointy+15);
-            JWindowObjects.setSize(230,200);
-            JWindowObjects.requestFocus();
-            JWindowObjects.show();
-        } catch(BadLocationException e){
-            System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
-        }
-    }
-
-
-
-
 
     public void saveAs(){
         // recupero il nuovo nome del file e lo salvo....
@@ -7890,12 +7588,8 @@ public class jFrame extends JFrame {
                 ps.println("OPENLASTFILE="+ jCheckBoxOpenLastFile.isSelected());
                 // Flag per creare un nuovo file all'apertura di JIF
                 ps.println("CREATENEWFILE="+ jCheckBoxCreateNewFile.isSelected());
-                // SPELL CHECK
-                ps.println("SPELLCHECK="+ jCheckBoxSpellCheck.isSelected());
                 // numero max di file nella recent files
                 ps.println("MAXRECENTFILES="+ this.jTextFieldMaxRecentFiles.getText());
-                // file impostato per lo spell check
-                ps.println("SPELLCHECKFILE="+ jTextFieldSpellCheckFile.getText());
                 // Attiva/disattiva il controllo sulle parentesi automatico
                 ps.println("AUTOMATICBRACKETSCHECK="+ jCheckBoxAutomaticCheckBrackets.isSelected());
                 // salvo le informazioni sui colori
@@ -8016,11 +7710,6 @@ public class jFrame extends JFrame {
                             jCheckBoxCreateNewFile.setSelected(
                             riga.substring(riga.indexOf("CREATENEWFILE=")+14).equals("true")?true:false);
                         }
-                        // SPELL CHECK
-                        if (riga.indexOf("SPELLCHECK=")!=-1){
-                            this.jCheckBoxSpellCheck.setSelected(
-                            riga.substring(riga.indexOf("SPELLCHECK=")+11).equals("true")?true:false);
-                        }
                         // MAX NUMBER OF RECENT FILES
                         if (riga.indexOf("MAXRECENTFILES=")!=-1){
                             String num = riga.substring(riga.indexOf("MAXRECENTFILES=")+15);
@@ -8033,30 +7722,13 @@ public class jFrame extends JFrame {
                                 this.jTextFieldMaxRecentFiles.setText("10");
                             }
                         }
-                        // file scelto per lo spellcheck
-                        // SPELL CHECK
-                        if (riga.indexOf("SPELLCHECKFILE=")!=-1){
-                            jTextFieldSpellCheckFile.setText(
-                            riga.substring(riga.indexOf("SPELLCHECKFILE=")+15)
-                        );
-                        }
 
                         // AUTOMATIC BRACKETS CHECK
                         if (riga.indexOf("AUTOMATICBRACKETSCHECK=")!=-1){
                             jCheckBoxAutomaticCheckBrackets.setSelected(
                             riga.substring(riga.indexOf("AUTOMATICBRACKETSCHECK=")+23).equals("true")?true:false);
                         }
-//                        // Informazioni sul GLULX MODE
-//                        if (riga.indexOf("BRESLOCATION=")!=-1){
-//                            jTextFieldBres.setText(
-//                            riga.substring(riga.indexOf("BRESLOCATION=")+13)
-//                        );
-//                        }
-//                        if (riga.indexOf("BLCLOCATION=")!=-1){
-//                            jTextFieldBlc.setText(
-//                            riga.substring(riga.indexOf("BLCLOCATION=")+12)
-//                        );
-//                        }
+
                         if (riga.indexOf("CHECKBOXMAKERESOURCE=")!=-1){
                             jCheckBoxMakeResource.setSelected(
                             riga.substring(riga.indexOf("CHECKBOXMAKERESOURCE=")+21).equals("true")?true:false);
@@ -8397,12 +8069,9 @@ public class jFrame extends JFrame {
                 ps.println("SCANPROJECTFILESFORCLASSES="+ jCheckBoxScanProjectFiles.isSelected());
                 ps.println("PROJECTOPENALLFILE="+ jCheckBoxProjectOpenAllFiles.isSelected());
                 ps.println("PROJECTCLOSEALLFILE="+ jCheckBoxProjectCloseAll.isSelected());
-                //ps.println("QUOTESTRING="+ jCheckBoxQuoteString.isSelected());
                 ps.println("OPENLASTFILE="+ jCheckBoxOpenLastFile.isSelected());
                 ps.println("CREATENEWFILE="+ jCheckBoxCreateNewFile.isSelected());
-                ps.println("SPELLCHECK="+ jCheckBoxSpellCheck.isSelected());
                 ps.println("MAXRECENTFILES="+ this.jTextFieldMaxRecentFiles.getText());
-                ps.println("SPELLCHECKFILE="+ jTextFieldSpellCheckFile.getText());
                 ps.println("AUTOMATICBRACKETSCHECK="+ jCheckBoxAutomaticCheckBrackets.isSelected());
                 ps.println("[colorKeyword]="+colorKeyword.getRed()+","+colorKeyword.getGreen()+","+colorKeyword.getBlue());
                 ps.println("[colorAttribute]="+colorAttribute.getRed()+","+colorAttribute.getGreen()+","+colorAttribute.getBlue());
@@ -8413,8 +8082,6 @@ public class jFrame extends JFrame {
                 ps.println("[colorComment]="+colorComment.getRed()+","+colorComment.getGreen()+","+colorComment.getBlue());
                 ps.println("[colorBackground]="+colorBackground.getRed()+","+colorBackground.getGreen()+","+colorBackground.getBlue());
                 ps.println("[defaultFont]="+ defaultFont.getName()+","+defaultFont.getStyle()+","+defaultFont.getSize());
-//                ps.println("BRESLOCATION="+ jTextFieldBres.getText());
-//                ps.println("BLCLOCATION="+ jTextFieldBlc.getText());
                 ps.println("CHECKBOXMAKERESOURCE="+ jCheckBoxMakeResource.isSelected());
 
                 ps.println("");
@@ -8585,7 +8252,7 @@ public class jFrame extends JFrame {
     // 2) tutti i file index.html
     // 3) non prendo le directory
     public void loadTutorial(){
-        String tutorialDir = this.workingDir+"tutorial"+Constants.SEP+java.util.ResourceBundle.getBundle("JIF").getString("TUTORIAL")+Constants.SEP;
+        String tutorialDir = this.workingDir+"tutorial";
         try {
             // azzero il menu
             jMenuTutorial.removeAll();
@@ -8753,49 +8420,6 @@ public class jFrame extends JFrame {
     }
 
 
-    // apre tutti i file nella dir LIB e carica il vettore con i nomi delle funzioni
-    public void loadjListFunctions(){
-        Vector vett = new Vector();
-        BufferedReader br;
-        StringTokenizer stoken;
-        String pattern;
-        File file = new File(libPath);
-        File lib[] = file.listFiles();
-
-        // Apro un file per volta, lo leggo e cerco le funzioni
-        int length = lib.length;
-        for (int count=0; count < length; count++){
-            try{
-                // se il file ha come estensione *.h o *.inf lo apro
-                // altimenti "salto"
-                if (lib[count].getAbsolutePath().endsWith(".h") || lib[count].getAbsolutePath().endsWith(".inf")){
-
-                    br = new BufferedReader(new FileReader(lib[count]));
-                    while ((riga = br.readLine())!=null){
-                        if (
-                        riga.trim().startsWith("[")
-                        && riga.trim().endsWith(";")
-                        && (riga.indexOf("Sub")==-1)
-                        ){
-                            stoken = new StringTokenizer(riga.substring(1)," ;");
-                            pattern = stoken.nextToken();
-                            if (!vett.contains(pattern)){
-                                vett.add(pattern);
-                            }
-                        }
-                    }
-                    br.close();
-                }
-            } catch(Exception e){
-                System.out.println(e.getMessage());
-                System.err.println("ERROR in loadjListFunctions() metod, LOADING FUNCTIONS FROM LIB DIRECTORY");
-                System.err.println(e.getMessage());
-            }
-        }
-        Collections.sort(vett);
-        this.jListFunctions.setListData(vett);
-    }
-
 
     // If a string is on the system clipboard, this method returns it;
     // otherwise it returns null.
@@ -8887,14 +8511,6 @@ public class jFrame extends JFrame {
 
 
     public void defaultOptions(){
-        // Opzioni di default
-        //scheda spell-check opzione "correttore ortografico" disattivata;
-        //scheda PROJECT attiva solo l'opzione "chiudi tutti i file quando chiudi un progetto";
-        //scheda SOURCE attivi "codice assistito", "syntax highlight" e "numeri di riga";
-        //scheda PATH credo nulla;
-        //scheda MAPPING tutto disattivato;
-        //scheda GENERAL 10 come numero max di file e disattivato tutto il resto.
-        jCheckBoxSpellCheck.setSelected(false);
         jCheckBoxOpenLastFile.setSelected(false);
         jCheckBoxCreateNewFile.setSelected(false);
         jCheckBoxMappingLive.setSelected(false);
@@ -8909,7 +8525,6 @@ public class jFrame extends JFrame {
         jCheckBoxSyntax.setSelected(true);
         jCheckBoxWrapLines.setSelected(false);
         jCheckBoxProjectCloseAll.setSelected(true);
-        //jCheckBoxQuoteString.setSelected(false);
     }
 
 
@@ -9698,38 +9313,6 @@ public class jFrame extends JFrame {
     }
 
     /**
-     * Getter for property JWindowFunctions.
-     * @return Value of property JWindowFunctions.
-     */
-    public javax.swing.JFrame getJWindowFunctions() {
-        return JWindowFunctions;
-    }
-
-    /**
-     * Setter for property JWindowFunctions.
-     * @param JWindowFunctions New value of property JWindowFunctions.
-     */
-    public void setJWindowFunctions(javax.swing.JFrame JWindowFunctions) {
-        this.JWindowFunctions = JWindowFunctions;
-    }
-
-    /**
-     * Getter for property JWindowObjects.
-     * @return Value of property JWindowObjects.
-     */
-    public javax.swing.JFrame getJWindowObjects() {
-        return JWindowObjects;
-    }
-
-    /**
-     * Setter for property JWindowObjects.
-     * @param JWindowObjects New value of property JWindowObjects.
-     */
-    public void setJWindowObjects(javax.swing.JFrame JWindowObjects) {
-        this.JWindowObjects = JWindowObjects;
-    }
-
-    /**
      * Getter for property JWindowSymbols.
      * @return Value of property JWindowSymbols.
      */
@@ -9790,7 +9373,6 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButtonBlc;
     private javax.swing.JButton jButtonBracketCheck;
     private javax.swing.JButton jButtonBres;
-    private javax.swing.JButton jButtonBrowseSpellCheck;
     private javax.swing.JButton jButtonClose;
     private javax.swing.JButton jButtonCloseAll;
     private javax.swing.JButton jButtonComment;
@@ -9808,8 +9390,6 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButtonImportSelectAll;
     private javax.swing.JButton jButtonImportUnselectAll;
     private javax.swing.JButton jButtonInfo;
-    private javax.swing.JButton jButtonInsertFunction;
-    private javax.swing.JButton jButtonInsertObject;
     private javax.swing.JButton jButtonInsertSymbol;
     private javax.swing.JButton jButtonInterpreter;
     private javax.swing.JButton jButtonKeyword;
@@ -9851,7 +9431,6 @@ public class jFrame extends JFrame {
     private javax.swing.JCheckBox jCheckBoxProjectCloseAll;
     private javax.swing.JCheckBox jCheckBoxProjectOpenAllFiles;
     private javax.swing.JCheckBox jCheckBoxScanProjectFiles;
-    public javax.swing.JCheckBox jCheckBoxSpellCheck;
     public javax.swing.JCheckBox jCheckBoxSyntax;
     private javax.swing.JCheckBoxMenuItem jCheckBoxToggleFullscreen;
     public javax.swing.JCheckBox jCheckBoxWrapLines;
@@ -9927,6 +9506,7 @@ public class jFrame extends JFrame {
     private javax.swing.JMenuItem jMenuItemCopyright;
     private javax.swing.JMenuItem jMenuItemCut;
     private javax.swing.JMenuItem jMenuItemHelp;
+    private javax.swing.JMenuItem jMenuItemHelpedCode;
     private javax.swing.JMenuItem jMenuItemInsertFile;
     private javax.swing.JMenuItem jMenuItemInsertFromFile;
     private javax.swing.JMenuItem jMenuItemInsertSymbol;
@@ -10011,8 +9591,6 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanel36;
     private javax.swing.JPanel jPanel37;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel40;
-    private javax.swing.JPanel jPanel41;
     private javax.swing.JPanel jPanel42;
     private javax.swing.JPanel jPanel43;
     private javax.swing.JPanel jPanel44;
@@ -10032,7 +9610,6 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanelGeneral;
     private javax.swing.JPanel jPanelMainFile;
     private javax.swing.JPanel jPanelPath;
-    private javax.swing.JPanel jPanelSpellCheck;
     private javax.swing.JPanel jPanelSwitch1;
     private javax.swing.JPanel jPanelSwitch2;
     private javax.swing.JPanel jPanelTreeControl;
@@ -10096,7 +9673,6 @@ public class jFrame extends JFrame {
     private javax.swing.JTextField jTextFieldReplace;
     private javax.swing.JTextField jTextFieldReplaceFind;
     protected javax.swing.JTextField jTextFieldRowCol;
-    private javax.swing.JTextField jTextFieldSpellCheckFile;
     private static final javax.swing.JToolBar jToolBarCommon = new javax.swing.JToolBar();
     private static final javax.swing.JToolBar jToolBarInform = new javax.swing.JToolBar();
     private static javax.swing.JTree jTree1;
@@ -10188,15 +9764,10 @@ public class jFrame extends JFrame {
     // New Files name counter
     private int countNewFile=0;
 
-    // per la JWindow degli oggetti
-    private JFrame JWindowObjects;
-    private JList jListObjects;
     // Gestione finestra con i simboli (come la windowObject)
     private JFrame JWindowSymbols;
     private JList jListSymbols;
-    // Gestione finestra delle funzioni
-    private JFrame JWindowFunctions;
-    private JList jListFunctions;
+
     // prova tree per i template
     private TemplateManager templateManager;
     private Vector templateVector;
@@ -10233,8 +9804,6 @@ public class jFrame extends JFrame {
     private String lastFile;
     private int maxRecentFiles=10;
 
-    //  correttore
-    public Hashtable correttore;
 
     // ultima dir usata per aprire un file
     private String lastDir = null;

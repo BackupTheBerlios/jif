@@ -66,15 +66,9 @@ public  class PopupListener extends MouseAdapter {
         jif.removeHighlighter();
         jif.removeHighlighterBrackets();
         
-        // hiding JWindowObjects, JWindowSymbols, JWindowFunctions
-        if (null != jframe.getJWindowObjects()  && jframe.getJWindowObjects().isVisible()) {
-            jframe.getJWindowObjects().hide();
-        }
+        // hiding JWindowSymbols
         if (null != jframe.getJWindowSymbols()  && jframe.getJWindowSymbols().isVisible()) {
             jframe.getJWindowSymbols().hide();
-        }
-        if (null != jframe.getJWindowFunctions() && jframe.getJWindowFunctions().isVisible()) {
-            jframe.getJWindowFunctions().hide();
         }
 
         // if the JtextAreaOutput is hidden

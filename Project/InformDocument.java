@@ -382,16 +382,6 @@ import javax.swing.event.*;
                         }
                     }
 
-                    // Check Spell
-                    else {
-                        if (jframe.jCheckBoxSpellCheck.isSelected()){
-                            //System.out.println( "found: " + token );
-                            if (!(jframe.correttore.containsKey(token.toLowerCase()))){
-                                doc.setCharacterAttributes(startOffset, endOfToken - startOffset, error, false);
-                            }
-                        }
-                    }
-
                     return endOfToken + 1;
                 }
 	}
