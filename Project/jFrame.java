@@ -722,7 +722,7 @@ public class jFrame extends JFrame {
         jPopupMenu1.add(jSeparator13);
 
         jMenuItemRefresh.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemRefresh.setText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENUITEM_REFRESHTREE"));
+        jMenuItemRefresh.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_REFRESH_SYNTAX"));
         jMenuItemRefresh.setToolTipText("");
         jMenuItemRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -731,6 +731,7 @@ public class jFrame extends JFrame {
         });
 
         jPopupMenu1.add(jMenuItemRefresh);
+        jMenuItemRefresh.getAccessibleContext().setAccessibleName(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_REFRESH_SYNTAX"));
 
         jMenuItemPrint1.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemPrint1.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_PRINT"));
@@ -4674,7 +4675,7 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_SaveAsActionPerformed
 
     private void jMenuItemRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRefreshActionPerformed
-        refreshTree();
+        refreshSyntax();
     }//GEN-LAST:event_jMenuItemRefreshActionPerformed
 
     private void jMenuItemCopyrightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCopyrightActionPerformed
@@ -9279,6 +9280,18 @@ public class jFrame extends JFrame {
     }
     
 
+    // It will reload the current file to make it with a refreshed syntax
+    public void refreshSyntax(){        
+        JIFTextPane jif = getCurrentJIFTextPane();
+    
+        // Save the current Cursor Position
+        int position = jif.getCaretPosition();
+        String main = jif.getText();
+        jif.setText("");
+        jif.setText(main); 
+        jif.setCaretPosition(position);
+    }
+    
     public JTabbedPane getTabbed(){
         return jTabbedPane1;
     }
