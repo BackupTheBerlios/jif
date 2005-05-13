@@ -41,7 +41,7 @@ public class Constants {
     /**
      * JIF Version
      */
-    public static final String JIFVERSION = "1.7.2 20050509";
+    public static final String JIFVERSION = "2.0 RC 20050513";
 
     /**
      * File Separator, depending on which Operative System is executing JIF
@@ -66,6 +66,6 @@ public class Constants {
     /**
      * Token for mark a line as a command
      */
-    public static final String TOKENCOMMAND = "[execute]=";    
-    
+    public static final String TOKENCOMMAND = "[execute]=";
+
 }
