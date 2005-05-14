@@ -1,11 +1,14 @@
-Legend:
-	[NF]  New Feature
-	[FIX] Bug Fixed
+CHANGELOG
+=========
+[NF]  New Feature
+[FIX] Bug Fixed
+
 
 
 JIF 2.0 (may 2005)
 ==================
 
+- [NF]  Added a "Syntax Refresh" command (right mouse button)
 - [NF]	Menu "Toggle Fullscreen" (F11)
 - [NF]	Added Set/next bookmark Menu 
 - [FIX]	ALT+B (Build) ALT+R (Run) deprecated. Use now: F8 => Compile F9=> Run
@@ -13,40 +16,22 @@ JIF 2.0 (may 2005)
 	now You can choose if start JIF in debug mode or not
 - [NF]
 	Remapped Functional Keys
-X	F1		View the info.txt file
-X	CTRL-F2		Set Bookmark
-X	F2 		Next Bookmark
-???	Shift-F2	Previous Bookmark
-???	F3		Find Next
-???	Shift-F3	Find Previous
-???	CTRL-F3		Find
-???	ALT-F4		Exit (questo è di sistema?)
-???	CTRL-F4		Close file
+	F1		View the info.txt file
+	CTRL-F2		Set Bookmark
+	F2 		Next Bookmark
 	F5		Open Project
 	CTRL-F5		New project
-???	CTRL-F6		Next file
-???	F6		Next file
-X	F9		Compile/Build
-X	CTRL+F9		Run
+	F9		Compile/Build
+	CTRL+F9		Run
 	F12		Rebuild All Glulx
 	CTRL+F12	Rebuild BLB file
-X	F11		Toggle Fullscreen
+	F11		Toggle Fullscreen
 
-- [FIX] removed all the MNEMONIC_BUILD for languages
-	MNEMONIC_BUILD
-	MNEMONIC_EDIT
-	MNEMONIC_LINKS
-	MNEMONIC_OPTION
-	MNEMONIC_PROJECT
-	MNEMONIC_TEMPLATE
-	MNEMONIC_VIEW
 - [NF]	Added the "alt.ini" file to manage the ALT+char keyboard re-mapping
 - [NF]	Removed the functionalKeys.ini file
 - [NF]	New command JUMP TO DEFINITION (CTRL+J): Jif jumps to the current object's definition (seek it
 	across every project File)
-
-- [FIX] Error with ALT+1, ALT+2, ALT+3 popup window (if you want to put a boolean "or" in the code, JIF 
-	pops up a menu)
+- [FIX] Error with ALT+1, ALT+2, ALT+3 popup window. ShortCuts Removed.
 - [FIX] Object Tree now is updated correctly with the current opened file
 - [FIX] Object Tree now works correctly with the WRAP LINE option checked
 - [FIX] Automatic Quote string always passed to the compiler
