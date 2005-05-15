@@ -1232,6 +1232,12 @@ public class jFrame extends JFrame {
         jPanel36.add(jCheckBoxScanProjectFiles);
 
         jCheckBoxWrapLines.setText("Wrap Lines");
+        jCheckBoxWrapLines.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxWrapLinesActionPerformed(evt);
+            }
+        });
+
         jPanel36.add(jCheckBoxWrapLines);
 
         jCheckBoxAutomaticCheckBrackets.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_AUTOMATIC_CHECK_BRACKETS"));
@@ -3409,6 +3415,12 @@ public class jFrame extends JFrame {
         pack();
     }//GEN-END:initComponents
 
+    private void jCheckBoxWrapLinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxWrapLinesActionPerformed
+            if (jCheckBoxWrapLines.isSelected()){
+                jCheckBoxNumberLines.setSelected(false);
+            }
+    }//GEN-LAST:event_jCheckBoxWrapLinesActionPerformed
+
     private void jMenuItemHelpedCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemHelpedCodeActionPerformed
         try{
             loadConfigFiles(workingDir+"config"+Constants.SEP+java.util.ResourceBundle.getBundle("JIF").getString("HELPED_FILE"));
@@ -4698,7 +4710,7 @@ public class jFrame extends JFrame {
                     sb.append(riga).append("\n");
                 }
                 jTextArea4.setText(sb.toString());
-                jLabel5.setText(java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF6"));
+                jLabel5.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_COPYRIGHTS"));
                 jTextArea4.setCaretPosition(0);
                 br.close();
         } catch(IOException e){
