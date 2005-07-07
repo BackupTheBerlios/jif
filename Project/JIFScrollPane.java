@@ -1,5 +1,5 @@
 /*
- * Constants.java
+ * JIFScrollPane.java
  *
  * This file is part of JIF.
  *
@@ -30,46 +30,24 @@
  *
  */
 
-import java.io.File;
+import javax.swing.*;
+import javax.swing.text.*;
+import java.io.*;
+import java.awt.*;
+import javax.swing.undo.*;
+import javax.swing.event.*;
+import java.awt.event.*;
+import java.util.*;
 
-/**
- * General Class with some constants
- * @author Alessandro Schillaci
- */
-public class Constants {
-
-    /**
-     * JIF Version
-     */
-    public static final String JIFVERSION = "2.1 DEVELOPMENT 20050704";
-
-    /**
-     * File Separator, depending on which Operative System is executing JIF
-     */
-    public static final String SEP = File.separator;
-
-    /**
-     * URL to download templates via WEB
-     */
-    public static final String JIFURL = "http://slade.altervista.org/JIF/template.txt";
-
-    /**
-     * MAX dimension of the copy/paste menu
-     */
-    public static final int MAX_DIMENSION_PASTE_MENU = 20;
-
-    /**
-     * Token for mark a line as a comment
-     */
-    public static final String TOKENCOMMENT = "#";
-
-    /**
-     * Token for mark a line as a command
-     */
-    public static final String TOKENCOMMAND = "[execute]=";
-
-    /**
-     * User dir /home/xxx/.jif or c:\documents and settings\xxx\.jif
-     */    
-    public static final String userDir=System.getProperty("user.home")+SEP+".jif"+SEP;
+public class JIFScrollPane extends JScrollPane{
+    String filePath;
+    /** Creates a new instance of JIFScrollPane */
+    public JIFScrollPane(JIFTextPane aJIFTextPane,String aPath) {
+        super(aJIFTextPane);
+        this.setToolTipText(aPath);
+        this.filePath=aPath;
+    }
+    String getFile(){
+        return filePath;
+    }
 }

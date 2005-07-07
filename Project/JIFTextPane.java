@@ -50,6 +50,7 @@ public class JIFTextPane extends JTextPane{
     Element el;
     MouseListener popupListener;
     String pathfile;
+    String subPath;
     private HighlightText hlighter;
     private HighlightText hlighterBrackets;
     private HighlightBookmark hlighterBookmarks;    
@@ -71,6 +72,11 @@ public class JIFTextPane extends JTextPane{
         hlighterBookmarks = new HighlightBookmark(this, Color.gray);               
         hlighter = new HighlightText(this,Color.pink);
         this.bookmarks = new ArrayList();
+        this.setPaths(this.pathfile);
+//        if(this.pathfile.length()>25)
+//              this.subPath=this.pathfile.substring(0 ,  21)+"..." + this.pathfile.substring(this.pathfile.length()-20 ,  this.pathfile.length());
+//        else
+//              this.subPath=this.pathfile;        
         
         setBackground(jframe.colorBackground);
         setCaretColor(jframe.colorNormal);
@@ -80,7 +86,7 @@ public class JIFTextPane extends JTextPane{
         setEditable(true);
         setFont(jframe.defaultFont);
         setCaretColor(jframe.colorNormal);
-
+        
         // If the JCheckBoxSyntax = true, using InformDocument, otherwise using Document
 	if (jframe.jCheckBoxSyntax.isSelected()){
             if (file==null){
@@ -111,9 +117,8 @@ public class JIFTextPane extends JTextPane{
             setCaretColor(Color.black);
         }
 
-        loadFile(file);
-
-
+        loadFile(file); 
+        
         undoF = new UndoManager();
         undoF.setLimit(50000);
         Document doc = getDocument();
@@ -123,7 +128,7 @@ public class JIFTextPane extends JTextPane{
                 undoF.addEdit(evt.getEdit());
                 // adding a "*" to the file name, when the file has changed but not saved
                 if (jframe.getTabbed().getComponentCount()!=0  && jframe.getCurrentFilename().indexOf("*")==-1){
-                    jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), jframe.getCurrentFilename()+"*");
+                    jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), subPath+"*");
                     jframe.setTitle(jframe.getJifVersion() +" - " + jframe.getCurrentFilename());                    
                 }
             }
@@ -139,7 +144,7 @@ public class JIFTextPane extends JTextPane{
                         undoF.undo();
                         // adding a "*" to the file name, when the file has changed but not saved
                         if (jframe.getTabbed().getComponentCount()!=0  && jframe.getCurrentFilename().indexOf("*")==-1){
-                            jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), jframe.getCurrentFilename()+"*");
+                            jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), subPath+"*");
                             jframe.setTitle(jframe.getJifVersion() +" - " + jframe.getCurrentFilename());                    
                         }
                     }
@@ -161,7 +166,7 @@ public class JIFTextPane extends JTextPane{
                         undoF.redo();
                         // adding a "*" to the file name, when the file has changed but not saved
                         if (jframe.getTabbed().getComponentCount()!=0  && jframe.getCurrentFilename().indexOf("*")==-1){
-                            jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), jframe.getCurrentFilename()+"*");
+                            jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), subPath+"*");
                             jframe.setTitle(jframe.getJifVersion() +" - " + jframe.getCurrentFilename());                                                
                         }
                     }
@@ -1071,4 +1076,12 @@ public class JIFTextPane extends JTextPane{
         return word;
     }
 
+    public void setPaths(String aString){
+        this.pathfile=aString;
+        if(this.pathfile.length()>20)
+              this.subPath=this.pathfile.substring(0 ,  10)+"..." + this.pathfile.substring(this.pathfile.length()-20 ,  this.pathfile.length());
+        else
+              this.subPath=this.pathfile;        
+    }
+    
 }
