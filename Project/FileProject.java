@@ -43,8 +43,7 @@
         /**
          * File name, with complete path
          */
-        public String path;
-
+        public String path; 
         /**
          * Creates a new FileProject object
          * @param absPath Absolute path of the file
@@ -52,6 +51,7 @@
         public FileProject(String absPath){
             path = absPath;
             name = absPath.substring(absPath.lastIndexOf(Constants.SEP)+1 ,  absPath.length());
+
         }
 
         /**
@@ -59,6 +59,7 @@
          * @return Returns the name of the FileProject
          */
         public String toString() {
+            //return subpath;
             return name;
         }
 

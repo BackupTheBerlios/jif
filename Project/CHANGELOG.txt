@@ -3,7 +3,14 @@ CHANGELOG
 [NF]  New Feature
 [FIX] Bug Fixed
 
-
+JIF 2.1 (jul 2005)
+==================
+- [NF] The names of files in tabs are shorted with "..."
+- [FIX] The Inform/Glulx mode menu now works properly
+- [FIX] When closing a project, the main file is properly cleared
+- [FIX] Cut option added to right click menu
+- [FIX] Spanish syntax bugfixing
+- [FIX] Code beauting
 
 JIF 2.0 (may 2005)
 ==================

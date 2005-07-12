@@ -2583,14 +2583,14 @@ public class jFrame extends JFrame {
         jScrollPane3.setPreferredSize(new java.awt.Dimension(150, 300));
         jTree1.setFont(new java.awt.Font("Courier New", 0, 12));
         jTree1.setMaximumSize(new java.awt.Dimension(0, 0));
-        jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jTree1MouseEntered(evt);
-            }
-        });
         jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
                 jTree1ValueChanged(evt);
+            }
+        });
+        jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jTree1MouseEntered(evt);
             }
         });
 
@@ -4846,6 +4846,7 @@ public class jFrame extends JFrame {
             //	* com.jgoodies.plaf.plastic.PlasticXPLookAndFeel
             System.out.println(System.getProperty("os.name"));
             System.out.println(UIManager.getSystemLookAndFeelClassName());
+                        
             /*
             if(System.getProperty("os.name").indexOf("Windows")!=-1){
                 //PlasticXPLookAndFeel.setMyCurrentTheme(new SkyBlue());
@@ -4988,7 +4989,7 @@ public class jFrame extends JFrame {
         int componenti = jTabbedPane1.getTabCount();
         for (int count=0; count < componenti; count++){
             jTabbedPane1.setSelectedIndex(count);
-            if (getCurrentFilename().indexOf("*")!=-1)
+            if (getCurrentTitle().indexOf("*")!=-1)
             	saveFile(); //Only save modified files
         }
         
@@ -5719,29 +5720,15 @@ public class jFrame extends JFrame {
             if (!(file.exists())){
                     // Se il file non esiste lo creo con i valori di default,
                     // ovvero prendo la directory attuale del file jif.jar
-                    StringBuffer makeConfig = new StringBuffer();
-                    makeConfig.append("######################################################"+"\n");
-                    makeConfig.append("# Jif Configuration"+"\n");
-                    makeConfig.append("######################################################"+"\n");
-                    makeConfig.append("\n");
-                    makeConfig.append("libPath=\n");
-                    makeConfig.append("libPathSecondary1=\n");
-                    makeConfig.append("libPathSecondary2=\n");
-                    makeConfig.append("libPathSecondary3=\n");
-                    makeConfig.append("gamesDir=\n");
-                    makeConfig.append("interpreter=\n");
-                    makeConfig.append("glulx=\n");
-                    makeConfig.append("compiler=\n");
-                    makeConfig.append("defaultBrowser=\n");
-                    makeConfig.append("BRESLOCATION=\n");
-                    makeConfig.append("BLCLOCATION=\n");
-
+                    
+                    makeConfigIni si=new makeConfigIni();
+                    
                     //salvo il file default
                     PrintStream ps;
                     try{
                         FileOutputStream fos = new FileOutputStream(file);
                         ps = new PrintStream( fos );
-                        ps.println (makeConfig.toString());
+                        ps.println (si.makeConfig());
                         ps.close();
                     } catch(IOException e ){
                         System.out.println(e.getMessage());
@@ -6646,7 +6633,14 @@ public class jFrame extends JFrame {
         }
     }
 
+    public static final String getCurrentTitle(){
+        return(jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()));
+    }
 
+    public static final String getTitleAt(int aTabNumber){
+        return(jTabbedPane1.getTitleAt(aTabNumber));
+    }    
+    
     public static final String getCurrentFilename(){
         JIFScrollPane aScrollPane;
         if (jTabbedPane1.getTabCount() == 0){
@@ -6820,8 +6814,10 @@ public class jFrame extends JFrame {
         jButtonRedo.setEnabled(false);
         jButtonExtractStrings.setEnabled(false);
         jButtonTranslate.setEnabled(false);
+        jMenuMode.setEnabled(false);
         jTree1.setEnabled(false);
-        
+        if(jCheckBoxGlulxMode.getState())
+            jMenuGlulx.setEnabled(false);
         // search and definition
         jTextFieldFind.setEnabled(false);
         jTextFieldDefinition.setEnabled(false);
@@ -6865,6 +6861,8 @@ public class jFrame extends JFrame {
         jButtonTranslate.setEnabled(true);
         jMenuMode.setEnabled(true);
         jTree1.setEnabled(true);
+        if(jCheckBoxGlulxMode.getState())
+            jMenuGlulx.setEnabled(true);
         
         jTextFieldFind.setEnabled(true);
         jTextFieldDefinition.setEnabled(true);
@@ -6968,7 +6966,7 @@ public class jFrame extends JFrame {
 
     public void closeFile(){
             // se i il file non contiene * allora posso chiudere senza salvare
-            if (getCurrentFilename().indexOf("*")!=-1){
+            if (getCurrentTitle().indexOf("*")!=-1){
                 String[] scelte = new String[3];
                 scelte[0] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF14");
                 scelte[1] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF15");

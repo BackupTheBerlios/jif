@@ -1,5 +1,5 @@
 /*
- * JIFScrollPane.java
+ * JIFTextPane.java
  *
  * This file is part of JIF.
  *
