@@ -5,7 +5,15 @@ CHANGELOG
 
 JIF 2.1 (jul 2005)
 ==================
-- [NF] The names of files in tabs are shorted with "..."
+
+- [NF]  Added a new Menu (Search String)
+- [FIX] Bug #4416 FIX: Search string with F3, JIF will select the found string and give the focus
+        When click on an object in the tree, the current window will receive the Focus
+- [NF]  You can select "Wrap Line" option or "Show Line number" option (not both of them)
+- [NF]  Added a internationalized String JTEXTOUTPUT_CONFIG_SAVED = "Jif configuration file saved."
+- [NF]  Added a message to the Outputwindow when JIF saves the configuration file
+- [FIX] Fixed code Removed the update flag (not used)
+- [NF]  The names of files in tabs are shorted with "..."
 - [FIX] The Inform/Glulx mode menu now works properly
 - [FIX] When closing a project, the main file is properly cleared
 - [FIX] Cut option added to right click menu

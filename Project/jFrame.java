@@ -601,6 +601,7 @@ public class jFrame extends JFrame {
         jMenuItemCopy1 = new javax.swing.JMenuItem();
         jMenuItemPaste = new javax.swing.JMenuItem();
         jSeparator11 = new javax.swing.JSeparator();
+        jMenuItemSearch = new javax.swing.JMenuItem();
         jMenuItemReplace = new javax.swing.JMenuItem();
         jMenuItemSelectAll = new javax.swing.JMenuItem();
         jMenuItemClearAll = new javax.swing.JMenuItem();
@@ -1188,32 +1189,14 @@ public class jFrame extends JFrame {
         jCheckBoxHelpedCode.setSelected(true);
         jCheckBoxHelpedCode.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE"));
         jCheckBoxHelpedCode.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE_TOOLTIP"));
-        jCheckBoxHelpedCode.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxHelpedCodeActionPerformed(evt);
-            }
-        });
-
         jPanel36.add(jCheckBoxHelpedCode);
 
         jCheckBoxSyntax.setSelected(true);
         jCheckBoxSyntax.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SYNTAX"));
-        jCheckBoxSyntax.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxSyntaxActionPerformed(evt);
-            }
-        });
-
         jPanel36.add(jCheckBoxSyntax);
 
         jCheckBoxBackup.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_BACKUP"));
         jCheckBoxBackup.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_BACKUP_TOOLTIP"));
-        jCheckBoxBackup.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxBackupActionPerformed(evt);
-            }
-        });
-
         jPanel36.add(jCheckBoxBackup);
 
         jCheckBoxNumberLines.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_NUMBEROFLINES"));
@@ -1241,21 +1224,9 @@ public class jFrame extends JFrame {
         jPanel36.add(jCheckBoxAutomaticCheckBrackets);
 
         jCheckBoxProjectOpenAllFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_ALL_FILES"));
-        jCheckBoxProjectOpenAllFiles.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxProjectOpenAllFilesActionPerformed(evt);
-            }
-        });
-
         jPanel36.add(jCheckBoxProjectOpenAllFiles);
 
         jCheckBoxProjectCloseAll.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_CLOSE_ALL_FILE"));
-        jCheckBoxProjectCloseAll.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxProjectCloseAllActionPerformed(evt);
-            }
-        });
-
         jPanel36.add(jCheckBoxProjectCloseAll);
 
         jPanelGeneral.add(jPanel36);
@@ -2811,6 +2782,16 @@ public class jFrame extends JFrame {
 
         jMenuEdit.add(jSeparator11);
 
+        jMenuItemSearch.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, 0));
+        jMenuItemSearch.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH"));
+        jMenuItemSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemSearchActionPerformed(evt);
+            }
+        });
+
+        jMenuEdit.add(jMenuItemSearch);
+
         jMenuItemReplace.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItemReplace.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemReplace.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_REPLACE"));
@@ -3408,6 +3389,16 @@ public class jFrame extends JFrame {
         pack();
     }//GEN-END:initComponents
 
+    private void jMenuItemSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSearchActionPerformed
+        getCurrentJIFTextPane().findString();
+    }//GEN-LAST:event_jMenuItemSearchActionPerformed
+
+    private void jCheckBoxNumberLinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxNumberLinesActionPerformed
+            if (jCheckBoxNumberLines.isSelected()){
+                jCheckBoxWrapLines.setSelected(false);
+            }
+    }//GEN-LAST:event_jCheckBoxNumberLinesActionPerformed
+
     private void jCheckBoxInformModePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jCheckBoxInformModePropertyChange
         // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBoxInformModePropertyChange
@@ -3701,22 +3692,6 @@ public class jFrame extends JFrame {
         closeAllFiles();
     }//GEN-LAST:event_jMenuItemPopupCloseAllFilesActionPerformed
 
-    private void jCheckBoxProjectCloseAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxProjectCloseAllActionPerformed
-        update = true;
-    }//GEN-LAST:event_jCheckBoxProjectCloseAllActionPerformed
-
-    private void jCheckBoxProjectOpenAllFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxProjectOpenAllFilesActionPerformed
-        update = true;
-    }//GEN-LAST:event_jCheckBoxProjectOpenAllFilesActionPerformed
-
-    private void jCheckBoxBackupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxBackupActionPerformed
-        update = true;
-    }//GEN-LAST:event_jCheckBoxBackupActionPerformed
-
-    private void jCheckBoxHelpedCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxHelpedCodeActionPerformed
-        update = true;
-    }//GEN-LAST:event_jCheckBoxHelpedCodeActionPerformed
-
     private void jButtonBracketCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBracketCheckActionPerformed
         getCurrentJIFTextPane().checkbrackets(this);
     }//GEN-LAST:event_jButtonBracketCheckActionPerformed
@@ -3779,10 +3754,6 @@ public class jFrame extends JFrame {
         });
         jListProject.setListData(projectFiles);
     }//GEN-LAST:event_jMenuItemPopupAddNewToProjectActionPerformed
-
-    private void jCheckBoxNumberLinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxNumberLinesActionPerformed
-            update = true;
-    }//GEN-LAST:event_jCheckBoxNumberLinesActionPerformed
 
     private void jButtonLeftTabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLeftTabActionPerformed
         if (null != getCurrentJIFTextPane()){
@@ -3866,7 +3837,6 @@ public class jFrame extends JFrame {
         // updates the font
         jComboBoxFont.setSelectedItem("Courier New");
         jComboBoxFontSize.setSelectedItem("12");
-        update = true;
         jTextFieldMaxRecentFiles.setText("10");
         defaultOptions();
     }//GEN-LAST:event_jButton23ActionPerformed
@@ -3875,7 +3845,6 @@ public class jFrame extends JFrame {
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorComment);
         if (temp != null) {
             colorComment= temp;
-            update=true;
         }
         updateColor();
         updateColorEditor();
@@ -3885,7 +3854,6 @@ public class jFrame extends JFrame {
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorNormal );
         if (temp != null) {
             colorNormal = temp;
-            update=true;
         }
         updateColor();
         updateColorEditor();
@@ -3895,7 +3863,6 @@ public class jFrame extends JFrame {
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorVerb  );
         if (temp != null) {
             colorVerb  = temp;
-            update=true;
         }
         updateColor();
         updateColorEditor();
@@ -3905,7 +3872,6 @@ public class jFrame extends JFrame {
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorRoutine   );
         if (temp != null) {
             colorRoutine   = temp;
-            update=true;
         }
         updateColor();
         updateColorEditor();
@@ -3915,7 +3881,6 @@ public class jFrame extends JFrame {
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorProperty    );
         if (temp != null) {
             colorProperty    = temp;
-            update=true;
         }
         updateColor();
         updateColorEditor();
@@ -3925,7 +3890,6 @@ public class jFrame extends JFrame {
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorAttribute    );
         if (temp != null) {
             colorAttribute    = temp;
-            update=true;
         }
         updateColor();
         updateColorEditor();
@@ -3935,7 +3899,6 @@ public class jFrame extends JFrame {
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorKeyword     );
         if (temp != null) {
             colorKeyword = temp;
-            update=true;
         }
         updateColor();
         updateColorEditor();
@@ -4069,21 +4032,8 @@ public class jFrame extends JFrame {
         newProject();
     }//GEN-LAST:event_jMenuItemPopupNewProjectActionPerformed
 
-    private void jCheckBoxSyntaxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxSyntaxActionPerformed
-        update = true;
-    }//GEN-LAST:event_jCheckBoxSyntaxActionPerformed
-
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        // Advise message in case of modifing of settings
-//        if (update){
-//        JOptionPane.showMessageDialog(this.jDialogOption,
-//            java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGOPTION_UPDATE"),
-//            "Message",
-//            JOptionPane.INFORMATION_MESSAGE);
-//        }
         jDialogOption.setVisible(false);
-        // update = true => user did some changes
-        update = false;
         maxRecentFiles = Integer.parseInt(jTextFieldMaxRecentFiles.getText());
         unquote();
         saveJifConfiguration();
@@ -4118,7 +4068,7 @@ public class jFrame extends JFrame {
         jComboBoxFontSize.setSelectedItem(String.valueOf(tmpFont.getSize()));
 
         jTextFieldFont.setFont(new Font((String)jComboBoxFont.getSelectedItem(),Font.PLAIN,Integer.parseInt((String)jComboBoxFontSize.getSelectedItem())));
-        update = false;
+
         //jDialogOption.pack();
         jDialogOption.setSize(580,550);           
         jDialogOption.setLocationRelativeTo(this);
@@ -4408,6 +4358,8 @@ public class jFrame extends JFrame {
                 //jif.scrollRectToVisible(this.getRectForLine(el.getElementIndex(insp.Iposition)));
                 jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                 jif.scrollRectToVisible(jif.modelToView(insp.Iposition));
+                jif.requestFocus();
+                jif.setCaretPosition(insp.IpositionEnd);
             }
         }catch(Exception e){
             e.printStackTrace();            
@@ -5738,12 +5690,6 @@ public class jFrame extends JFrame {
 
             br = new BufferedReader(new FileReader(file));
 
-            // per memorizzare i colori.
-            //int col1=0; unused
-            //int col2=0;
-            //int col3=0;
-            //StringTokenizer st;
-
             while ((riga = br.readLine())!=null){
                 //salto le di commento che iniziano per Constants.TOKENCOMMENT=#
                 if (!(riga.startsWith(Constants.TOKENCOMMENT))&&!(riga.equals(""))){
@@ -5756,7 +5702,6 @@ public class jFrame extends JFrame {
                     if (riga.indexOf("glulx=")!=-1){glulx=riga.substring(riga.indexOf("glulx=")+6);}
                     if (riga.indexOf("compiler=")!=-1){compiler=riga.substring(riga.indexOf("compiler=")+9);}
                     if (riga.indexOf("defaultBrowser=")!=-1){defaultBrowser=riga.substring(riga.indexOf("defaultBrowser=")+15);}
-
                     if (riga.indexOf("BRESLOCATION=")!=-1){jTextFieldBres.setText(riga.substring(riga.indexOf("BRESLOCATION=")+13));}
                     if (riga.indexOf("BLCLOCATION=")!=-1) {jTextFieldBlc.setText( riga.substring(riga.indexOf("BLCLOCATION=")+12));}
                 }
@@ -7580,17 +7525,10 @@ public class jFrame extends JFrame {
                 ps.println("PROJECTOPENALLFILE="+ jCheckBoxProjectOpenAllFiles.isSelected());
                 ps.println("PROJECTCLOSEALLFILE="+ jCheckBoxProjectCloseAll.isSelected());
                 ps.println("ADVENTINLIBPATH="+jCheckBoxAdventInLib.isSelected());
-                // Flag per quotare le stringhe prima di passarle al compilatore...
-                //ps.println("QUOTESTRING="+ jCheckBoxQuoteString.isSelected());
-                // Flag per aprire l'ultimo file aperto e progetto aperto
                 ps.println("OPENLASTFILE="+ jCheckBoxOpenLastFile.isSelected());
-                // Flag per creare un nuovo file all'apertura di JIF
                 ps.println("CREATENEWFILE="+ jCheckBoxCreateNewFile.isSelected());
-                // numero max di file nella recent files
                 ps.println("MAXRECENTFILES="+ this.jTextFieldMaxRecentFiles.getText());
-                // Attiva/disattiva il controllo sulle parentesi automatico
                 ps.println("AUTOMATICBRACKETSCHECK="+ jCheckBoxAutomaticCheckBrackets.isSelected());
-                // salvo le informazioni sui colori
                 ps.println("[colorKeyword]="+colorKeyword.getRed()+","+colorKeyword.getGreen()+","+colorKeyword.getBlue());
                 ps.println("[colorAttribute]="+colorAttribute.getRed()+","+colorAttribute.getGreen()+","+colorAttribute.getBlue());
                 ps.println("[colorProperty]="+colorProperty.getRed()+","+colorProperty.getGreen()+","+colorProperty.getBlue());
@@ -7598,21 +7536,13 @@ public class jFrame extends JFrame {
                 ps.println("[colorVerb]="+colorVerb.getRed()+","+colorVerb.getGreen()+","+colorVerb.getBlue());
                 ps.println("[colorNormal]="+colorNormal.getRed()+","+colorNormal.getGreen()+","+colorNormal.getBlue());
                 ps.println("[colorComment]="+colorComment.getRed()+","+colorComment.getGreen()+","+colorComment.getBlue());
-
                 ps.println("[colorBackground]="+colorBackground.getRed()+","+colorBackground.getGreen()+","+colorBackground.getBlue());
                 ps.println("[defaultFont]="+ defaultFont.getName()+","+defaultFont.getStyle()+","+defaultFont.getSize());
-                // Informazioni sul GLULX MODE
-//                ps.println("BRESLOCATION="+ jTextFieldBres.getText());
-//                ps.println("BLCLOCATION="+ jTextFieldBlc.getText());
                 ps.println("CHECKBOXMAKERESOURCE="+ jCheckBoxMakeResource.isSelected());
-
                 ps.close();
 
-                // Segnalo il salvataggio
-                //JOptionPane.showMessageDialog(this.jDialogOption,
-                //java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE1"),
-                //java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CONFIGURATION"),
-                //JOptionPane.INFORMATION_MESSAGE);
+                // Message to the jTextAreaOutput about saving configuration
+                this.jTextAreaOutput.setText(java.util.ResourceBundle.getBundle("JIF").getString("JTEXTOUTPUT_CONFIG_SAVED"));
 
         } catch(Exception e){
             JOptionPane.showMessageDialog(jDialogConfigFiles, "Error", e.getMessage() , JOptionPane.INFORMATION_MESSAGE);
@@ -9559,6 +9489,7 @@ public class jFrame extends JFrame {
     private javax.swing.JMenuItem jMenuItemRunUlx;
     private javax.swing.JMenuItem jMenuItemSaveAll;
     private javax.swing.JMenuItem jMenuItemSaveProject;
+    private javax.swing.JMenuItem jMenuItemSearch;
     private javax.swing.JMenuItem jMenuItemSelectAll;
     private javax.swing.JMenuItem jMenuItemSetBookmark;
     private javax.swing.JMenuItem jMenuItemSetMainClass;
@@ -9825,10 +9756,6 @@ public class jFrame extends JFrame {
 
     // ultima dir usata per aprire un file
     private String lastDir = null;
-
-    // flag per sapere se è stata effettuata una modifica
-    // nelle opzioni del JOptionDialog
-    private boolean update=false; //unused
 
     // spellcheck file name
     //private String spellcheck; unused

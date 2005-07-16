@@ -590,9 +590,14 @@ public class JIFTextPane extends JTextPane{
 
                 //while ( ( (pos = text.indexOf(pattern, pos)) >= 0) && (!found)) {
                 while ( ( (pos = Utils.IgnoreCaseIndexOf(text,pattern, pos)) >= 0)  && (!found)) {
-                    hlighter.highlightFromTo(this, pos, pos + pattern.length());
+                    //hlighter.highlightFromTo(this, pos, pos + pattern.length());
+                    // Bug #4416
+                    this.requestFocus();
+                    this.setSelectionStart(pos);
+                    this.setSelectionEnd(pos + pattern.length());
+                    // Bug #4416                    
                     pos += pattern.length();
-                    setCaretPosition(pos);
+                    //setCaretPosition(pos);
                     found=true;
                 }
 
