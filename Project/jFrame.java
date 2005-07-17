@@ -2063,6 +2063,14 @@ public class jFrame extends JFrame {
                 jButtonSearchProjectActionPerformed(evt);
             }
         });
+        jButtonSearchProject.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButtonMouseExited(evt);
+            }
+        });
 
         jToolBarCommon.add(jButtonSearchProject);
 
