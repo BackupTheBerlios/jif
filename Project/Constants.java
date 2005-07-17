@@ -41,7 +41,7 @@ public class Constants {
     /**
      * JIF Version
      */
-    public static final String JIFVERSION = "2.1 development 20050716";
+    public static final String JIFVERSION = "2.1 development 20050717";
 
     /**
      * File Separator, depending on which Operative System is executing JIF
@@ -63,6 +63,11 @@ public class Constants {
      */
     public static final String TOKENCOMMENT = "#";
 
+    /**
+     * Token for mark a line in the search function in all project files
+     */
+    public static final String TOKENSEARCH = "*";
+    
     /**
      * Token for mark a line as a command
      */

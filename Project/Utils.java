@@ -317,4 +317,36 @@ public class Utils {
         code = replace(code,"@","");
         return code;
     }
+    
+    /**
+     * Returns a string with all occurrences of the target string in file
+     *
+     */    
+    public static String searchString(String target, File file){
+        // open file
+        String head = new String("File="+file.getName());
+        String filename = file.getAbsolutePath();
+        StringBuffer out = new StringBuffer();
+        try{        
+            String riga;
+            int lineCount=0;
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            while ((riga = br.readLine())!=null){
+                lineCount++;
+                if (Utils.IgnoreCaseIndexOf(riga,target)!=-1){
+                    out.append("\n"+Constants.TOKENSEARCH+filename+Constants.TOKENSEARCH+lineCount+Constants.TOKENSEARCH+": "+ riga);
+                }
+            }
+            br.close();            
+        } catch(IOException e){
+            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
+        }      
+        if (out.length() == 0){
+            return null; // find no string "target" in the current file
+        }
+        else return (head+out.toString()+"\n");
+        //return out.toString();                    
+    }
+    
 }

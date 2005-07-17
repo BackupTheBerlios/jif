@@ -580,7 +580,7 @@ public class JIFTextPane extends JTextPane{
      * the Search TextField
      */
     public void findString(){
-        hlighter.removeHighlights(this);
+        //hlighter.removeHighlights(this);
         int pos = getCaretPosition();   // current position
         String pattern = jframe.jTextFieldFind.getText();
 
@@ -592,13 +592,13 @@ public class JIFTextPane extends JTextPane{
                 while ( ( (pos = Utils.IgnoreCaseIndexOf(text,pattern, pos)) >= 0)  && (!found)) {
                     //hlighter.highlightFromTo(this, pos, pos + pattern.length());
                     // Bug #4416
-                    this.requestFocus();
                     this.setSelectionStart(pos);
                     this.setSelectionEnd(pos + pattern.length());
                     // Bug #4416                    
                     pos += pattern.length();
                     //setCaretPosition(pos);
                     found=true;
+                    this.requestFocus();                    
                 }
 
                 // if not found, JIF shows a message to the user

@@ -6,6 +6,9 @@ CHANGELOG
 JIF 2.1 (jul 2005)
 ==================
 
+- [NF]  Added a new Menu (Search String in the whole project). With CTRL+F3 it's possible to 
+        search any string in the project files. Then you click on a result and jump straight to
+        the code that contains the string.
 - [NF]  Added a new Menu (Search String)
 - [FIX] Bug #4416 FIX: Search string with F3, JIF will select the found string and give the focus
         When click on an object in the tree, the current window will receive the Focus

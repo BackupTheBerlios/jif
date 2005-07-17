@@ -511,8 +511,9 @@ public class jFrame extends JFrame {
         jButtonUndo = new javax.swing.JButton();
         jButtonRedo = new javax.swing.JButton();
         jTextFieldFind = new javax.swing.JTextField();
-        jButtonReplace = new javax.swing.JButton();
         jButtonFind = new javax.swing.JButton();
+        jButtonSearchProject = new javax.swing.JButton();
+        jButtonReplace = new javax.swing.JButton();
         jSeparator5 = new javax.swing.JSeparator();
         jTextFieldDefinition = new javax.swing.JTextField();
         jButtonDefinition = new javax.swing.JButton();
@@ -602,6 +603,7 @@ public class jFrame extends JFrame {
         jMenuItemPaste = new javax.swing.JMenuItem();
         jSeparator11 = new javax.swing.JSeparator();
         jMenuItemSearch = new javax.swing.JMenuItem();
+        jMenuItemSearchAllFiles = new javax.swing.JMenuItem();
         jMenuItemReplace = new javax.swing.JMenuItem();
         jMenuItemSelectAll = new javax.swing.JMenuItem();
         jMenuItemClearAll = new javax.swing.JMenuItem();
@@ -2018,6 +2020,7 @@ public class jFrame extends JFrame {
         jTextFieldFind.setFont(new java.awt.Font("Dialog", 1, 12));
         jTextFieldFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
         jTextFieldFind.setMaximumSize(new java.awt.Dimension(200, 30));
+        jTextFieldFind.setMinimumSize(new java.awt.Dimension(10, 22));
         jTextFieldFind.setPreferredSize(new java.awt.Dimension(171, 30));
         jTextFieldFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2026,6 +2029,42 @@ public class jFrame extends JFrame {
         });
 
         jToolBarCommon.add(jTextFieldFind);
+
+        jButtonFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png")));
+        jButtonFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH_BUTTON"));
+        jButtonFind.setBorderPainted(false);
+        jButtonFind.setMaximumSize(new java.awt.Dimension(29, 29));
+        jButtonFind.setMinimumSize(new java.awt.Dimension(29, 29));
+        jButtonFind.setPreferredSize(new java.awt.Dimension(29, 29));
+        jButtonFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonFindActionPerformed(evt);
+            }
+        });
+        jButtonFind.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButtonMouseExited(evt);
+            }
+        });
+
+        jToolBarCommon.add(jButtonFind);
+
+        jButtonSearchProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/fileprojectfind.png")));
+        jButtonSearchProject.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCHALL_BUTTON"));
+        jButtonSearchProject.setBorderPainted(false);
+        jButtonSearchProject.setMaximumSize(new java.awt.Dimension(29, 29));
+        jButtonSearchProject.setMinimumSize(new java.awt.Dimension(29, 29));
+        jButtonSearchProject.setPreferredSize(new java.awt.Dimension(29, 29));
+        jButtonSearchProject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSearchProjectActionPerformed(evt);
+            }
+        });
+
+        jToolBarCommon.add(jButtonSearchProject);
 
         jButtonReplace.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/find.png")));
         jButtonReplace.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_REPLACE"));
@@ -2048,28 +2087,6 @@ public class jFrame extends JFrame {
         });
 
         jToolBarCommon.add(jButtonReplace);
-
-        jButtonFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png")));
-        jButtonFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH"));
-        jButtonFind.setBorderPainted(false);
-        jButtonFind.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonFind.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonFind.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonFind.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonFindActionPerformed(evt);
-            }
-        });
-        jButtonFind.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jButtonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButtonMouseExited(evt);
-            }
-        });
-
-        jToolBarCommon.add(jButtonFind);
 
         jSeparator5.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jSeparator5.setMinimumSize(new java.awt.Dimension(10, 10));
@@ -2554,14 +2571,14 @@ public class jFrame extends JFrame {
         jScrollPane3.setPreferredSize(new java.awt.Dimension(150, 300));
         jTree1.setFont(new java.awt.Font("Courier New", 0, 12));
         jTree1.setMaximumSize(new java.awt.Dimension(0, 0));
-        jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
-            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
-                jTree1ValueChanged(evt);
-            }
-        });
         jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jTree1MouseEntered(evt);
+            }
+        });
+        jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                jTree1ValueChanged(evt);
             }
         });
 
@@ -2791,6 +2808,16 @@ public class jFrame extends JFrame {
         });
 
         jMenuEdit.add(jMenuItemSearch);
+
+        jMenuItemSearchAllFiles.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItemSearchAllFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCHALL"));
+        jMenuItemSearchAllFiles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemSearchAllFilesActionPerformed(evt);
+            }
+        });
+
+        jMenuEdit.add(jMenuItemSearchAllFiles);
 
         jMenuItemReplace.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItemReplace.setFont(new java.awt.Font("Dialog", 0, 11));
@@ -3388,6 +3415,30 @@ public class jFrame extends JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void jButtonSearchProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSearchProjectActionPerformed
+        String target = this.jTextFieldFind.getText();
+        if(null!=target && !target.trim().equals("")){
+            // if output window is hide, I'll show it
+            if (!jCheckBoxOutput.getState()){
+                jSplitPane3.setBottomComponent(jTabbedPane2);
+                jTabbedPane2.setVisible(true);
+            }            
+            this.searchAllFiles(target);
+        }
+    }//GEN-LAST:event_jButtonSearchProjectActionPerformed
+
+    private void jMenuItemSearchAllFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSearchAllFilesActionPerformed
+        String target = this.jTextFieldFind.getText();
+        if(null!=target && !target.trim().equals("")){
+            // if output window is hide, I'll show it
+            if (!jCheckBoxOutput.getState()){
+                jSplitPane3.setBottomComponent(jTabbedPane2);
+                jTabbedPane2.setVisible(true);
+            }            
+            this.searchAllFiles(target);
+        }
+    }//GEN-LAST:event_jMenuItemSearchAllFilesActionPerformed
 
     private void jMenuItemSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSearchActionPerformed
         getCurrentJIFTextPane().findString();
@@ -4425,6 +4476,45 @@ public class jFrame extends JFrame {
                 getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getDocument().getLength()));                
                 getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(el.getStartOffset()));
             }
+            // find string in all files function
+            else if (ultima.startsWith(Constants.TOKENSEARCH)){
+                // Removing all the selected text in the output window
+                hlighterOutput.removeHighlights(jTextAreaOutput);
+
+                // Highlight the correct line
+                hlighterOutput.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );
+
+                StringTokenizer stok = new StringTokenizer(ultima,Constants.TOKENSEARCH);
+                nome=stok.nextToken();
+                riga=Integer.parseInt(stok.nextToken());
+
+                // checks if the file exists
+                int selected = jTabbedPane1.getTabCount();
+                for (int count=0; count < selected; count++){
+                    if (nome.equals(getFilenameAt(count))){
+                        found = true;
+                        jTabbedPane1.setSelectedIndex(count);
+                    }
+                }
+
+                if (!found) {
+                    // The file (with the error) is closed and JIF has to open is
+                    openFile(nome);
+                }
+
+                // Find the line with the error
+                el = getCurrentJIFTextPane().getDocument().getDefaultRootElement();
+                el = el.getElement(riga-1);
+                getCurrentJIFTextPane().setCaretPosition(el.getStartOffset());
+
+                // Removing all the selected text
+                getCurrentJIFTextPane().removeHighlighter();
+
+                // Highlight the line which has product the error during compiling
+                getCurrentJIFTextPane().getHlighter().highlightFromTo(getCurrentJIFTextPane(),el.getStartOffset(),el.getEndOffset() );
+                getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getDocument().getLength()));                
+                getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(el.getStartOffset()));
+            }
             else return;
         } catch (BadLocationException e){
             e.printStackTrace();
@@ -4506,7 +4596,7 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jButton19ActionPerformed
 
     private void jTextFieldFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldFindActionPerformed
-      getCurrentJIFTextPane().findString();
+//      getCurrentJIFTextPane().findString();
     }//GEN-LAST:event_jTextFieldFindActionPerformed
 
     private void jMenuItemCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCloseActionPerformed
@@ -4840,6 +4930,41 @@ public class jFrame extends JFrame {
         }
     }
 
+    /**
+     * Search for a string in all files of project
+     */
+    public void searchAllFiles(String target){
+        // if project is Not null
+        if (null != currentProject && !currentProject.equals("default"))
+        {
+            StringBuffer output = new StringBuffer();
+            // Load the current project file
+            File file = new File(currentProject);
+            try{
+                String result;
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                while ((riga = br.readLine())!=null){
+                    if (!(riga.startsWith(Constants.TOKENCOMMENT))&&!(riga.equals(""))){
+                        if (riga.indexOf("[FILE]=")!=-1){
+                            // qui lancio un metodo che mi apre il file e mi cerca la stringa
+                            result = Utils.searchString(target, new File(riga.substring(riga.indexOf("[FILE]=")+7)));
+                            if (null!=result){
+                                output.append(result+"\n");    
+                            }                            
+                        }
+                    }
+                }
+                br.close();
+            } catch(IOException e){
+                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
+            }
+            
+            this.jTextAreaOutput.setText(output.toString());
+            this.jTextAreaOutput.setCaretPosition(0);
+        }        
+    }
+    
     public void saveFile() {
         if (jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).endsWith("*")){
                 //getCurrentFilename().indexOf("*")!=-1){
@@ -5164,24 +5289,6 @@ public class jFrame extends JFrame {
         }
     }
 
-// class PopupListener extends MouseAdapter {
-//    public void mousePressed(MouseEvent e) {
-//        maybeShowPopup(e);
-//        // qui tolgo tutte le eventuali SELEZIONI
-//        if (null!=hlighter) { hlighter.removeHighlights(getCurrentJIFTextPane());}
-//    }
-//
-//    public void mouseReleased(MouseEvent e) {
-//        maybeShowPopup(e);
-//    }
-//
-//    private void maybeShowPopup(MouseEvent e) {
-//        if (e.isPopupTrigger()) {
-//            jPopupMenu1.show(e.getComponent(),
-//                       e.getX(), e.getY());
-//        }
-//    }
-//}
 
  class PopupListenerProject extends MouseAdapter {
     public void mousePressed(MouseEvent e) {
@@ -6736,6 +6843,7 @@ public class jFrame extends JFrame {
         jMenuItemCloseAll.setEnabled(false);
         jMenuItemPrint.setEnabled(false);
         jButtonFind.setEnabled(false);
+        jButtonSearchProject.setEnabled(false);
         jButtonReplace.setEnabled(false);
         jButtonCopy.setEnabled(false);
         jButtonCut.setEnabled(false);
@@ -6783,6 +6891,7 @@ public class jFrame extends JFrame {
         jMenuItemCloseAll.setEnabled(true);
         jMenuItemPrint.setEnabled(true);
         jButtonFind.setEnabled(true);
+        jButtonSearchProject.setEnabled(true);
         jButtonReplace.setEnabled(true);
         jButtonCopy.setEnabled(true);
         jButtonCut.setEnabled(true);
@@ -9353,6 +9462,7 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButtonReplace;
     private javax.swing.JButton jButtonRightTab;
     private javax.swing.JButton jButtonRoutine;
+    private javax.swing.JButton jButtonSearchProject;
     private javax.swing.JButton jButtonSwitchManager;
     private javax.swing.JButton jButtonTemplateManager;
     private javax.swing.JButton jButtonTranslate;
@@ -9490,6 +9600,7 @@ public class jFrame extends JFrame {
     private javax.swing.JMenuItem jMenuItemSaveAll;
     private javax.swing.JMenuItem jMenuItemSaveProject;
     private javax.swing.JMenuItem jMenuItemSearch;
+    private javax.swing.JMenuItem jMenuItemSearchAllFiles;
     private javax.swing.JMenuItem jMenuItemSelectAll;
     private javax.swing.JMenuItem jMenuItemSetBookmark;
     private javax.swing.JMenuItem jMenuItemSetMainClass;
