@@ -168,7 +168,6 @@ public class jFrame extends JFrame {
 
     // loading configuration
     loadConfig();
-    templateManager = new TemplateManager(this,workingDir+"config"+Constants.SEP+"template");
 
     currentProject = workingDir+"projects"+Constants.SEP+"default.jpf";
     projectFiles = new Vector();
@@ -534,9 +533,6 @@ public class jFrame extends JFrame {
         jButtonInterpreter = new javax.swing.JButton();
         jButtonSwitchManager = new javax.swing.JButton();
         jButtonOption = new javax.swing.JButton();
-        jButtonTemplateManager = new javax.swing.JButton();
-        jButtonImportFromWeb = new javax.swing.JButton();
-        jButtonImportFromFile = new javax.swing.JButton();
         jTextFieldRowCol = new javax.swing.JTextField();
         jSplitPane3 = new javax.swing.JSplitPane();
         jSplitPane1 = new javax.swing.JSplitPane();
@@ -649,10 +645,6 @@ public class jFrame extends JFrame {
         jSeparator15 = new javax.swing.JSeparator();
         jMenuItemRunUlx = new javax.swing.JMenuItem();
         jMenuItemRunBlb = new javax.swing.JMenuItem();
-        jMenuTemplate = new javax.swing.JMenu();
-        jMenuItemTemplateManager = new javax.swing.JMenuItem();
-        jMenuItemCheckOutFromFile = new javax.swing.JMenuItem();
-        jMenuItemCheckOutFromWeb = new javax.swing.JMenuItem();
         jMenuOptions = new javax.swing.JMenu();
         jMenuItemSwitch = new javax.swing.JMenuItem();
         jMenuItemAltKeys = new javax.swing.JMenuItem();
@@ -2467,72 +2459,6 @@ public class jFrame extends JFrame {
 
         jToolBarInform.add(jButtonOption);
 
-        jButtonTemplateManager.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/view_sidetree.png")));
-        jButtonTemplateManager.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_TEMPLATEMANAGER_TOOLTIP"));
-        jButtonTemplateManager.setBorderPainted(false);
-        jButtonTemplateManager.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonTemplateManager.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonTemplateManager.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonTemplateManager.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonTemplateManagerActionPerformed(evt);
-            }
-        });
-        jButtonTemplateManager.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jButtonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButtonMouseExited(evt);
-            }
-        });
-
-        jToolBarInform.add(jButtonTemplateManager);
-
-        jButtonImportFromWeb.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/TemplateManagerFromWeb.png")));
-        jButtonImportFromWeb.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CHECKOUTFROMWEB_TOOLTIP"));
-        jButtonImportFromWeb.setBorderPainted(false);
-        jButtonImportFromWeb.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonImportFromWeb.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonImportFromWeb.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonImportFromWeb.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonImportFromWebActionPerformed(evt);
-            }
-        });
-        jButtonImportFromWeb.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jButtonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButtonMouseExited(evt);
-            }
-        });
-
-        jToolBarInform.add(jButtonImportFromWeb);
-
-        jButtonImportFromFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/TemplateManagerFromFile.png")));
-        jButtonImportFromFile.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CHECKOUTFROMFILE_TOOLTIP"));
-        jButtonImportFromFile.setBorderPainted(false);
-        jButtonImportFromFile.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonImportFromFile.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonImportFromFile.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonImportFromFile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonImportFromFileActionPerformed(evt);
-            }
-        });
-        jButtonImportFromFile.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jButtonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButtonMouseExited(evt);
-            }
-        });
-
-        jToolBarInform.add(jButtonImportFromFile);
-
         jTextFieldRowCol.setEditable(false);
         jTextFieldRowCol.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jTextFieldRowCol.setBorder(null);
@@ -3252,44 +3178,6 @@ public class jFrame extends JFrame {
         jMenuGlulx.add(jMenuItemRunBlb);
 
         jMenuBar1.add(jMenuGlulx);
-
-        jMenuTemplate.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_TEMPLATE"));
-        jMenuTemplate.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuTemplate.setDelay(0);
-        jMenuItemTemplateManager.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemTemplateManager.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_TEMPLATEMANAGER"));
-        jMenuItemTemplateManager.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_TEMPLATEMANAGER_TOOLTIP"));
-        jMenuItemTemplateManager.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemTemplateManagerActionPerformed(evt);
-            }
-        });
-
-        jMenuTemplate.add(jMenuItemTemplateManager);
-
-        jMenuItemCheckOutFromFile.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCheckOutFromFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CHECKOUTFROMFILE"));
-        jMenuItemCheckOutFromFile.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CHECKOUTFROMFILE_TOOLTIP"));
-        jMenuItemCheckOutFromFile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemCheckOutFromFileActionPerformed(evt);
-            }
-        });
-
-        jMenuTemplate.add(jMenuItemCheckOutFromFile);
-
-        jMenuItemCheckOutFromWeb.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCheckOutFromWeb.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CHECKOUTFROMWEB"));
-        jMenuItemCheckOutFromWeb.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CHECKOUTFROMWEB_TOOLTIP"));
-        jMenuItemCheckOutFromWeb.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemCheckOutFromWebActionPerformed(evt);
-            }
-        });
-
-        jMenuTemplate.add(jMenuItemCheckOutFromWeb);
-
-        jMenuBar1.add(jMenuTemplate);
 
         jMenuOptions.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_OPTIONS"));
         jMenuOptions.setDelay(0);
@@ -4220,24 +4108,10 @@ public class jFrame extends JFrame {
         showJWindowSymbol();
     }//GEN-LAST:event_jMenuItemInsertSymbolActionPerformed
 
-    private void jButtonImportFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonImportFromFileActionPerformed
-        checkOutFromFile();
-    }//GEN-LAST:event_jButtonImportFromFileActionPerformed
-
-    private void jButtonImportFromWebActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonImportFromWebActionPerformed
-        checkOutFromWeb();
-    }//GEN-LAST:event_jButtonImportFromWebActionPerformed
-
     private void jCheckBoxJToolBarInformActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxJToolBarInformActionPerformed
         if (!jCheckBoxJToolBarInform.getState()) jToolBarInform.setVisible(false);
         if (jCheckBoxJToolBarInform.getState()) jToolBarInform.setVisible(true);
     }//GEN-LAST:event_jCheckBoxJToolBarInformActionPerformed
-
-    private void jButtonTemplateManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonTemplateManagerActionPerformed
-        templateManager.setSize(screensize.width-260, screensize.height-200);
-        templateManager.setLocation(screensize.width/2 - (templateManager.getWidth()/2), screensize.height/2 - (templateManager.getHeight()/2));
-        templateManager.setVisible(true);
-    }//GEN-LAST:event_jButtonTemplateManagerActionPerformed
 
     private void jButtonNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNewActionPerformed
         newAdventure();
@@ -4317,10 +4191,6 @@ public class jFrame extends JFrame {
         insertFromFile();
     }//GEN-LAST:event_jMenuItemInsertFileActionPerformed
 
-    private void jMenuItemCheckOutFromWebActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCheckOutFromWebActionPerformed
-        checkOutFromWeb();
-    }//GEN-LAST:event_jMenuItemCheckOutFromWebActionPerformed
-
     private void jButtonImportFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonImportFilesActionPerformed
         // Imports templates
         Object[] array = jListImportTemplate.getSelectedValues();
@@ -4357,7 +4227,6 @@ public class jFrame extends JFrame {
         jFrameImport.hide();
         // Show "ok" message
         JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("MSG_ADDTEMPLATE1")+array.length+java.util.ResourceBundle.getBundle("JIF").getString("MSG_ADDTEMPLATE2"),java.util.ResourceBundle.getBundle("JIF").getString("MSG_ADDTEMPLATE3") , JOptionPane.INFORMATION_MESSAGE);
-        templateManager.refreshTree();
     }//GEN-LAST:event_jButtonImportFilesActionPerformed
 
     private void jButtonImportCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonImportCancelActionPerformed
@@ -4371,16 +4240,6 @@ public class jFrame extends JFrame {
     private void jButtonImportSelectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonImportSelectAllActionPerformed
         jListImportTemplate.setSelectionInterval(0,  templateVector.size()-1);
     }//GEN-LAST:event_jButtonImportSelectAllActionPerformed
-
-    private void jMenuItemCheckOutFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCheckOutFromFileActionPerformed
-        checkOutFromFile();
-    }//GEN-LAST:event_jMenuItemCheckOutFromFileActionPerformed
-
-    private void jMenuItemTemplateManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemTemplateManagerActionPerformed
-        templateManager.setSize(screensize.width-260, screensize.height-200);
-        templateManager.setLocation(screensize.width/2 - (templateManager.getWidth()/2), screensize.height/2 - (templateManager.getHeight()/2));
-        templateManager.setVisible(true);
-    }//GEN-LAST:event_jMenuItemTemplateManagerActionPerformed
 
     private void jMenuItemSyntaxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSyntaxActionPerformed
         try{
@@ -7338,118 +7197,6 @@ public class jFrame extends JFrame {
     }
 
 
-    public void checkOutFromFile(){
-         try{
-        // prelevato in locale
-        //StringBuffer content = new StringBuffer(); unused
-        String riga="";
-        String result;
-        JFileChooser chooser = new JFileChooser(workingDir);
-        chooser.setFileSelectionMode(chooser.FILES_ONLY);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
-            return;
-        }
-        else result = chooser.getSelectedFile().getAbsolutePath();
-            BufferedReader br = new BufferedReader(new FileReader(new File(result)));
-            StringTokenizer sttok ;
-            File test;
-            //boolean found=false; unused
-            templateVector = new Vector();
-            while ((riga = br.readLine())!= null & (!riga.equals("") & (!riga.startsWith("#")))){
-                //content.append(riga).append("§");
-                sttok = new StringTokenizer(riga,"¥");
-                String name = sttok.nextToken();
-                String path = sttok.nextToken();
-                test = new File(workingDir+"config"+Constants.SEP + path);
-                //System.out.println("file: "+test.getAbsolutePath());
-                if (!test.exists()){
-                    //System.out.println("NUOVO TEMPLATE: " + test.getAbsolutePath());
-                    templateVector.add(new ImportTemplate(name,path,riga.substring(riga.indexOf("# **** MADE BY JIF ****"))));
-                }
-            }
-            if (templateVector.size()==0){
-                JOptionPane.showMessageDialog(this,java.util.ResourceBundle.getBundle("JIF").getString("MSG_NOTEMPLATE"));
-                return;
-            }
-            //popolo la lista e visualizzo il frame
-            jListImportTemplate.setListData(templateVector);
-            jFrameImport.pack();
-
-            Point p = getLocationOnScreen();
-            p.move(300,300);
-            jFrameImport.setLocation(p);
-
-            jFrameImport.pack();
-            jFrameImport.show();
-
-        } catch (Exception e){
-            //JOptionPane.showMessageDialog(this, e.getMessage());
-            System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
-        }
-
-    }
-
-
-
-    public void checkOutFromWeb(){
-       try{
-
-        int result = JOptionPane.showConfirmDialog(this,java.util.ResourceBundle.getBundle("JIF").getString("MSG_WEB") ,java.util.ResourceBundle.getBundle("JIF").getString("MSG_WEB1") , JOptionPane.OK_CANCEL_OPTION);
-        if (result == 2){
-            return;
-        }
-
-        // prelevato da internet
-        URL url = new URL(Constants.JIFURL);
-        url.openConnection();
-        InputStreamReader st = new InputStreamReader(url.openStream());
-        BufferedReader br= new BufferedReader(st);
-        //StringBuffer templates = new StringBuffer(); unused
-
-        //StringBuffer content = new StringBuffer(); unused
-        String riga = "";
-        StringTokenizer sttok ;
-        File test;
-        //boolean found=false; unused
-        templateVector = new Vector();
-
-        while ((riga = br.readLine())!=null){
-            if (riga.indexOf("¥")!=-1){
-                //System.out.println(riga);
-                //templates.append(riga+"\n");
-                sttok = new StringTokenizer(riga,"¥");
-                String name = sttok.nextToken();
-                String path = sttok.nextToken();
-                test = new File(workingDir+"config"+Constants.SEP + path);
-                //System.out.println("file: "+test.getAbsolutePath());
-                if (!test.exists()){
-                    //System.out.println("NUOVO TEMPLATE: " + test.getAbsolutePath());
-                    templateVector.add(new ImportTemplate(name,path,riga.substring(riga.indexOf("# **** MADE BY JIF ****"))));
-                }
-            }
-        }
-              if (templateVector.size()==0){
-                JOptionPane.showMessageDialog(this,java.util.ResourceBundle.getBundle("JIF").getString("MSG_NOTEMPLATE"));
-                return;
-            }
-            //popolo la lista e visualizzo il frame
-            jListImportTemplate.setListData(templateVector);
-            jFrameImport.pack();
-            Point p = getLocationOnScreen();
-            p.move(300,300);
-            jFrameImport.setLocation( p );
-            jFrameImport.show();
-        } catch (Exception e){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("MSG_WEB2"), java.util.ResourceBundle.getBundle("JIF").getString("MSG_WEB3"),  JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-            System.out.println(e.getLocalizedMessage());
-        }
-
-    }
-
-
     // recupero un Rettangolo della grandezza del viewport con le coordinate
     // Quando lo user clicca su una foglia dell'albero degli oggetti,
     // viene anche cambiata la viewport del JTextPane
@@ -9450,8 +9197,6 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButtonFind;
     private javax.swing.JButton jButtonImportCancel;
     private javax.swing.JButton jButtonImportFiles;
-    private javax.swing.JButton jButtonImportFromFile;
-    private javax.swing.JButton jButtonImportFromWeb;
     private javax.swing.JButton jButtonImportSelectAll;
     private javax.swing.JButton jButtonImportUnselectAll;
     private javax.swing.JButton jButtonInfo;
@@ -9472,7 +9217,6 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButtonRoutine;
     private javax.swing.JButton jButtonSearchProject;
     private javax.swing.JButton jButtonSwitchManager;
-    private javax.swing.JButton jButtonTemplateManager;
     private javax.swing.JButton jButtonTranslate;
     private javax.swing.JButton jButtonUncommentSelection;
     private javax.swing.JButton jButtonUndo;
@@ -9556,8 +9300,6 @@ public class jFrame extends JFrame {
     private javax.swing.JMenuItem jMenuItemAddNewToProject;
     private javax.swing.JMenuItem jMenuItemAltKeys;
     private javax.swing.JMenuItem jMenuItemBuildAllGlulx;
-    private javax.swing.JMenuItem jMenuItemCheckOutFromFile;
-    private javax.swing.JMenuItem jMenuItemCheckOutFromWeb;
     private javax.swing.JMenuItem jMenuItemClear;
     private javax.swing.JMenuItem jMenuItemClearAll;
     private javax.swing.JMenuItem jMenuItemClearRecentFiles;
@@ -9616,7 +9358,6 @@ public class jFrame extends JFrame {
     private javax.swing.JMenuItem jMenuItemSwitch;
     private javax.swing.JMenuItem jMenuItemSwitches;
     private javax.swing.JMenuItem jMenuItemSyntax;
-    private javax.swing.JMenuItem jMenuItemTemplateManager;
     private javax.swing.JMenuItem jMenuItemUncommentSelection;
     private javax.swing.JMenu jMenuLinks;
     private javax.swing.JMenu jMenuMode;
@@ -9624,7 +9365,6 @@ public class jFrame extends JFrame {
     private javax.swing.JMenu jMenuPaste;
     private javax.swing.JMenu jMenuProject;
     private javax.swing.JMenu jMenuRecentFiles;
-    private javax.swing.JMenu jMenuTemplate;
     private javax.swing.JMenu jMenuTutorial;
     private javax.swing.JMenu jMenuView;
     private javax.swing.JPanel jPanel1;
@@ -9836,8 +9576,6 @@ public class jFrame extends JFrame {
     private JFrame JWindowSymbols;
     private JList jListSymbols;
 
-    // prova tree per i template
-    private TemplateManager templateManager;
     private Vector templateVector;
 
     // links

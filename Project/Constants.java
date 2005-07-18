@@ -41,17 +41,12 @@ public class Constants {
     /**
      * JIF Version
      */
-    public static final String JIFVERSION = "2.1 development 20050717";
+    public static final String JIFVERSION = "2.1 development 20050718";
 
     /**
      * File Separator, depending on which Operative System is executing JIF
      */
     public static final String SEP = File.separator;
-
-    /**
-     * URL to download templates via WEB
-     */
-    public static final String JIFURL = "http://slade.altervista.org/JIF/template.txt";
 
     /**
      * MAX dimension of the copy/paste menu
@@ -67,7 +62,7 @@ public class Constants {
      * Token for mark a line in the search function in all project files
      */
     public static final String TOKENSEARCH = "*";
-    
+
     /**
      * Token for mark a line as a command
      */
@@ -75,6 +70,6 @@ public class Constants {
 
     /**
      * User dir /home/xxx/.jif or c:\documents and settings\xxx\.jif
-     */    
+     */
     public static final String userDir=System.getProperty("user.home")+SEP+".jif"+SEP;
 }

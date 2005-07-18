@@ -6,6 +6,7 @@ CHANGELOG
 JIF 2.1 (jul 2005)
 ==================
 
+- [FIX] Removed the Template Manager Management
 - [NF]  Added a new Menu (Search String in the whole project). With CTRL+F3 it's possible to 
         search any string in the project files. Then you click on a result and jump straight to
         the code that contains the string.
