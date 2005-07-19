@@ -30,11 +30,8 @@ insertSymbol.png
 launch.png
 redo.png
 runInterpreter.png
-TemplateManagerFromFile.png
-TemplateManagerFromWeb.png
 translate.png
 undo.png
-view_sidetree.png
 
 
 These images are under the GNU GPL license
@@ -45,14 +42,9 @@ comment.png
 delete.png
 Jif.png
 leftIndent.png
-newTemplateDynamic.png
-newTemplateStatic.png
 rightIndent.png
-tree.png
-TREE_dynamic.png
 tree_menu.png
 TREE_objects.png
-TREE_static.png
 uncomment.png
 
 

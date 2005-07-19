@@ -4,7 +4,7 @@
 Configuration File
 --------------------------------------------------------------------------------
 
-Last Update: 2005-05-12
+Last Update: 2005-07-19
 
 INDEX
 
@@ -24,8 +24,6 @@ INDEX
 	2.8 syntax.ini
 	2.9 links.ini
 
-3. TEMPLATE MANAGER
-
 
 
 --------------------------------------------------------------------------------
@@ -43,6 +41,8 @@ CTRL+J                  Jump to the current word's definition
 
 CTRL+F5                 New project
 F5                      Open project
+F3                      Search String (from the current file)
+CTRL+F5                 Search String (from the whole project)
 
 CTRL+A                  Select all
 CTRL+X                  Cut
@@ -93,7 +93,6 @@ projects          - projects directory
 tutorial          - tutorial directory (tutorials are still in italian)
 
 config/menu       - "Insert New" function
-config/template	  - Templates directory
 
 
 --------------------------------------------------------------------------------
@@ -331,37 +330,6 @@ This file contains all the links you can open from JIF toolbar.
 
 
 
-
---------------------------------------------------------------------------------
-3 TEMPLATE MANAGER
---------------------------------------------------------------------------------
-
-With the template manager you can create/use static/dynamic templates.
-There's an update option from WEB or from a template file.
-
-
-Static templates, are substantially a block of code (with additional information
-like version, author...)
-Dynamic templates are a block of code to customize with parameters.
-
-Dynamic template, example:
-
-Class treasure
- with point 7,
-      after
-      [; 
-      	Take: if (location==§*room§) "Taken!";        
-      ];
-
-Text beetween "§*" and "§", is considered as a parameter, so user can insert it
-when you're using this template.
-
-
-It's possibile to export all template to a file.
-Send me your new templates, they'll be added in JIF site. 
-
-
-
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 Send me comments, errors , congratulations to:silver.slade@tiscalinet.it
 --------------------------------------------------------------------------------
