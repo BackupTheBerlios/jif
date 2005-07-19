@@ -3282,7 +3282,7 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jMenuItemSearchAllFilesActionPerformed
 
     private void jMenuItemSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSearchActionPerformed
-        getCurrentJIFTextPane().findString();
+        getCurrentJIFTextPane().findString(this);
     }//GEN-LAST:event_jMenuItemSearchActionPerformed
 
     private void jCheckBoxNumberLinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxNumberLinesActionPerformed
@@ -4397,7 +4397,7 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jMenuItemConfigurazioneActionPerformed
 
     private void jButtonFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFindActionPerformed
-      getCurrentJIFTextPane().findString();
+      getCurrentJIFTextPane().findString(this);
     }//GEN-LAST:event_jButtonFindActionPerformed
 
     private void jMenuItemAltKeysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAltKeysActionPerformed
@@ -9333,7 +9333,7 @@ public class jFrame extends JFrame {
     private javax.swing.JTextArea jTextArea4;
     private javax.swing.JTextArea jTextAreaConfig;
     private javax.swing.JTextArea jTextAreaInfo;
-    private javax.swing.JTextArea jTextAreaOutput;
+    public javax.swing.JTextArea jTextAreaOutput;
     private javax.swing.JTextField jTextFieldBlc;
     private javax.swing.JTextField jTextFieldBres;
     private javax.swing.JTextField jTextFieldDefinition;

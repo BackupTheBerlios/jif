@@ -579,8 +579,7 @@ public class JIFTextPane extends JTextPane{
      * The target String to be found, it taken from
      * the Search TextField
      */
-    public void findString(){
-        //hlighter.removeHighlights(this);
+    public void findString(jFrame parent){
         int pos = getCaretPosition();   // current position
         String pattern = jframe.jTextFieldFind.getText();
 
@@ -597,14 +596,24 @@ public class JIFTextPane extends JTextPane{
                     // Bug #4416                    
                     pos += pattern.length();
                     //setCaretPosition(pos);
-                    found=true;
+                    found = true;
                     this.requestFocus();                    
                 }
 
                 // If the string not found, JIF will move the Caret position to 0 (zero)
-                if (!found){
-                    setCaretPosition(0);
-                    findString();
+                if (!found){                    
+                    // if at least one string is found
+                    if (Utils.IgnoreCaseIndexOf(text,pattern, 0)!=-1){
+                        // append a message in the outputwindow
+                        parent.jTextAreaOutput.setText("END of file reached. Jump to the beginning");                        
+                        setCaretPosition(0);
+                        findString(parent);                        
+                    }
+                    else{
+                        // if there aren't any occurences of the string
+                        // append a message in the outputwindow
+                        parent.jTextAreaOutput.setText("String \""+parent.jTextFieldFind.getText()+"\" not found");                        
+                    }                                            
                 }
                 
                 // if not found, JIF shows a message to the user

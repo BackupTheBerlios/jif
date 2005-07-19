@@ -219,7 +219,7 @@ public class EditorKeyAdapter extends KeyAdapter {
                 if (selezione!=null){
                     jframe.jTextFieldFind.setText(selezione);
                 }
-                jif.findString();
+                jif.findString(jframe);
             }
 
             // CTRL+INS for "copy" command
