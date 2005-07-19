@@ -3,9 +3,12 @@ CHANGELOG
 [NF]  New Feature
 [FIX] Bug Fixed
 
-JIF 2.1 (jul 2005)
+
+JIF 2.2 (jul 2005)
 ==================
 
+- [FIX] The findString method doesn't warning if the searching has arrived to the beginning of the current file
+- [FIX] The ReplaceAll method, now starts from the beginning of the current file
 - [FIX] Removed the Template Manager Management
 - [NF]  Added a new Menu (Search String in the whole project). With CTRL+F3 it's possible to 
         search any string in the project files. Then you click on a result and jump straight to
@@ -13,6 +16,10 @@ JIF 2.1 (jul 2005)
 - [NF]  Added a new Menu (Search String)
 - [FIX] Bug #4416 FIX: Search string with F3, JIF will select the found string and give the focus
         When click on an object in the tree, the current window will receive the Focus
+
+JIF 2.1 (jul 2005)
+==================
+
 - [NF]  You can select "Wrap Line" option or "Show Line number" option (not both of them)
 - [NF]  Added a internationalized String JTEXTOUTPUT_CONFIG_SAVED = "Jif configuration file saved."
 - [NF]  Added a message to the Outputwindow when JIF saves the configuration file

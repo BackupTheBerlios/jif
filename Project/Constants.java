@@ -9,7 +9,7 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004  Alessandro Schillaci
+ * Copyright (C) 2004-2005  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
  * e-m@il: silver.slade@tiscalinet.it
@@ -41,7 +41,7 @@ public class Constants {
     /**
      * JIF Version
      */
-    public static final String JIFVERSION = "2.1 development 20050718";
+    public static final String JIFVERSION = "2.2 development 20050719";
 
     /**
      * File Separator, depending on which Operative System is executing JIF

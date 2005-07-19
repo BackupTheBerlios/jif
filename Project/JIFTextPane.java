@@ -601,18 +601,24 @@ public class JIFTextPane extends JTextPane{
                     this.requestFocus();                    
                 }
 
-                // if not found, JIF shows a message to the user
-                if (!found) {
-                    String[] scelte = new String[2];
-                    scelte[0] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF18");
-                    scelte[1] = java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CANCEL");
-                    int result = JOptionPane.showOptionDialog(null,  java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF19")+" ["+pattern+"]"+java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF20") , java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF21") , 0 , JOptionPane.INFORMATION_MESSAGE , null , scelte , scelte[1]);
-                    if (result==0) {
-                        setCaretPosition(0);
-                        findString();
-                    }
-                    return;
+                // If the string not found, JIF will move the Caret position to 0 (zero)
+                if (!found){
+                    setCaretPosition(0);
+                    findString();
                 }
+                
+                // if not found, JIF shows a message to the user
+//                if (!found) {
+//                    String[] scelte = new String[2];
+//                    scelte[0] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF18");
+//                    scelte[1] = java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CANCEL");
+//                    int result = JOptionPane.showOptionDialog(null,  java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF19")+" ["+pattern+"]"+java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF20") , java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF21") , 0 , JOptionPane.INFORMATION_MESSAGE , null , scelte , scelte[1]);
+//                    if (result==0) {
+//                        setCaretPosition(0);
+//                        findString();
+//                    }
+//                    return;
+//                }
             } catch (BadLocationException e)  {
                 System.out.println(e.getMessage());
                 System.err.println(e.getMessage());

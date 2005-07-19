@@ -9,7 +9,7 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004  Alessandro Schillaci
+ * Copyright (C) 2004-2005  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
  * e-m@il: silver.slade@tiscalinet.it
@@ -6800,6 +6800,8 @@ public class jFrame extends JFrame {
     // 1.cerco la prima occorrenza se non esiste esci
     // 2. replace string e vai al punto 1.
     public void replaceAll(){
+        // Set Caret Position to ZERO
+        getCurrentJIFTextPane().setCaretPosition(0);
         boolean eseguito=false;
         while (!eseguito){
             eseguito = findAllString(jTextFieldReplaceFind.getText());
