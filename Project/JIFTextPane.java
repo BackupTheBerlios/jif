@@ -9,7 +9,7 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004  Alessandro Schillaci
+ * Copyright (C) 2004-2005  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
  * e-m@il: silver.slade@tiscalinet.it
@@ -956,6 +956,7 @@ public class JIFTextPane extends JTextPane{
                 String key = null;
                 String obj = null;
                 String riga;
+                Vector strings = new Vector();
 
                 while ((riga = br.readLine())!=null){
                     if (riga.startsWith("*****")){
@@ -969,7 +970,9 @@ public class JIFTextPane extends JTextPane{
                             if (obj.startsWith("\n")) {
                                 obj = obj.substring(1);
                             }
-                            testo = Utils.replace(testo, key , obj);
+                            //testo = Utils.replace(testo, key , obj);
+                            strings.add(new TranslatedString(key,obj));
+                            //strings.put(key,obj);
                             key="";
                             obj="";
                         }
@@ -997,6 +1000,24 @@ public class JIFTextPane extends JTextPane{
                     }
                 }
                 br.close();
+                
+                // FIX: sort HashMap by lenght of strings
+                // Before JIF translates the longer strings and then the shorter ones
+                Collections.sort(strings,new Comparator(){
+                    public int compare(Object a, Object b) {
+                    String id1 = ((TranslatedString)a).getSource();
+                    String id2 = ((TranslatedString)b).getResult();
+                    return (id2.length() - id1.length());
+                    }
+                });
+                
+                // Execute the translation using the sorted strings
+                for (Iterator ite = strings.iterator(); ite.hasNext(); ){
+                    TranslatedString ts = (TranslatedString) ite.next();
+                    testo = Utils.replace(testo, "\""+ts.getSource()+"\"" , "\""+ts.getResult()+"\"");
+                }                
+                // FIX
+                
             } catch(IOException e){
                 System.out.println(e.getMessage());
                 System.err.println(e.getMessage());

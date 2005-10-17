@@ -3,6 +3,10 @@ CHANGELOG
 [NF]  New Feature
 [FIX] Bug Fixed
 
+JIF 2.3 (oct 2005)
+==================
+
+- [FIX] Translation Process: now JIF sort the strings to be translated before translation process
 
 JIF 2.2 (jul 2005)
 ==================
