@@ -1,5 +1,5 @@
 /*
- * Inspect.java
+ * TranslatedString.java
  *
  * This file is part of JIF.
  *
@@ -9,7 +9,7 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004  Alessandro Schillaci
+ * Copyright (C) 2004-2005  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
  * e-m@il: silver.slade@tiscalinet.it
@@ -30,38 +30,30 @@
  *
  */
 
-/**
- * A Class for The Object Tree
- * @author Alessandro Schillaci
- */
-   public class Inspect {
-       /**
-        * The Inform keyword to be highlighted when selected from
-        * the Object Tree
-        */
-        public String Ilabel;   //pattern
-        /**
-         * Initial position of the Keyword
-         */
-        public int Iposition;   //posizione iniziale
+public class TranslatedString {
+    
+    private String source;
+    private String result;
+    
+    /** Creates a new instance of TranslatedString */
+    public TranslatedString(String source, String result) {
+        this.setSource(source);
+        this.setResult(result);
+    }    
 
-
-        /**
-         * Creates a new Inspect Object.
-         * The object tree is a tree of Inspect objects
-         * @param label The keyword
-         * @param position Position of keyword in the inform document
-         */
-        public Inspect(String label, int position) {
-            Ilabel=label;
-            Iposition = position;
-        }
-
-        /**
-         * This method is used by the Object Tree
-         * @return The keyword
-         */
-        public String toString() {
-            return Ilabel;
-        }
+    public String getSource() {
+        return source;
     }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+}

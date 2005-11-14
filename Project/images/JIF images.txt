@@ -2,7 +2,7 @@ LIST OF IMAGES USED BY JIF
 ==========================
 (see the license file for using them)
 
-2005-07-19
+2005-11-14
 
 about.png
 check.png
@@ -11,22 +11,15 @@ compfile.png
 configure.png
 delete.png
 edit.png
-editcopy.png
-editcut.png
-editpaste.png
-exit.png
-extractString.png
 fileclose.png
 filecloseAll.png
 filefind.png
 filenew.png
 fileopen.png
-fileprint.png
 filesave.png
 filesaveall.png
 filesaveas.png
 find.png
-info.png
 infoFile.png
 insertFunction.png
 insertObject.png
@@ -37,7 +30,6 @@ leftIndent.png
 redo.png
 rightIndent.gif
 runInterpreter.png
-translate.png
 TREE_objects.png
 uncomment.png
 undo.png

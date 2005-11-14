@@ -7,22 +7,15 @@ check.png
 compfile.png
 configure.png
 edit.png
-editcopy.png
-editcut.png
-editpaste.png
-exit.png
-extractString.png
 fileclose.png
 filecloseAll.png
 filefind.png
 filenew.png
 fileopen.png
-fileprint.png
 filesave.png
 filesaveall.png
 filesaveas.png
 find.png
-info.png
 infoFile.png
 insertFunction.png
 insertObject.png
@@ -30,7 +23,6 @@ insertSymbol.png
 launch.png
 redo.png
 runInterpreter.png
-translate.png
 undo.png
 
 
