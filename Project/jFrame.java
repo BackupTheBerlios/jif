@@ -511,6 +511,8 @@ public class jFrame extends JFrame {
         jButtonInterpreter = new javax.swing.JButton();
         jButtonSwitchManager = new javax.swing.JButton();
         jButtonOption = new javax.swing.JButton();
+        jTextFieldFind = new javax.swing.JTextField();
+        jButtonFind = new javax.swing.JButton();
         jSplitPane3 = new javax.swing.JSplitPane();
         jSplitPane1 = new javax.swing.JSplitPane();
         jTabbedPane3 = new javax.swing.JTabbedPane();
@@ -546,9 +548,6 @@ public class jFrame extends JFrame {
         jListProject.addMouseListener(popupListenerProject);
         jLabelMainFile = new javax.swing.JLabel();
         jPanelSearch = new javax.swing.JPanel();
-        jPanelSearchNormal = new javax.swing.JPanel();
-        jTextFieldFind = new javax.swing.JTextField();
-        jButtonFind = new javax.swing.JButton();
         jPanelSearchProject = new javax.swing.JPanel();
         jTextFieldFindAll = new javax.swing.JTextField();
         jButtonSearchProject = new javax.swing.JButton();
@@ -770,7 +769,7 @@ public class jFrame extends JFrame {
 
         jDialogConfigFiles.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGFILES_TITLE"));
         jDialogConfigFiles.setFont(new java.awt.Font("Arial", 0, 12));
-        jPanel1.setBorder(new javax.swing.border.EtchedBorder());
+        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton1.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -798,7 +797,7 @@ public class jFrame extends JFrame {
 
         jPanel2.setLayout(new java.awt.GridLayout(1, 0));
 
-        jPanel2.setBorder(new javax.swing.border.EtchedBorder());
+        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jLabel2.setText("jLabel2");
         jPanel2.add(jLabel2);
 
@@ -820,13 +819,13 @@ public class jFrame extends JFrame {
 
         jPanelSwitch1.setLayout(new java.awt.GridLayout(0, 4));
 
-        jPanelSwitch1.setBorder(new javax.swing.border.EtchedBorder());
+        jPanelSwitch1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanelSwitch1.setFont(new java.awt.Font("Dialog", 0, 8));
         jPanel11.add(jPanelSwitch1);
 
         jPanelSwitch2.setLayout(new java.awt.GridLayout(0, 3));
 
-        jPanelSwitch2.setBorder(new javax.swing.border.EtchedBorder());
+        jPanelSwitch2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanelSwitch2.setFont(new java.awt.Font("Dialog", 0, 8));
         jPanel11.add(jPanelSwitch2);
 
@@ -1637,7 +1636,7 @@ public class jFrame extends JFrame {
         jPanel22.setLayout(new java.awt.BorderLayout());
 
         jPanel22.setMinimumSize(new java.awt.Dimension(0, 0));
-        jToolBarCommon.setBorder(new javax.swing.border.EtchedBorder());
+        jToolBarCommon.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jToolBarCommon.setFloatable(false);
         jToolBarCommon.setToolTipText("Jif Toolbar");
         jToolBarCommon.setPreferredSize(new java.awt.Dimension(400, 34));
@@ -2097,6 +2096,42 @@ public class jFrame extends JFrame {
 
         jToolBarCommon.add(jButtonOption);
 
+        jTextFieldFind.setColumns(15);
+        jTextFieldFind.setFont(new java.awt.Font("Courier New", 0, 12));
+        jTextFieldFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
+        jTextFieldFind.setMaximumSize(new java.awt.Dimension(111, 20));
+        jTextFieldFind.setMinimumSize(new java.awt.Dimension(10, 22));
+        jTextFieldFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldFindActionPerformed(evt);
+            }
+        });
+
+        jToolBarCommon.add(jTextFieldFind);
+
+        jButtonFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png")));
+        jButtonFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH_BUTTON"));
+        jButtonFind.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jButtonFind.setBorderPainted(false);
+        jButtonFind.setMaximumSize(new java.awt.Dimension(29, 29));
+        jButtonFind.setMinimumSize(new java.awt.Dimension(29, 29));
+        jButtonFind.setPreferredSize(new java.awt.Dimension(29, 29));
+        jButtonFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonFindActionPerformed(evt);
+            }
+        });
+        jButtonFind.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButtonMouseExited(evt);
+            }
+        });
+
+        jToolBarCommon.add(jButtonFind);
+
         jPanel22.add(jToolBarCommon, java.awt.BorderLayout.NORTH);
 
         getContentPane().add(jPanel22, java.awt.BorderLayout.NORTH);
@@ -2109,6 +2144,7 @@ public class jFrame extends JFrame {
         jSplitPane1.setMinimumSize(new java.awt.Dimension(180, 248));
         jSplitPane1.setPreferredSize(new java.awt.Dimension(180, 328));
         jTabbedPane3.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
+        jTabbedPane3.setFont(new java.awt.Font("Dialog", 0, 11));
         jPanelTreeControl.setLayout(new javax.swing.BoxLayout(jPanelTreeControl, javax.swing.BoxLayout.Y_AXIS));
 
         jScrollPane3.setBorder(null);
@@ -2136,7 +2172,7 @@ public class jFrame extends JFrame {
 
         jPanelMainFile.setLayout(new javax.swing.BoxLayout(jPanelMainFile, javax.swing.BoxLayout.Y_AXIS));
 
-        jScrollPaneProject.setBorder(new javax.swing.border.TitledBorder(null, "Project", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 10)));
+        jScrollPaneProject.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Project", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 10)));
         jScrollPaneProject.setPreferredSize(new java.awt.Dimension(90, 131));
         jListProject.setFont(new java.awt.Font("Dialog", 0, 11));
         jListProject.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -2165,53 +2201,9 @@ public class jFrame extends JFrame {
         jPanelSearch.setMaximumSize(new java.awt.Dimension(1800, 220));
         jPanelSearch.setMinimumSize(new java.awt.Dimension(180, 220));
         jPanelSearch.setPreferredSize(new java.awt.Dimension(180, 220));
-        jPanelSearchNormal.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
-
-        jPanelSearchNormal.setBorder(new javax.swing.border.TitledBorder(null, "Normal Search", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 10)));
-        jPanelSearchNormal.setMaximumSize(new java.awt.Dimension(180, 55));
-        jPanelSearchNormal.setMinimumSize(new java.awt.Dimension(180, 55));
-        jPanelSearchNormal.setPreferredSize(new java.awt.Dimension(180, 55));
-        jTextFieldFind.setColumns(15);
-        jTextFieldFind.setFont(new java.awt.Font("Courier New", 0, 12));
-        jTextFieldFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
-        jTextFieldFind.setMaximumSize(new java.awt.Dimension(111, 20));
-        jTextFieldFind.setMinimumSize(new java.awt.Dimension(10, 22));
-        jTextFieldFind.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldFindActionPerformed(evt);
-            }
-        });
-
-        jPanelSearchNormal.add(jTextFieldFind);
-
-        jButtonFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png")));
-        jButtonFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH_BUTTON"));
-        jButtonFind.setBorder(new javax.swing.border.EtchedBorder());
-        jButtonFind.setBorderPainted(false);
-        jButtonFind.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonFind.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonFind.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonFind.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonFindActionPerformed(evt);
-            }
-        });
-        jButtonFind.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jButtonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButtonMouseExited(evt);
-            }
-        });
-
-        jPanelSearchNormal.add(jButtonFind);
-
-        jPanelSearch.add(jPanelSearchNormal);
-
         jPanelSearchProject.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
 
-        jPanelSearchProject.setBorder(new javax.swing.border.TitledBorder(null, "Search all project files", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 10)));
+        jPanelSearchProject.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search all project files", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 10)));
         jPanelSearchProject.setMaximumSize(new java.awt.Dimension(180, 55));
         jPanelSearchProject.setMinimumSize(new java.awt.Dimension(180, 55));
         jPanelSearchProject.setPreferredSize(new java.awt.Dimension(180, 55));
@@ -2230,7 +2222,7 @@ public class jFrame extends JFrame {
 
         jButtonSearchProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/fileprojectfind.png")));
         jButtonSearchProject.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCHALL_BUTTON"));
-        jButtonSearchProject.setBorder(new javax.swing.border.EtchedBorder());
+        jButtonSearchProject.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButtonSearchProject.setBorderPainted(false);
         jButtonSearchProject.setMaximumSize(new java.awt.Dimension(29, 29));
         jButtonSearchProject.setMinimumSize(new java.awt.Dimension(29, 29));
@@ -2255,7 +2247,7 @@ public class jFrame extends JFrame {
 
         jPanelDefinition.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
 
-        jPanelDefinition.setBorder(new javax.swing.border.TitledBorder(null, "Search for Definition", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 10)));
+        jPanelDefinition.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search for Definition", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 10)));
         jPanelDefinition.setMaximumSize(new java.awt.Dimension(180, 55));
         jPanelDefinition.setMinimumSize(new java.awt.Dimension(180, 55));
         jPanelDefinition.setPreferredSize(new java.awt.Dimension(180, 55));
@@ -2270,7 +2262,7 @@ public class jFrame extends JFrame {
         jPanelDefinition.add(jTextFieldDefinition);
 
         jButtonDefinition.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png")));
-        jButtonDefinition.setBorder(new javax.swing.border.EtchedBorder());
+        jButtonDefinition.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButtonDefinition.setBorderPainted(false);
         jButtonDefinition.setMaximumSize(new java.awt.Dimension(29, 29));
         jButtonDefinition.setMinimumSize(new java.awt.Dimension(29, 29));
@@ -2333,10 +2325,10 @@ public class jFrame extends JFrame {
 
         jSplitPane3.setTopComponent(jSplitPane1);
 
-        jTabbedPane2.setBorder(new javax.swing.border.EtchedBorder());
+        jTabbedPane2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jTabbedPane2.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
         jTabbedPane2.setAutoscrolls(true);
-        jTabbedPane2.setFont(new java.awt.Font("Dialog", 0, 10));
+        jTabbedPane2.setFont(new java.awt.Font("Dialog", 0, 11));
         jTabbedPane2.setMinimumSize(new java.awt.Dimension(31, 100));
         jTabbedPane2.setPreferredSize(new java.awt.Dimension(30, 150));
         jScrollPane2.setAutoscrolls(true);
@@ -2515,6 +2507,7 @@ public class jFrame extends JFrame {
         jMenuEdit.add(jSeparator11);
 
         jMenuItemSearch.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, 0));
+        jMenuItemSearch.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemSearch.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH"));
         jMenuItemSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2525,6 +2518,7 @@ public class jFrame extends JFrame {
         jMenuEdit.add(jMenuItemSearch);
 
         jMenuItemSearchAllFiles.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItemSearchAllFiles.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemSearchAllFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCHALL"));
         jMenuItemSearchAllFiles.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2591,6 +2585,7 @@ public class jFrame extends JFrame {
 
         jMenuEdit.add(jMenuItemUncommentSelection);
 
+        jMenuItemRightShift.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemRightShift.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RIGHTSHIFT"));
         jMenuItemRightShift.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2600,6 +2595,7 @@ public class jFrame extends JFrame {
 
         jMenuEdit.add(jMenuItemRightShift);
 
+        jMenuItemLeftShift.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemLeftShift.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_LEFTSHIFT"));
         jMenuItemLeftShift.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2633,6 +2629,7 @@ public class jFrame extends JFrame {
         jMenuEdit.add(jMenuItemInsertSymbol1);
 
         jMenuItemSetBookmark.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItemSetBookmark.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemSetBookmark.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SETBOOKMARK"));
         jMenuItemSetBookmark.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2643,6 +2640,7 @@ public class jFrame extends JFrame {
         jMenuEdit.add(jMenuItemSetBookmark);
 
         jMenuItemNextBookmark.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
+        jMenuItemNextBookmark.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemNextBookmark.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_NEXTBOOKMARK"));
         jMenuItemNextBookmark.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2652,6 +2650,7 @@ public class jFrame extends JFrame {
 
         jMenuEdit.add(jMenuItemNextBookmark);
 
+        jMenuItemExtractStrings.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemExtractStrings.setText("Extract Strings");
         jMenuItemExtractStrings.setToolTipText("KEY JFRAME_EXTRACT_STRINGS : RB JIF");
         jMenuItemExtractStrings.addActionListener(new java.awt.event.ActionListener() {
@@ -2662,6 +2661,7 @@ public class jFrame extends JFrame {
 
         jMenuEdit.add(jMenuItemExtractStrings);
 
+        jMenuItemTranslate.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemTranslate.setText("Translate Strings");
         jMenuItemTranslate.setToolTipText("KEY JFRAME_TRANSLATE : RB JIF");
         jMenuItemTranslate.addActionListener(new java.awt.event.ActionListener() {
@@ -2729,6 +2729,7 @@ public class jFrame extends JFrame {
         jMenuView.add(jCheckBoxJTree);
 
         jCheckBoxToggleFullscreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
+        jCheckBoxToggleFullscreen.setFont(new java.awt.Font("Dialog", 0, 11));
         jCheckBoxToggleFullscreen.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_TOGGLEFULLSCREEN"));
         jCheckBoxToggleFullscreen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -9054,7 +9055,6 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanelMainFile;
     private javax.swing.JPanel jPanelPath;
     private javax.swing.JPanel jPanelSearch;
-    private javax.swing.JPanel jPanelSearchNormal;
     private javax.swing.JPanel jPanelSearchProject;
     private javax.swing.JPanel jPanelSwitch1;
     private javax.swing.JPanel jPanelSwitch2;
