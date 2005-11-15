@@ -403,10 +403,6 @@ public class jFrame extends JFrame {
         jLabel19 = new javax.swing.JLabel();
         jTextFieldPathGlulx = new javax.swing.JTextField();
         jButton26 = new javax.swing.JButton();
-        jPanel25 = new javax.swing.JPanel();
-        jLabel17 = new javax.swing.JLabel();
-        jTextFieldPathBrowser = new javax.swing.JTextField();
-        jButton22 = new javax.swing.JButton();
         jPanel46 = new javax.swing.JPanel();
         jLabelBres = new javax.swing.JLabel();
         jTextFieldBres = new javax.swing.JTextField();
@@ -635,11 +631,9 @@ public class jFrame extends JFrame {
         jMenuItemSwitch = new javax.swing.JMenuItem();
         jMenuItemAltKeys = new javax.swing.JMenuItem();
         jMenuItemSyntax = new javax.swing.JMenuItem();
-        jMenuItemLinks = new javax.swing.JMenuItem();
         jMenuItemHelpedCode = new javax.swing.JMenuItem();
         jSeparator12 = new javax.swing.JSeparator();
         jMenuItemSettings = new javax.swing.JMenuItem();
-        jMenuLinks = new javax.swing.JMenu();
         jMenuHelp = new javax.swing.JMenu();
         jMenuItemHelp = new javax.swing.JMenuItem();
         jMenuItemConfigurazione = new javax.swing.JMenuItem();
@@ -1308,25 +1302,6 @@ public class jFrame extends JFrame {
         jPanel44.add(jButton26);
 
         jPanel14.add(jPanel44);
-
-        jPanel25.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabel17.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_BROWSERPATH"));
-        jPanel25.add(jLabel17);
-
-        jTextFieldPathBrowser.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel25.add(jTextFieldPathBrowser);
-
-        jButton22.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButton22.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton22ActionPerformed(evt);
-            }
-        });
-
-        jPanel25.add(jButton22);
-
-        jPanel14.add(jPanel25);
 
         jPanel46.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -3000,17 +2975,6 @@ public class jFrame extends JFrame {
 
         jMenuOptions.add(jMenuItemSyntax);
 
-        jMenuItemLinks.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemLinks.setText(java.util.ResourceBundle.getBundle("JIF").getString("CONFIG_LINKS"));
-        jMenuItemLinks.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_LINKS_TOOLTIP"));
-        jMenuItemLinks.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemLinksActionPerformed(evt);
-            }
-        });
-
-        jMenuOptions.add(jMenuItemLinks);
-
         jMenuItemHelpedCode.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemHelpedCode.setText(java.util.ResourceBundle.getBundle("JIF").getString("HELPED_FILE"));
         jMenuItemHelpedCode.addActionListener(new java.awt.event.ActionListener() {
@@ -3034,11 +2998,6 @@ public class jFrame extends JFrame {
         jMenuOptions.add(jMenuItemSettings);
 
         jMenuBar1.add(jMenuOptions);
-
-        jMenuLinks.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_LINKS"));
-        jMenuLinks.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuLinks.setDelay(0);
-        jMenuBar1.add(jMenuLinks);
 
         jMenuHelp.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_HELP"));
         jMenuHelp.setDelay(0);
@@ -3532,7 +3491,6 @@ public class jFrame extends JFrame {
         jTextFieldPathCompiler.setText(compiler);
         jTextFieldPathInterpreter.setText(interpreter);
         jTextFieldPathGlulx.setText(glulx);
-        jTextFieldPathBrowser.setText(defaultBrowser);
         
         // set the colors
         updateColor();
@@ -3690,15 +3648,7 @@ public class jFrame extends JFrame {
             jListProject.setToolTipText(null);
         }
     }//GEN-LAST:event_jListProjectMouseEntered
-    
-    private void jButton22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton22ActionPerformed
-        JFileChooser chooser = new JFileChooser(workingDir);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
-            return;
-        } else jTextFieldPathBrowser.setText(chooser.getSelectedFile().getAbsolutePath());
-    }//GEN-LAST:event_jButton22ActionPerformed
-    
+        
     private void jButtonInterpreterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInterpreterActionPerformed
         runInterpreter();
     }//GEN-LAST:event_jButtonInterpreterActionPerformed
@@ -3780,7 +3730,6 @@ public class jFrame extends JFrame {
         jTextFieldPathCompiler.setText(compiler);
         jTextFieldPathInterpreter.setText(interpreter);
         jTextFieldPathGlulx.setText(glulx);
-        jTextFieldPathBrowser.setText(defaultBrowser);
         
         updateColor();
         updateColorEditor();
@@ -3859,16 +3808,7 @@ public class jFrame extends JFrame {
     private void jMenuItemOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemOpenProjectActionPerformed
         openProject();
     }//GEN-LAST:event_jMenuItemOpenProjectActionPerformed
-    
-    private void jMenuItemLinksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLinksActionPerformed
-        try{
-            loadConfigFiles(workingDir+"config"+Constants.SEP+java.util.ResourceBundle.getBundle("JIF").getString("CONFIG_LINKS"));
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
-        }
-    }//GEN-LAST:event_jMenuItemLinksActionPerformed
-    
+        
     private void jMenuItemInsertSymbol1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemInsertSymbol1ActionPerformed
         showJWindowSymbol();
     }//GEN-LAST:event_jMenuItemInsertSymbol1ActionPerformed
@@ -5251,55 +5191,9 @@ public class jFrame extends JFrame {
                 System.err.println(e.getMessage());
             }
             
-            
-            
             // carico la configurazione di JIF
             loadJifConfiguration(new File(this.workingDir+"config"+Constants.SEP+"config.jif"));
-            
-            // CARICO I LINK DA AGGIUNGERE COME MENU
-            try{
-                file = new File(workingDir+"config"+Constants.SEP+java.util.ResourceBundle.getBundle("JIF").getString("CONFIG_LINKS"));
-                if (!(file.exists())){
-                    System.out.println(java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE5"));
-                    return;
-                }
-                br = new BufferedReader(new FileReader(file));
-                
-                while ((riga = br.readLine())!=null){
-                    
-                    if (!(riga.startsWith(Constants.TOKENCOMMENT))&&!(riga.equals(""))){
-                        JMenuItem mi = new JMenuItem(riga);
-                        mi.setFont(new Font("Dialog",Font.PLAIN,11));
-                        
-                        mi.addActionListener(new java.awt.event.ActionListener() {
-                            // MouseListener per descrivere l'azione dello switch
-                            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                try{
-                                    String testo= ((JMenuItem)evt.getSource()).getText();
-                                    
-                                    // controllo l'esistenza del browser
-                                    checkBrowser();
-                                    
-                                    Runtime rt = Runtime.getRuntime();
-                                    String auxBrowser[]=new String[2];
-                                    auxBrowser[0]=defaultBrowser;
-                                    auxBrowser[1]=testo;
-                                    rt.exec(auxBrowser); //Process proc =  unused
-                                    
-                                } catch(Exception e){
-                                    System.out.println(e.getMessage());
-                                    System.err.println(e.getMessage());
-                                }
-                            }
-                        });
-                        jMenuLinks.add(mi);
-                    }
-                }
-                br.close();
-            } catch(Exception e){
-                System.err.println("ERROR WHILE LOADING "+ workingDir+"config"+Constants.SEP+java.util.ResourceBundle.getBundle("JIF").getString("CONFIG_LINKS"));
-                System.err.println(e.getMessage());
-            }
+
         } // end if loaded==true
         
         
@@ -5340,7 +5234,6 @@ public class jFrame extends JFrame {
                     if (riga.indexOf("interpreter=")!=-1){interpreter=riga.substring(riga.indexOf("interpreter=")+12);}
                     if (riga.indexOf("glulx=")!=-1){glulx=riga.substring(riga.indexOf("glulx=")+6);}
                     if (riga.indexOf("compiler=")!=-1){compiler=riga.substring(riga.indexOf("compiler=")+9);}
-                    if (riga.indexOf("defaultBrowser=")!=-1){defaultBrowser=riga.substring(riga.indexOf("defaultBrowser=")+15);}
                     if (riga.indexOf("BRESLOCATION=")!=-1){jTextFieldBres.setText(riga.substring(riga.indexOf("BRESLOCATION=")+13));}
                     if (riga.indexOf("BLCLOCATION=")!=-1) {jTextFieldBlc.setText( riga.substring(riga.indexOf("BLCLOCATION=")+12));}
                 }
@@ -7745,7 +7638,6 @@ public class jFrame extends JFrame {
         makeConfig.append("interpreter="+jTextFieldPathInterpreter.getText()+"\n");
         makeConfig.append("glulx="+jTextFieldPathGlulx.getText()+"\n");
         makeConfig.append("compiler="+jTextFieldPathCompiler.getText()+"\n");
-        makeConfig.append("defaultBrowser="+ jTextFieldPathBrowser.getText()+"\n");
         makeConfig.append("BRESLOCATION="+ jTextFieldBres.getText()+"\n");
         makeConfig.append("BLCLOCATION="+ jTextFieldBlc.getText()+"\n");
         
@@ -7946,7 +7838,6 @@ public class jFrame extends JFrame {
     // questa funzione toglie i doppi apici o i singoli apici
     // dai campi di PATH
     public void unquote(){
-        String browser = jTextFieldPathBrowser.getText();
         String compiler = jTextFieldPathCompiler.getText();
         String games = jTextFieldPathGames.getText();
         String interpreter = jTextFieldPathInterpreter.getText();
@@ -7954,11 +7845,6 @@ public class jFrame extends JFrame {
         String libsec1 = jTextFieldPathLibSecondary1.getText();
         String libsec2 = jTextFieldPathLibSecondary2.getText();
         String libsec3 = jTextFieldPathLibSecondary3.getText();
-        
-        // tolgo i " e '
-        browser = Utils.replace(browser , "\"", "");
-        browser = Utils.replace(browser , "'", "");
-        jTextFieldPathBrowser.setText(browser);
         
         compiler = Utils.replace(compiler , "\"", "");
         compiler = Utils.replace(compiler , "'", "");
@@ -8204,29 +8090,6 @@ public class jFrame extends JFrame {
             jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
         } catch(IOException e){
             System.err.println(e.getMessage());
-        }
-    }
-    
-    
-    // metodo controlla l'esistenza del browser
-    public void checkBrowser(){
-        // se il defaultBrowser non è stato impostato
-        if (null == defaultBrowser || defaultBrowser.trim().equals("")){
-            System.out.println("ERR: defaultBrowser not set");
-            JOptionPane.showMessageDialog(this.jDialogOption,
-                    "WEB BROWSER not set",
-                    "Web Browser Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        File file = new File(defaultBrowser);
-        if (!(file.exists())){
-            System.out.println(defaultBrowser+": "+java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1"));
-            JOptionPane.showMessageDialog(this.jDialogOption,
-                    defaultBrowser+": "+
-                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1") ,
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
         }
     }
     
@@ -8834,7 +8697,6 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButton19;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton21;
-    private javax.swing.JButton jButton22;
     private javax.swing.JButton jButton23;
     private javax.swing.JButton jButton24;
     private javax.swing.JButton jButton25;
@@ -8914,7 +8776,6 @@ public class jFrame extends JFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
@@ -8974,7 +8835,6 @@ public class jFrame extends JFrame {
     private javax.swing.JMenuItem jMenuItemInsertSymbol1;
     private javax.swing.JMenuItem jMenuItemJumpToSource;
     private javax.swing.JMenuItem jMenuItemLeftShift;
-    private javax.swing.JMenuItem jMenuItemLinks;
     private javax.swing.JMenuItem jMenuItemMakeBlb;
     private javax.swing.JMenuItem jMenuItemMakeResource;
     private javax.swing.JMenuItem jMenuItemNewProject;
@@ -9012,7 +8872,6 @@ public class jFrame extends JFrame {
     private javax.swing.JMenuItem jMenuItemSyntax;
     private javax.swing.JMenuItem jMenuItemTranslate;
     private javax.swing.JMenuItem jMenuItemUncommentSelection;
-    private javax.swing.JMenu jMenuLinks;
     private javax.swing.JMenu jMenuMode;
     private javax.swing.JMenu jMenuOptions;
     private javax.swing.JMenu jMenuPaste;
@@ -9033,7 +8892,6 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel24;
-    private javax.swing.JPanel jPanel25;
     private javax.swing.JPanel jPanel26;
     private javax.swing.JPanel jPanel27;
     private javax.swing.JPanel jPanel28;
@@ -9117,7 +8975,6 @@ public class jFrame extends JFrame {
     public javax.swing.JTextField jTextFieldFindAll;
     private javax.swing.JTextField jTextFieldFont;
     private javax.swing.JTextField jTextFieldMaxRecentFiles;
-    private javax.swing.JTextField jTextFieldPathBrowser;
     private javax.swing.JTextField jTextFieldPathCompiler;
     private javax.swing.JTextField jTextFieldPathGames;
     private javax.swing.JTextField jTextFieldPathGlulx;
@@ -9222,9 +9079,6 @@ public class jFrame extends JFrame {
     private JFrame JWindowSymbols;
     private JList jListSymbols;
     
-    // links
-    private String defaultBrowser;
-    
     // titolo di JIF, serve per aggiungerci il nome del progetto aperto
     private String jifVersion = "Jif "+ Constants.JIFVERSION + "     Inform Mode";
     
@@ -9253,16 +9107,9 @@ public class jFrame extends JFrame {
     private String lastFile;
     private int maxRecentFiles=10;
     
-    
     // ultima dir usata per aprire un file
     private String lastDir = null;
-    
-    // spellcheck file name
-    //private String spellcheck; unused
-    
-    // Inform/Glulx Mode
-    // private String Mode; unused
-    
+   
     // PROJECT VARIABLES
     private String currentProject ="default";
     private Vector projectFiles ;
