@@ -31,14 +31,17 @@
  */
 
 import javax.swing.text.*;
-import javax.swing.event.*;
 
 /**
  * An extension of DefaultStyledDocument for the Inform Syntax Highlight
  * @author Alessandro Schillaci
  */
  public class InformDocument extends DefaultStyledDocument{
-        jFrame jframe;
+        /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5856047697369563208L;
+		jFrame jframe;
         DefaultStyledDocument doc;
         MutableAttributeSet normal;
         MutableAttributeSet keyword;

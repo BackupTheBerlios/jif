@@ -42,6 +42,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -105,11 +106,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.*;
-import java.io.*;
-import java.nio.*;
-import java.nio.charset.*;
-import java.nio.channels.*;
+
 
 /*
  * jFrame.java
@@ -125,7 +122,12 @@ import java.nio.channels.*;
  */
 public class jFrame extends JFrame {
     
-    /** Creates new form jFrame */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7544939067324000307L;
+
+	/** Creates new form jFrame */
     public jFrame(String dir) {
         
         // Screen Resolution
@@ -193,7 +195,7 @@ public class jFrame extends JFrame {
         
         jListSymbols.addKeyListener(new java.awt.event.KeyAdapter(){
             public void keyPressed(java.awt.event.KeyEvent ke){
-                if ((ke.getKeyCode()==ke.VK_ENTER)){
+                if ((ke.getKeyCode()==KeyEvent.VK_ENTER)){
                     try{
                         if (jCheckBoxMappingLive.isSelected()&&mapping.containsKey((String)jListSymbols.getSelectedValue())){
                             getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)mapping.get((String)jListSymbols.getSelectedValue()), attr);
@@ -205,7 +207,7 @@ public class jFrame extends JFrame {
                     }
                 }
                 // ESC key
-                if ((ke.getKeyCode()==ke.VK_ESCAPE)){
+                if ((ke.getKeyCode()==KeyEvent.VK_ESCAPE)){
                     JWindowSymbols.hide();
                 }
             }
@@ -253,7 +255,6 @@ public class jFrame extends JFrame {
         
         // load JIF ini
         loadJifIni();
-        //new SplashWindow(this);
         
         // Opens the last file opened
         if (jCheckBoxOpenLastFile.isSelected() && (null!=lastFile && !lastFile.equals("null"))){
@@ -3241,7 +3242,7 @@ public class jFrame extends JFrame {
     
     private void jButton28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton28ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
-        chooser.setFileSelectionMode(chooser.DIRECTORIES_ONLY);
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.CANCEL_OPTION) {
             return;
@@ -3253,7 +3254,7 @@ public class jFrame extends JFrame {
     
     private void jButton27ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton27ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
-        chooser.setFileSelectionMode(chooser.DIRECTORIES_ONLY);
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.CANCEL_OPTION) {
             return;
@@ -3429,7 +3430,7 @@ public class jFrame extends JFrame {
     
     private void jButton25ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton25ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
-        chooser.setFileSelectionMode(chooser.DIRECTORIES_ONLY);
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.CANCEL_OPTION) {
             return;
@@ -3463,7 +3464,7 @@ public class jFrame extends JFrame {
         // Creates a new file and append this to the project
         newAdventure();
         saveAs();
-        projectFiles.add(new FileProject(this.getCurrentFilename()));
+        projectFiles.add(new FileProject(jFrame.getCurrentFilename()));
         jListProject.removeAll();
         // Sorting the vector
         Collections.sort(projectFiles,new Comparator(){
@@ -3483,7 +3484,7 @@ public class jFrame extends JFrame {
         // Creates a new file and append this to the project
         newAdventure();
         saveAs();
-        projectFiles.add(new FileProject(this.getCurrentFilename()));
+        projectFiles.add(new FileProject(jFrame.getCurrentFilename()));
         jListProject.removeAll();
         // Sorting the vector
         Collections.sort(projectFiles,new Comparator(){
@@ -4122,7 +4123,7 @@ public class jFrame extends JFrame {
     
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
-        chooser.setFileSelectionMode(chooser.DIRECTORIES_ONLY);
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.CANCEL_OPTION) {
             return;
@@ -4134,7 +4135,7 @@ public class jFrame extends JFrame {
     
     private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
-        chooser.setFileSelectionMode(chooser.DIRECTORIES_ONLY);
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.CANCEL_OPTION) {
             return;
@@ -4901,7 +4902,11 @@ public class jFrame extends JFrame {
                 jtp = new JIFTextPane(this, file);
             } else{
                 jtp = new JIFTextPane(this, file){
-                    public boolean getScrollableTracksViewportWidth(){
+                    /**
+					 * 
+					 */
+					private static final long serialVersionUID = 7492924940162258936L;
+					public boolean getScrollableTracksViewportWidth(){
                         if (getSize().width < getParent().getSize().width) return true;
                         return false;
                     }
@@ -4961,7 +4966,12 @@ public class jFrame extends JFrame {
             jtp = new JIFTextPane(this, file);
         } else{
             jtp = new JIFTextPane(this, file){
-                public boolean getScrollableTracksViewportWidth(){
+                /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1381807237210816003L;
+
+				public boolean getScrollableTracksViewportWidth(){
                     if (getSize().width < getParent().getSize().width) return true;
                     return false;
                 }
@@ -5013,7 +5023,12 @@ public class jFrame extends JFrame {
             jtp = new JIFTextPane(this, null);
         } else{
             jtp = new JIFTextPane(this, null){
-                public boolean getScrollableTracksViewportWidth(){
+                /**
+				 * 
+				 */
+				private static final long serialVersionUID = -7868710263636743719L;
+
+				public boolean getScrollableTracksViewportWidth(){
                     if (getSize().width < getParent().getSize().width) return true;
                     return false;
                 }
@@ -5692,7 +5707,6 @@ public class jFrame extends JFrame {
         treeModel.reload();
         
         String testo = getCurrentJIFTextPane().getText();
-        StringTokenizer sttok;
         
         // Using the regexp
         Charset charset = Charset.forName("ISO-8859-1");
@@ -6641,7 +6655,7 @@ public class jFrame extends JFrame {
     public void insertFromFile(){
         try{
             JFileChooser chooser = new JFileChooser(insertnewdir);
-            chooser.setFileSelectionMode(chooser.FILES_ONLY);
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             int returnVal = chooser.showOpenDialog(this);
             if(returnVal == JFileChooser.CANCEL_OPTION) {
                 return;
@@ -9213,7 +9227,6 @@ public class jFrame extends JFrame {
     
     // titolo di JIF, serve per aggiungerci il nome del progetto aperto
     private String jifVersion = "Jif "+ Constants.JIFVERSION + "     Inform Mode";
-    private Hashtable tutorialtarget;
     
     // COLORS
     public Color colorKeyword;

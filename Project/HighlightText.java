@@ -32,7 +32,6 @@
 
 import javax.swing.text.*;
 import java.awt.*;
-import javax.swing.*;
 
 /**
  * Class for Highlighting text in a JTextComponent

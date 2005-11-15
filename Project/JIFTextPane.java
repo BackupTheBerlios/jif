@@ -45,7 +45,11 @@ import java.util.*;
  */
 public class JIFTextPane extends JTextPane{
     
-    UndoManager undoF;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1475021670099346825L;
+	UndoManager undoF;
     jFrame jframe;
     Element el;
     MouseListener popupListener;
@@ -123,15 +127,20 @@ public class JIFTextPane extends JTextPane{
             public void undoableEditHappened(UndoableEditEvent evt) {
                 undoF.addEdit(evt.getEdit());
                 // adding a "*" to the file name, when the file has changed but not saved
-                if (jframe.getTabbed().getComponentCount()!=0  && jframe.getCurrentFilename().indexOf("*")==-1){
+                if (jframe.getTabbed().getComponentCount()!=0  && jFrame.getCurrentFilename().indexOf("*")==-1){
                     jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), subPath+"*");
-                    jframe.setTitle(jframe.getJifVersion() +" - " + jframe.getCurrentFilename());
+                    jframe.setTitle(jframe.getJifVersion() +" - " + jFrame.getCurrentFilename());
                 }
             }
         });
         
         getActionMap().put("Undo", new AbstractAction("Undo") {
-            public void actionPerformed(ActionEvent evt) {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 4366132315214562191L;
+
+			public void actionPerformed(ActionEvent evt) {
                 try {
                     if (undoF.canUndo()) {
                         while (undoF.getUndoPresentationName().equals(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_STYLE_CHANGED_UNDO"))){
@@ -139,9 +148,9 @@ public class JIFTextPane extends JTextPane{
                         }
                         undoF.undo();
                         // adding a "*" to the file name, when the file has changed but not saved
-                        if (jframe.getTabbed().getComponentCount()!=0  && jframe.getCurrentFilename().indexOf("*")==-1){
+                        if (jframe.getTabbed().getComponentCount()!=0  && jFrame.getCurrentFilename().indexOf("*")==-1){
                             jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), subPath+"*");
-                            jframe.setTitle(jframe.getJifVersion() +" - " + jframe.getCurrentFilename());
+                            jframe.setTitle(jframe.getJifVersion() +" - " + jFrame.getCurrentFilename());
                         }
                     }
                 } catch (CannotUndoException e) {
@@ -153,7 +162,12 @@ public class JIFTextPane extends JTextPane{
         getInputMap().put(KeyStroke.getKeyStroke("control Z"), "Undo");
         
         getActionMap().put("Redo", new AbstractAction("Redo") {
-            public void actionPerformed(ActionEvent evt) {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 3720633173380513902L;
+
+			public void actionPerformed(ActionEvent evt) {
                 try {
                     if (undoF.canRedo()) {
                         while (undoF.getRedoPresentationName().equals(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_STYLE_CHANGED_REDO"))){
@@ -161,9 +175,9 @@ public class JIFTextPane extends JTextPane{
                         }
                         undoF.redo();
                         // adding a "*" to the file name, when the file has changed but not saved
-                        if (jframe.getTabbed().getComponentCount()!=0  && jframe.getCurrentFilename().indexOf("*")==-1){
+                        if (jframe.getTabbed().getComponentCount()!=0  && jFrame.getCurrentFilename().indexOf("*")==-1){
                             jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), subPath+"*");
-                            jframe.setTitle(jframe.getJifVersion() +" - " + jframe.getCurrentFilename());
+                            jframe.setTitle(jframe.getJifVersion() +" - " + jFrame.getCurrentFilename());
                         }
                     }
                 } catch (CannotRedoException e) {

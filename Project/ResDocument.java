@@ -33,14 +33,17 @@
 
 import javax.swing.text.*;
 import java.util.Hashtable;
-import javax.swing.event.*;
 
 /**
  * An extension of DefaultStyledDocument for the Resource Syntax Highlight
  * @author Alessandro Schillaci
  */
  public class ResDocument extends DefaultStyledDocument{
-        jFrame jframe;
+        /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4399244071115666713L;
+		jFrame jframe;
         DefaultStyledDocument doc;
         MutableAttributeSet normal;
         MutableAttributeSet keyword;

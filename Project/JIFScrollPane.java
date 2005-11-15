@@ -31,16 +31,13 @@
  */
 
 import javax.swing.*;
-import javax.swing.text.*;
-import java.io.*;
-import java.awt.*;
-import javax.swing.undo.*;
-import javax.swing.event.*;
-import java.awt.event.*;
-import java.util.*;
 
 public class JIFScrollPane extends JScrollPane{
-    String filePath;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4897501931771671145L;
+	String filePath;
     /** Creates a new instance of JIFScrollPane */
     public JIFScrollPane(JIFTextPane aJIFTextPane,String aPath) {
         super(aJIFTextPane);

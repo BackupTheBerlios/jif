@@ -31,6 +31,7 @@
  */
 
 import java.awt.event.*;
+
 import javax.swing.text.*;
 
 /**
@@ -106,13 +107,13 @@ public class EditorKeyAdapter extends KeyAdapter {
             
             
             // Automatic JUMP to object, if present into the object tree
-            if (ke.getKeyCode() == ke.VK_J && ke.isControlDown()) {
+            if (ke.getKeyCode() == KeyEvent.VK_J && ke.isControlDown()) {
                 jframe.checkTree(jif.getCurrentWord());
             }
             
             
             // Automatic right shifting
-            if (ke.getKeyCode() == ke.VK_ENTER) {
+            if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
                 Element root = doc.getDefaultRootElement();
                 Element e = root.getElement(root.getElementIndex(jif.getCaretPosition()-1));
                 String tmp;
@@ -137,19 +138,19 @@ public class EditorKeyAdapter extends KeyAdapter {
                 }
             }
 
-            if( (ke.getKeyCode() == ke.VK_RIGHT )&&(ke.isAltDown() ) ){
+            if( (ke.getKeyCode() == KeyEvent.VK_RIGHT )&&(ke.isAltDown() ) ){
                 jif.tabSelection();
             }
 
-            if( (ke.getKeyCode() == ke.VK_LEFT )&&(ke.isAltDown() ) ){
+            if( (ke.getKeyCode() == KeyEvent.VK_LEFT )&&(ke.isAltDown() ) ){
                 jif.removeTabSelection();
             }
 
             // Ignored keys
-            if( (ke.getKeyCode()==ke.VK_DOWN)  ||  (ke.getKeyCode()==ke.VK_UP)   ||
-            (ke.getKeyCode()==ke.VK_RIGHT) ||  (ke.getKeyCode()==ke.VK_LEFT) ||
-            (ke.getKeyCode()==ke.VK_SHIFT) ||  (ke.getKeyCode()==ke.VK_END)  ||
-            (ke.getKeyCode()==ke.VK_HOME)){
+            if( (ke.getKeyCode()==KeyEvent.VK_DOWN)  ||  (ke.getKeyCode()==KeyEvent.VK_UP)   ||
+            (ke.getKeyCode()==KeyEvent.VK_RIGHT) ||  (ke.getKeyCode()==KeyEvent.VK_LEFT) ||
+            (ke.getKeyCode()==KeyEvent.VK_SHIFT) ||  (ke.getKeyCode()==KeyEvent.VK_END)  ||
+            (ke.getKeyCode()==KeyEvent.VK_HOME)){
 
                 jif.removeHighlighterBrackets();
 
@@ -179,7 +180,7 @@ public class EditorKeyAdapter extends KeyAdapter {
 
 
             // Assistant code
-            if (jframe.jCheckBoxHelpedCode.isSelected()&&(ke.getKeyCode()==ke.VK_SPACE && ke.isControlDown() ) ){
+            if (jframe.jCheckBoxHelpedCode.isSelected()&&(ke.getKeyCode()==KeyEvent.VK_SPACE && ke.isControlDown() ) ){
                 el = doc.getDefaultRootElement();
                 int ind = el.getElementIndex(jif.getCaretPosition());
                 el = doc.getDefaultRootElement().getElement(ind);
@@ -214,7 +215,7 @@ public class EditorKeyAdapter extends KeyAdapter {
 
 
 
-            if( (ke.getKeyCode() == ke.VK_F )&&(ke.isControlDown() ) ){
+            if( (ke.getKeyCode() == KeyEvent.VK_F )&&(ke.isControlDown() ) ){
                 String selezione = jif.getSelectedText();
                 if (selezione!=null){
                     jframe.jTextFieldFind.setText(selezione);
@@ -223,12 +224,12 @@ public class EditorKeyAdapter extends KeyAdapter {
             }
 
             // CTRL+INS for "copy" command
-            else if( (ke.getKeyCode() == ke.VK_INSERT)&&(ke.isControlDown()) ){
+            else if( (ke.getKeyCode() == KeyEvent.VK_INSERT)&&(ke.isControlDown()) ){
                 jframe.copyToClipBoard();
             }
             // SHIFT+INS for "paste" command
-            else if( (ke.getKeyCode() == ke.VK_INSERT)&&(ke.isShiftDown()) ){
-                String paste = jframe.getClipboard();
+            else if( (ke.getKeyCode() == KeyEvent.VK_INSERT)&&(ke.isShiftDown()) ){
+                String paste = jFrame.getClipboard();
                 if (paste!=null){
                     doc.insertString(jif.getCaretPosition() , paste , jframe.getAttr());
                 }

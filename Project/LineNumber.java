@@ -1,10 +1,12 @@
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.text.*;
 
 public class LineNumber extends JComponent
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2905458151135695364L;
 	private final static Color DEFAULT_BACKGROUND = new Color(204, 204, 255);
 	private final static Color DEFAULT_FOREGROUND = Color.black;
 	private final static Font  DEFAULT_FONT = new Font("monospaced", Font.PLAIN, 12);
