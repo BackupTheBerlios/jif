@@ -37,14 +37,7 @@ import java.awt.*;
 import javax.swing.undo.*;
 import javax.swing.event.*;
 import java.awt.event.*;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This is a sub-class of JTextPane, with the Inform source management.
@@ -1081,8 +1074,9 @@ public class JIFTextPane extends JTextPane{
         int start = Utilities.getWordStart(this, getCaretPosition());
         int end = Utilities.getWordEnd(this, getCaretPosition());
         String word = getDocument().getText(start, end-start);
-        if(word.indexOf(".")!=-1)
+        if(word.indexOf(".")!=-1){
             word=word.substring(0,word.lastIndexOf("."));
+        }
         //System.out.println( "Selected word: " + word );
         return word;
     }

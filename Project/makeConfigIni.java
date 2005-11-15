@@ -1,5 +1,5 @@
 /*
- * jFrame.java
+ * makeConfigIni.java
  *
  * This file is part of JIF.
  *
@@ -9,7 +9,7 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004  Alessandro Schillaci
+ * Copyright (C) 2004-2005  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
  * e-m@il: silver.slade@tiscalinet.it

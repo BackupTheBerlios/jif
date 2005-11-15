@@ -106,8 +106,9 @@ public class HighlightBookmark extends DefaultHighlighter.DefaultHighlightPainte
             Highlighter hilite = component.getHighlighter();
             Highlighter.Highlight[] hilites = hilite.getHighlights();
             for (int i = 0; i < hilites.length; i++)     {
-                if (hilites[i].getPainter() instanceof HighlightBookmark)
+                if (hilites[i].getPainter() instanceof HighlightBookmark){
                     hilite.removeHighlight(hilites[i]);
+                }
             }
         }
         

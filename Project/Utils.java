@@ -169,43 +169,6 @@ public class Utils {
     }
 
 
-
-    // Print Functions
-    //    // stampa il contenuto di un JIFTextPane
-//    // titolo, JIFTextPane
-//    // job.setJobName("Jif print - "+getCurrentFilename());
-//    public static void printDoc(String title,JTextComponent component){
-//        try{
-//            PrinterJob job = PrinterJob.getPrinterJob();
-//            final JTextComponent comp = component;
-//            job.setJobName(title);
-//            if (job.printDialog()==false) return;
-//            job.setPrintable(new Printable() {
-//                public int print(Graphics g, PageFormat format, int pageNumber){
-//                    double pageOffset = pageNumber * format.getImageableHeight();
-//                    View view = comp.getUI().getRootView(getCurrentJIFTextPane());
-//                    if(pageOffset > view.getPreferredSpan(view.Y_AXIS))
-//                    return Printable.NO_SUCH_PAGE;
-//                    ((Graphics2D)g).translate(0d, - pageOffset);
-//                    Shape rect2D =
-//                    new Rectangle2D.Double(format.getImageableX(),
-//                    format.getImageableY(),
-//                    format.getImageableWidth(),
-//                    format.getImageableHeight() + pageOffset);
-//                    view.paint(g, rect2D);
-//                    return Printable.PAGE_EXISTS;
-//                }
-//            }
-//            );
-//            job.print();
-//        }
-//        catch(PrinterException e){
-//            e.printStackTrace();
-//            System.err.println(e.getMessage());
-//        }
-//    }
-
-
     public void printInform(jFrame jframe,String title, JTextComponent jif){
       Properties prop = new Properties();
       PrintJob pjob = jframe.getToolkit().getPrintJob(jframe, title, prop);
