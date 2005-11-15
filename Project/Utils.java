@@ -9,7 +9,7 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004  Alessandro Schillaci
+ * Copyright (C) 2004-2005  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
  * e-m@il: silver.slade@tiscalinet.it
@@ -31,14 +31,11 @@
  */
 
 import java.io.*;
-import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.swing.text.*;
 import java.awt.*;
 import java.util.*;
-import javax.swing.JTree;
 
 
 /**
@@ -231,7 +228,7 @@ public class Utils {
     s = Utils.replace(s,"\t","    ");
 
     int margin = 50;
-    int pageNum = 1;
+    int pageNum = 1;    
     int linesForThisPage = 0;
     int linesForThisJob = 0;
     // Note: String is immutable so won't change while printing.
