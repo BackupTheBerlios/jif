@@ -389,8 +389,6 @@ public class jFrame extends JFrame {
         jLabel14 = new javax.swing.JLabel();
         jTextFieldPathGames = new javax.swing.JTextField();
         jButton16 = new javax.swing.JButton();
-        jPanel9 = new javax.swing.JPanel();
-        jCheckBoxAdventInLib = new javax.swing.JCheckBox();
         jPanel18 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
         jTextFieldPathCompiler = new javax.swing.JTextField();
@@ -413,7 +411,8 @@ public class jFrame extends JFrame {
         jButtonBlc = new javax.swing.JButton();
         jPanel48 = new javax.swing.JPanel();
         jCheckBoxMakeResource = new javax.swing.JCheckBox();
-        jPanel15 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        jCheckBoxAdventInLib = new javax.swing.JCheckBox();
         jPanelColor = new javax.swing.JPanel();
         jPanel33 = new javax.swing.JPanel();
         jPanel26 = new javax.swing.JPanel();
@@ -444,8 +443,8 @@ public class jFrame extends JFrame {
         jLabelDefaultDark = new javax.swing.JLabel();
         jButtonDefaultDark = new javax.swing.JButton();
         jEditorPaneColor = new javax.swing.JEditorPane();
-        jPanelFont = new javax.swing.JPanel();
-        jPanel34 = new javax.swing.JPanel();
+        jPanel13 = new javax.swing.JPanel();
+        jTextFieldFont = new javax.swing.JTextField();
         jComboBoxFont = new javax.swing.JComboBox();
         jComboBoxFont.addItem("Arial");
         jComboBoxFont.addItem("Book Antiqua");
@@ -470,7 +469,6 @@ public class jFrame extends JFrame {
         jComboBoxFontSize.addItem("13");
         jComboBoxFontSize.addItem("14");
 
-        jTextFieldFont = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jButton10 = new javax.swing.JButton();
         jButton23 = new javax.swing.JButton();
@@ -510,6 +508,7 @@ public class jFrame extends JFrame {
         jButtonOption = new javax.swing.JButton();
         jTextFieldFind = new javax.swing.JTextField();
         jButtonFind = new javax.swing.JButton();
+        jTextFieldRowCol = new javax.swing.JTextField();
         jSplitPane3 = new javax.swing.JSplitPane();
         jSplitPane1 = new javax.swing.JSplitPane();
         jTabbedPane3 = new javax.swing.JTabbedPane();
@@ -552,8 +551,6 @@ public class jFrame extends JFrame {
         jTextFieldDefinition = new javax.swing.JTextField();
         jButtonDefinition = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
-        jPanel10 = new javax.swing.JPanel();
-        jTextFieldRowCol = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextAreaOutput = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -1239,11 +1236,6 @@ public class jFrame extends JFrame {
 
         jPanel14.add(jPanel17);
 
-        jCheckBoxAdventInLib.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_ADVENT_IN_LIB"));
-        jPanel9.add(jCheckBoxAdventInLib);
-
-        jPanel14.add(jPanel9);
-
         jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jLabel15.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_COMPILERPATH"));
@@ -1350,13 +1342,16 @@ public class jFrame extends JFrame {
 
         jPanel14.add(jPanel48);
 
-        jPanelPath.add(jPanel14, java.awt.BorderLayout.CENTER);
+        jCheckBoxAdventInLib.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_ADVENT_IN_LIB"));
+        jPanel9.add(jCheckBoxAdventInLib);
 
-        jPanelPath.add(jPanel15, java.awt.BorderLayout.SOUTH);
+        jPanel14.add(jPanel9);
+
+        jPanelPath.add(jPanel14, java.awt.BorderLayout.CENTER);
 
         jTabbedPaneOption.addTab("Path", jPanelPath);
 
-        jPanelColor.setLayout(new java.awt.BorderLayout());
+        jPanelColor.setLayout(new java.awt.BorderLayout(10, 10));
 
         jPanel33.setLayout(new javax.swing.BoxLayout(jPanel33, javax.swing.BoxLayout.Y_AXIS));
 
@@ -1499,9 +1494,10 @@ public class jFrame extends JFrame {
 
         jPanelColor.add(jEditorPaneColor, java.awt.BorderLayout.CENTER);
 
-        jTabbedPaneOption.addTab("Color", jPanelColor);
+        jPanel13.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        jPanelFont.setLayout(new java.awt.BorderLayout());
+        jTextFieldFont.setText("Test Test Test abcdefghilmnopqrstuvz");
+        jPanel13.add(jTextFieldFont);
 
         jComboBoxFont.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1509,22 +1505,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanel34.add(jComboBoxFont);
+        jPanel13.add(jComboBoxFont);
 
+        jComboBoxFontSize.setMinimumSize(new java.awt.Dimension(40, 21));
         jComboBoxFontSize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxFontSizeActionPerformed(evt);
             }
         });
 
-        jPanel34.add(jComboBoxFontSize);
+        jPanel13.add(jComboBoxFontSize);
 
-        jPanelFont.add(jPanel34, java.awt.BorderLayout.WEST);
+        jPanelColor.add(jPanel13, java.awt.BorderLayout.SOUTH);
 
-        jTextFieldFont.setText("Test Test Test abcdefghilmnopqrstuvz");
-        jPanelFont.add(jTextFieldFont, java.awt.BorderLayout.NORTH);
-
-        jTabbedPaneOption.addTab("Font", jPanelFont);
+        jTabbedPaneOption.addTab("Font", jPanelColor);
 
         jDialogOption.getContentPane().add(jTabbedPaneOption, java.awt.BorderLayout.CENTER);
 
@@ -2108,6 +2102,16 @@ public class jFrame extends JFrame {
 
         jToolBarCommon.add(jButtonFind);
 
+        jTextFieldRowCol.setBackground(new java.awt.Color(153, 153, 153));
+        jTextFieldRowCol.setEditable(false);
+        jTextFieldRowCol.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jTextFieldRowCol.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jTextFieldRowCol.setDisabledTextColor(new java.awt.Color(212, 208, 200));
+        jTextFieldRowCol.setMaximumSize(new java.awt.Dimension(50, 20));
+        jTextFieldRowCol.setMinimumSize(new java.awt.Dimension(50, 20));
+        jTextFieldRowCol.setPreferredSize(new java.awt.Dimension(50, 20));
+        jToolBarCommon.add(jTextFieldRowCol);
+
         jPanel22.add(jToolBarCommon, java.awt.BorderLayout.NORTH);
 
         getContentPane().add(jPanel22, java.awt.BorderLayout.NORTH);
@@ -2283,19 +2287,6 @@ public class jFrame extends JFrame {
         });
 
         jPanel5.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
-
-        jPanel10.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
-
-        jTextFieldRowCol.setEditable(false);
-        jTextFieldRowCol.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextFieldRowCol.setBorder(null);
-        jTextFieldRowCol.setDisabledTextColor(new java.awt.Color(212, 208, 200));
-        jTextFieldRowCol.setMaximumSize(new java.awt.Dimension(50, 20));
-        jTextFieldRowCol.setMinimumSize(new java.awt.Dimension(50, 20));
-        jTextFieldRowCol.setPreferredSize(new java.awt.Dimension(50, 20));
-        jPanel10.add(jTextFieldRowCol);
-
-        jPanel5.add(jPanel10, java.awt.BorderLayout.SOUTH);
 
         jSplitPane1.setRightComponent(jPanel5);
 
@@ -3052,6 +3043,16 @@ public class jFrame extends JFrame {
         pack();
     }
     // </editor-fold>//GEN-END:initComponents
+
+    private void jCheckBoxOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxOutputActionPerformed
+        if (!jCheckBoxOutput.getState()) {
+            jTabbedPane2.setVisible(false);
+        }
+        if (jCheckBoxOutput.getState()) {
+            jSplitPane3.setBottomComponent(jTabbedPane2);
+            jTabbedPane2.setVisible(true);
+        }
+    }//GEN-LAST:event_jCheckBoxOutputActionPerformed
 
     private void jMenuItemTranslateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemTranslateActionPerformed
         getCurrentJIFTextPane().InsertTranslate(new File(getCurrentFilename()+"_translate.txt"), new File(getCurrentFilename()+"_translated.inf"));
@@ -3884,7 +3885,7 @@ public class jFrame extends JFrame {
     private void jTree1ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree1ValueChanged
         // Object Tree management
         // Removing all the selected text
-        //getCurrentJIFTextPane().removeHighlighter();
+        getCurrentJIFTextPane().removeHighlighter();
         
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)jTree1.getLastSelectedPathComponent();
         if (node == null || !(node.getUserObject() instanceof Inspect)){
@@ -3896,8 +3897,11 @@ public class jFrame extends JFrame {
             Inspect insp = (Inspect) nodo;
             if (insp != null){
                 JIFTextPane jif = getCurrentJIFTextPane();
-                //jif.getHlighter().highlightFromTo(jif, insp.Iposition , insp.IpositionEnd);
                 el = jif.getDocument().getDefaultRootElement();
+                int ind = el.getElementIndex(insp.Iposition);
+                el = jif.getDocument().getDefaultRootElement().getElement(ind);
+                jif.getHlighter().highlightFromTo(jif, el.getStartOffset() , el.getEndOffset());
+                
                 //jif.scrollRectToVisible(this.getRectForLine(el.getElementIndex(insp.Iposition)));
                 jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                 jif.scrollRectToVisible(jif.modelToView(insp.Iposition));
@@ -4266,17 +4270,7 @@ public class jFrame extends JFrame {
         if (!jCheckBoxJToolBar.getState()) jToolBarCommon.setVisible(false);
         if (jCheckBoxJToolBar.getState()) jToolBarCommon.setVisible(true);
     }//GEN-LAST:event_jCheckBoxJToolBarActionPerformed
-    
-    private void jCheckBoxOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxOutputActionPerformed
-        if (!jCheckBoxOutput.getState()) {
-            jTabbedPane2.setVisible(false);
-        }
-        if (jCheckBoxOutput.getState()) {
-            jSplitPane3.setBottomComponent(jTabbedPane2);
-            jTabbedPane2.setVisible(true);
-        }
-    }//GEN-LAST:event_jCheckBoxOutputActionPerformed
-    
+        
     private void AboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AboutActionPerformed
         jDialogAbout.pack();
         jDialogAbout.setLocationRelativeTo(this);
@@ -5547,8 +5541,9 @@ public class jFrame extends JFrame {
     
     // Modified to Use the Regular Expressions
     public void refreshTree(){
-        //long tempo1=System.currentTimeMillis();
+        // long tempo1=System.currentTimeMillis();
         // Se eseguo il refresh tree e non ho nessun file aperto,
+        
         // resetto solo l'albero
         if (jTabbedPane1.getTabCount() == 0){
             // cancello il contenuto dell'albero
@@ -5695,259 +5690,6 @@ public class jFrame extends JFrame {
         
         //System.out.println("Tempo impiegato= "+(System.currentTimeMillis()-tempo1));
     }
-    
-    // Funzione per il refresh dell'albero
-//    public void refreshTree1(){
-//        long tempo1 = System.currentTimeMillis();
-//        // Se eseguo il refresh tree e non ho nessun file aperto,
-//        // resetto solo l'albero
-//        if (jTabbedPane1.getTabCount() == 0){
-//            // cancello il contenuto dell'albero
-//            category1.removeAllChildren();
-//            category2.removeAllChildren();
-//            //category3.removeAllChildren();
-//            category4.removeAllChildren();
-//            category5.removeAllChildren();
-//            category6.removeAllChildren();
-//            category7.removeAllChildren();
-//            //richiamo il Garbage collector.un po di pulizia
-//            //System.gc();
-//            top.setUserObject("Inspect");
-//            treeModel.reload();
-//            jTextAreaOutput.setText("");    // Svuoto la textarea di output
-//            disableComponents();
-//            this.setTitle(getJifVersion());
-//            jTree1.setEnabled(false);
-//            return;
-//        }
-//        
-//        String currentName = getCurrentFilename();
-//        
-//        // imposto il titolo sulla barra in alto
-//        this.setTitle(getJifVersion() +" - " + currentName);
-//        
-//        // Se il file ha estensione != da INF e H
-//        // svuoto l'abero ed esco
-//        if (currentName.endsWith(".txt")||currentName.endsWith(".res")){
-//            //System.out.println("non è INF ne H");
-//            category1.removeAllChildren();
-//            category2.removeAllChildren();
-//            category4.removeAllChildren();
-//            category5.removeAllChildren();
-//            category6.removeAllChildren();
-//            category7.removeAllChildren();
-//            top.setUserObject("Inspect");
-//            treeModel.reload();
-//            jTree1.setEnabled(false);
-//            return;
-//        }
-//        
-//        jTree1.setEnabled(true);
-//        
-//        // cancello il contenuto dell'albero
-//        category1.removeAllChildren();
-//        category2.removeAllChildren();
-//        //category3.removeAllChildren();
-//        category4.removeAllChildren();
-//        category5.removeAllChildren();
-//        category6.removeAllChildren();
-//        category7.removeAllChildren();
-//        String nomefile = getCurrentFilename();
-//        top.setUserObject(nomefile.substring(nomefile.lastIndexOf(Constants.SEP)+1));
-//        treeModel.reload();
-//        
-//        String testo = getCurrentJIFTextPane().getText();
-//        StringTokenizer sttok;
-//        
-//        String pattern = "Global ";
-//        String appoggio=""; //  appoggio per controllare che non vi siano caratteri di commento
-//        // ! prima del pattern
-//        int pos = 0;
-//        objTree = new Vector(); // serve per l'ordinamento
-//        //while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
-//        while ((pos = Utils.IgnoreCaseIndexOf(testo,pattern, pos)) >= 0)       {
-//            //ignoro le righe con commenti
-//            appoggio = getCurrentJIFTextPane().getRowAt(pos);
-//            appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
-//            if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
-//                sttok = new StringTokenizer(testo.substring(pos+pattern.length())," ;=");
-//                //category1.add(new DefaultMutableTreeNode( new Inspect(sttok.nextToken(),pos,pos+pattern.length())));
-//                objTree.add(new Inspect(sttok.nextToken().toLowerCase(),pos,pos+pattern.length()));
-//            }
-//            pos += pattern.length();
-//        }
-//        
-//        // sorting
-//        sortNodes(objTree,category1);
-//        
-//        
-//        pattern = "Constant ";
-//        pos = 0;
-//        objTree = new Vector();
-//        //while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
-//        while ((pos = Utils.IgnoreCaseIndexOf(testo,pattern, pos)) >= 0)       {
-//            //ignoro le righe con commenti
-//            appoggio = getCurrentJIFTextPane().getRowAt(pos);
-//            appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
-//            if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
-//                sttok = new StringTokenizer(testo.substring(pos+pattern.length())," ;=");
-//                //category2.add(new DefaultMutableTreeNode( new Inspect(sttok.nextToken(),pos,pos+pattern.length())));
-//                objTree.add(new Inspect(sttok.nextToken().toLowerCase(),pos,pos+pattern.length()));
-//            }
-//            pos += pattern.length();
-//        }
-//        // Sorting
-//        sortNodes(objTree,category2);
-//        
-//        
-//        
-//        pattern = "Object ";
-//        String hang="";
-//        String tmp="";
-//        pos = 0;
-//        Vector objvett = new Vector();
-//        objTree = new Vector();
-//        //while ((pos = testo.indexOf(pattern, pos)) >= 0){
-//        while ((pos = Utils.IgnoreCaseIndexOf(testo,pattern, pos)) >= 0){
-//            //ignoro le righe con commenti
-//            appoggio = getCurrentJIFTextPane().getRowAt(pos);
-//            int posizione_freccia=0;
-//            posizione_freccia = appoggio.lastIndexOf("->");
-//            appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
-//            appoggio = appoggio.trim();
-//            if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
-//                if (posizione_freccia==-1) {
-//                    posizione_freccia=0;
-//                } else posizione_freccia -=3;
-//                
-//                tmp = testo.substring(pos+pattern.length()-1+posizione_freccia);
-//                if (tmp.trim().startsWith("\"")){
-//                    sttok = new StringTokenizer(tmp.trim(),"\"");
-//                } else{
-//                    sttok = new StringTokenizer(tmp," ;");
-//                }
-//                hang = sttok.nextToken();
-//                //category4.add(new DefaultMutableTreeNode( new Inspect(hang,pos,pos+pattern.length()-1)));
-//                objvett.add(hang);
-//                objTree.add(new Inspect(hang.toLowerCase(),pos,pos+pattern.length()-1));
-//            }
-//            pos += pattern.length();
-//        }
-//        
-//        // Sorting
-//        sortNodes(objTree,category4);
-//        
-//        
-//        
-//        pattern = "Sub";
-//        pos = 0;
-//        objTree = new Vector();
-//        tmp="";
-//        //while ((pos = testo.indexOf(pattern, pos)) >= 0){
-//        while ((pos = Utils.IgnoreCaseIndexOf(testo,pattern, pos)) >= 0){
-//            //ignoro le righe con commenti
-//            appoggio = getCurrentJIFTextPane().getRowAt(pos);
-//            //appoggio = appoggio.substring(0, appoggio.indexOf(pattern));
-//            if (appoggio.indexOf("!")==-1 && appoggio.indexOf('[')>=0 && appoggio.indexOf(';')>=0){
-//                tmp = testo.substring(0,pos);
-//                tmp = tmp.substring(tmp.lastIndexOf('[')+1);
-//                tmp = tmp.trim();
-//                //category6.add(new DefaultMutableTreeNode( new Inspect( tmp+pattern,pos,pos+pattern.length())));
-//                objTree.add(new Inspect((tmp+pattern).toLowerCase(),pos,pos+pattern.length()));
-//            }
-//            pos += pattern.length();
-//        }
-//        // Sorting
-//        sortNodes(objTree,category6);
-//        
-//        
-//        
-//        
-//        // ***************** CLASSI
-//        Vector classi_locali= new Vector();
-//        pattern = "Class ";
-//        pos = 0;
-//        //while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
-//        while ((pos = Utils.IgnoreCaseIndexOf(testo,pattern, pos)) >= 0){
-//            //ignoro le righe con commenti
-//            appoggio = getCurrentJIFTextPane().getRowAt(pos);
-//            
-//            appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
-//            appoggio = appoggio.trim();
-//            
-//            if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
-////            if (appoggio.indexOf("!")==-1 && appoggio.startsWith("Class")){
-//                sttok = new StringTokenizer(testo.substring(pos+pattern.length())," ;\n");
-//                String nome = sttok.nextToken();
-//                classi_locali.add((String) nome);
-//                tmp_nodo = new DefaultMutableTreeNode( new Inspect(nome.toLowerCase(),pos,pos+pattern.length()));
-//                category7.add(tmp_nodo);
-//                getClasses(tmp_nodo,nome);
-//            }
-//            pos += pattern.length();
-//        }
-//        
-//        
-//        // se ho impostato il flag jCheckBoxScanProjectFiles a true
-//        if (jCheckBoxScanProjectFiles.isSelected() && null != projectClass){
-//            //Aggiungo tutte le classi degli altri file del progetto che non sono contenute in classi_locali
-//            for (int i=0 ; i < projectClass.size(); i++){
-//                // se la classe alla posizione i non c'è in classi_locali la aggiungo all'albero
-//                String classe = (String) projectClass.get(i);
-//                if (!classi_locali.contains((String) classe)){
-//                    tmp_nodo = new DefaultMutableTreeNode( new Inspect(classe.toLowerCase(),-1,-1));
-//                    category7.add(tmp_nodo);
-//                    getClasses(tmp_nodo,classe);
-//                }
-//            }
-//        }
-//        
-//        
-//        
-//        // ****** Functions
-//        pattern="[";
-//        pos=0;
-//        int lunghezza=0;
-//        tmp ="";
-//        objTree = new Vector();
-//        while ((pos = testo.indexOf(pattern, pos)) >= 0){
-//            //ignoro le righe con commenti
-//            appoggio = getCurrentJIFTextPane().getRowAt(pos);
-//            //appoggio = appoggio.substring(0, appoggio.indexOf(pattern));
-//            appoggio = appoggio.trim();
-//            if (appoggio.indexOf("!")==-1  && appoggio.startsWith("[")){
-//                tmp = testo.substring(pos);
-//                tmp = tmp.substring(1,tmp.indexOf(';'));
-//                tmp = tmp.trim();
-//                if (!tmp.equals("") &&
-//                        (tmp.indexOf('\"')==-1) &&
-//                        (tmp.indexOf("Sub"))==-1
-//                        
-//                        ){
-//                    //System.out.println("ho trovato la funzione=["+tmp+"]");
-//                    // prendo solo la prima stringa...
-//                    sttok = new StringTokenizer(tmp," ;\n");
-//                    if (sttok.hasMoreTokens()){
-//                        tmp = sttok.nextToken();
-//                    }
-//                    lunghezza = tmp.length();
-//                    //category5.add(new DefaultMutableTreeNode( new Inspect( tmp ,pos+1+1,pos+lunghezza+2)));
-//                    objTree.add(new Inspect( tmp.toLowerCase() ,pos+1+1,pos+lunghezza+2));
-//                }
-//            }
-//            pos += pattern.length();
-//        }
-//        
-//        // Sorting
-//        sortNodes(objTree,category5);
-//        
-//        //APRO TUTTI I NODI DELL'ALBERO. se ho explode==true
-//        if (explode) expandAll(jTree1, true);
-//        
-//        System.out.println("Tempo impiegato= "+(System.currentTimeMillis()-tempo1));        
-//    }
-    
-    
     
     
     public void sortNodes(Vector vettore, DefaultMutableTreeNode nodo ){
@@ -6206,66 +5948,6 @@ public class jFrame extends JFrame {
         }
     }
         
-    
-//    //    per correggere errori tipo:
-//    //    Class Widget;
-//    //    Widget Blue_Widget "widget";
-//    //    per ogni classe nuova aggiungo al nodo passato, il nome degli oggetti di quella classe
-//    public void getClasses(DefaultMutableTreeNode nodo, String nome){
-//        //per ogni parola trovata la cerco nel file e la inserisco nel nodo corrente
-//        String tmp;
-//        String pattern = nome+" ";  //aggiungo uno spazio
-//        String testo = getCurrentJIFTextPane().getText();
-//        String target;
-//        StringTokenizer sttok;
-//        int pos=0;
-//        //while ((pos = testo.indexOf(pattern, pos)) >= 0){
-//        while ((pos = Utils.IgnoreCaseIndexOf(testo,pattern, pos)) >= 0){
-//            //gestione -> freccia
-//            String appoggio = getCurrentJIFTextPane().getRowAt(pos);
-//            // if appoggio starts with a comment ! has to be ignored
-//            if (!appoggio.trim().startsWith("!") && appoggio.trim().startsWith(nome) ){
-//                int posizione_freccia=0;
-//                posizione_freccia = appoggio.lastIndexOf("->");
-//                if (posizione_freccia==-1) {
-//                    posizione_freccia=0;
-//                } else posizione_freccia = posizione_freccia + 3 - pattern.length();
-//                
-//                tmp = testo.substring(pos+pattern.length()+posizione_freccia);
-//                if (tmp.trim().startsWith("\"")){
-//                    sttok = new StringTokenizer(tmp.trim(),"\"");
-//                } else{
-//                    sttok = new StringTokenizer(tmp," ;");
-//                }
-//                target = sttok.nextToken();
-//                // se la riga corrente non contiene la word "Class "
-//                //if ( (getCurrentJIFTextPane().getRowAt(pos)).indexOf("Class ")==-1){
-//                if ( Utils.IgnoreCaseIndexOf(getCurrentJIFTextPane().getRowAt(pos),"Class ")==-1){
-//                    
-//                    //System.out.println("RIGA="+getCurrentJIFTextPane().getRowAt(pos));
-//                    
-//                    // Add the node only if the char at pos-1 is
-//                    // A) TAB char or
-//                    // B) Space Char or
-//                    // B) \n char
-//                    String test = "";
-//                    try{
-//                        test = getCurrentJIFTextPane().getText(pos-1,1);
-//                    } catch (Exception e){
-//                        System.out.println(e.getMessage());
-//                    }
-//                    
-//                    if (test.equals(" ") || test.equals("\t") || test.equals("\n")){
-//                        nodo.add(new DefaultMutableTreeNode( new Inspect(target.toLowerCase(),pos)));
-//                    }
-//                }
-//            }
-//            pos += pattern.length();
-//        }
-//    }
-//    
-    
-    
     
     
     public static final JIFTextPane getCurrentJIFTextPane(){
@@ -7469,6 +7151,9 @@ public class jFrame extends JFrame {
                 );
         
         jScrollPaneProject.setEnabled(true);
+        
+        // View the Project Panel
+        jTabbedPane3.setSelectedIndex(1);
     }
     
     // chiude un progetto. Inserire un flag per chiudere tutti i files
@@ -7627,7 +7312,7 @@ public class jFrame extends JFrame {
         //salvo la nuova configurazione
         StringBuffer makeConfig = new StringBuffer();
         makeConfig.append("######################################################"+"\n");
-        makeConfig.append("# Jif Configuration"+"\n");
+        makeConfig.append("# Jif Configuration "+"\n");
         makeConfig.append("######################################################"+"\n");
         makeConfig.append("\n");
         makeConfig.append("libPath="+jTextFieldPathLib.getText()+"\n");
@@ -8156,10 +7841,6 @@ public class jFrame extends JFrame {
                     if (riga.indexOf("[JIF.DIVIDER1]=")!=-1){
                         int size1 = new Integer(riga.substring(riga.indexOf("[JIF.DIVIDER1]=")+15)).intValue();
                         jSplitPane1.setDividerLocation(size1);
-                    }
-                    if (riga.indexOf("[JIF.DIVIDER2]=")!=-1){
-                        //int size2 = new Integer(riga.substring(riga.indexOf("[JIF.DIVIDER2]=")+15)).intValue();
-                        //jSplitPane2.setDividerLocation(size2);
                     }
                     if (riga.indexOf("[JIF.DIVIDER3]=")!=-1){
                         int size3 = new Integer(riga.substring(riga.indexOf("[JIF.DIVIDER3]=")+15)).intValue();
@@ -8879,11 +8560,10 @@ public class jFrame extends JFrame {
     private javax.swing.JMenu jMenuRecentFiles;
     private javax.swing.JMenu jMenuView;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
-    private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
@@ -8901,7 +8581,6 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
-    private javax.swing.JPanel jPanel34;
     private javax.swing.JPanel jPanel35;
     private javax.swing.JPanel jPanel36;
     private javax.swing.JPanel jPanel37;
@@ -8922,7 +8601,6 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanelColor;
     private javax.swing.JPanel jPanelDefaultDark;
     private javax.swing.JPanel jPanelDefinition;
-    private javax.swing.JPanel jPanelFont;
     private javax.swing.JPanel jPanelGeneral;
     private javax.swing.JPanel jPanelMainFile;
     private javax.swing.JPanel jPanelPath;

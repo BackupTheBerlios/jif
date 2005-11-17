@@ -71,10 +71,10 @@ public class JIFTextPane extends JTextPane{
         this.jframe = parent;
         this.pathfile = (file != null ? file.getAbsolutePath() : "");
         this.popupListener = new PopupListener(this, jframe);
-        hlighterBrackets = new HighlightText(this,Color.pink);
-        //hlighterBookmarks = new HighlightBookmark(this,new Color(204, 204, 255));
-        hlighterBookmarks = new HighlightBookmark(this, Color.gray);
-        hlighter = new HighlightText(this,Color.pink);
+        hlighterBrackets = new HighlightText(this, new Color(255, 153, 50));
+        hlighterBookmarks = new HighlightBookmark(this,new Color(51, 100, 255));
+        //hlighterBookmarks = new HighlightBookmark(this, Color.gray);
+        hlighter = new HighlightText(this,new Color(255, 153, 50));
         this.bookmarks = new ArrayList();
         this.setPaths(this.pathfile);
 //        if(this.pathfile.length()>25)
