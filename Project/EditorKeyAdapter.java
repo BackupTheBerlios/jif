@@ -63,7 +63,7 @@ public class EditorKeyAdapter extends KeyAdapter {
         if (ke.getKeyChar() == KeyEvent.VK_TAB && !ke.isShiftDown()){
             try{
                 if (jif.getSelectedText() == null){
-                    doc.insertString(jif.getCaretPosition(), Utils.spacesForTab(jframe.spacesfortab), jframe.getAttr());   
+                    doc.insertString(jif.getCaretPosition(), Utils.spacesForTab(jframe.tabSize-1), jframe.getAttr());   
                 }                
                 else{
                     jif.tabSelection();

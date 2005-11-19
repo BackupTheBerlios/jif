@@ -162,7 +162,7 @@ public class jFrame extends JFrame {
         }
         
         // JIF's icon
-        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/Jif.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/runInterpreter.png")));
         
         if (null!=dir && (!dir.equals(""))){
             workingDir = dir;
@@ -295,9 +295,9 @@ public class jFrame extends JFrame {
         jMenuItemPopupCloseAllFiles = new javax.swing.JMenuItem();
         jMenuItemJumpToSource = new javax.swing.JMenuItem();
         jDialogAbout = new JDialog (this, "", true);
-        jLabel7 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         jButton9 = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
         jDialogConfigFiles = new JDialog (this, "", false);
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
@@ -351,8 +351,11 @@ public class jFrame extends JFrame {
         jPanelGeneral = new javax.swing.JPanel();
         jPanel36 = new javax.swing.JPanel();
         jPanel42 = new javax.swing.JPanel();
-        jTextFieldMaxRecentFiles = new javax.swing.JTextField();
         jLabelMaxRecentFiles = new javax.swing.JLabel();
+        jTextFieldMaxRecentFiles = new javax.swing.JTextField();
+        jPanel10 = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        jTextFieldTabSize = new javax.swing.JTextField();
         jCheckBoxOpenLastFile = new javax.swing.JCheckBox();
         jCheckBoxCreateNewFile = new javax.swing.JCheckBox();
         jCheckBoxMappingLive = new javax.swing.JCheckBox();
@@ -360,7 +363,6 @@ public class jFrame extends JFrame {
         jCheckBoxMappingHFile = new javax.swing.JCheckBox();
         jCheckBoxHelpedCode = new javax.swing.JCheckBox();
         jCheckBoxSyntax = new javax.swing.JCheckBox();
-        jCheckBoxBackup = new javax.swing.JCheckBox();
         jCheckBoxNumberLines = new javax.swing.JCheckBox();
         jCheckBoxScanProjectFiles = new javax.swing.JCheckBox();
         jCheckBoxWrapLines = new javax.swing.JCheckBox();
@@ -742,12 +744,10 @@ public class jFrame extends JFrame {
 
         jDialogAbout.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         jDialogAbout.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_ABOUT_JIF"));
+        jDialogAbout.setFocusCycleRoot(false);
         jDialogAbout.setModal(true);
         jDialogAbout.setResizable(false);
         jDialogAbout.getAccessibleContext().setAccessibleParent(this);
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/about.png")));
-        jDialogAbout.getContentPane().add(jLabel7, java.awt.BorderLayout.CENTER);
-
         jButton9.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_OK"));
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -758,6 +758,9 @@ public class jFrame extends JFrame {
         jPanel7.add(jButton9);
 
         jDialogAbout.getContentPane().add(jPanel7, java.awt.BorderLayout.SOUTH);
+
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/about.png")));
+        jDialogAbout.getContentPane().add(jLabel7, java.awt.BorderLayout.CENTER);
 
         jDialogConfigFiles.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGFILES_TITLE"));
         jDialogConfigFiles.setFont(new java.awt.Font("Arial", 0, 12));
@@ -1041,21 +1044,30 @@ public class jFrame extends JFrame {
         jPanelGeneral.setLayout(new java.awt.GridLayout(1, 0));
 
         jPanelGeneral.setPreferredSize(new java.awt.Dimension(205, 400));
-        jPanel36.setLayout(new java.awt.GridLayout(15, 0));
+        jPanel36.setLayout(new java.awt.GridLayout(8, 2));
 
         jPanel36.setMinimumSize(new java.awt.Dimension(205, 400));
         jPanel36.setPreferredSize(new java.awt.Dimension(205, 400));
         jPanel42.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        jTextFieldMaxRecentFiles.setColumns(5);
+        jLabelMaxRecentFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTIONDIALOG_MAX_RECENT_FILES"));
+        jPanel42.add(jLabelMaxRecentFiles);
+
+        jTextFieldMaxRecentFiles.setColumns(8);
         jTextFieldMaxRecentFiles.setText("10");
         jTextFieldMaxRecentFiles.setMinimumSize(new java.awt.Dimension(18, 21));
         jPanel42.add(jTextFieldMaxRecentFiles);
 
-        jLabelMaxRecentFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTIONDIALOG_MAX_RECENT_FILES"));
-        jPanel42.add(jLabelMaxRecentFiles);
-
         jPanel36.add(jPanel42);
+
+        jLabel8.setText("TAB size");
+        jPanel10.add(jLabel8);
+
+        jTextFieldTabSize.setColumns(8);
+        jTextFieldTabSize.setText("4");
+        jPanel10.add(jTextFieldTabSize);
+
+        jPanel36.add(jPanel10);
 
         jCheckBoxOpenLastFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_LAST_OPEN_FILE"));
         jPanel36.add(jCheckBoxOpenLastFile);
@@ -1098,10 +1110,6 @@ public class jFrame extends JFrame {
         jCheckBoxSyntax.setSelected(true);
         jCheckBoxSyntax.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SYNTAX"));
         jPanel36.add(jCheckBoxSyntax);
-
-        jCheckBoxBackup.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_BACKUP"));
-        jCheckBoxBackup.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_BACKUP_TOOLTIP"));
-        jPanel36.add(jCheckBoxBackup);
 
         jCheckBoxNumberLines.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_NUMBEROFLINES"));
         jCheckBoxNumberLines.addActionListener(new java.awt.event.ActionListener() {
@@ -2153,7 +2161,7 @@ public class jFrame extends JFrame {
 
         jPanelMainFile.setLayout(new javax.swing.BoxLayout(jPanelMainFile, javax.swing.BoxLayout.Y_AXIS));
 
-        jScrollPaneProject.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Project", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 10)));
+        jScrollPaneProject.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Project", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
         jScrollPaneProject.setPreferredSize(new java.awt.Dimension(90, 131));
         jListProject.setFont(new java.awt.Font("Dialog", 0, 11));
         jListProject.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -2184,7 +2192,7 @@ public class jFrame extends JFrame {
         jPanelSearch.setPreferredSize(new java.awt.Dimension(180, 220));
         jPanelSearchProject.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
 
-        jPanelSearchProject.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search all project files", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 10)));
+        jPanelSearchProject.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search all project files", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
         jPanelSearchProject.setMaximumSize(new java.awt.Dimension(180, 55));
         jPanelSearchProject.setMinimumSize(new java.awt.Dimension(180, 55));
         jPanelSearchProject.setPreferredSize(new java.awt.Dimension(180, 55));
@@ -2222,7 +2230,7 @@ public class jFrame extends JFrame {
 
         jPanelDefinition.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
 
-        jPanelDefinition.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search for Definition", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 10)));
+        jPanelDefinition.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search for Definition", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
         jPanelDefinition.setMaximumSize(new java.awt.Dimension(180, 55));
         jPanelDefinition.setMinimumSize(new java.awt.Dimension(180, 55));
         jPanelDefinition.setPreferredSize(new java.awt.Dimension(180, 55));
@@ -3529,6 +3537,7 @@ public class jFrame extends JFrame {
         jComboBoxFont.setSelectedItem("Courier New");
         jComboBoxFontSize.setSelectedItem("12");
         jTextFieldMaxRecentFiles.setText("10");
+        jTextFieldTabSize.setText("4");
         defaultOptions();
     }//GEN-LAST:event_jButton23ActionPerformed
     
@@ -3698,7 +3707,15 @@ public class jFrame extends JFrame {
     
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         jDialogOption.setVisible(false);
-        maxRecentFiles = Integer.parseInt(jTextFieldMaxRecentFiles.getText());
+        // if not numbers, get default values
+        try{
+            maxRecentFiles  = Integer.parseInt(jTextFieldMaxRecentFiles.getText());
+            tabSize         = Integer.parseInt(jTextFieldTabSize.getText());
+        }
+        catch(Exception e){
+            maxRecentFiles = 10;
+            tabSize = 4;
+        }
         unquote();
         saveJifConfiguration();
         savePath();
@@ -4280,24 +4297,6 @@ public class jFrame extends JFrame {
     
     private void SaveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveButtonActionPerformed
         saveFile();
-        // Saving a backup if the jCheckBoxBackup is Selected
-        if(jCheckBoxBackup.isSelected()){
-            try{
-                // Creates the Backup directory if this doesn't exist
-                File file_dirBackup = new File(workingDir+Constants.SEP+"backup"+Constants.SEP);
-                if (!file_dirBackup.exists()) file_dirBackup.mkdir();
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mmss", java.util.Locale.getDefault());
-                Date today = new Date();
-                
-                // Saving the file with this name
-                // NAMEFILE_YEAR MONTH DAY HOURS MINUTES SECONDS.inf
-                String nomefile = workingDir+Constants.SEP+"backup"+Constants.SEP+formatter.format(today) +"_"+ fileInf.substring(fileInf.lastIndexOf(Constants.SEP)+1) + ".zip";
-                Utils.zippa(fileInf , nomefile);
-            } catch(Exception e){
-                System.out.println(e.getMessage());
-                System.err.println(e.getMessage());
-            }
-        }
     }//GEN-LAST:event_SaveButtonActionPerformed
     
     private void RebuildButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RebuildButtonActionPerformed
@@ -6746,7 +6745,6 @@ public class jFrame extends JFrame {
             ps.println("WRAPLINES="+ jCheckBoxWrapLines.isSelected());
             ps.println("SYNTAX="+ jCheckBoxSyntax.isSelected());
             ps.println("HELPEDCODE="+ jCheckBoxHelpedCode.isSelected());
-            ps.println("BACKUP="+ jCheckBoxBackup.isSelected());
             ps.println("MAPPINGEDITING="+ jCheckBoxMappingLive.isSelected());
             ps.println("MAPPINGTEMP="+ jCheckBoxMapping.isSelected());
             ps.println("MAPPINGTEMPH="+ jCheckBoxMappingHFile.isSelected());
@@ -6758,6 +6756,7 @@ public class jFrame extends JFrame {
             ps.println("OPENLASTFILE="+ jCheckBoxOpenLastFile.isSelected());
             ps.println("CREATENEWFILE="+ jCheckBoxCreateNewFile.isSelected());
             ps.println("MAXRECENTFILES="+ this.jTextFieldMaxRecentFiles.getText());
+            ps.println("TABSIZE="+ this.jTextFieldTabSize.getText());
             ps.println("AUTOMATICBRACKETSCHECK="+ jCheckBoxAutomaticCheckBrackets.isSelected());
             ps.println("[colorKeyword]="+colorKeyword.getRed()+","+colorKeyword.getGreen()+","+colorKeyword.getBlue());
             ps.println("[colorAttribute]="+colorAttribute.getRed()+","+colorAttribute.getGreen()+","+colorAttribute.getBlue());
@@ -6811,11 +6810,6 @@ public class jFrame extends JFrame {
                     if (riga.indexOf("HELPEDCODE=")!=-1){
                         this.jCheckBoxHelpedCode.setSelected(
                                 riga.substring(riga.indexOf("HELPEDCODE=")+11).equals("true")?true:false);
-                    }
-                    // BACKUP
-                    if (riga.indexOf("BACKUP=")!=-1){
-                        this.jCheckBoxBackup.setSelected(
-                                riga.substring(riga.indexOf("BACKUP=")+7).equals("true")?true:false);
                     }
                     // MAPPINGEDITING
                     if (riga.indexOf("MAPPINGEDITING=")!=-1){
@@ -6880,7 +6874,18 @@ public class jFrame extends JFrame {
                             this.jTextFieldMaxRecentFiles.setText("10");
                         }
                     }
-                    
+                    // TabSize
+                    if (riga.indexOf("TABSIZE=")!=-1){
+                        String num = riga.substring(riga.indexOf("TABSIZE=")+8);
+                        this.jTextFieldTabSize.setText(num);
+                        try{
+                            tabSize = Integer.parseInt(num);
+                        } catch (Exception e){
+                            // valore di default
+                            tabSize = 4;
+                            this.jTextFieldTabSize.setText("4");
+                        }
+                    }                    
                     // AUTOMATIC BRACKETS CHECK
                     if (riga.indexOf("AUTOMATICBRACKETSCHECK=")!=-1){
                         jCheckBoxAutomaticCheckBrackets.setSelected(
@@ -7224,7 +7229,6 @@ public class jFrame extends JFrame {
             ps.println("WRAPLINES="+ jCheckBoxWrapLines.isSelected());
             ps.println("SYNTAX="+ jCheckBoxSyntax.isSelected());
             ps.println("HELPEDCODE="+ jCheckBoxHelpedCode.isSelected());
-            ps.println("BACKUP="+ jCheckBoxBackup.isSelected());
             ps.println("MAPPINGEDITING="+ jCheckBoxMappingLive.isSelected());
             ps.println("MAPPINGTEMP="+ jCheckBoxMapping.isSelected());
             ps.println("MAPPINGTEMPH="+ jCheckBoxMappingHFile.isSelected());
@@ -7235,6 +7239,7 @@ public class jFrame extends JFrame {
             ps.println("OPENLASTFILE="+ jCheckBoxOpenLastFile.isSelected());
             ps.println("CREATENEWFILE="+ jCheckBoxCreateNewFile.isSelected());
             ps.println("MAXRECENTFILES="+ this.jTextFieldMaxRecentFiles.getText());
+            ps.println("TABSIZE="+ this.jTextFieldTabSize.getText());
             ps.println("AUTOMATICBRACKETSCHECK="+ jCheckBoxAutomaticCheckBrackets.isSelected());
             ps.println("[colorKeyword]="+colorKeyword.getRed()+","+colorKeyword.getGreen()+","+colorKeyword.getBlue());
             ps.println("[colorAttribute]="+colorAttribute.getRed()+","+colorAttribute.getGreen()+","+colorAttribute.getBlue());
@@ -7566,7 +7571,6 @@ public class jFrame extends JFrame {
         jCheckBoxMappingLive.setSelected(false);
         jCheckBoxMapping.setSelected(false);
         jCheckBoxMappingHFile.setSelected(false);
-        jCheckBoxBackup.setSelected(false);
         jCheckBoxProjectOpenAllFiles.setSelected(false);
         jCheckBoxAutomaticCheckBrackets.setSelected(false);
         jCheckBoxHelpedCode.setSelected(true);
@@ -8417,7 +8421,6 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButtonVerb;
     private javax.swing.JCheckBox jCheckBoxAdventInLib;
     public javax.swing.JCheckBox jCheckBoxAutomaticCheckBrackets;
-    private javax.swing.JCheckBox jCheckBoxBackup;
     private javax.swing.JCheckBox jCheckBoxCreateNewFile;
     private javax.swing.JCheckBoxMenuItem jCheckBoxGlulxMode;
     public javax.swing.JCheckBox jCheckBoxHelpedCode;
@@ -8464,6 +8467,7 @@ public class jFrame extends JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabelAttribute;
     private javax.swing.JLabel jLabelBackground;
     private javax.swing.JLabel jLabelBlc;
@@ -8557,6 +8561,7 @@ public class jFrame extends JFrame {
     private javax.swing.JMenu jMenuRecentFiles;
     private javax.swing.JMenu jMenuView;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
@@ -8661,6 +8666,7 @@ public class jFrame extends JFrame {
     private javax.swing.JTextField jTextFieldReplace;
     private javax.swing.JTextField jTextFieldReplaceFind;
     protected javax.swing.JTextField jTextFieldRowCol;
+    private javax.swing.JTextField jTextFieldTabSize;
     private static final javax.swing.JToolBar jToolBarCommon = new javax.swing.JToolBar();
     private static javax.swing.JTree jTree1;
     // End of variables declaration//GEN-END:variables
@@ -8775,6 +8781,7 @@ public class jFrame extends JFrame {
     // ultimo file aperto...
     private String lastFile;
     private int maxRecentFiles=10;
+    public int tabSize = 4;
     
     // ultima dir usata per aprire un file
     private String lastDir = null;
@@ -8790,9 +8797,6 @@ public class jFrame extends JFrame {
     
     // alphabetical sorting
     private Vector objTree;
-    
-    // if hit "TAB" JIF will insert 4 spaces or a custom integer
-    public int spacesfortab = 4;
     
     public String getJifVersion() {
         return jifVersion;

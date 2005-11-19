@@ -785,9 +785,9 @@ public class JIFTextPane extends JTextPane{
                 riga = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
                 
                 if (i == index_end){
-                    output.append(Utils.spacesForTab(jframe.spacesfortab)).append(riga.substring(0,riga.indexOf('\n')));
+                    output.append(Utils.spacesForTab(jframe.tabSize-1)).append(riga.substring(0,riga.indexOf('\n')));
                 } else{
-                    output.append(Utils.spacesForTab(jframe.spacesfortab)).append(riga);
+                    output.append(Utils.spacesForTab(jframe.tabSize-1)).append(riga);
                 }
             }
             
@@ -796,7 +796,7 @@ public class JIFTextPane extends JTextPane{
             // Selected rows will be selected again
             requestFocus();
             setSelectionStart(start);
-            setSelectionEnd(end + ((index_end - index_start+1)*(jframe.spacesfortab+1)));
+            setSelectionEnd(end + ((index_end - index_start+1)*(jframe.tabSize)));
             
         } catch(BadLocationException e){
             System.out.println(e.getMessage());
@@ -824,14 +824,14 @@ public class JIFTextPane extends JTextPane{
                 riga = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
                 
                 if (i == index_end){
-                    if (riga.startsWith(Utils.spacesForTab(jframe.spacesfortab))){
-                        output.append(riga.substring(jframe.spacesfortab+1,riga.indexOf('\n')));
+                    if (riga.startsWith(Utils.spacesForTab(jframe.tabSize-1))){
+                        output.append(riga.substring(jframe.tabSize,riga.indexOf('\n')));
                     } else{
                         output.append(riga.substring(0,riga.indexOf('\n')));
                     }
                 } else {
-                    if (riga.startsWith(Utils.spacesForTab(jframe.spacesfortab))){
-                        output.append(riga.substring(jframe.spacesfortab+1));
+                    if (riga.startsWith(Utils.spacesForTab(jframe.tabSize-1))){
+                        output.append(riga.substring(jframe.tabSize));
                     } else {
                         output.append(riga);
                     }

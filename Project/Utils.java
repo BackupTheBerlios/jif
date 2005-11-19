@@ -142,38 +142,38 @@ public class Utils {
 
 
 
-    /** Zip function */
-    public static void zippa(String source,String target){
-        //System.out.println(source+ "-"+target);
-
-        // Create a buffer for reading the files
-        byte[] buf = new byte[1024];
-        try {
-            // Create the ZIP file
-            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(target));
-            out.setComment("Compressed with Jif (C) Copyright 2003 - Schillaci Alessandro\n\nAT Backup Utility");
-            out.setLevel(9);
-            // Compress the files
-            FileInputStream in = new FileInputStream(source);
-
-            // Add ZIP entry to output stream.
-            out.putNextEntry(new ZipEntry(source));
-
-            // Transfer bytes from the file to the ZIP file
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            // Complete the entry
-            out.closeEntry();
-            in.close();
-            // Complete the ZIP file
-            out.close();
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-                System.err.println(e.getMessage());
-            }
-    }
+//    /** Zip function */
+//    public static void zippa(String source,String target){
+//        //System.out.println(source+ "-"+target);
+//
+//        // Create a buffer for reading the files
+//        byte[] buf = new byte[1024];
+//        try {
+//            // Create the ZIP file
+//            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(target));
+//            out.setComment("Compressed with Jif (C) Copyright 2003 - Schillaci Alessandro\n\nAT Backup Utility");
+//            out.setLevel(9);
+//            // Compress the files
+//            FileInputStream in = new FileInputStream(source);
+//
+//            // Add ZIP entry to output stream.
+//            out.putNextEntry(new ZipEntry(source));
+//
+//            // Transfer bytes from the file to the ZIP file
+//            int len;
+//            while ((len = in.read(buf)) > 0) {
+//                out.write(buf, 0, len);
+//            }
+//            // Complete the entry
+//            out.closeEntry();
+//            in.close();
+//            // Complete the ZIP file
+//            out.close();
+//            } catch (IOException e) {
+//                System.out.println(e.getMessage());
+//                System.err.println(e.getMessage());
+//            }
+//    }
 
 
     public void printInform(jFrame jframe,String title, JTextComponent jif){

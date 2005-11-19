@@ -16,7 +16,6 @@ filesave.png
 filesaveall.png
 filesaveas.png
 find.png
-infoFile.png
 insertFunction.png
 insertObject.png
 insertSymbol.png
@@ -32,7 +31,6 @@ These images are under the GNU GPL license
 about.png
 comment.png
 delete.png
-Jif.png
 leftIndent.png
 rightIndent.png
 tree_menu.png

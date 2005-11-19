@@ -20,11 +20,9 @@ filesave.png
 filesaveall.png
 filesaveas.png
 find.png
-infoFile.png
 insertFunction.png
 insertObject.png
 insertSymbol.png
-Jif.png
 launch.png
 leftIndent.png
 redo.png
