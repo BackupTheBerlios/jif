@@ -1,10 +1,10 @@
 --------------------------------------------------------------------------------
                                        Jif
-                                       2.0
+                                       3.0
 Configuration File
 --------------------------------------------------------------------------------
 
-Last Update: 2005-07-19
+Last Update: 2005-11-19
 
 INDEX
 
@@ -30,6 +30,9 @@ INDEX
 0. SHORTCUTS
 --------------------------------------------------------------------------------
 
+Editing:
+=======
+
 CTRL+N                  New file
 CTRL+O                  Open file
 CTRL+S                  Save file
@@ -37,44 +40,48 @@ CTRL+SHIFT+S            Save all
 CTRL+Q                  Close file
 CTRL+P                  Print
 ALT+X                   Exit
-CTRL+J                  Jump to the current word's definition
-
-CTRL+F5                 New project
-F5                      Open project
-F3                      Search String (from the current file)
-CTRL+F5                 Search String (from the whole project)
-
 CTRL+A                  Select all
 CTRL+X                  Cut
 CTRL+C,CTRL+INS         Copy
 CTRL+V,SHIFT+INS        Paste
-
 CTRL+Z                  Undo
 CTRL+Y                  Redo
+TAB (or ALT + ->)       Right shift selected text block
+SHIFT+TAB (or ALT + <-) Left  shift selected text block
+CTRL+W                  Comment selection
+CTRL+E                  Uncomment selection
+CTRL+F2                 Set/Reset Bookmark
+F2                      Go to next bookmark
+F11                     Toggle FullScreen
+F1                      View help
 
-ALT + ->                Right shift selected text block
-ALT + <-                Left  shift selected text block
+Search:
+=======
 
-MOUSE: RIGHT BUTTON     Menu Popup 1 (if pointer is on the Text Editor)
-                        Menu Popup 2 (if pointer is on the Project file list)
-
+F3                      Search String (from the current file)
+CTRL+J                  Jump to the current word's definition
+CTRL+F5                 Search String (from the whole project)
 CTRL+F                  Find selected string
 CTRL+R                  Find and replace
 CTRL+V                  Find object in source
 
-CTRL+W                  Comment selection
-CTRL+E                  Uncomment selection
 
-CTRL+F2                 Set/Reset Bookmark
-F2                      Go to next bookmark
+Project:
+=======
+
+CTRL+F5                 New project
+F5                      Open project
+
+Inform:
+======
 
 F9                      Compile
 CTRL+F9                 Run
 F12                     Build all
 CTRL+F12                Make blb
 
-F11                     Toggle FullScreen
-F1                      View help
+Right Button (mouse)    Menu Popup 1 (from the Text Editor)
+                        Menu Popup 2 (from the Project file list)
 
 
 --------------------------------------------------------------------------------
@@ -90,7 +97,6 @@ backup            - directory of backup-files (if backup system is ON)
 config            - JIF configuration directory
 doc               - docs directory
 projects          - projects directory
-tutorial          - tutorial directory (tutorials are still in italian)
 
 config/menu       - "Insert New" function
 
