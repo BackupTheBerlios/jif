@@ -46,10 +46,10 @@ import java.util.*;
 public class JIFTextPane extends JTextPane{
     
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1475021670099346825L;
-	UndoManager undoF;
+    * 
+    */
+    private static final long serialVersionUID = 1475021670099346825L;
+    UndoManager undoF;
     jFrame jframe;
     Element el;
     MouseListener popupListener;
@@ -136,11 +136,11 @@ public class JIFTextPane extends JTextPane{
         
         getActionMap().put("Undo", new AbstractAction("Undo") {
             /**
-			 * 
-			 */
-			private static final long serialVersionUID = 4366132315214562191L;
-
-			public void actionPerformed(ActionEvent evt) {
+             *
+             */
+            private static final long serialVersionUID = 4366132315214562191L;
+            
+            public void actionPerformed(ActionEvent evt) {
                 try {
                     if (undoF.canUndo()) {
                         while (undoF.getUndoPresentationName().equals(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_STYLE_CHANGED_UNDO"))){
@@ -163,11 +163,11 @@ public class JIFTextPane extends JTextPane{
         
         getActionMap().put("Redo", new AbstractAction("Redo") {
             /**
-			 * 
-			 */
-			private static final long serialVersionUID = 3720633173380513902L;
+            * 
+            */
+            private static final long serialVersionUID = 3720633173380513902L;
 
-			public void actionPerformed(ActionEvent evt) {
+            public void actionPerformed(ActionEvent evt) {
                 try {
                     if (undoF.canRedo()) {
                         while (undoF.getRedoPresentationName().equals(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_STYLE_CHANGED_REDO"))){
@@ -784,10 +784,10 @@ public class JIFTextPane extends JTextPane{
                 el = getDocument().getDefaultRootElement().getElement(i);
                 riga = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
                 
-                if (i== index_end){
-                    output.append("\t").append(riga.substring(0,riga.indexOf('\n')));
+                if (i == index_end){
+                    output.append(Utils.spacesForTab(jframe.spacesfortab)).append(riga.substring(0,riga.indexOf('\n')));
                 } else{
-                    output.append("\t").append(riga);
+                    output.append(Utils.spacesForTab(jframe.spacesfortab)).append(riga);
                 }
             }
             
@@ -796,7 +796,7 @@ public class JIFTextPane extends JTextPane{
             // Selected rows will be selected again
             requestFocus();
             setSelectionStart(start);
-            setSelectionEnd(end + index_end - index_start +1);
+            setSelectionEnd(end + ((index_end - index_start+1)*(jframe.spacesfortab+1)));
             
         } catch(BadLocationException e){
             System.out.println(e.getMessage());
@@ -824,14 +824,14 @@ public class JIFTextPane extends JTextPane{
                 riga = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
                 
                 if (i == index_end){
-                    if (riga.charAt(0) == '\t' || riga.charAt(0) == ' '){
-                        output.append(riga.substring(1,riga.indexOf('\n')));
+                    if (riga.startsWith(Utils.spacesForTab(jframe.spacesfortab))){
+                        output.append(riga.substring(jframe.spacesfortab+1,riga.indexOf('\n')));
                     } else{
                         output.append(riga.substring(0,riga.indexOf('\n')));
                     }
                 } else {
-                    if (riga.charAt(0) == '\t' || riga.charAt(0) == ' '){
-                        output.append(riga.substring(1));
+                    if (riga.startsWith(Utils.spacesForTab(jframe.spacesfortab))){
+                        output.append(riga.substring(jframe.spacesfortab+1));
                     } else {
                         output.append(riga);
                     }

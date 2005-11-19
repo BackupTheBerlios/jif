@@ -118,16 +118,16 @@ import java.util.regex.Pattern;
 /** Main Class for Jif application.
  * Jif is a Java Editor for Inform
  * @author Alessandro Schillaci
- * @version 1.1f
+ * @version 3.0
  */
 public class jFrame extends JFrame {
     
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 7544939067324000307L;
-
-	/** Creates new form jFrame */
+     *
+     */
+    private static final long serialVersionUID = 7544939067324000307L;
+    
+    /** Creates new form jFrame */
     public jFrame(String dir) {
         
         // Screen Resolution
@@ -1508,6 +1508,7 @@ public class jFrame extends JFrame {
         jPanel13.add(jComboBoxFont);
 
         jComboBoxFontSize.setMinimumSize(new java.awt.Dimension(40, 21));
+        jComboBoxFontSize.setPreferredSize(new java.awt.Dimension(40, 21));
         jComboBoxFontSize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxFontSizeActionPerformed(evt);
@@ -2192,12 +2193,6 @@ public class jFrame extends JFrame {
         jTextFieldFindAll.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
         jTextFieldFindAll.setMaximumSize(new java.awt.Dimension(111, 20));
         jTextFieldFindAll.setMinimumSize(new java.awt.Dimension(10, 22));
-        jTextFieldFindAll.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldFindAllActionPerformed(evt);
-            }
-        });
-
         jPanelSearchProject.add(jTextFieldFindAll);
 
         jButtonSearchProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/fileprojectfind.png")));
@@ -3041,9 +3036,8 @@ public class jFrame extends JFrame {
         setJMenuBar(jMenuBar1);
 
         pack();
-    }
-    // </editor-fold>//GEN-END:initComponents
-
+    }// </editor-fold>//GEN-END:initComponents
+    
     private void jCheckBoxOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxOutputActionPerformed
         if (!jCheckBoxOutput.getState()) {
             jTabbedPane2.setVisible(false);
@@ -3053,31 +3047,19 @@ public class jFrame extends JFrame {
             jTabbedPane2.setVisible(true);
         }
     }//GEN-LAST:event_jCheckBoxOutputActionPerformed
-
+    
     private void jMenuItemTranslateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemTranslateActionPerformed
         getCurrentJIFTextPane().InsertTranslate(new File(getCurrentFilename()+"_translate.txt"), new File(getCurrentFilename()+"_translated.inf"));
     }//GEN-LAST:event_jMenuItemTranslateActionPerformed
-
+    
     private void jMenuItemExtractStringsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemExtractStringsActionPerformed
         getCurrentJIFTextPane().ExtractTranslate(new File(getCurrentFilename()+"_translate.txt"));
     }//GEN-LAST:event_jMenuItemExtractStringsActionPerformed
-
-    private void jTextFieldFindAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldFindAllActionPerformed
-//        String target = this.jTextFieldFindAll.getText();
-//        if(null!=target && !target.trim().equals("")){
-//            // if output window is hide, I'll show it
-//            if (!jCheckBoxOutput.getState()){
-//                jSplitPane3.setBottomComponent(jTabbedPane2);
-//                jTabbedPane2.setVisible(true);
-//            }
-//            this.searchAllFiles(target);
-//        }
-    }//GEN-LAST:event_jTextFieldFindAllActionPerformed
-
+        
     private void jButtonFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFindActionPerformed
         getCurrentJIFTextPane().findString(this);
     }//GEN-LAST:event_jButtonFindActionPerformed
-
+    
     private void jButtonSearchProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSearchProjectActionPerformed
         String target = this.jTextFieldFindAll.getText();
         if(null!=target && !target.trim().equals("")){
@@ -3089,18 +3071,18 @@ public class jFrame extends JFrame {
             this.searchAllFiles(target);
         }
     }//GEN-LAST:event_jButtonSearchProjectActionPerformed
-
+    
     private void jButtonDefinitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDefinitionActionPerformed
 // Search for definition
         if (!jTextFieldDefinition.getText().equals("")){
             checkTree(jTextFieldDefinition.getText());
         }
     }//GEN-LAST:event_jButtonDefinitionActionPerformed
-
+    
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         jDialogReplace.setVisible(false);
     }//GEN-LAST:event_jButton3ActionPerformed
-
+    
     private void jButtonReplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReplaceActionPerformed
         if (getCurrentJIFTextPane().getSelectedText()!= null){
             jTextFieldReplaceFind.setText(getCurrentJIFTextPane().getSelectedText());
@@ -3111,9 +3093,13 @@ public class jFrame extends JFrame {
         jDialogReplace.setLocationRelativeTo(this);
         jDialogReplace.setVisible(true);
     }//GEN-LAST:event_jButtonReplaceActionPerformed
-        
+    
     private void jMenuItemSearchAllFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSearchAllFilesActionPerformed
-        String target = this.jTextFieldFind.getText();
+        // se è presente una stringa uso quella altrimenti la prendo da quella selezionata
+        String target = this.jTextFieldFindAll.getText();
+        if(null==target || target.trim().equals("")){
+            target = getCurrentJIFTextPane().getSelectedText();
+        }
         if(null!=target && !target.trim().equals("")){
             // if output window is hide, I'll show it
             if (!jCheckBoxOutput.getState()){
@@ -3125,6 +3111,10 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jMenuItemSearchAllFilesActionPerformed
     
     private void jMenuItemSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSearchActionPerformed
+        String selezione = getCurrentJIFTextPane().getSelectedText();
+        if (selezione!=null){
+            jTextFieldFind.setText(selezione);
+        }
         getCurrentJIFTextPane().findString(this);
     }//GEN-LAST:event_jMenuItemSearchActionPerformed
     
@@ -3192,7 +3182,7 @@ public class jFrame extends JFrame {
             getCurrentJIFTextPane().setBookmark();
         }
     }//GEN-LAST:event_jMenuItemSetBookmarkActionPerformed
-        
+    
     private void jTextFieldDefinitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldDefinitionActionPerformed
 //        // Search for definition
 //        if (!jTextFieldDefinition.getText().equals("")){
@@ -3240,7 +3230,7 @@ public class jFrame extends JFrame {
         if (!jCheckBoxJTree.getState()) jSplitPane1.setDividerLocation(0);
         if (jCheckBoxJTree.getState()) jSplitPane1.setDividerLocation(150);
     }//GEN-LAST:event_jCheckBoxJTreeStateChanged
-        
+    
     private void jCheckBoxJToolBarStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jCheckBoxJToolBarStateChanged
         if (!jCheckBoxJToolBar.getState()) jToolBarCommon.setVisible(false);
         if (jCheckBoxJToolBar.getState()) jToolBarCommon.setVisible(true);
@@ -3419,7 +3409,7 @@ public class jFrame extends JFrame {
         updateColor();
         updateColorEditor();
     }//GEN-LAST:event_jButtonBackgroundActionPerformed
-            
+    
     private void jMenuItemAddNewToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAddNewToProjectActionPerformed
         // Creates a new file and append this to the project
         newAdventure();
@@ -3639,7 +3629,7 @@ public class jFrame extends JFrame {
             System.err.println(e.getMessage());
         }
     }//GEN-LAST:event_jButton15ActionPerformed
-        
+    
     private void jListProjectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListProjectMouseEntered
         // Just One click: shows the tooltip
         FileProject fp = (FileProject)jListProject.getSelectedValue();
@@ -3649,7 +3639,7 @@ public class jFrame extends JFrame {
             jListProject.setToolTipText(null);
         }
     }//GEN-LAST:event_jListProjectMouseEntered
-        
+    
     private void jButtonInterpreterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInterpreterActionPerformed
         runInterpreter();
     }//GEN-LAST:event_jButtonInterpreterActionPerformed
@@ -3664,7 +3654,7 @@ public class jFrame extends JFrame {
     private void jButton21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton21ActionPerformed
         jDialogInfo.setVisible(false);
     }//GEN-LAST:event_jButton21ActionPerformed
-        
+    
     private void jMenuItemPopupCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupCloseActionPerformed
         closeFile();
         refreshTree();
@@ -3809,7 +3799,7 @@ public class jFrame extends JFrame {
     private void jMenuItemOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemOpenProjectActionPerformed
         openProject();
     }//GEN-LAST:event_jMenuItemOpenProjectActionPerformed
-        
+    
     private void jMenuItemInsertSymbol1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemInsertSymbol1ActionPerformed
         showJWindowSymbol();
     }//GEN-LAST:event_jMenuItemInsertSymbol1ActionPerformed
@@ -3821,11 +3811,11 @@ public class jFrame extends JFrame {
     private void jMenuItemInsertSymbolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemInsertSymbolActionPerformed
         showJWindowSymbol();
     }//GEN-LAST:event_jMenuItemInsertSymbolActionPerformed
-        
+    
     private void jButtonNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNewActionPerformed
         newAdventure();
     }//GEN-LAST:event_jButtonNewActionPerformed
-        
+    
     private void jMenuItemUncommentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemUncommentSelectionActionPerformed
         getCurrentJIFTextPane().unCommentSelection();
     }//GEN-LAST:event_jMenuItemUncommentSelectionActionPerformed
@@ -3837,14 +3827,14 @@ public class jFrame extends JFrame {
     private void jButtonCommentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCommentSelectionActionPerformed
         getCurrentJIFTextPane().commentSelection();
     }//GEN-LAST:event_jButtonCommentSelectionActionPerformed
-                
+    
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
         // Replacing....only if there is a selected TEXT
         if (getCurrentJIFTextPane().getSelectedText()!= null){
             getCurrentJIFTextPane().replaceSelection(jTextFieldReplace.getText());
         }
     }//GEN-LAST:event_jButton12ActionPerformed
-        
+    
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         if (jTextFieldReplaceFind.getText().equals("")){
             JOptionPane.showMessageDialog(this,java.util.ResourceBundle.getBundle("JIF").getString("ERR_EMPTY_STRING"));
@@ -3856,7 +3846,7 @@ public class jFrame extends JFrame {
         replaceAll();
         refreshTree();
     }//GEN-LAST:event_jButton13ActionPerformed
-        
+    
     private void jMenuItemCommentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCommentSelectionActionPerformed
         getCurrentJIFTextPane().commentSelection();
     }//GEN-LAST:event_jMenuItemCommentSelectionActionPerformed
@@ -4124,7 +4114,7 @@ public class jFrame extends JFrame {
             System.err.println(e.getMessage());
         }
     }//GEN-LAST:event_jMenuItemConfigurazioneActionPerformed
-        
+    
     private void jMenuItemAltKeysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAltKeysActionPerformed
         try{
             loadConfigFiles(workingDir+"config"+Constants.SEP+"altkeys.ini");
@@ -4270,13 +4260,13 @@ public class jFrame extends JFrame {
         if (!jCheckBoxJToolBar.getState()) jToolBarCommon.setVisible(false);
         if (jCheckBoxJToolBar.getState()) jToolBarCommon.setVisible(true);
     }//GEN-LAST:event_jCheckBoxJToolBarActionPerformed
-        
+    
     private void AboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AboutActionPerformed
         jDialogAbout.pack();
         jDialogAbout.setLocationRelativeTo(this);
         jDialogAbout.setVisible(true);
     }//GEN-LAST:event_AboutActionPerformed
-        
+    
     private void RunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunButtonActionPerformed
         //saveFile();
         saveAll();
@@ -4544,6 +4534,10 @@ public class jFrame extends JFrame {
     
     
     public void rebuildAll() {
+        
+        // Clearing the OutputWindow
+        this.jTextAreaOutput.setText("");
+        
         String process_string[];
         Vector auxV=new Vector(6);
         String switchString[];
@@ -4837,10 +4831,10 @@ public class jFrame extends JFrame {
             } else{
                 jtp = new JIFTextPane(this, file){
                     /**
-					 * 
-					 */
-					private static final long serialVersionUID = 7492924940162258936L;
-					public boolean getScrollableTracksViewportWidth(){
+                     *
+                     */
+                    private static final long serialVersionUID = 7492924940162258936L;
+                    public boolean getScrollableTracksViewportWidth(){
                         if (getSize().width < getParent().getSize().width) return true;
                         return false;
                     }
@@ -4901,11 +4895,11 @@ public class jFrame extends JFrame {
         } else{
             jtp = new JIFTextPane(this, file){
                 /**
-				 * 
-				 */
-				private static final long serialVersionUID = 1381807237210816003L;
-
-				public boolean getScrollableTracksViewportWidth(){
+                 *
+                 */
+                private static final long serialVersionUID = 1381807237210816003L;
+                
+                public boolean getScrollableTracksViewportWidth(){
                     if (getSize().width < getParent().getSize().width) return true;
                     return false;
                 }
@@ -4958,11 +4952,11 @@ public class jFrame extends JFrame {
         } else{
             jtp = new JIFTextPane(this, null){
                 /**
-				 * 
-				 */
-				private static final long serialVersionUID = -7868710263636743719L;
-
-				public boolean getScrollableTracksViewportWidth(){
+                 *
+                 */
+                private static final long serialVersionUID = -7868710263636743719L;
+                
+                public boolean getScrollableTracksViewportWidth(){
                     if (getSize().width < getParent().getSize().width) return true;
                     return false;
                 }
@@ -5093,7 +5087,7 @@ public class jFrame extends JFrame {
                 System.err.println(e.getMessage());
             }
             
-           
+            
             // SWITCHES
             // apro il file switches.ini e imposto il Vector switches
             // questo va effettuato una sola volta: uso il flag loaded
@@ -5187,7 +5181,7 @@ public class jFrame extends JFrame {
             
             // carico la configurazione di JIF
             loadJifConfiguration(new File(this.workingDir+"config"+Constants.SEP+"config.jif"));
-
+            
         } // end if loaded==true
         
         
@@ -5584,12 +5578,13 @@ public class jFrame extends JFrame {
         
         jTree1.setEnabled(true);
         
-        // cancello il contenuto dell'albero
-        category1.removeAllChildren();
-        category2.removeAllChildren();
-        category4.removeAllChildren();
-        category5.removeAllChildren();
-        category7.removeAllChildren();
+        // Delete contents only for the closed nodes
+        if (!category1.isLeaf())    category1.removeAllChildren();
+        if (!category2.isLeaf())    category2.removeAllChildren();
+        if (!category4.isLeaf())    category4.removeAllChildren();
+        if (!category5.isLeaf())    category5.removeAllChildren();
+        if (!category7.isLeaf())    category7.removeAllChildren();
+        
         String nomefile = getCurrentFilename();
         top.setUserObject(nomefile.substring(nomefile.lastIndexOf(Constants.SEP)+1));
         treeModel.reload();
@@ -5603,6 +5598,8 @@ public class jFrame extends JFrame {
         ByteBuffer bbuf = null;
         CharBuffer cb = null;
         objTree = new Vector();
+        Pattern patt;
+        Matcher m;
         try {
             bbuf = encoder.encode(CharBuffer.wrap(testo));
             cb = decoder.decode(bbuf);
@@ -5612,64 +5609,63 @@ public class jFrame extends JFrame {
         }
         
         // Globals
-        Pattern patt = Pattern.compile("\n+\\s*Global\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);        
-        Matcher m = patt.matcher(cb);
+        patt = Pattern.compile("\n+\\s*Global\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+        m = patt.matcher(cb);
         while (m.find()){
             objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
         }
         sortNodes(objTree,category1);
         
-        
         // Constant
         objTree.clear();
-        patt = Pattern.compile("\n+\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);        
+        patt = Pattern.compile("\n+\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
         while (m.find()){
             objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
         }
         sortNodes(objTree,category2);
-
+        
         // Object
         objTree.clear();
-        //patt = Pattern.compile("\n\\s*Object\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);        
-        patt = Pattern.compile("\n+\\s*Object\\s+(->\\s+)*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);                        
+        //patt = Pattern.compile("\n\\s*Object\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+        patt = Pattern.compile("\n+\\s*Object\\s+(->\\s+)*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
         while (m.find()){
             objTree.add(new Inspect(m.group(2).toLowerCase(),m.start()+m.group(2).length()));
         }
-        sortNodes(objTree,category4);        
-
+        sortNodes(objTree,category4);
+        
 //        // Sub and functions
 //        objTree.clear();
-//        patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+Sub)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);        
+//        patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+Sub)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
 //        m = patt.matcher(cb);
 //        while (m.find()){
 //            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
 //        }
-//        sortNodes(objTree,category6);   
+//        sortNodes(objTree,category6);
         
         // Functions
         objTree.clear();
-        patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);        
+        patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
         while (m.find()){
             objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
         }
-        sortNodes(objTree,category5);           
-    
-        // Classes         
+        sortNodes(objTree,category5);
+        
+        // Classes
         objTree.clear();
         Vector classi_locali= new Vector();
-        patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);        
+        patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
         while (m.find()){
             objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
             classi_locali.add(m.group(1));
             tmp_nodo = new DefaultMutableTreeNode( new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
             category7.add(tmp_nodo);
-            getClasses(tmp_nodo,m.group(1));            
-        }                
-
+            getClasses(tmp_nodo,m.group(1));
+        }
+        
         // se ho impostato il flag jCheckBoxScanProjectFiles a true
         if (jCheckBoxScanProjectFiles.isSelected() && null != projectClass){
             //Aggiungo tutte le classi degli altri file del progetto che non sono contenute in classi_locali
@@ -5682,11 +5678,12 @@ public class jFrame extends JFrame {
                     getClasses(tmp_nodo,classe);
                 }
             }
-        }        
+        }
         
         
         // to Open all tree's nodes if explode==true
-        if (explode) expandAll(jTree1, true);
+        //if (explode) expandAll(jTree1, true);
+        expandAll(jTree1, true);
         
         //System.out.println("Tempo impiegato= "+(System.currentTimeMillis()-tempo1));
     }
@@ -5939,15 +5936,15 @@ public class jFrame extends JFrame {
         }
         
         // Classes
-        //Pattern patt = Pattern.compile("\n\\s*"+nome+"\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);        
-        Pattern patt = Pattern.compile("\n+\\s*"+nome+"\\s+(->\\s+)*(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);                
+        //Pattern patt = Pattern.compile("\n\\s*"+nome+"\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+        Pattern patt = Pattern.compile("\n+\\s*"+nome+"\\s+(->\\s+)*(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         
         Matcher m = patt.matcher(cb);
         while (m.find()){
             nodo.add(new DefaultMutableTreeNode(new Inspect(m.group(2).toLowerCase(),m.start()+m.group(2).length())));
         }
     }
-        
+    
     
     
     public static final JIFTextPane getCurrentJIFTextPane(){
@@ -7343,7 +7340,7 @@ public class jFrame extends JFrame {
     
     
     
-   
+    
     
     // Lancia l'interprete senza passargli il file AT (.inf)
     // This method has to be splitted in 2
@@ -8726,12 +8723,10 @@ public class jFrame extends JFrame {
     // per scegliere l'estensione del file da passare all'interprete
     private String tipoz = "";
     
-    //tasti F1..F12
-    //private Hashtable tastiFunzione;
+    // keys F1..F12
     // Saves the ALT+char mapping and executecommands for the commands to be executed
     private Hashtable altkeys;
     private Hashtable executecommands;
-    
     
     // Vettore che contiene i nomi delle nuove classi all'interno del sorgente
     private DefaultMutableTreeNode tmp_nodo;
@@ -8771,10 +8766,6 @@ public class jFrame extends JFrame {
     public Color colorBackground;
     public Font defaultFont;
     
-    
-    // Tree
-    private boolean explode=true;
-    
     // vettore che memorizza i flag di tipo -v5,-v6 ecc
     private Vector flags;
     
@@ -8787,19 +8778,21 @@ public class jFrame extends JFrame {
     
     // ultima dir usata per aprire un file
     private String lastDir = null;
-   
+    
     // PROJECT VARIABLES
-    private String currentProject ="default";
+    private String currentProject = "default";
     private Vector projectFiles ;
     private Vector projectClass = new Vector();
     private String mainFile="";
-    // private TitledBorder tb; unused
     
     // Main file for the compiling process
     private Dimension screensize;
     
     // alphabetical sorting
     private Vector objTree;
+    
+    // if hit "TAB" JIF will insert 4 spaces or a custom integer
+    public int spacesfortab = 4;
     
     public String getJifVersion() {
         return jifVersion;

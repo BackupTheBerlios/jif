@@ -59,6 +59,32 @@ public class EditorKeyAdapter extends KeyAdapter {
         this.doc = jif.getDocument();
     }
 
+    public void keyPressed(KeyEvent ke) {
+        if (ke.getKeyChar() == KeyEvent.VK_TAB && !ke.isShiftDown()){
+            try{
+                if (jif.getSelectedText() == null){
+                    doc.insertString(jif.getCaretPosition(), Utils.spacesForTab(jframe.spacesfortab), jframe.getAttr());   
+                }                
+                else{
+                    jif.tabSelection();
+                }
+            } catch(BadLocationException e){
+                System.out.println(e.getMessage());
+            }
+            ke.consume(); 
+            return;
+        }
+        if (ke.getKeyChar() == KeyEvent.VK_TAB && ke.isShiftDown()){
+            try{
+                    jif.removeTabSelection();
+            } catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+            ke.consume(); 
+            return;
+        }        
+    }
+    
     /**
      * keyTyped method for the Mapping characters Management.
      * When you type a character which has to be "mapped" into

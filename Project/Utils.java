@@ -65,6 +65,13 @@ public class Utils {
     }
 
 
+    public static String spacesForTab(int numberofspaces){
+        String tmp="";
+        for (int i = 0; i < numberofspaces+1; i++) {
+            tmp+=" ";
+        }
+        return tmp;
+    }
 
     /**
      * Replaces the string "pattern" with "replace" into a text
