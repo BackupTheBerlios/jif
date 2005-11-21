@@ -155,7 +155,7 @@ public class jFrame extends JFrame {
                 
                 System.err.println("\n");
                 System.err.println("JIF version "+ Constants.JIFVERSION + "\n");
-                System.err.println("Start ERROR loggin on "+ new Date()+"\n");
+                System.err.println("Start loggin on "+ new Date()+"\n");
             } catch(FileNotFoundException e){
                 e.printStackTrace();
             }
@@ -181,11 +181,11 @@ public class jFrame extends JFrame {
         // loading configuration
         loadConfig();
         
-        currentProject = workingDir+"projects"+Constants.SEP+"default.jpf";
+        //currentProject = workingDir+"projects"+Constants.SEP+"default.jpf";
         projectFiles = new Vector();
         
-        updateProjectTitle("Project: "+
-                currentProject.substring(currentProject.lastIndexOf(Constants.SEP)+1,currentProject.length()));
+        //updateProjectTitle("Project: "+ currentProject.substring(currentProject.lastIndexOf(Constants.SEP)+1,currentProject.length()));
+        updateProjectTitle("Project: "+ currentProject);
         
         // Events management in the symbols list
         JWindowSymbols = new JFrame();
@@ -244,9 +244,6 @@ public class jFrame extends JFrame {
         JWindowSymbols.getContentPane().add(jsp1);
         JWindowSymbols.toFront();
         // END Events management in the symbols list
-        
-        
-        
         
         attr = new SimpleAttributeSet();
         
@@ -3201,8 +3198,8 @@ public class jFrame extends JFrame {
     private void jButton28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton28ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
+        int_var = chooser.showOpenDialog(this);
+        if(int_var == JFileChooser.CANCEL_OPTION) {
             return;
         } else {
             jTextFieldPathLibSecondary3.setText(chooser.getSelectedFile().getAbsolutePath());
@@ -3213,8 +3210,8 @@ public class jFrame extends JFrame {
     private void jButton27ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton27ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
+        int_var = chooser.showOpenDialog(this);
+        if(int_var == JFileChooser.CANCEL_OPTION) {
             return;
         } else {
             jTextFieldPathLibSecondary2.setText(chooser.getSelectedFile().getAbsolutePath());
@@ -3278,6 +3275,7 @@ public class jFrame extends JFrame {
     
     private void SaveButtonAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveButtonAllActionPerformed
         saveAll();
+        saveProject(false);
     }//GEN-LAST:event_SaveButtonAllActionPerformed
     
     private void jMenuItemRemoveMainClassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRemoveMainClassActionPerformed
@@ -3338,8 +3336,8 @@ public class jFrame extends JFrame {
     
     private void jButtonBlcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBlcActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
+        int_var = chooser.showOpenDialog(this);
+        if(int_var == JFileChooser.CANCEL_OPTION) {
             return;
         } else {
             jTextFieldBlc.setText(chooser.getSelectedFile().getAbsolutePath());
@@ -3348,8 +3346,8 @@ public class jFrame extends JFrame {
     
     private void jButtonBresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBresActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
+        int_var = chooser.showOpenDialog(this);
+        if(int_var == JFileChooser.CANCEL_OPTION) {
             return;
         } else {
             jTextFieldBres.setText(chooser.getSelectedFile().getAbsolutePath());
@@ -3358,8 +3356,8 @@ public class jFrame extends JFrame {
     
     private void jButton26ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton26ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
+        int_var = chooser.showOpenDialog(this);
+        if(int_var == JFileChooser.CANCEL_OPTION) {
             return;
         } else jTextFieldPathGlulx.setText(chooser.getSelectedFile().getAbsolutePath());
     }//GEN-LAST:event_jButton26ActionPerformed
@@ -3389,8 +3387,8 @@ public class jFrame extends JFrame {
     private void jButton25ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton25ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
+        int_var = chooser.showOpenDialog(this);
+        if(int_var == JFileChooser.CANCEL_OPTION) {
             return;
         } else {
             jTextFieldPathLibSecondary1.setText(chooser.getSelectedFile().getAbsolutePath());
@@ -3435,7 +3433,7 @@ public class jFrame extends JFrame {
         jListProject.setListData(projectFiles);
         
         // Update and save the project
-        saveProject();
+        saveProject(false);
     }//GEN-LAST:event_jMenuItemAddNewToProjectActionPerformed
     
     private void jMenuItemPopupAddNewToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupAddNewToProjectActionPerformed
@@ -3613,9 +3611,9 @@ public class jFrame extends JFrame {
     private void jMenuItemPopupOpenSelectedFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupOpenSelectedFilesActionPerformed
         Object[] oggetti = jListProject.getSelectedValues();
         if (oggetti.length == 0) return;
-        for (int c=0; c < oggetti.length ;c++){
-            if (null != oggetti[c]){
-                openFile( ((FileProject)oggetti[c]).path);
+        for (int_var=0; int_var < oggetti.length ;int_var++){
+            if (null != oggetti[int_var]){
+                openFile( ((FileProject)oggetti[int_var]).path);
             }
         }
     }//GEN-LAST:event_jMenuItemPopupOpenSelectedFilesActionPerformed
@@ -3690,7 +3688,7 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jMenuItemRemoveFromProjectActionPerformed
     
     private void jMenuItemPopupSaveProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupSaveProjectActionPerformed
-        saveProject();
+        saveProject(true);
     }//GEN-LAST:event_jMenuItemPopupSaveProjectActionPerformed
     
     private void jMenuItemPopupCloseProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupCloseProjectActionPerformed
@@ -3798,7 +3796,7 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jMenuItemNewProjectActionPerformed
     
     private void jMenuItemSaveProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveProjectActionPerformed
-        saveProject();
+        saveProject(true);
     }//GEN-LAST:event_jMenuItemSaveProjectActionPerformed
     
     private void jMenuItemPopupRemoveFromProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupRemoveFromProjectActionPerformed
@@ -3905,11 +3903,10 @@ public class jFrame extends JFrame {
             if (insp != null){
                 JIFTextPane jif = getCurrentJIFTextPane();
                 el = jif.getDocument().getDefaultRootElement();
-                int ind = el.getElementIndex(insp.Iposition);
-                el = jif.getDocument().getDefaultRootElement().getElement(ind);
+                int_var = el.getElementIndex(insp.Iposition);
+                el = jif.getDocument().getDefaultRootElement().getElement(int_var);
                 jif.getHlighter().highlightFromTo(jif, el.getStartOffset() , el.getEndOffset());
-                
-                //jif.scrollRectToVisible(this.getRectForLine(el.getElementIndex(insp.Iposition)));
+
                 jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                 jif.scrollRectToVisible(jif.modelToView(insp.Iposition));
                 jif.requestFocus();
@@ -3928,14 +3925,14 @@ public class jFrame extends JFrame {
             // 2) find the correct line
             // 3) get the file name
             // 4) (if closed) opens the correct file and jump on the correct line
-            int posizione_click = jTextAreaOutput.viewToModel(evt.getPoint());
+            //int_var = jTextAreaOutput.viewToModel(evt.getPoint());
             String nome="";
             int riga = 0;
             boolean found=false;
             
             // Rescues the correct line
             el = jTextAreaOutput.getDocument().getDefaultRootElement();
-            int ind = el.getElementIndex(posizione_click);
+            int ind = el.getElementIndex(jTextAreaOutput.viewToModel(evt.getPoint()));
             el = jTextAreaOutput.getDocument().getDefaultRootElement().getElement(ind);
             ultima = jTextAreaOutput.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
             
@@ -3954,10 +3951,10 @@ public class jFrame extends JFrame {
                 
                 // checks if the file exists
                 int selected = jTabbedPane1.getTabCount();
-                for (int count=0; count < selected; count++){
-                    if (nome.equals(getFilenameAt(count))){
+                for (int_var=0; int_var < selected; int_var++){
+                    if (nome.equals(getFilenameAt(int_var))){
                         found = true;
-                        jTabbedPane1.setSelectedIndex(count);
+                        jTabbedPane1.setSelectedIndex(int_var);
                     }
                 }
                 
@@ -3993,10 +3990,10 @@ public class jFrame extends JFrame {
                 
                 // checks if the file exists
                 int selected = jTabbedPane1.getTabCount();
-                for (int count=0; count < selected; count++){
-                    if (nome.equals(getFilenameAt(count))){
+                for (int_var=0; int_var < selected; int_var++){
+                    if (nome.equals(getFilenameAt(int_var))){
                         found = true;
-                        jTabbedPane1.setSelectedIndex(count);
+                        jTabbedPane1.setSelectedIndex(int_var);
                     }
                 }
                 
@@ -4393,7 +4390,7 @@ public class jFrame extends JFrame {
      */
     public void searchAllFiles(String target){
         // if project is Not null
-        if (null != currentProject && !currentProject.equals("default")) {
+        if (null != currentProject && !currentProject.equals(Constants.PROJECTEMPTY)) {
             StringBuffer output = new StringBuffer();
             // Load the current project file
             File file = new File(currentProject);
@@ -4456,13 +4453,13 @@ public class jFrame extends JFrame {
                 boolean entrato = false;
                 sb.setLength(0);
                 int size = mappa.size();
-                for (int count=0; count < size; count++){
+                for (int_var=0; int_var < size; int_var++){
                     
                     pos=0;
                     old=0;
                     entrato = false;
                     sb.setLength(0);
-                    String riga = (String)mappa.get(count);
+                    String riga = (String)mappa.get(int_var);
                     String index = riga.substring(0,riga.indexOf(','));
                     String value = riga.substring(riga.indexOf(',')+1);
                     
@@ -4521,8 +4518,8 @@ public class jFrame extends JFrame {
         Component comp = jTabbedPane1.getSelectedComponent();
         
         int componenti = jTabbedPane1.getTabCount();
-        for (int count=0; count < componenti; count++){
-            jTabbedPane1.setSelectedIndex(count);
+        for (int_var=0; int_var < componenti; int_var++){
+            jTabbedPane1.setSelectedIndex(int_var);
             if (getCurrentTitle().indexOf("*")!=-1)
                 saveFile(); //Only save modified files
         }
@@ -4818,20 +4815,15 @@ public class jFrame extends JFrame {
         lastDir = tmp.substring(0,tmp.lastIndexOf(Constants.SEP));
         
         File file;
-        for (int i=0 ; i<files.length; i++){
-            file = files[i];
+        for (int_var=0 ; int_var < files.length; int_var++){
+            file = files[int_var];
             //Controllo che non sia stato già aperto un file
             if (checkOpenFile(file.getAbsoluteFile().toString())) return;
-//            riga="";
-            
             JIFTextPane jtp;
             if (jCheckBoxWrapLines.isSelected()){
                 jtp = new JIFTextPane(this, file);
             } else{
                 jtp = new JIFTextPane(this, file){
-                    /**
-                     *
-                     */
                     private static final long serialVersionUID = 7492924940162258936L;
                     public boolean getScrollableTracksViewportWidth(){
                         if (getSize().width < getParent().getSize().width) return true;
@@ -5070,8 +5062,7 @@ public class jFrame extends JFrame {
                                     // limito la dimensione della preview...
                                     if (tmp.length() > 700) tmp = tmp.substring(0,600);
                                     mi.setToolTipText("<html>"+tmp+"</html>");
-                                    // Inserimento tooltip
-                                    
+                                   
                                     menu.add(mi).addMouseListener(menuListener);
                                     operations.put((String)id,(String) name);
                                 }
@@ -5901,7 +5892,7 @@ public class jFrame extends JFrame {
             //it must save the project file [ Bug #2997 ]
             saveAll();
             saveJifIni();
-            saveProject();
+            saveProject(false);
             System.exit(0);
         }
         if (result==1){
@@ -6728,7 +6719,7 @@ public class jFrame extends JFrame {
         }
         
         // Update and save the project
-        saveProject();
+        saveProject(false);
     }
     
     
@@ -7194,15 +7185,11 @@ public class jFrame extends JFrame {
     }
     
     
-    public void saveProject(){
-//        if (
-//        JOptionPane.showConfirmDialog(this,
-//        currentProject ,
-//        java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_SAVE"),
-//        JOptionPane.OK_CANCEL_OPTION)
-//        ==0
-//        ){
+    public void saveProject(boolean message){
         try{
+            if (currentProject.equals(Constants.PROJECTEMPTY)){
+                return;
+            }
             File file = new File(currentProject);
             
             PrintStream ps;
@@ -7264,12 +7251,14 @@ public class jFrame extends JFrame {
             System.err.println(e.getMessage());
         }
         
-        JOptionPane.showMessageDialog(
+        // silent save?
+        if (message){
+            JOptionPane.showMessageDialog(
                 jDialogConfigFiles,
                 currentProject +" " +java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE4"),
                 java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE2") ,
                 JOptionPane.INFORMATION_MESSAGE);
-        //  }
+        }
     }
     
     
@@ -7296,7 +7285,7 @@ public class jFrame extends JFrame {
             jListProject.setListData(projectFiles);
             
             // Update and save the project
-            saveProject();
+            saveProject(false);
         }
     }
     
@@ -8787,7 +8776,7 @@ public class jFrame extends JFrame {
     private String lastDir = null;
     
     // PROJECT VARIABLES
-    private String currentProject = "default";
+    private String currentProject = Constants.PROJECTEMPTY;
     private Vector projectFiles ;
     private Vector projectClass = new Vector();
     private String mainFile="";
@@ -8797,6 +8786,9 @@ public class jFrame extends JFrame {
     
     // alphabetical sorting
     private Vector objTree;
+    
+    // hack variable
+    private int int_var = 0;
     
     public String getJifVersion() {
         return jifVersion;

@@ -62,14 +62,14 @@ import javax.swing.text.*;
             this.jframe = parent;
 
             //imposto il TAB!
-            TabStop[] stops = new TabStop[30];
-            for (int i=0; i<30; i++) {
-                stops[ i ]=new TabStop((i+1)*30, TabStop.ALIGN_LEFT, TabStop.LEAD_NONE);
-            }
-            TabSet tabSet = new TabSet(stops);
-            SimpleAttributeSet attributes = new SimpleAttributeSet();
-            StyleConstants.setTabSet(attributes, tabSet);
-            setParagraphAttributes(0, getLength(), attributes, false);
+//            TabStop[] stops = new TabStop[30];
+//            for (int i=0; i<30; i++) {
+//                stops[ i ]=new TabStop((i+1)*30, TabStop.ALIGN_LEFT, TabStop.LEAD_NONE);
+//            }
+//            TabSet tabSet = new TabSet(stops);
+//            SimpleAttributeSet attributes = new SimpleAttributeSet();
+//            StyleConstants.setTabSet(attributes, tabSet);
+//            setParagraphAttributes(0, getLength(), attributes, false);
 
 
             putProperty( DefaultEditorKit.EndOfLineStringProperty, "\n" );

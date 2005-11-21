@@ -59,6 +59,7 @@ public class JIFTextPane extends JTextPane{
     private HighlightText hlighterBrackets;
     private HighlightBookmark hlighterBookmarks;
     java.util.List bookmarks;
+    private DefaultStyledDocument dsdoc;
     
     
     /**
@@ -67,20 +68,15 @@ public class JIFTextPane extends JTextPane{
      * @param file File to be load into JIFTextPane.
      * If this is NULL, a new empty JIFTextPane will be created
      */
-    public JIFTextPane(jFrame parent,File file) {
+    public JIFTextPane(jFrame parent, File file) {
         this.jframe = parent;
         this.pathfile = (file != null ? file.getAbsolutePath() : "");
         this.popupListener = new PopupListener(this, jframe);
         hlighterBrackets = new HighlightText(this, new Color(255, 153, 50));
         hlighterBookmarks = new HighlightBookmark(this,new Color(51, 100, 255));
-        //hlighterBookmarks = new HighlightBookmark(this, Color.gray);
         hlighter = new HighlightText(this,new Color(255, 153, 50));
         this.bookmarks = new ArrayList();
         this.setPaths(this.pathfile);
-//        if(this.pathfile.length()>25)
-//              this.subPath=this.pathfile.substring(0 ,  21)+"..." + this.pathfile.substring(this.pathfile.length()-20 ,  this.pathfile.length());
-//        else
-//              this.subPath=this.pathfile;
         
         setBackground(jframe.colorBackground);
         setCaretColor(jframe.colorNormal);
@@ -95,35 +91,42 @@ public class JIFTextPane extends JTextPane{
         if (jframe.jCheckBoxSyntax.isSelected()){
             if (file==null){
                 // This is a new file, I'll apply the Inform Syntax Highlighting
-                setDocument(new InformDocument(jframe));
+                //setDocument(new InformDocument(jframe));
+                dsdoc = new InformDocument(jframe);
             } else {
                 if (pathfile.endsWith(".inf")||(pathfile.endsWith(".h"))){
                     // .inf or .h file
-                    setDocument(new InformDocument(jframe));
+                    //setDocument(new InformDocument(jframe));
+                    dsdoc = new InformDocument(jframe);
                 } else if (pathfile.endsWith(".res")){
                     // Resource File, I'll use the ResDocument for Syntax Highlighting
-                    setDocument(new ResDocument(jframe));
+                    //setDocument(new ResDocument(jframe));
+                    dsdoc = new ResDocument(jframe);
                 } else {
                     // a Normal Document. I'll use a DefaultStyledDocument
-                    setDocument(new DefaultStyledDocument());
+                    //setDocument(new DefaultStyledDocument());
+                    dsdoc = new DefaultStyledDocument();
                     setBackground(Color.white);
                     setCaretColor(Color.black);
                 }
             }
         } else{
             // a Normal Document. I'll use a DefaultStyledDocument
-            setDocument(new DefaultStyledDocument());
+            //setDocument(new DefaultStyledDocument());
+            dsdoc = new DefaultStyledDocument();
             setBackground(Color.white);
             setCaretColor(Color.black);
         }
         
+        long tempo1=System.currentTimeMillis();
         loadFile(file);
+        System.out.println("Tempo impiegato= "+(System.currentTimeMillis()-tempo1));
         
         undoF = new UndoManager();
-        undoF.setLimit(50000);
-        Document doc = getDocument();
+        undoF.setLimit(10000);
+        //Document doc = getDocument();
         
-        doc.addUndoableEditListener(new UndoableEditListener() {
+        dsdoc.addUndoableEditListener(new UndoableEditListener() {
             public void undoableEditHappened(UndoableEditEvent evt) {
                 undoF.addEdit(evt.getEdit());
                 // adding a "*" to the file name, when the file has changed but not saved
@@ -135,11 +138,7 @@ public class JIFTextPane extends JTextPane{
         });
         
         getActionMap().put("Undo", new AbstractAction("Undo") {
-            /**
-             *
-             */
             private static final long serialVersionUID = 4366132315214562191L;
-            
             public void actionPerformed(ActionEvent evt) {
                 try {
                     if (undoF.canUndo()) {
@@ -162,11 +161,7 @@ public class JIFTextPane extends JTextPane{
         getInputMap().put(KeyStroke.getKeyStroke("control Z"), "Undo");
         
         getActionMap().put("Redo", new AbstractAction("Redo") {
-            /**
-            * 
-            */
             private static final long serialVersionUID = 3720633173380513902L;
-
             public void actionPerformed(ActionEvent evt) {
                 try {
                     if (undoF.canRedo()) {
@@ -205,24 +200,26 @@ public class JIFTextPane extends JTextPane{
         addCaretListener(new CaretListener(){
             public void caretUpdate(CaretEvent ce){
                 int pos = getCaretPosition();
-                Element map = getDocument().getDefaultRootElement();
+                //Element map = getDocument().getDefaultRootElement();
+                Element map = dsdoc.getDefaultRootElement();
                 int row = map.getElementIndex(pos);
                 Element lineElem = map.getElement(row);
                 int col = pos - lineElem.getStartOffset();
                 jframe.jTextFieldRowCol.setText((row+1)+" | "+(col+1));
             }
-        });
+        });        
+        
+        this.setDocument(dsdoc);
     }
     
-    
-    
+   
     /**
      * Load text from a file into a JIFTextPane
      * @param file The file to load into JIFTextPane
      */
     public void loadFile(File file){
         if (null!=file){
-            try{
+            try{                
                 StringBuffer sb = new StringBuffer();
                 String riga;
                 sb.setLength(0);
@@ -231,7 +228,9 @@ public class JIFTextPane extends JTextPane{
                     sb.append(riga).append("\n");
                 }
                 br.close();
-                setText(sb.toString());
+                //setText(sb.toString());
+                SimpleAttributeSet sas = new SimpleAttributeSet();
+                dsdoc.insertString(0,sb.toString(), sas);
             }catch(Exception e){
                 System.out.println("ERR: " + e.getMessage());
                 e.printStackTrace();

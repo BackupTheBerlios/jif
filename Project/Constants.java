@@ -67,6 +67,11 @@ public class Constants {
      * Token for mark a line as a command
      */
     public static final String TOKENCOMMAND = "[execute]=";
+    
+    /**
+     * Empty project
+     */
+    public static final String PROJECTEMPTY="blank";   
 
     /**
      * User dir /home/xxx/.jif or c:\documents and settings\xxx\.jif
