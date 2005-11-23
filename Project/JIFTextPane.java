@@ -38,6 +38,13 @@ import javax.swing.undo.*;
 import javax.swing.event.*;
 import java.awt.event.*;
 import java.util.*;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This is a sub-class of JTextPane, with the Inform source management.
@@ -46,8 +53,8 @@ import java.util.*;
 public class JIFTextPane extends JTextPane{
     
     /**
-    * 
-    */
+     *
+     */
     private static final long serialVersionUID = 1475021670099346825L;
     UndoManager undoF;
     jFrame jframe;
@@ -118,9 +125,9 @@ public class JIFTextPane extends JTextPane{
             setCaretColor(Color.black);
         }
         
-        long tempo1=System.currentTimeMillis();
+        //long tempo1=System.currentTimeMillis();
         loadFile(file);
-        System.out.println("Tempo impiegato= "+(System.currentTimeMillis()-tempo1));
+        //System.out.println("Tempo impiegato= "+(System.currentTimeMillis()-tempo1));
         
         undoF = new UndoManager();
         undoF.setLimit(10000);
@@ -207,19 +214,19 @@ public class JIFTextPane extends JTextPane{
                 int col = pos - lineElem.getStartOffset();
                 jframe.jTextFieldRowCol.setText((row+1)+" | "+(col+1));
             }
-        });        
+        });
         
         this.setDocument(dsdoc);
     }
     
-   
+    
     /**
      * Load text from a file into a JIFTextPane
      * @param file The file to load into JIFTextPane
      */
     public void loadFile(File file){
         if (null!=file){
-            try{                
+            try{
                 StringBuffer sb = new StringBuffer();
                 String riga;
                 sb.setLength(0);
@@ -239,6 +246,21 @@ public class JIFTextPane extends JTextPane{
         }
     }
     
+    public CharBuffer getCharBuffer(){
+        Charset charset = Charset.forName("ISO-8859-1");
+        CharsetEncoder encoder = charset.newEncoder();
+        CharsetDecoder decoder = charset.newDecoder();
+        CharBuffer cb;
+        try {
+            ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(this.getText()));
+            cb = decoder.decode(bbuf);
+        } catch (Exception e){
+            System.out.println("ERR:"+e.getMessage());
+            System.err.println(e.getMessage());
+            return null;
+        }
+        return cb;
+    }
     
     
     /**
@@ -622,7 +644,7 @@ public class JIFTextPane extends JTextPane{
         }
     }
     
-   
+    
     /**
      * Returns the current Highlighter
      * @return the current Highlighter

@@ -2144,6 +2144,13 @@ public class jFrame extends JFrame {
                 jTree1MouseEntered(evt);
             }
         });
+        jTree1.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
+            public void treeCollapsed(javax.swing.event.TreeExpansionEvent evt) {
+            }
+            public void treeExpanded(javax.swing.event.TreeExpansionEvent evt) {
+                jTree1TreeExpanded(evt);
+            }
+        });
         jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
                 jTree1ValueChanged(evt);
@@ -3042,6 +3049,41 @@ public class jFrame extends JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jTree1TreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_jTree1TreeExpanded
+        CharBuffer cb = getCurrentJIFTextPane().getCharBuffer();
+//        objTree = new Vector();
+        Pattern patt;
+        Matcher m;
+        if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(category1)))){
+            patt = Pattern.compile("\n+\\s*Global\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+            m = patt.matcher(cb);
+            refreshGlobals(patt,m);          
+        }
+        else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(category2)))){
+            patt = Pattern.compile("\n*\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+            m = patt.matcher(cb);            
+            refreshConstants(patt,m);            
+        }
+        else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(category4)))){
+           patt = Pattern.compile("\n+\\s*Object\\s+(->\\s+)*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+            m = patt.matcher(cb);
+            refreshObjects(patt,m);           
+        }
+        else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(category5)))){
+            patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+            m = patt.matcher(cb);
+            refreshFunctions(patt,m);          
+        }        
+        else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(category7)))){
+            Vector classi_locali= new Vector();        
+            patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+            m = patt.matcher(cb);
+            refreshClasses(patt,m,classi_locali);          
+        }        
+        evt = null;
+        return;
+    }//GEN-LAST:event_jTree1TreeExpanded
     
     private void jCheckBoxOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxOutputActionPerformed
         if (!jCheckBoxOutput.getState()) {
@@ -3228,7 +3270,7 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jMenuItemJumpToSourceActionPerformed
     
     private void jTree1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseEntered
-        refreshTree();
+        refreshTreeIncremental();
     }//GEN-LAST:event_jTree1MouseEntered
     
     private void jCheckBoxJTreeStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jCheckBoxJTreeStateChanged
@@ -5521,7 +5563,122 @@ public class jFrame extends JFrame {
             }
         }
     }
+
     
+public void refreshTreeIncremental(){
+        String currentName = getCurrentFilename();
+        if (jTabbedPane1.getTabCount()==0 || 
+            currentName.endsWith(".txt")  ||
+            currentName.endsWith(".res")){
+            return;
+        }
+
+        DefaultTreeModel treeModel = (DefaultTreeModel) jTree1.getModel();
+        treePath1 = new TreePath(treeModel.getPathToRoot(category1));
+        treePath2 = new TreePath(treeModel.getPathToRoot(category2));
+        treePath4 = new TreePath(treeModel.getPathToRoot(category4));
+        treePath5 = new TreePath(treeModel.getPathToRoot(category5));
+        treePath7 = new TreePath(treeModel.getPathToRoot(category7));
+        
+        String testo = getCurrentJIFTextPane().getText();
+        
+        // Using the regexp
+        CharBuffer cb = getCurrentJIFTextPane().getCharBuffer();
+        objTree = new Vector();
+        Pattern patt;
+        Matcher m;
+        
+        // GLOBALS
+        if(jTree1.isExpanded(treePath1) || category1.isLeaf()){
+            patt = Pattern.compile("\n+\\s*Global\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+            m = patt.matcher(cb);
+            refreshGlobals(patt,m);
+        }
+        
+        // CONSTANTS
+        if(jTree1.isExpanded(treePath2) || category2.isLeaf()){     
+            patt = Pattern.compile("\n*\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+            m = patt.matcher(cb);            
+            refreshConstants(patt,m);
+        }
+        
+        // OBJECTS
+        if(jTree1.isExpanded(treePath4) || category4.isLeaf()){   
+            patt = Pattern.compile("\n+\\s*Object\\s+(->\\s+)*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+            m = patt.matcher(cb);
+            refreshObjects(patt,m);
+        }
+        
+        // FUNCTIONS
+        if(jTree1.isExpanded(treePath5) || category5.isLeaf()){           
+            patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+            m = patt.matcher(cb);
+            refreshFunctions(patt,m);
+        }
+        
+        // CLASSES
+        if(jTree1.isExpanded(treePath7) || category7.isLeaf()){   
+            Vector classi_locali= new Vector();        
+            patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+            m = patt.matcher(cb);
+            refreshClasses(patt,m,classi_locali);
+        }
+
+    }
+    
+
+    public void refreshGlobals(Pattern patt, Matcher m){
+        objTree.clear();
+        while (m.find()){
+            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
+        }
+        category1.removeAllChildren();
+        sortNodes(objTree,category1);
+        treeModel.reload(category1);
+    }
+
+    public void refreshConstants(Pattern patt, Matcher m){
+        objTree.clear();
+        while (m.find()){
+            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
+        }
+        category2.removeAllChildren();            
+        sortNodes(objTree,category2);
+        treeModel.reload(category2);
+    }
+
+    public void refreshObjects(Pattern patt, Matcher m){
+        objTree.clear();
+        while (m.find()){
+            objTree.add(new Inspect(m.group(2).toLowerCase(),m.start()+m.group(2).length()));
+        }
+        category4.removeAllChildren();             
+        sortNodes(objTree,category4);
+        treeModel.reload(category4);
+    }
+
+    public void refreshFunctions(Pattern patt, Matcher m){
+        objTree.clear();        
+        while (m.find()){
+            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
+        }
+        category5.removeAllChildren();                 
+        sortNodes(objTree,category5);
+        treeModel.reload(category5);        
+    }        
+    
+    public void refreshClasses(Pattern patt, Matcher m, Vector classi_locali){
+        objTree.clear();
+        category7.removeAllChildren(); 
+        while (m.find()){
+            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
+            classi_locali.add(m.group(1));
+            tmp_nodo = new DefaultMutableTreeNode( new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
+            category7.add(tmp_nodo);
+            getClasses(tmp_nodo,m.group(1));
+        }
+        treeModel.reload(category7);        
+    }
     
     // Modified to Use the Regular Expressions
     public void refreshTree(){
@@ -5569,11 +5726,11 @@ public class jFrame extends JFrame {
         jTree1.setEnabled(true);
         
         // Delete contents only for the closed nodes
-        if (!category1.isLeaf())    category1.removeAllChildren();
-        if (!category2.isLeaf())    category2.removeAllChildren();
-        if (!category4.isLeaf())    category4.removeAllChildren();
-        if (!category5.isLeaf())    category5.removeAllChildren();
-        if (!category7.isLeaf())    category7.removeAllChildren();
+        category1.removeAllChildren();
+        category2.removeAllChildren();
+        category4.removeAllChildren();
+        category5.removeAllChildren();
+        category7.removeAllChildren();
         
         String nomefile = getCurrentFilename();
         top.setUserObject(nomefile.substring(nomefile.lastIndexOf(Constants.SEP)+1));
@@ -5581,80 +5738,38 @@ public class jFrame extends JFrame {
         
         String testo = getCurrentJIFTextPane().getText();
         
-        // Using the regexp
-        Charset charset = Charset.forName("ISO-8859-1");
-        CharsetEncoder encoder = charset.newEncoder();
-        CharsetDecoder decoder = charset.newDecoder();
-        ByteBuffer bbuf = null;
-        CharBuffer cb = null;
+        CharBuffer cb = getCurrentJIFTextPane().getCharBuffer();
         objTree = new Vector();
         Pattern patt;
         Matcher m;
-        try {
-            bbuf = encoder.encode(CharBuffer.wrap(testo));
-            cb = decoder.decode(bbuf);
-        } catch (Exception e){
-            System.out.println("ERR:"+e.getMessage());
-            System.err.println(e.getMessage());
-        }
         
-        // Globals
+        // GLOBALS
+
         patt = Pattern.compile("\n+\\s*Global\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
-        while (m.find()){
-            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
-        }
-        sortNodes(objTree,category1);
-        
-        // Constant
-        objTree.clear();
-        patt = Pattern.compile("\n+\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-        m = patt.matcher(cb);
-        while (m.find()){
-            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
-        }
-        sortNodes(objTree,category2);
-        
-        // Object
-        objTree.clear();
-        //patt = Pattern.compile("\n\\s*Object\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+        refreshGlobals(patt,m);
+
+
+        // CONSTANTS
+        patt = Pattern.compile("\n*\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+        m = patt.matcher(cb);            
+        refreshConstants(patt,m);
+
+        // OBJECTS
         patt = Pattern.compile("\n+\\s*Object\\s+(->\\s+)*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
-        while (m.find()){
-            objTree.add(new Inspect(m.group(2).toLowerCase(),m.start()+m.group(2).length()));
-        }
-        sortNodes(objTree,category4);
-        
-//        // Sub and functions
-//        objTree.clear();
-//        patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+Sub)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-//        m = patt.matcher(cb);
-//        while (m.find()){
-//            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
-//        }
-//        sortNodes(objTree,category6);
-        
-        // Functions
-        objTree.clear();
+        refreshObjects(patt,m);
+
+        // FUNCTIONS
         patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
-        while (m.find()){
-            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
-        }
-        sortNodes(objTree,category5);
-        
-        // Classes
-        objTree.clear();
-        Vector classi_locali= new Vector();
+        refreshFunctions(patt,m);
+
+        // CLASSES
+        Vector classi_locali= new Vector();        
         patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
-        while (m.find()){
-            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
-            classi_locali.add(m.group(1));
-            tmp_nodo = new DefaultMutableTreeNode( new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
-            category7.add(tmp_nodo);
-            getClasses(tmp_nodo,m.group(1));
-        }
+        refreshClasses(patt,m,classi_locali);
         
         // se ho impostato il flag jCheckBoxScanProjectFiles a true
         if (jCheckBoxScanProjectFiles.isSelected() && null != projectClass){
@@ -8692,6 +8807,7 @@ public class jFrame extends JFrame {
     
     // gestione albero INSPECT
     private DefaultMutableTreeNode top,category1,category2,category4,category5,category7;
+    private TreePath treePath1,treePath2,treePath4,treePath5,treePath7;
     
     private HighlightText hlighterOutput;
     
