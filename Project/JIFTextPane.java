@@ -230,7 +230,8 @@ public class JIFTextPane extends JTextPane{
                 StringBuffer sb = new StringBuffer();
                 String riga;
                 sb.setLength(0);
-                BufferedReader br = new BufferedReader(new FileReader(file));
+                //BufferedReader br = new BufferedReader(new FileReader(file));
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
                 while ((riga = br.readLine())!=null){
                     sb.append(riga).append("\n");
                 }
@@ -955,7 +956,8 @@ public class JIFTextPane extends JTextPane{
     public void InsertTranslate(File file, File fileout){
         String testo = getText();
         try{
-            BufferedReader br = new BufferedReader(new FileReader(file));
+            //BufferedReader br = new BufferedReader(new FileReader(file));
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
             boolean chiave = false;
             String key = null;
             String obj = null;

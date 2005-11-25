@@ -33,6 +33,7 @@
 import java.awt.Checkbox;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
@@ -277,6 +278,8 @@ public class jFrame extends JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
+
         jPopupMenu1 = new javax.swing.JPopupMenu();
         jMenuInsertNew = new javax.swing.JMenu();
         jMenuItemInsertSymbol = new javax.swing.JMenuItem();
@@ -346,7 +349,7 @@ public class jFrame extends JFrame {
         jDialogOption = new JDialog (this, "", false);
         jTabbedPaneOption = new javax.swing.JTabbedPane();
         jPanelGeneral = new javax.swing.JPanel();
-        jPanel36 = new javax.swing.JPanel();
+        jPanelGeneralOptions = new javax.swing.JPanel();
         jPanel42 = new javax.swing.JPanel();
         jLabelMaxRecentFiles = new javax.swing.JLabel();
         jTextFieldMaxRecentFiles = new javax.swing.JTextField();
@@ -366,8 +369,62 @@ public class jFrame extends JFrame {
         jCheckBoxAutomaticCheckBrackets = new javax.swing.JCheckBox();
         jCheckBoxProjectOpenAllFiles = new javax.swing.JCheckBox();
         jCheckBoxProjectCloseAll = new javax.swing.JCheckBox();
-        jPanelPath = new javax.swing.JPanel();
+        jPanelColor = new javax.swing.JPanel();
+        jPanel33 = new javax.swing.JPanel();
+        jPanel26 = new javax.swing.JPanel();
+        jLabelKeyword = new javax.swing.JLabel();
+        jButtonKeyword = new javax.swing.JButton();
+        jPanel27 = new javax.swing.JPanel();
+        jLabelAttribute = new javax.swing.JLabel();
+        jButtonAttribute = new javax.swing.JButton();
+        jPanel28 = new javax.swing.JPanel();
+        jLabelProperty = new javax.swing.JLabel();
+        jButtonProperty = new javax.swing.JButton();
+        jPanel29 = new javax.swing.JPanel();
+        jLabelRoutine = new javax.swing.JLabel();
+        jButtonRoutine = new javax.swing.JButton();
+        jPanel30 = new javax.swing.JPanel();
+        jLabelVerb = new javax.swing.JLabel();
+        jButtonVerb = new javax.swing.JButton();
+        jPanel31 = new javax.swing.JPanel();
+        jLabelNormal = new javax.swing.JLabel();
+        jButtonNormal = new javax.swing.JButton();
+        jPanel32 = new javax.swing.JPanel();
+        jLabelComment = new javax.swing.JLabel();
+        jButtonComment = new javax.swing.JButton();
+        jPanel37 = new javax.swing.JPanel();
+        jLabelBackground = new javax.swing.JLabel();
+        jButtonBackground = new javax.swing.JButton();
+        jEditorPaneColor = new javax.swing.JEditorPane();
         jPanel14 = new javax.swing.JPanel();
+        jComboBoxFont = new javax.swing.JComboBox();
+        jComboBoxFont.addItem("Arial");
+        jComboBoxFont.addItem("Book Antiqua");
+        jComboBoxFont.addItem("Comic Sans MS");
+        jComboBoxFont.addItem("Courier New");
+        jComboBoxFont.addItem("Dialog");
+        jComboBoxFont.addItem("Georgia");
+        jComboBoxFont.addItem("Lucida Console");
+        jComboBoxFont.addItem("Lucida Bright");
+        jComboBoxFont.addItem("Lucida Sans");
+        jComboBoxFont.addItem("Monospaced");
+        jComboBoxFont.addItem("Thaoma");
+        jComboBoxFont.addItem("Times New Roman");
+        jComboBoxFont.addItem("Verdana");
+        jComboBoxFontSize = new javax.swing.JComboBox();
+        jComboBoxFontSize.addItem("7");
+        jComboBoxFontSize.addItem("8");
+        jComboBoxFontSize.addItem("9");
+        jComboBoxFontSize.addItem("10");
+        jComboBoxFontSize.addItem("11");
+        jComboBoxFontSize.addItem("12");
+        jComboBoxFontSize.addItem("13");
+        jComboBoxFontSize.addItem("14");
+
+        jPanelDefaultDark = new javax.swing.JPanel();
+        jLabelDefaultDark = new javax.swing.JLabel();
+        jButtonDefaultDark = new javax.swing.JButton();
+        jPanelPath = new javax.swing.JPanel();
         jPanel16 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
         jTextFieldPathLib = new javax.swing.JTextField();
@@ -412,62 +469,6 @@ public class jFrame extends JFrame {
         jCheckBoxMakeResource = new javax.swing.JCheckBox();
         jPanel9 = new javax.swing.JPanel();
         jCheckBoxAdventInLib = new javax.swing.JCheckBox();
-        jPanelColor = new javax.swing.JPanel();
-        jPanel33 = new javax.swing.JPanel();
-        jPanel26 = new javax.swing.JPanel();
-        jLabelKeyword = new javax.swing.JLabel();
-        jButtonKeyword = new javax.swing.JButton();
-        jPanel27 = new javax.swing.JPanel();
-        jLabelAttribute = new javax.swing.JLabel();
-        jButtonAttribute = new javax.swing.JButton();
-        jPanel28 = new javax.swing.JPanel();
-        jLabelProperty = new javax.swing.JLabel();
-        jButtonProperty = new javax.swing.JButton();
-        jPanel29 = new javax.swing.JPanel();
-        jLabelRoutine = new javax.swing.JLabel();
-        jButtonRoutine = new javax.swing.JButton();
-        jPanel30 = new javax.swing.JPanel();
-        jLabelVerb = new javax.swing.JLabel();
-        jButtonVerb = new javax.swing.JButton();
-        jPanel31 = new javax.swing.JPanel();
-        jLabelNormal = new javax.swing.JLabel();
-        jButtonNormal = new javax.swing.JButton();
-        jPanel32 = new javax.swing.JPanel();
-        jLabelComment = new javax.swing.JLabel();
-        jButtonComment = new javax.swing.JButton();
-        jPanel37 = new javax.swing.JPanel();
-        jLabelBackground = new javax.swing.JLabel();
-        jButtonBackground = new javax.swing.JButton();
-        jPanelDefaultDark = new javax.swing.JPanel();
-        jLabelDefaultDark = new javax.swing.JLabel();
-        jButtonDefaultDark = new javax.swing.JButton();
-        jEditorPaneColor = new javax.swing.JEditorPane();
-        jPanel13 = new javax.swing.JPanel();
-        jTextFieldFont = new javax.swing.JTextField();
-        jComboBoxFont = new javax.swing.JComboBox();
-        jComboBoxFont.addItem("Arial");
-        jComboBoxFont.addItem("Book Antiqua");
-        jComboBoxFont.addItem("Comic Sans MS");
-        jComboBoxFont.addItem("Courier New");
-        jComboBoxFont.addItem("Dialog");
-        jComboBoxFont.addItem("Georgia");
-        jComboBoxFont.addItem("Lucida Console");
-        jComboBoxFont.addItem("Lucida Bright");
-        jComboBoxFont.addItem("Lucida Sans");
-        jComboBoxFont.addItem("Monospaced");
-        jComboBoxFont.addItem("Thaoma");
-        jComboBoxFont.addItem("Times New Roman");
-        jComboBoxFont.addItem("Verdana");
-        jComboBoxFontSize = new javax.swing.JComboBox();
-        jComboBoxFontSize.addItem("7");
-        jComboBoxFontSize.addItem("8");
-        jComboBoxFontSize.addItem("9");
-        jComboBoxFontSize.addItem("10");
-        jComboBoxFontSize.addItem("11");
-        jComboBoxFontSize.addItem("12");
-        jComboBoxFontSize.addItem("13");
-        jComboBoxFontSize.addItem("14");
-
         jPanel3 = new javax.swing.JPanel();
         jButton10 = new javax.swing.JButton();
         jButton23 = new javax.swing.JButton();
@@ -1038,39 +1039,48 @@ public class jFrame extends JFrame {
         jDialogOption.setResizable(false);
         jTabbedPaneOption.setMinimumSize(new java.awt.Dimension(535, 535));
         jTabbedPaneOption.setPreferredSize(new java.awt.Dimension(535, 535));
-        jPanelGeneral.setLayout(new java.awt.GridLayout(1, 0));
+        jPanelGeneral.setLayout(new java.awt.GridLayout(2, 0));
 
-        jPanelGeneral.setPreferredSize(new java.awt.Dimension(205, 400));
-        jPanel36.setLayout(new java.awt.GridLayout(8, 2));
+        jPanelGeneral.setMinimumSize(new java.awt.Dimension(277, 800));
+        jPanelGeneralOptions.setLayout(new java.awt.GridBagLayout());
 
-        jPanel36.setMinimumSize(new java.awt.Dimension(205, 400));
-        jPanel36.setPreferredSize(new java.awt.Dimension(205, 400));
+        jPanelGeneralOptions.setBorder(javax.swing.BorderFactory.createTitledBorder("General"));
+        jPanelGeneralOptions.setMinimumSize(new java.awt.Dimension(205, 410));
+        jPanelGeneralOptions.setPreferredSize(new java.awt.Dimension(205, 410));
         jPanel42.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         jLabelMaxRecentFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTIONDIALOG_MAX_RECENT_FILES"));
         jPanel42.add(jLabelMaxRecentFiles);
 
-        jTextFieldMaxRecentFiles.setColumns(8);
+        jTextFieldMaxRecentFiles.setColumns(2);
         jTextFieldMaxRecentFiles.setText("10");
         jTextFieldMaxRecentFiles.setMinimumSize(new java.awt.Dimension(18, 21));
         jPanel42.add(jTextFieldMaxRecentFiles);
 
-        jPanel36.add(jPanel42);
+        jPanelGeneralOptions.add(jPanel42, new java.awt.GridBagConstraints());
 
         jLabel8.setText("TAB size");
         jPanel10.add(jLabel8);
 
-        jTextFieldTabSize.setColumns(8);
+        jTextFieldTabSize.setColumns(2);
         jTextFieldTabSize.setText("4");
         jPanel10.add(jTextFieldTabSize);
 
-        jPanel36.add(jPanel10);
+        jPanelGeneralOptions.add(jPanel10, new java.awt.GridBagConstraints());
 
         jCheckBoxOpenLastFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_LAST_OPEN_FILE"));
-        jPanel36.add(jCheckBoxOpenLastFile);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxOpenLastFile, gridBagConstraints);
 
         jCheckBoxCreateNewFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("OPTION_CREATE_A_NEW_FILE"));
-        jPanel36.add(jCheckBoxCreateNewFile);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxCreateNewFile, gridBagConstraints);
 
         jCheckBoxMappingLive.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_MAPPINGLIVE"));
         jCheckBoxMappingLive.addActionListener(new java.awt.event.ActionListener() {
@@ -1079,7 +1089,11 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanel36.add(jCheckBoxMappingLive);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxMappingLive, gridBagConstraints);
 
         jCheckBoxMapping.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_MAPPING"));
         jCheckBoxMapping.addActionListener(new java.awt.event.ActionListener() {
@@ -1088,7 +1102,11 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanel36.add(jCheckBoxMapping);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxMapping, gridBagConstraints);
 
         jCheckBoxMappingHFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_MAPPING_HEADER_FILE"));
         jCheckBoxMappingHFile.addActionListener(new java.awt.event.ActionListener() {
@@ -1097,16 +1115,28 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanel36.add(jCheckBoxMappingHFile);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxMappingHFile, gridBagConstraints);
 
         jCheckBoxHelpedCode.setSelected(true);
         jCheckBoxHelpedCode.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE"));
         jCheckBoxHelpedCode.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE_TOOLTIP"));
-        jPanel36.add(jCheckBoxHelpedCode);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxHelpedCode, gridBagConstraints);
 
         jCheckBoxSyntax.setSelected(true);
         jCheckBoxSyntax.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SYNTAX"));
-        jPanel36.add(jCheckBoxSyntax);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxSyntax, gridBagConstraints);
 
         jCheckBoxNumberLines.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_NUMBEROFLINES"));
         jCheckBoxNumberLines.addActionListener(new java.awt.event.ActionListener() {
@@ -1115,10 +1145,18 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanel36.add(jCheckBoxNumberLines);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxNumberLines, gridBagConstraints);
 
         jCheckBoxScanProjectFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SCAN_PROJECT"));
-        jPanel36.add(jCheckBoxScanProjectFiles);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxScanProjectFiles, gridBagConstraints);
 
         jCheckBoxWrapLines.setText("Wrap Lines");
         jCheckBoxWrapLines.addActionListener(new java.awt.event.ActionListener() {
@@ -1127,24 +1165,241 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanel36.add(jCheckBoxWrapLines);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxWrapLines, gridBagConstraints);
 
         jCheckBoxAutomaticCheckBrackets.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_AUTOMATIC_CHECK_BRACKETS"));
-        jPanel36.add(jCheckBoxAutomaticCheckBrackets);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxAutomaticCheckBrackets, gridBagConstraints);
 
         jCheckBoxProjectOpenAllFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_ALL_FILES"));
-        jPanel36.add(jCheckBoxProjectOpenAllFiles);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxProjectOpenAllFiles, gridBagConstraints);
 
         jCheckBoxProjectCloseAll.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_CLOSE_ALL_FILE"));
-        jPanel36.add(jCheckBoxProjectCloseAll);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanelGeneralOptions.add(jCheckBoxProjectCloseAll, gridBagConstraints);
 
-        jPanelGeneral.add(jPanel36);
+        jPanelGeneral.add(jPanelGeneralOptions);
+
+        jPanelColor.setLayout(new java.awt.BorderLayout());
+
+        jPanelColor.setBorder(javax.swing.BorderFactory.createTitledBorder("Color and Font"));
+        jPanelColor.setMinimumSize(new java.awt.Dimension(277, 260));
+        jPanelColor.setPreferredSize(new java.awt.Dimension(277, 260));
+        jPanel33.setLayout(new javax.swing.BoxLayout(jPanel33, javax.swing.BoxLayout.Y_AXIS));
+
+        jPanel33.setMinimumSize(new java.awt.Dimension(120, 255));
+        jPanel33.setPreferredSize(new java.awt.Dimension(120, 255));
+        jPanel26.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelKeyword.setText("Keyword");
+        jPanel26.add(jLabelKeyword);
+
+        jButtonKeyword.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonKeyword.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonKeyword.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonKeyword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonKeywordActionPerformed(evt);
+            }
+        });
+
+        jPanel26.add(jButtonKeyword);
+
+        jPanel33.add(jPanel26);
+
+        jPanel27.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelAttribute.setText("Attribute");
+        jPanel27.add(jLabelAttribute);
+
+        jButtonAttribute.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonAttribute.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonAttribute.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonAttribute.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAttributeActionPerformed(evt);
+            }
+        });
+
+        jPanel27.add(jButtonAttribute);
+
+        jPanel33.add(jPanel27);
+
+        jPanel28.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelProperty.setText("Property");
+        jPanel28.add(jLabelProperty);
+
+        jButtonProperty.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonProperty.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonProperty.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonProperty.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonPropertyActionPerformed(evt);
+            }
+        });
+
+        jPanel28.add(jButtonProperty);
+
+        jPanel33.add(jPanel28);
+
+        jPanel29.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelRoutine.setText("Routine");
+        jPanel29.add(jLabelRoutine);
+
+        jButtonRoutine.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonRoutine.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonRoutine.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonRoutine.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRoutineActionPerformed(evt);
+            }
+        });
+
+        jPanel29.add(jButtonRoutine);
+
+        jPanel33.add(jPanel29);
+
+        jPanel30.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelVerb.setText("Verb");
+        jPanel30.add(jLabelVerb);
+
+        jButtonVerb.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonVerb.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonVerb.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonVerb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonVerbActionPerformed(evt);
+            }
+        });
+
+        jPanel30.add(jButtonVerb);
+
+        jPanel33.add(jPanel30);
+
+        jPanel31.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelNormal.setText("Normal");
+        jPanel31.add(jLabelNormal);
+
+        jButtonNormal.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonNormal.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonNormal.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonNormal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonNormalActionPerformed(evt);
+            }
+        });
+
+        jPanel31.add(jButtonNormal);
+
+        jPanel33.add(jPanel31);
+
+        jPanel32.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelComment.setText("Comment");
+        jPanel32.add(jLabelComment);
+
+        jButtonComment.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonComment.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonComment.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonComment.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCommentActionPerformed(evt);
+            }
+        });
+
+        jPanel32.add(jButtonComment);
+
+        jPanel33.add(jPanel32);
+
+        jPanel37.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelBackground.setText("Background");
+        jPanel37.add(jLabelBackground);
+
+        jButtonBackground.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonBackground.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonBackground.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonBackground.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBackgroundActionPerformed(evt);
+            }
+        });
+
+        jPanel37.add(jButtonBackground);
+
+        jPanel33.add(jPanel37);
+
+        jPanelColor.add(jPanel33, java.awt.BorderLayout.WEST);
+
+        jEditorPaneColor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jEditorPaneColor.setEditable(false);
+        jPanelColor.add(jEditorPaneColor, java.awt.BorderLayout.CENTER);
+
+        jPanel14.setLayout(new java.awt.GridLayout(10, 0));
+
+        jComboBoxFont.setMinimumSize(new java.awt.Dimension(100, 21));
+        jComboBoxFont.setPreferredSize(new java.awt.Dimension(100, 21));
+        jComboBoxFont.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxFontActionPerformed(evt);
+            }
+        });
+
+        jPanel14.add(jComboBoxFont);
+
+        jComboBoxFontSize.setMinimumSize(new java.awt.Dimension(100, 21));
+        jComboBoxFontSize.setPreferredSize(new java.awt.Dimension(100, 21));
+        jComboBoxFontSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxFontSizeActionPerformed(evt);
+            }
+        });
+
+        jPanel14.add(jComboBoxFontSize);
+
+        jPanelDefaultDark.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelDefaultDark.setText("Black setting");
+        jPanelDefaultDark.add(jLabelDefaultDark);
+
+        jButtonDefaultDark.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonDefaultDark.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonDefaultDark.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonDefaultDark.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDefaultDarkActionPerformed(evt);
+            }
+        });
+
+        jPanelDefaultDark.add(jButtonDefaultDark);
+
+        jPanel14.add(jPanelDefaultDark);
+
+        jPanelColor.add(jPanel14, java.awt.BorderLayout.EAST);
+
+        jPanelGeneral.add(jPanelColor);
 
         jTabbedPaneOption.addTab("General", jPanelGeneral);
 
-        jPanelPath.setLayout(new java.awt.BorderLayout());
-
-        jPanel14.setLayout(new java.awt.GridLayout(13, 1));
+        jPanelPath.setLayout(new java.awt.GridLayout(12, 1));
 
         jPanel16.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1163,7 +1418,7 @@ public class jFrame extends JFrame {
 
         jPanel16.add(jButton19);
 
-        jPanel14.add(jPanel16);
+        jPanelPath.add(jPanel16);
 
         jPanel43.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1182,7 +1437,7 @@ public class jFrame extends JFrame {
 
         jPanel43.add(jButton25);
 
-        jPanel14.add(jPanel43);
+        jPanelPath.add(jPanel43);
 
         jPanel45.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1201,7 +1456,7 @@ public class jFrame extends JFrame {
 
         jPanel45.add(jButton27);
 
-        jPanel14.add(jPanel45);
+        jPanelPath.add(jPanel45);
 
         jPanel49.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1220,7 +1475,7 @@ public class jFrame extends JFrame {
 
         jPanel49.add(jButton28);
 
-        jPanel14.add(jPanel49);
+        jPanelPath.add(jPanel49);
 
         jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1239,7 +1494,7 @@ public class jFrame extends JFrame {
 
         jPanel17.add(jButton16);
 
-        jPanel14.add(jPanel17);
+        jPanelPath.add(jPanel17);
 
         jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1258,7 +1513,7 @@ public class jFrame extends JFrame {
 
         jPanel18.add(jButton17);
 
-        jPanel14.add(jPanel18);
+        jPanelPath.add(jPanel18);
 
         jPanel19.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1277,7 +1532,7 @@ public class jFrame extends JFrame {
 
         jPanel19.add(jButton18);
 
-        jPanel14.add(jPanel19);
+        jPanelPath.add(jPanel19);
 
         jPanel44.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1298,14 +1553,13 @@ public class jFrame extends JFrame {
 
         jPanel44.add(jButton26);
 
-        jPanel14.add(jPanel44);
+        jPanelPath.add(jPanel44);
 
         jPanel46.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jLabelBres.setText(java.util.ResourceBundle.getBundle("JIF").getString("GLULX_BRES_LOCATION"));
         jPanel46.add(jLabelBres);
 
-        jTextFieldBres.setText("c:\\Jif\\glulx\\bres.exe");
         jTextFieldBres.setPreferredSize(new java.awt.Dimension(280, 21));
         jPanel46.add(jTextFieldBres);
 
@@ -1319,14 +1573,13 @@ public class jFrame extends JFrame {
 
         jPanel46.add(jButtonBres);
 
-        jPanel14.add(jPanel46);
+        jPanelPath.add(jPanel46);
 
         jPanel47.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jLabelBlc.setText(java.util.ResourceBundle.getBundle("JIF").getString("GLULX_BLC_LOCATION"));
         jPanel47.add(jLabelBlc);
 
-        jTextFieldBlc.setText("c:\\Jif\\glulx\\blc.exe");
         jTextFieldBlc.setPreferredSize(new java.awt.Dimension(280, 21));
         jPanel47.add(jTextFieldBlc);
 
@@ -1340,191 +1593,19 @@ public class jFrame extends JFrame {
 
         jPanel47.add(jButtonBlc);
 
-        jPanel14.add(jPanel47);
+        jPanelPath.add(jPanel47);
 
         jCheckBoxMakeResource.setText(java.util.ResourceBundle.getBundle("JIF").getString("GLULX_MAKE_RESOURCE_WHEN_BUILD_ALL"));
         jPanel48.add(jCheckBoxMakeResource);
 
-        jPanel14.add(jPanel48);
+        jPanelPath.add(jPanel48);
 
         jCheckBoxAdventInLib.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_ADVENT_IN_LIB"));
         jPanel9.add(jCheckBoxAdventInLib);
 
-        jPanel14.add(jPanel9);
-
-        jPanelPath.add(jPanel14, java.awt.BorderLayout.CENTER);
+        jPanelPath.add(jPanel9);
 
         jTabbedPaneOption.addTab("Path", jPanelPath);
-
-        jPanelColor.setLayout(new java.awt.BorderLayout(10, 10));
-
-        jPanel33.setLayout(new javax.swing.BoxLayout(jPanel33, javax.swing.BoxLayout.Y_AXIS));
-
-        jPanel26.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelKeyword.setText("Keyword");
-        jPanel26.add(jLabelKeyword);
-
-        jButtonKeyword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonKeywordActionPerformed(evt);
-            }
-        });
-
-        jPanel26.add(jButtonKeyword);
-
-        jPanel33.add(jPanel26);
-
-        jPanel27.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelAttribute.setText("Attribute");
-        jPanel27.add(jLabelAttribute);
-
-        jButtonAttribute.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAttributeActionPerformed(evt);
-            }
-        });
-
-        jPanel27.add(jButtonAttribute);
-
-        jPanel33.add(jPanel27);
-
-        jPanel28.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelProperty.setText("Property");
-        jPanel28.add(jLabelProperty);
-
-        jButtonProperty.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonPropertyActionPerformed(evt);
-            }
-        });
-
-        jPanel28.add(jButtonProperty);
-
-        jPanel33.add(jPanel28);
-
-        jPanel29.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelRoutine.setText("Routine");
-        jPanel29.add(jLabelRoutine);
-
-        jButtonRoutine.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonRoutineActionPerformed(evt);
-            }
-        });
-
-        jPanel29.add(jButtonRoutine);
-
-        jPanel33.add(jPanel29);
-
-        jPanel30.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelVerb.setText("Verb");
-        jPanel30.add(jLabelVerb);
-
-        jButtonVerb.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonVerbActionPerformed(evt);
-            }
-        });
-
-        jPanel30.add(jButtonVerb);
-
-        jPanel33.add(jPanel30);
-
-        jPanel31.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelNormal.setText("Normal");
-        jPanel31.add(jLabelNormal);
-
-        jButtonNormal.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonNormalActionPerformed(evt);
-            }
-        });
-
-        jPanel31.add(jButtonNormal);
-
-        jPanel33.add(jPanel31);
-
-        jPanel32.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelComment.setText("Comment");
-        jPanel32.add(jLabelComment);
-
-        jButtonComment.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCommentActionPerformed(evt);
-            }
-        });
-
-        jPanel32.add(jButtonComment);
-
-        jPanel33.add(jPanel32);
-
-        jPanel37.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelBackground.setText("Background");
-        jPanel37.add(jLabelBackground);
-
-        jButtonBackground.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBackgroundActionPerformed(evt);
-            }
-        });
-
-        jPanel37.add(jButtonBackground);
-
-        jPanel33.add(jPanel37);
-
-        jPanelDefaultDark.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelDefaultDark.setText("Black setting");
-        jPanelDefaultDark.add(jLabelDefaultDark);
-
-        jButtonDefaultDark.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonDefaultDarkActionPerformed(evt);
-            }
-        });
-
-        jPanelDefaultDark.add(jButtonDefaultDark);
-
-        jPanel33.add(jPanelDefaultDark);
-
-        jPanelColor.add(jPanel33, java.awt.BorderLayout.WEST);
-
-        jPanelColor.add(jEditorPaneColor, java.awt.BorderLayout.CENTER);
-
-        jPanel13.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-
-        jTextFieldFont.setText("Test Test Test abcdefghilmnopqrstuvz");
-        jPanel13.add(jTextFieldFont);
-
-        jComboBoxFont.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxFontActionPerformed(evt);
-            }
-        });
-
-        jPanel13.add(jComboBoxFont);
-
-        jComboBoxFontSize.setMinimumSize(new java.awt.Dimension(40, 21));
-        jComboBoxFontSize.setPreferredSize(new java.awt.Dimension(40, 21));
-        jComboBoxFontSize.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxFontSizeActionPerformed(evt);
-            }
-        });
-
-        jPanel13.add(jComboBoxFontSize);
-
-        jPanelColor.add(jPanel13, java.awt.BorderLayout.SOUTH);
-
-        jTabbedPaneOption.addTab("Font", jPanelColor);
 
         jDialogOption.getContentPane().add(jTabbedPaneOption, java.awt.BorderLayout.CENTER);
 
@@ -2317,6 +2398,11 @@ public class jFrame extends JFrame {
                 jTextAreaOutputMouseClicked(evt);
             }
         });
+        jTextAreaOutput.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jTextAreaOutputMouseMoved(evt);
+            }
+        });
 
         jScrollPane2.setViewportView(jTextAreaOutput);
 
@@ -3050,6 +3136,29 @@ public class jFrame extends JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jTextAreaOutputMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextAreaOutputMouseMoved
+        try{
+            String nome="";
+            int riga = 0;
+            boolean found=false;
+            
+            // Rescues the correct line
+            el = jTextAreaOutput.getDocument().getDefaultRootElement();
+            int ind = el.getElementIndex(jTextAreaOutput.viewToModel(evt.getPoint()));
+            el = jTextAreaOutput.getDocument().getDefaultRootElement().getElement(ind);
+            ultima = jTextAreaOutput.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
+            
+            if (ultima.startsWith(Constants.TOKENCOMMENT) || ultima.startsWith(Constants.TOKENSEARCH) ){
+                // Removing all the selected text in the output window
+                hlighterOutput.removeHighlights(jTextAreaOutput);
+                // Highlight the correct line
+                hlighterOutput.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );                
+            }
+        } catch (BadLocationException e){
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jTextAreaOutputMouseMoved
+
     private void jTree1TreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_jTree1TreeExpanded
         CharBuffer cb = getCurrentJIFTextPane().getCharBuffer();
 //        objTree = new Vector();
@@ -3538,9 +3647,9 @@ public class jFrame extends JFrame {
         jComboBoxFont.setSelectedItem(tmpFont.getName());
         jComboBoxFontSize.setSelectedItem(String.valueOf(tmpFont.getSize()));
         
-        jTextFieldFont.setFont( new Font((String)jComboBoxFont.getSelectedItem(), Font.PLAIN, Integer.parseInt((String)jComboBoxFontSize.getSelectedItem()) ) );
         //jDialogOption.pack();
-        jDialogOption.setSize(580,550);
+        jDialogOption.setSize(580,560);
+        //jDialogOption.setSize(580,540);
         jDialogOption.setLocationRelativeTo(this);
         jDialogOption.setVisible(true);
     }//GEN-LAST:event_jButtonOptionActionPerformed
@@ -3550,13 +3659,15 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jButton24ActionPerformed
     
     private void jComboBoxFontSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxFontSizeActionPerformed
-        jTextFieldFont.setFont(new Font((String)jComboBoxFont.getSelectedItem(),Font.PLAIN, Integer.parseInt((String)jComboBoxFontSize.getSelectedItem()) ));
         defaultFont = new Font((String)jComboBoxFont.getSelectedItem(),Font.PLAIN,Integer.parseInt((String)jComboBoxFontSize.getSelectedItem()));
+        updateColor();
+        updateColorEditor();        
     }//GEN-LAST:event_jComboBoxFontSizeActionPerformed
     
     private void jComboBoxFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxFontActionPerformed
-        jTextFieldFont.setFont(new Font((String)jComboBoxFont.getSelectedItem(),Font.PLAIN,Integer.parseInt((String)jComboBoxFontSize.getSelectedItem()) ) );
         defaultFont = new Font((String)jComboBoxFont.getSelectedItem(),Font.PLAIN,Integer.parseInt((String)jComboBoxFontSize.getSelectedItem()));
+        updateColor();
+        updateColorEditor();
     }//GEN-LAST:event_jComboBoxFontActionPerformed
     
     private void jButton23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton23ActionPerformed
@@ -3786,10 +3897,10 @@ public class jFrame extends JFrame {
         jComboBoxFont.setSelectedItem(tmpFont.getName());
         jComboBoxFontSize.setSelectedItem(String.valueOf(tmpFont.getSize()));
         
-        jTextFieldFont.setFont(new Font((String)jComboBoxFont.getSelectedItem(),Font.PLAIN,Integer.parseInt((String)jComboBoxFontSize.getSelectedItem())));
         
         //jDialogOption.pack();
-        jDialogOption.setSize(580,550);
+        jDialogOption.setSize(580,560);
+        //jDialogOption.setSize(560,540);
         jDialogOption.setLocationRelativeTo(this);
         jDialogOption.setVisible(true);
     }//GEN-LAST:event_jMenuItemSettingsActionPerformed
@@ -3981,42 +4092,55 @@ public class jFrame extends JFrame {
             
             // Only if the line starts with the "#" char
             if (ultima.indexOf("#")!=-1 && ((ultima.indexOf(".inf")!=-1) || (ultima.indexOf(".h")!=-1))){
-                // Removing all the selected text in the output window
-                hlighterOutput.removeHighlights(jTextAreaOutput);
                 
-                // Highlight the correct line
-                hlighterOutput.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );
-                
-                StringTokenizer stok = new StringTokenizer(ultima,"#()");
-                nome=stok.nextToken();
-                riga=Integer.parseInt(stok.nextToken());
-                
-                // checks if the file exists
-                int selected = jTabbedPane1.getTabCount();
-                for (int_var=0; int_var < selected; int_var++){
-                    if (nome.equals(getFilenameAt(int_var))){
-                        found = true;
-                        jTabbedPane1.setSelectedIndex(int_var);
+                // Errors in E1 format
+                if(Utils.IgnoreCaseIndexOf(ultima,"line")==-1){
+                    // Removing all the selected text in the output window
+                    hlighterOutput.removeHighlights(jTextAreaOutput);
+
+                    // Highlight the correct line
+                    hlighterOutput.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );
+
+                    StringTokenizer stok = new StringTokenizer(ultima,"#()");
+                    nome=stok.nextToken();
+                    riga=Integer.parseInt(stok.nextToken());
+
+                    // checks if the file exists
+                    int selected = jTabbedPane1.getTabCount();
+                    for (int_var=0; int_var < selected; int_var++){
+                        if (nome.equals(getFilenameAt(int_var))){
+                            found = true;
+                            jTabbedPane1.setSelectedIndex(int_var);
+                        }
                     }
+
+                    if (!found) {
+                        // The file (with the error) is closed and JIF has to open is
+                        openFile(nome);
+                    }
+
+                    // Find the line with the error
+                    el = getCurrentJIFTextPane().getDocument().getDefaultRootElement();
+                    el = el.getElement(riga-1);
+                    getCurrentJIFTextPane().setCaretPosition(el.getStartOffset());
+
+                    // Removing all the selected text
+                    getCurrentJIFTextPane().removeHighlighter();
+
+                    // Highlight the line which has product the error during compiling
+                    getCurrentJIFTextPane().getHlighter().highlightFromTo(getCurrentJIFTextPane(),el.getStartOffset(),el.getEndOffset() );
+                    getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getDocument().getLength()));
+                    getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(el.getStartOffset()));                    
+                }              
+                // Errors in E0-E2 format
+                else{
+                    JOptionPane.showMessageDialog(this, "Please, use the -E1 error switch.", "Jump to Error", JOptionPane.INFORMATION_MESSAGE);
+                    return;                  
                 }
-                
-                if (!found) {
-                    // The file (with the error) is closed and JIF has to open is
-                    openFile(nome);
-                }
-                
-                // Find the line with the error
-                el = getCurrentJIFTextPane().getDocument().getDefaultRootElement();
-                el = el.getElement(riga-1);
-                getCurrentJIFTextPane().setCaretPosition(el.getStartOffset());
-                
-                // Removing all the selected text
-                getCurrentJIFTextPane().removeHighlighter();
-                
-                // Highlight the line which has product the error during compiling
-                getCurrentJIFTextPane().getHlighter().highlightFromTo(getCurrentJIFTextPane(),el.getStartOffset(),el.getEndOffset() );
-                getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getDocument().getLength()));
-                getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(el.getStartOffset()));
+            }
+            else if (ultima.indexOf("#")!=-1 && Utils.IgnoreCaseIndexOf(ultima,"file")==-1){
+                    JOptionPane.showMessageDialog(this, "Please, use the -E1 error switch.", "Jump to Error", JOptionPane.INFORMATION_MESSAGE);
+                    return;                    
             }
             // find string in all files function
             else if (ultima.startsWith(Constants.TOKENSEARCH)){
@@ -7556,10 +7680,11 @@ public void refreshTreeIncremental(){
     
     public void updateColorEditor(){
         // aggiorno l'editor di test
-        jEditorPaneColor.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        //jEditorPaneColor.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        jEditorPaneColor.setFont(defaultFont);
         jEditorPaneColor.setDoubleBuffered(false);
         jEditorPaneColor.setEditorKit(new StyledEditorKit());
-        jEditorPaneColor.setEditable(true);
+        jEditorPaneColor.setEditable(false);
         
         // imposto il colore di sfondo
         jEditorPaneColor.setBackground(colorBackground);
@@ -7575,10 +7700,7 @@ public void refreshTreeIncremental(){
                 .append("   print \"This is a poisoned apple, isn't it?\"\n")
                 .append("   return true;\n")
                 .append("],\n")
-                .append("has   light;\n")
-                .append("[ Initialise;\n")
-                .append("	location = Forest;\"^^^...^\";\n")
-                .append("];\n");
+                .append("has   light;\n");
         jEditorPaneColor.setText(sb.toString());
     }
     
@@ -7715,7 +7837,7 @@ public void refreshTreeIncremental(){
         
         // Source file name
         String source = fileInf.substring(0,fileInf.lastIndexOf("."));
-        String pathForCd=fileInf.substring(0,fileInf.lastIndexOf("\\"));
+        String pathForCd=fileInf.substring(0,fileInf.lastIndexOf(Constants.SEP));
         //jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
         String process_string[]=new String[3];
         
@@ -8668,7 +8790,6 @@ public void refreshTreeIncremental(){
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
-    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
@@ -8688,7 +8809,6 @@ public void refreshTreeIncremental(){
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
     private javax.swing.JPanel jPanel35;
-    private javax.swing.JPanel jPanel36;
     private javax.swing.JPanel jPanel37;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel42;
@@ -8708,6 +8828,7 @@ public void refreshTreeIncremental(){
     private javax.swing.JPanel jPanelDefaultDark;
     private javax.swing.JPanel jPanelDefinition;
     private javax.swing.JPanel jPanelGeneral;
+    private javax.swing.JPanel jPanelGeneralOptions;
     private javax.swing.JPanel jPanelMainFile;
     private javax.swing.JPanel jPanelPath;
     private javax.swing.JPanel jPanelSearch;
@@ -8757,7 +8878,6 @@ public void refreshTreeIncremental(){
     private javax.swing.JTextField jTextFieldDefinition;
     public javax.swing.JTextField jTextFieldFind;
     public javax.swing.JTextField jTextFieldFindAll;
-    private javax.swing.JTextField jTextFieldFont;
     private javax.swing.JTextField jTextFieldMaxRecentFiles;
     private javax.swing.JTextField jTextFieldPathCompiler;
     private javax.swing.JTextField jTextFieldPathGames;
