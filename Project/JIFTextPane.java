@@ -64,6 +64,8 @@ public class JIFTextPane extends JTextPane{
     String subPath;
     private HighlightText hlighter;
     private HighlightText hlighterBrackets;
+    private HighlightText hlighterErrors;
+    private HighlightText hlighterWarnings;
     private HighlightBookmark hlighterBookmarks;
     java.util.List bookmarks;
     private DefaultStyledDocument dsdoc;
@@ -81,6 +83,8 @@ public class JIFTextPane extends JTextPane{
         this.popupListener = new PopupListener(this, jframe);
         hlighterBrackets = new HighlightText(this, new Color(255, 153, 50));
         hlighterBookmarks = new HighlightBookmark(this,new Color(51, 100, 255));
+        hlighterErrors = new HighlightText(this, Constants.colorErrors);
+        hlighterWarnings = new HighlightText(this, Constants.colorWarnings);
         hlighter = new HighlightText(this,new Color(255, 153, 50));
         this.bookmarks = new ArrayList();
         this.setPaths(this.pathfile);
@@ -346,11 +350,6 @@ public class JIFTextPane extends JTextPane{
                 hlighterBrackets.highlightFromTo(this, posizioneIniziale+c-1, posizioneIniziale+c);
             }
         } catch (Exception e){
-            if (jframe.jCheckBoxAutomaticCheckBrackets.isSelected()){
-                JOptionPane.showMessageDialog(null,
-                        java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_CHECK_BRACKET_ISNT_CLOSE"),
-                        "Warning", JOptionPane.ERROR_MESSAGE);
-            }
         }
     }
     
@@ -382,11 +381,6 @@ public class JIFTextPane extends JTextPane{
                 hlighterBrackets.highlightFromTo(this, posizioneIniziale-c+1, posizioneIniziale-c+2);
             }
         } catch (Exception e){
-            if (jframe.jCheckBoxAutomaticCheckBrackets.isSelected()){
-                JOptionPane.showMessageDialog(null,
-                        java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_CHECK_BRACKET_ISNT_OPEN"),
-                        "Warning", JOptionPane.ERROR_MESSAGE);
-            }
         }
     }
     
@@ -645,6 +639,22 @@ public class JIFTextPane extends JTextPane{
         }
     }
     
+    /**
+     * Returns the current HighlighterWarnings
+     * @return the current HighlighterWarnings
+     */
+    public HighlightText getHlighterWarnings(){
+        return this.hlighterWarnings;
+    }
+    
+    /**
+     * Returns the current HighlighterErrors
+     * @return the current HighlighterErrors
+     */
+    public HighlightText getHlighterErrors(){
+        return this.hlighterErrors;
+    }
+    
     
     /**
      * Returns the current Highlighter
@@ -672,7 +682,24 @@ public class JIFTextPane extends JTextPane{
             this.hlighterBrackets.removeHighlights(this);
         }
     }
-    
+
+    /**
+     * Remove current highlighterErrors from the JIFTextPane
+     */
+    public void removeHighlighterErrors(){
+        if (null != this.hlighterErrors){
+            this.hlighterErrors.removeHighlights(this);
+        }
+    }    
+
+    /**
+     * Remove current highlighterWarnings from the JIFTextPane
+     */
+    public void removeHighlighterWarnings(){
+        if (null != this.hlighterWarnings){
+            this.hlighterWarnings.removeHighlights(this);
+        }
+    }   
     
     /**
      * This method will fix the current selection

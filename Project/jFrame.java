@@ -182,10 +182,8 @@ public class jFrame extends JFrame {
         // loading configuration
         loadConfig();
         
-        //currentProject = workingDir+"projects"+Constants.SEP+"default.jpf";
         projectFiles = new Vector();
         
-        //updateProjectTitle("Project: "+ currentProject.substring(currentProject.lastIndexOf(Constants.SEP)+1,currentProject.length()));
         updateProjectTitle("Project: "+ currentProject);
         
         // Events management in the symbols list
@@ -249,7 +247,8 @@ public class jFrame extends JFrame {
         attr = new SimpleAttributeSet();
         
         // creates a hlighterOutput for the Output Windows
-        hlighterOutput = new HighlightText(Color.pink);
+        hlighterOutputErrors    = new HighlightText(Constants.colorErrors);
+        hlighterOutputWarnings  = new HighlightText(Constants.colorWarnings);
         
         // load JIF ini
         loadJifIni();
@@ -297,7 +296,10 @@ public class jFrame extends JFrame {
         jDialogAbout = new JDialog (this, "", true);
         jPanel7 = new javax.swing.JPanel();
         jButton9 = new javax.swing.JButton();
+        jTabbedPane3 = new javax.swing.JTabbedPane();
         jLabel7 = new javax.swing.JLabel();
+        jScrollPaneAbout = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jDialogConfigFiles = new JDialog (this, "", false);
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
@@ -366,7 +368,6 @@ public class jFrame extends JFrame {
         jCheckBoxNumberLines = new javax.swing.JCheckBox();
         jCheckBoxScanProjectFiles = new javax.swing.JCheckBox();
         jCheckBoxWrapLines = new javax.swing.JCheckBox();
-        jCheckBoxAutomaticCheckBrackets = new javax.swing.JCheckBox();
         jCheckBoxProjectOpenAllFiles = new javax.swing.JCheckBox();
         jCheckBoxProjectCloseAll = new javax.swing.JCheckBox();
         jPanelColor = new javax.swing.JPanel();
@@ -412,14 +413,14 @@ public class jFrame extends JFrame {
         jComboBoxFont.addItem("Times New Roman");
         jComboBoxFont.addItem("Verdana");
         jComboBoxFontSize = new javax.swing.JComboBox();
-        jComboBoxFontSize.addItem("7");
-        jComboBoxFontSize.addItem("8");
         jComboBoxFontSize.addItem("9");
         jComboBoxFontSize.addItem("10");
         jComboBoxFontSize.addItem("11");
         jComboBoxFontSize.addItem("12");
         jComboBoxFontSize.addItem("13");
         jComboBoxFontSize.addItem("14");
+        jComboBoxFontSize.addItem("15");
+        jComboBoxFontSize.addItem("16");
 
         jPanelDefaultDark = new javax.swing.JPanel();
         jLabelDefaultDark = new javax.swing.JLabel();
@@ -511,7 +512,7 @@ public class jFrame extends JFrame {
         jTextFieldRowCol = new javax.swing.JTextField();
         jSplitPane3 = new javax.swing.JSplitPane();
         jSplitPane1 = new javax.swing.JSplitPane();
-        jTabbedPane3 = new javax.swing.JTabbedPane();
+        jTabbedPaneLeft = new javax.swing.JTabbedPane();
         jPanelTreeControl = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
 
@@ -758,7 +759,16 @@ public class jFrame extends JFrame {
         jDialogAbout.getContentPane().add(jPanel7, java.awt.BorderLayout.SOUTH);
 
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/about.png")));
-        jDialogAbout.getContentPane().add(jLabel7, java.awt.BorderLayout.CENTER);
+        jTabbedPane3.addTab("About", jLabel7);
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jTextArea1.setText("JIF, a java editor for Inform Version 3\nby Alessandro Schillaci\nhttp://www.slade.altervista.org/JIF/\n\nDevelopment: Alessandro Schillaci, Luis Fernandez\n\nContributors:\nPaolo Lucchesi\nBaltasar Garc\u00eda Perez-Schofield\nVincenzo Scarpa\nPeter F. Piggott\nGiles Boutel\nChristof Menear\nDavid Moreno\nJavier San Jos\u00e9\nMax Kalus\nAdrien Saurat\nEric Forgeot\nAlex V Flinsch\nDaryl McCullough\nGiancarlo Niccolai\nIgnazio di Napoli\nJoerg Rosenbauer\nMatteo De Simone\nTommaso Caldarola");
+        jScrollPaneAbout.setViewportView(jTextArea1);
+
+        jTabbedPane3.addTab("Credits", jScrollPaneAbout);
+
+        jDialogAbout.getContentPane().add(jTabbedPane3, java.awt.BorderLayout.NORTH);
 
         jDialogConfigFiles.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGFILES_TITLE"));
         jDialogConfigFiles.setFont(new java.awt.Font("Arial", 0, 12));
@@ -1104,7 +1114,7 @@ public class jFrame extends JFrame {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanelGeneralOptions.add(jCheckBoxMapping, gridBagConstraints);
 
@@ -1116,8 +1126,8 @@ public class jFrame extends JFrame {
         });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanelGeneralOptions.add(jCheckBoxMappingHFile, gridBagConstraints);
 
@@ -1125,8 +1135,8 @@ public class jFrame extends JFrame {
         jCheckBoxHelpedCode.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE"));
         jCheckBoxHelpedCode.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE_TOOLTIP"));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanelGeneralOptions.add(jCheckBoxHelpedCode, gridBagConstraints);
 
@@ -1166,17 +1176,10 @@ public class jFrame extends JFrame {
         });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        jPanelGeneralOptions.add(jCheckBoxWrapLines, gridBagConstraints);
-
-        jCheckBoxAutomaticCheckBrackets.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_AUTOMATIC_CHECK_BRACKETS"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        jPanelGeneralOptions.add(jCheckBoxAutomaticCheckBrackets, gridBagConstraints);
+        jPanelGeneralOptions.add(jCheckBoxWrapLines, gridBagConstraints);
 
         jCheckBoxProjectOpenAllFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_ALL_FILES"));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1187,8 +1190,8 @@ public class jFrame extends JFrame {
 
         jCheckBoxProjectCloseAll.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_CLOSE_ALL_FILE"));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanelGeneralOptions.add(jCheckBoxProjectCloseAll, gridBagConstraints);
 
@@ -2210,14 +2213,15 @@ public class jFrame extends JFrame {
         jSplitPane1.setDoubleBuffered(true);
         jSplitPane1.setMinimumSize(new java.awt.Dimension(180, 248));
         jSplitPane1.setPreferredSize(new java.awt.Dimension(180, 328));
-        jTabbedPane3.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
-        jTabbedPane3.setFont(new java.awt.Font("Dialog", 0, 11));
+        jTabbedPaneLeft.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
+        jTabbedPaneLeft.setFont(new java.awt.Font("Dialog", 0, 11));
         jPanelTreeControl.setLayout(new javax.swing.BoxLayout(jPanelTreeControl, javax.swing.BoxLayout.Y_AXIS));
 
         jScrollPane3.setBorder(null);
         jScrollPane3.setDoubleBuffered(true);
         jScrollPane3.setMinimumSize(new java.awt.Dimension(150, 200));
         jScrollPane3.setPreferredSize(new java.awt.Dimension(150, 300));
+        jTree1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jTree1.setFont(new java.awt.Font("Courier New", 0, 12));
         jTree1.setMaximumSize(new java.awt.Dimension(0, 0));
         jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -2242,7 +2246,7 @@ public class jFrame extends JFrame {
 
         jPanelTreeControl.add(jScrollPane3);
 
-        jTabbedPane3.addTab("Tree", jPanelTreeControl);
+        jTabbedPaneLeft.addTab("Tree", jPanelTreeControl);
 
         jPanelMainFile.setLayout(new javax.swing.BoxLayout(jPanelMainFile, javax.swing.BoxLayout.Y_AXIS));
 
@@ -2268,7 +2272,7 @@ public class jFrame extends JFrame {
         jLabelMainFile.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         jPanelMainFile.add(jLabelMainFile);
 
-        jTabbedPane3.addTab("Project", jPanelMainFile);
+        jTabbedPaneLeft.addTab("Project", jPanelMainFile);
 
         jPanelSearch.setLayout(new javax.swing.BoxLayout(jPanelSearch, javax.swing.BoxLayout.Y_AXIS));
 
@@ -2353,9 +2357,9 @@ public class jFrame extends JFrame {
 
         jPanelSearch.add(jPanelDefinition);
 
-        jTabbedPane3.addTab("Search", jPanelSearch);
+        jTabbedPaneLeft.addTab("Search", jPanelSearch);
 
-        jSplitPane1.setLeftComponent(jTabbedPane3);
+        jSplitPane1.setLeftComponent(jTabbedPaneLeft);
 
         jPanel5.setLayout(new java.awt.BorderLayout());
 
@@ -2746,11 +2750,6 @@ public class jFrame extends JFrame {
                 jCheckBoxOutputActionPerformed(evt);
             }
         });
-        jCheckBoxOutput.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jCheckBoxOutputStateChanged(evt);
-            }
-        });
 
         jMenuView.add(jCheckBoxOutput);
 
@@ -2763,11 +2762,6 @@ public class jFrame extends JFrame {
                 jCheckBoxJToolBarActionPerformed(evt);
             }
         });
-        jCheckBoxJToolBar.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jCheckBoxJToolBarStateChanged(evt);
-            }
-        });
 
         jMenuView.add(jCheckBoxJToolBar);
 
@@ -2778,11 +2772,6 @@ public class jFrame extends JFrame {
         jCheckBoxJTree.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxJTreeActionPerformed(evt);
-            }
-        });
-        jCheckBoxJTree.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jCheckBoxJTreeStateChanged(evt);
             }
         });
 
@@ -3149,10 +3138,19 @@ public class jFrame extends JFrame {
             ultima = jTextAreaOutput.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
             
             if (ultima.startsWith(Constants.TOKENCOMMENT) || ultima.startsWith(Constants.TOKENSEARCH) ){
-                // Removing all the selected text in the output window
-                hlighterOutput.removeHighlights(jTextAreaOutput);
-                // Highlight the correct line
-                hlighterOutput.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );                
+                
+                // In case of errors
+                if (Utils.IgnoreCaseIndexOf(ultima,"error")!=-1){
+                    hlighterOutputWarnings.removeHighlights(jTextAreaOutput);
+                    hlighterOutputErrors.removeHighlights(jTextAreaOutput);
+                    hlighterOutputErrors.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );                                    
+                }                
+                // In case of warnings
+                else{
+                    hlighterOutputErrors.removeHighlights(jTextAreaOutput);
+                    hlighterOutputWarnings.removeHighlights(jTextAreaOutput);
+                    hlighterOutputWarnings.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );                                                        
+                }
             }
         } catch (BadLocationException e){
             e.printStackTrace();
@@ -3320,11 +3318,14 @@ public class jFrame extends JFrame {
             jCheckBoxOutput.setSelected(true);
             jCheckBoxJToolBar.setSelected(true);
             jCheckBoxJTree.setSelected(true);
-        } else{
+       } else{
             jCheckBoxOutput.setSelected(false);
             jCheckBoxJToolBar.setSelected(false);
             jCheckBoxJTree.setSelected(false);
         }
+        jCheckBoxOutputActionPerformed(evt);
+        jCheckBoxJToolBarActionPerformed(evt);
+        jCheckBoxJTreeActionPerformed(evt);
     }//GEN-LAST:event_jCheckBoxToggleFullscreenActionPerformed
     
     private void jMenuItemNextBookmarkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNextBookmarkActionPerformed
@@ -3381,27 +3382,7 @@ public class jFrame extends JFrame {
     private void jTree1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseEntered
         refreshTreeIncremental();
     }//GEN-LAST:event_jTree1MouseEntered
-    
-    private void jCheckBoxJTreeStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jCheckBoxJTreeStateChanged
-        if (!jCheckBoxJTree.getState()) jSplitPane1.setDividerLocation(0);
-        if (jCheckBoxJTree.getState()) jSplitPane1.setDividerLocation(150);
-    }//GEN-LAST:event_jCheckBoxJTreeStateChanged
-    
-    private void jCheckBoxJToolBarStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jCheckBoxJToolBarStateChanged
-        if (!jCheckBoxJToolBar.getState()) jToolBarCommon.setVisible(false);
-        if (jCheckBoxJToolBar.getState()) jToolBarCommon.setVisible(true);
-    }//GEN-LAST:event_jCheckBoxJToolBarStateChanged
-    
-    private void jCheckBoxOutputStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jCheckBoxOutputStateChanged
-        if (!jCheckBoxOutput.getState()) {
-            jTabbedPane2.setVisible(false);
-        }
-        if (jCheckBoxOutput.getState()) {
-            jSplitPane3.setBottomComponent(jTabbedPane2);
-            jTabbedPane2.setVisible(true);
-        }
-    }//GEN-LAST:event_jCheckBoxOutputStateChanged
-    
+                
     private void jButtonDefaultDarkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDefaultDarkActionPerformed
         // Dark settings
         colorKeyword = new Color(51,102,255);
@@ -3557,7 +3538,7 @@ public class jFrame extends JFrame {
     
     private void jCheckBoxJTreeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxJTreeActionPerformed
         if (!jCheckBoxJTree.getState()) jSplitPane1.setDividerLocation(0);
-        if (jCheckBoxJTree.getState()) jSplitPane1.setDividerLocation(150);
+        if (jCheckBoxJTree.getState()) jSplitPane1.setDividerLocation(180);
     }//GEN-LAST:event_jCheckBoxJTreeActionPerformed
     
     private void jButtonBackgroundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackgroundActionPerformed
@@ -4041,19 +4022,15 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jMenuItemPrintActionPerformed
     
     private void jTree1ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree1ValueChanged
-        // Object Tree management
-        // Removing all the selected text
         getCurrentJIFTextPane().removeHighlighter();
-        
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)jTree1.getLastSelectedPathComponent();
         if (node == null || !(node.getUserObject() instanceof Inspect)){
             return;
         }
-        
         Object nodo = node.getUserObject();
         try{
             Inspect insp = (Inspect) nodo;
-            if (insp != null){
+            if (insp != null && insp.Iposition!=-1){
                 JIFTextPane jif = getCurrentJIFTextPane();
                 el = jif.getDocument().getDefaultRootElement();
                 int_var = el.getElementIndex(insp.Iposition);
@@ -4071,14 +4048,8 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jTree1ValueChanged
     
     private void jTextAreaOutputMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextAreaOutputMouseClicked
-        // When user clicks on errors/warnings, JIF jumps to the correct line
-        // in the source
+        // When user clicks on errors/warnings, JIF jumps to the correct line in the source
         try{
-            // 1) find where user has clicked on
-            // 2) find the correct line
-            // 3) get the file name
-            // 4) (if closed) opens the correct file and jump on the correct line
-            //int_var = jTextAreaOutput.viewToModel(evt.getPoint());
             String nome="";
             int riga = 0;
             boolean found=false;
@@ -4089,17 +4060,13 @@ public class jFrame extends JFrame {
             el = jTextAreaOutput.getDocument().getDefaultRootElement().getElement(ind);
             ultima = jTextAreaOutput.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
             
-            
             // Only if the line starts with the "#" char
             if (ultima.indexOf("#")!=-1 && ((ultima.indexOf(".inf")!=-1) || (ultima.indexOf(".h")!=-1))){
                 
                 // Errors in E1 format
-                if(Utils.IgnoreCaseIndexOf(ultima,"line")==-1){
+                if(Utils.IgnoreCaseIndexOf(ultima,"line ")==-1){
                     // Removing all the selected text in the output window
-                    hlighterOutput.removeHighlights(jTextAreaOutput);
-
-                    // Highlight the correct line
-                    hlighterOutput.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );
+                    hlighterOutputErrors.removeHighlights(jTextAreaOutput);
 
                     StringTokenizer stok = new StringTokenizer(ultima,"#()");
                     nome=stok.nextToken();
@@ -4115,22 +4082,33 @@ public class jFrame extends JFrame {
                     }
 
                     if (!found) {
-                        // The file (with the error) is closed and JIF has to open is
+                        //openFile(nome,riga);
                         openFile(nome);
                     }
 
+                    JIFTextPane jif = getCurrentJIFTextPane();
+                      
                     // Find the line with the error
-                    el = getCurrentJIFTextPane().getDocument().getDefaultRootElement();
+                    el = jif.getDocument().getDefaultRootElement();
                     el = el.getElement(riga-1);
-                    getCurrentJIFTextPane().setCaretPosition(el.getStartOffset());
+                    jif.setCaretPosition(el.getStartOffset());
 
-                    // Removing all the selected text
-                    getCurrentJIFTextPane().removeHighlighter();
+                    if (Utils.IgnoreCaseIndexOf(ultima,"warning")==-1){
+                        jif.removeHighlighterErrors();
+                        jif.getHlighterErrors().highlightFromTo(getCurrentJIFTextPane(),el.getStartOffset(),el.getEndOffset() );
+                    }
+                    else{
+                        jif.removeHighlighterWarnings();
+                        jif.getHlighterWarnings().highlightFromTo(getCurrentJIFTextPane(),el.getStartOffset(),el.getEndOffset() );
+                    }
 
-                    // Highlight the line which has product the error during compiling
-                    getCurrentJIFTextPane().getHlighter().highlightFromTo(getCurrentJIFTextPane(),el.getStartOffset(),el.getEndOffset() );
-                    getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getDocument().getLength()));
-                    getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(el.getStartOffset()));                    
+                    if (jif.modelToView(jif.getDocument().getLength()) != null){
+                        jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
+                        jif.scrollRectToVisible(jif.modelToView(el.getStartOffset()));     
+                    }
+                    else{
+                        jif.setCaretPosition(el.getStartOffset());
+                    }
                 }              
                 // Errors in E0-E2 format
                 else{
@@ -4145,10 +4123,10 @@ public class jFrame extends JFrame {
             // find string in all files function
             else if (ultima.startsWith(Constants.TOKENSEARCH)){
                 // Removing all the selected text in the output window
-                hlighterOutput.removeHighlights(jTextAreaOutput);
+                hlighterOutputErrors.removeHighlights(jTextAreaOutput);
                 
                 // Highlight the correct line
-                hlighterOutput.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );
+                hlighterOutputErrors.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );
                 
                 StringTokenizer stok = new StringTokenizer(ultima,Constants.TOKENSEARCH);
                 nome=stok.nextToken();
@@ -4169,17 +4147,18 @@ public class jFrame extends JFrame {
                 }
                 
                 // Find the line with the error
-                el = getCurrentJIFTextPane().getDocument().getDefaultRootElement();
+                JIFTextPane jif = getCurrentJIFTextPane();
+                el = jif.getDocument().getDefaultRootElement();
                 el = el.getElement(riga-1);
-                getCurrentJIFTextPane().setCaretPosition(el.getStartOffset());
+                jif.setCaretPosition(el.getStartOffset());
                 
                 // Removing all the selected text
-                getCurrentJIFTextPane().removeHighlighter();
+                jif.removeHighlighter();
                 
                 // Highlight the line which has product the error during compiling
-                getCurrentJIFTextPane().getHlighter().highlightFromTo(getCurrentJIFTextPane(),el.getStartOffset(),el.getEndOffset() );
-                getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getDocument().getLength()));
-                getCurrentJIFTextPane().scrollRectToVisible(getCurrentJIFTextPane().modelToView(el.getStartOffset()));
+                jif.getHlighter().highlightFromTo(jif,el.getStartOffset(),el.getEndOffset() );
+                jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
+                jif.scrollRectToVisible(jif.modelToView(el.getStartOffset()));
             } else return;
         } catch (BadLocationException e){
             e.printStackTrace();
@@ -4257,7 +4236,8 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jButton19ActionPerformed
     
     private void jTextFieldFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldFindActionPerformed
-//        getCurrentJIFTextPane().findString(this);
+        getCurrentJIFTextPane().findString(this);
+        evt=null;
     }//GEN-LAST:event_jTextFieldFindActionPerformed
     
     private void jMenuItemCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCloseActionPerformed
@@ -4505,28 +4485,8 @@ public class jFrame extends JFrame {
      */
     public static void main(String args[]) {
         try{
-            //  * com.jgoodies.plaf.windows.ExtWindowsLookAndFeel Parecido a win98
-            //	* com.jgoodies.plaf.plastic.PlasticLookAndFeel win98 mejorado
-            //	* com.jgoodies.plaf.plastic.Plastic3DLookAndFeel xp pero cuadradito
-            //	* com.jgoodies.plaf.plastic.PlasticXPLookAndFeel
-            System.out.println(System.getProperty("os.name"));
-            System.out.println(UIManager.getSystemLookAndFeelClassName());
-            
-            /*
-            if(System.getProperty("os.name").indexOf("Windows")!=-1){
-                //PlasticXPLookAndFeel.setMyCurrentTheme(new SkyBlue());
-                //UIManager.setLookAndFeel("com.jgoodies.plaf.plastic.PlasticXPLookAndFeel");
-             
-            }
-            else{
-                if(System.getProperty("os.name").indexOf("Linux")!=-1){
-                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-                }
-                else{
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                }
-            }
-             */
+            //System.out.println(System.getProperty("os.name"));
+            //System.out.println(UIManager.getSystemLookAndFeelClassName());
             try {
                 // test if looks.jar library is present
                 Class.forName("com.jgoodies.looks.LookUtils");
@@ -4538,11 +4498,10 @@ public class jFrame extends JFrame {
             } catch (Exception e) {
                 System.err.println("Can't set look & feel:" + e);
             }
-            System.out.println("Setting Look and Feel: "+UIManager.getLookAndFeel().getName());
+            //System.out.println("Setting Look and Feel: "+UIManager.getLookAndFeel().getName());
         } catch(Exception e){
             System.out.println("ERRORE: "+e.getMessage());
-            System.err.println(e.getMessage());
-            
+            System.err.println(e.getMessage());            
         }
         if (args.length > 0)  {
             new jFrame(args[0]).show();
@@ -4699,6 +4658,7 @@ public class jFrame extends JFrame {
         
         // Clearing the OutputWindow
         this.jTextAreaOutput.setText("");
+        System.gc();
         
         String process_string[];
         Vector auxV=new Vector(6);
@@ -4711,10 +4671,16 @@ public class jFrame extends JFrame {
             return;
         }
         
+        if (null == gamesDir || gamesDir.equals("")){
+            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_GAMESPATH"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_GENERIC"), JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        
+        
         // se l'utente ha tolto la visto della TextAreaOutput, la rendo visible..
         // Ma verrà sempre nascosa ad ogni evento sul TextPane
         if (!jCheckBoxOutput.getState()){
-            //jCheckBoxOutput.setState(true);
             jSplitPane3.setBottomComponent(jTabbedPane2);
             jTabbedPane2.setVisible(true);
         }
@@ -4739,17 +4705,21 @@ public class jFrame extends JFrame {
             estensione=".ulx";
         }
         
-        // se è impostato il file main lo uso
-        if (mainFile != null && !mainFile.equals("")){
-            jTextAreaOutput.append("Using main file "+mainFile+" to compiling...");
-            fileInf = mainFile;
+        // If compiling a project but there isn't a main file, warning
+        if (!currentProject.equals(Constants.PROJECTEMPTY)){
+            if (mainFile != null && !mainFile.equals("")){
+                jTextAreaOutput.append("Using main file "+mainFile+" to compiling...");
+                fileInf = mainFile;
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Set a Main file first.", "Warning" , JOptionPane.ERROR_MESSAGE);                            
+                return;
+            }            
         }
+
         
         String fileOut = fileInf.substring(0,fileInf.lastIndexOf(".")) + estensione;
-        //StringBuffer fileOut=new StringBuffer(fileInf.substring(0,fileInf.lastIndexOf(".")));
-        //fileOut.append(estensione);
         jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
-//        String process_string;
         String lib;
         
         // recupero la directory corrente del file che sto compilando e la includo in fase di compilazione
@@ -4811,14 +4781,11 @@ public class jFrame extends JFrame {
                 } else jTextAreaOutput.append(line+"\n");
             }
             
-            
-            
-            
-            //jTextAreaOutput.append(out+"\n");
             jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
             jTextAreaOutput.append("\n");
-            
             setTitle(getJifVersion() +" - " + getCurrentFilename());
+            // Set Caret position to the beginning of the TextArea
+            jTextAreaOutput.setCaretPosition(0);
             
         } catch(IOException e){
             System.out.println(e.getMessage());
@@ -5035,16 +5002,11 @@ public class jFrame extends JFrame {
     private void openFile(String nomefile){
         
         File file = new File(nomefile);
-        
-        //controllo che il file esista ancora.
         if (!file.exists()){
-            //JOptionPane.showMessageDialog(this, "File inesistente");
             JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE2")+nomefile+java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE3") , java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1") , JOptionPane.ERROR_MESSAGE);
             return;
         }
         if (checkOpenFile(file.getAbsoluteFile().toString())) return;
-        
-        //riga="";
         
         JIFTextPane jtp;
         if (jCheckBoxWrapLines.isSelected()){
@@ -5076,9 +5038,9 @@ public class jFrame extends JFrame {
             LineNumber lineNumber = new LineNumber( jtp );
             scroll.setRowHeaderView( lineNumber );
         }
-        //jTabbedPane1.add(scroll, file.getAbsolutePath());
         jTabbedPane1.add(scroll, jtp.subPath);
-        jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
+        //jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
+        jTabbedPane1.setSelectedComponent(scroll);
         
         //aggiungere al file config.ini il nome del file chiuso
         appendLastFile(file.getAbsolutePath());
@@ -5088,12 +5050,8 @@ public class jFrame extends JFrame {
         
         //abilito i componenti
         enableComponents();
-        
-        //refresh tree
         refreshTree();
-        
         lastFile = file.getAbsolutePath();
-        
     }
     
     private void newAdventure(){
@@ -5411,7 +5369,6 @@ public class jFrame extends JFrame {
                     mi.setFont(new Font("Dialog",Font.PLAIN,11));
                     mi.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
-                            //System.out.println("sono qui open recent file");
                             openFile(((javax.swing.JMenuItem)evt.getSource()).getText());
                         }
                     });
@@ -5746,6 +5703,35 @@ public void refreshTreeIncremental(){
             patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
             m = patt.matcher(cb);
             refreshClasses(patt,m,classi_locali);
+            
+            // se ho impostato il flag jCheckBoxScanProjectFiles a true
+            if (jCheckBoxScanProjectFiles.isSelected() && null != projectClass){
+                //Aggiungo tutte le classi degli altri file del progetto che non sono contenute in classi_locali
+                for (int i=0 ; i < projectClass.size(); i++){
+                    // se la classe alla posizione i non c'è in classi_locali la aggiungo all'albero
+                    String classe = (String) projectClass.get(i);
+                    if (!classi_locali.contains((String) classe)){
+                        tmp_nodo = new DefaultMutableTreeNode(new Inspect(classe.toLowerCase(),-1));
+                        category7.add(tmp_nodo);
+                        getClasses(tmp_nodo,classe);
+                    }
+                }
+            }
+            
+//            // performs a refresh for all classes children
+//            TreePath node = new TreePath(treeModel.getPathToRoot(category7));
+//            if (category7.getChildCount() >= 0) {
+//                for (Enumeration e = category7.children(); e.hasMoreElements(); ) {
+//                    TreeNode n = (TreeNode)e.nextElement();
+//                    TreePath tp = new TreePath(treeModel.getPathToRoot(n));
+//                    //if (jTree1.isExpanded(tp) || n.isLeaf()){
+//                        DefaultMutableTreeNode dmt = (DefaultMutableTreeNode) n;
+//                        Inspect ins = (Inspect) dmt.getUserObject();
+//                        getClasses(dmt, ins.Ilabel);
+//                    //}
+//                }
+//            }            
+            
         }
 
     }
@@ -5792,16 +5778,16 @@ public void refreshTreeIncremental(){
     }        
     
     public void refreshClasses(Pattern patt, Matcher m, Vector classi_locali){
-        objTree.clear();
+        //objTree.clear();
         category7.removeAllChildren(); 
         while (m.find()){
-            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
+            //objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
             classi_locali.add(m.group(1));
             tmp_nodo = new DefaultMutableTreeNode( new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
             category7.add(tmp_nodo);
             getClasses(tmp_nodo,m.group(1));
         }
-        treeModel.reload(category7);        
+        //treeModel.reload(category7);        
     }
     
     // Modified to Use the Regular Expressions
@@ -5835,7 +5821,6 @@ public void refreshTreeIncremental(){
         // Se il file ha estensione != da INF e H
         // svuoto l'abero ed esco
         if (currentName.endsWith(".txt")||currentName.endsWith(".res")){
-            //System.out.println("non è INF ne H");
             category1.removeAllChildren();
             category2.removeAllChildren();
             category4.removeAllChildren();
@@ -5868,11 +5853,9 @@ public void refreshTreeIncremental(){
         Matcher m;
         
         // GLOBALS
-
         patt = Pattern.compile("\n+\\s*Global\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
         refreshGlobals(patt,m);
-
 
         // CONSTANTS
         patt = Pattern.compile("\n*\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
@@ -5894,6 +5877,7 @@ public void refreshTreeIncremental(){
         patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
         refreshClasses(patt,m,classi_locali);
+        //System.out.println("classi locali = "+classi_locali);
         
         // se ho impostato il flag jCheckBoxScanProjectFiles a true
         if (jCheckBoxScanProjectFiles.isSelected() && null != projectClass){
@@ -6057,12 +6041,10 @@ public void refreshTreeIncremental(){
         // In questo metodo recuper il formato del file .z3,.z4,.z5,.z6,.z8
         // per passare all'interprete il nome del file corretto.
         StringBuffer make = new StringBuffer();
-        //System.out.println("ci sono "+jPanel3.getComponentCount()+" check");
         Checkbox ch;
         for(int count=0; count < jPanelSwitch1.getComponentCount(); count++){
             ch = (Checkbox) jPanelSwitch1.getComponent(count);
             if (ch.getState()){
-                //System.out.println(ch.getLabel());
                 // lo aggiungo solo se sono in INFORM MODE
                 if (jCheckBoxInformMode.isSelected()){
                     make.append(" "+ch.getLabel());
@@ -6142,9 +6124,6 @@ public void refreshTreeIncremental(){
         //return; unused
     }
     
-    //    per correggere errori tipo:
-    //    Class Widget;
-    //    Widget Blue_Widget "widget";
     //    per ogni classe nuova aggiungo al nodo passato, il nome degli oggetti di quella classe
     public void getClasses(DefaultMutableTreeNode nodo, String nome){
         
@@ -6155,7 +6134,7 @@ public void refreshTreeIncremental(){
         String testo = getCurrentJIFTextPane().getText();
         ByteBuffer bbuf = null;
         CharBuffer cb = null;
-        objTree = new Vector();
+        //objTree = new Vector();
         try {
             bbuf = encoder.encode(CharBuffer.wrap(testo));
             cb = decoder.decode(bbuf);
@@ -6165,13 +6144,12 @@ public void refreshTreeIncremental(){
         }
         
         // Classes
-        //Pattern patt = Pattern.compile("\n\\s*"+nome+"\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-        Pattern patt = Pattern.compile("\n+\\s*"+nome+"\\s+(->\\s+)*(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-        
+        Pattern patt = Pattern.compile("\n+\\s*"+nome+"\\s+(->\\s+)*(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);        
         Matcher m = patt.matcher(cb);
         while (m.find()){
             nodo.add(new DefaultMutableTreeNode(new Inspect(m.group(2).toLowerCase(),m.start()+m.group(2).length())));
         }
+        treeModel.reload(nodo); 
     }
     
     
@@ -6934,12 +6912,8 @@ public void refreshTreeIncremental(){
         File file;
         
         for (int i=0 ; i<files.length; i++){
-            
-            //file = chooser.getSelectedFile();
             file = files[i];
-            
-            //apro il file e lo aggiungo alla lista se
-            // il checkbox è attivo
+            // apro il file e lo aggiungo alla lista se il checkbox è attivo
             if (jCheckBoxProjectOpenAllFiles.isSelected()){
                 openFile(file.getAbsolutePath());
             }
@@ -6987,7 +6961,6 @@ public void refreshTreeIncremental(){
             ps.println("CREATENEWFILE="+ jCheckBoxCreateNewFile.isSelected());
             ps.println("MAXRECENTFILES="+ this.jTextFieldMaxRecentFiles.getText());
             ps.println("TABSIZE="+ this.jTextFieldTabSize.getText());
-            ps.println("AUTOMATICBRACKETSCHECK="+ jCheckBoxAutomaticCheckBrackets.isSelected());
             ps.println("[colorKeyword]="+colorKeyword.getRed()+","+colorKeyword.getGreen()+","+colorKeyword.getBlue());
             ps.println("[colorAttribute]="+colorAttribute.getRed()+","+colorAttribute.getGreen()+","+colorAttribute.getBlue());
             ps.println("[colorProperty]="+colorProperty.getRed()+","+colorProperty.getGreen()+","+colorProperty.getBlue());
@@ -7116,11 +7089,6 @@ public void refreshTreeIncremental(){
                             this.jTextFieldTabSize.setText("4");
                         }
                     }                    
-                    // AUTOMATIC BRACKETS CHECK
-                    if (riga.indexOf("AUTOMATICBRACKETSCHECK=")!=-1){
-                        jCheckBoxAutomaticCheckBrackets.setSelected(
-                                riga.substring(riga.indexOf("AUTOMATICBRACKETSCHECK=")+23).equals("true")?true:false);
-                    }
                     
                     if (riga.indexOf("CHECKBOXMAKERESOURCE=")!=-1){
                         jCheckBoxMakeResource.setSelected(
@@ -7385,13 +7353,13 @@ public void refreshTreeIncremental(){
         jScrollPaneProject.setEnabled(true);
         
         // View the Project Panel
-        jTabbedPane3.setSelectedIndex(1);
+        jTabbedPaneLeft.setSelectedIndex(1);
     }
     
     // chiude un progetto. Inserire un flag per chiudere tutti i files
     // relativi ad un progetto quando si chiude il progetto stesso
     public void closeProject(){
-        currentProject = workingDir+Constants.SEP+"projects"+Constants.SEP+"default.jpf";
+        currentProject = Constants.PROJECTEMPTY;
         
         updateProjectTitle("Project: ");
         
@@ -7466,7 +7434,6 @@ public void refreshTreeIncremental(){
             ps.println("CREATENEWFILE="+ jCheckBoxCreateNewFile.isSelected());
             ps.println("MAXRECENTFILES="+ this.jTextFieldMaxRecentFiles.getText());
             ps.println("TABSIZE="+ this.jTextFieldTabSize.getText());
-            ps.println("AUTOMATICBRACKETSCHECK="+ jCheckBoxAutomaticCheckBrackets.isSelected());
             ps.println("[colorKeyword]="+colorKeyword.getRed()+","+colorKeyword.getGreen()+","+colorKeyword.getBlue());
             ps.println("[colorAttribute]="+colorAttribute.getRed()+","+colorAttribute.getGreen()+","+colorAttribute.getBlue());
             ps.println("[colorProperty]="+colorProperty.getRed()+","+colorProperty.getGreen()+","+colorProperty.getBlue());
@@ -7798,7 +7765,6 @@ public void refreshTreeIncremental(){
         jCheckBoxMapping.setSelected(false);
         jCheckBoxMappingHFile.setSelected(false);
         jCheckBoxProjectOpenAllFiles.setSelected(false);
-        jCheckBoxAutomaticCheckBrackets.setSelected(false);
         jCheckBoxHelpedCode.setSelected(true);
         jCheckBoxNumberLines.setSelected(true);
         jCheckBoxScanProjectFiles.setSelected(true);
@@ -8646,7 +8612,6 @@ public void refreshTreeIncremental(){
     private javax.swing.JButton jButtonUndo;
     private javax.swing.JButton jButtonVerb;
     private javax.swing.JCheckBox jCheckBoxAdventInLib;
-    public javax.swing.JCheckBox jCheckBoxAutomaticCheckBrackets;
     private javax.swing.JCheckBox jCheckBoxCreateNewFile;
     private javax.swing.JCheckBoxMenuItem jCheckBoxGlulxMode;
     public javax.swing.JCheckBox jCheckBoxHelpedCode;
@@ -8843,6 +8808,7 @@ public void refreshTreeIncremental(){
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPaneAbout;
     private javax.swing.JScrollPane jScrollPaneInfo;
     private javax.swing.JScrollPane jScrollPaneProject;
     private javax.swing.JSeparator jSeparator1;
@@ -8868,7 +8834,9 @@ public void refreshTreeIncremental(){
     private static final javax.swing.JTabbedPane jTabbedPane1 = new javax.swing.JTabbedPane();
     private static final javax.swing.JTabbedPane jTabbedPane2 = new javax.swing.JTabbedPane();
     private javax.swing.JTabbedPane jTabbedPane3;
+    private javax.swing.JTabbedPane jTabbedPaneLeft;
     private javax.swing.JTabbedPane jTabbedPaneOption;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea4;
     private javax.swing.JTextArea jTextAreaConfig;
     private javax.swing.JTextArea jTextAreaInfo;
@@ -8929,7 +8897,7 @@ public void refreshTreeIncremental(){
     private DefaultMutableTreeNode top,category1,category2,category4,category5,category7;
     private TreePath treePath1,treePath2,treePath4,treePath5,treePath7;
     
-    private HighlightText hlighterOutput;
+    private HighlightText hlighterOutputErrors,hlighterOutputWarnings;
     
     private StringTokenizer st;
     private DefaultTreeModel treeModel;

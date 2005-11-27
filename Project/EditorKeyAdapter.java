@@ -44,7 +44,6 @@ public class EditorKeyAdapter extends KeyAdapter {
     JIFTextPane jif;
     Element el;
     String ultima, ultima_word;
-    Document doc;
     Process proc;
     String comando;
 
@@ -56,14 +55,13 @@ public class EditorKeyAdapter extends KeyAdapter {
     public EditorKeyAdapter(jFrame parent, JIFTextPane jif){
         this.jframe = parent;
         this.jif = jif;
-        this.doc = jif.getDocument();
     }
 
     public void keyPressed(KeyEvent ke) {
         if (ke.getKeyChar() == KeyEvent.VK_TAB && !ke.isShiftDown()){
             try{
                 if (jif.getSelectedText() == null){
-                    doc.insertString(jif.getCaretPosition(), Utils.spacesForTab(jframe.tabSize-1), jframe.getAttr());   
+                    jif.getDocument().insertString(jif.getCaretPosition(), Utils.spacesForTab(jframe.tabSize-1), jframe.getAttr());   
                 }                
                 else{
                     jif.tabSelection();
@@ -76,7 +74,7 @@ public class EditorKeyAdapter extends KeyAdapter {
         }
         if (ke.getKeyChar() == KeyEvent.VK_TAB && ke.isShiftDown()){
             try{
-                    jif.removeTabSelection();
+                jif.removeTabSelection();
             } catch(Exception e){
                 System.out.println(e.getMessage());
             }
@@ -100,7 +98,7 @@ public class EditorKeyAdapter extends KeyAdapter {
             if (jif.getCurrentRow().indexOf("!")==-1){
                 if (jframe.getMapping().containsKey(ke.getKeyChar()+"")){
                         try{
-                            doc.insertString(jif.getCaretPosition(), (String)jframe.getMapping().get(ke.getKeyChar()+""), jframe.getAttr());
+                            jif.getDocument().insertString(jif.getCaretPosition(), (String)jframe.getMapping().get(ke.getKeyChar()+""), jframe.getAttr());
                         } catch(BadLocationException e){
                             System.out.println(e.getMessage());
                         }
@@ -121,7 +119,7 @@ public class EditorKeyAdapter extends KeyAdapter {
             // Keyboard Mapping ALT
             if(ke.isAltDown()){                
                 if(jframe.getAltkeys().containsKey(""+ke.getKeyChar())){
-                    doc.insertString(jif.getCaretPosition() , (String)jframe.getAltkeys().get(""+ke.getKeyChar()) , jframe.getAttr());                    
+                    jif.getDocument().insertString(jif.getCaretPosition() , (String)jframe.getAltkeys().get(""+ke.getKeyChar()) , jframe.getAttr());                    
                 }
                 
                 // Commands to run
@@ -140,11 +138,11 @@ public class EditorKeyAdapter extends KeyAdapter {
             
             // Automatic right shifting
             if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
-                Element root = doc.getDefaultRootElement();
+                Element root = jif.getDocument().getDefaultRootElement();
                 Element e = root.getElement(root.getElementIndex(jif.getCaretPosition()-1));
                 String tmp;
                 try {
-                    String s = doc.getText(e.getStartOffset(), e.getEndOffset() - e.getStartOffset());
+                    String s = jif.getDocument().getText(e.getStartOffset(), e.getEndOffset() - e.getStartOffset());
                     int i;
                     int length = s.length();
                     for (i=0; i< length; i++) {
@@ -156,7 +154,7 @@ public class EditorKeyAdapter extends KeyAdapter {
                     if (tmp.endsWith("\n")) {
                         tmp = tmp.substring(0, tmp.length()-1);
                     }
-                    doc.insertString(jif.getCaretPosition(),tmp, null);
+                    jif.getDocument().insertString(jif.getCaretPosition(),tmp, null);
                 }
                 catch (Exception ex) {
                     ex.printStackTrace();
@@ -207,9 +205,9 @@ public class EditorKeyAdapter extends KeyAdapter {
 
             // Assistant code
             if (jframe.jCheckBoxHelpedCode.isSelected()&&(ke.getKeyCode()==KeyEvent.VK_SPACE && ke.isControlDown() ) ){
-                el = doc.getDefaultRootElement();
+                el = jif.getDocument().getDefaultRootElement();
                 int ind = el.getElementIndex(jif.getCaretPosition());
-                el = doc.getDefaultRootElement().getElement(ind);
+                el = jif.getDocument().getDefaultRootElement().getElement(ind);
                 ultima = jif.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset()-1);
                 int position = jif.getCaretPosition();
 
@@ -257,7 +255,7 @@ public class EditorKeyAdapter extends KeyAdapter {
             else if( (ke.getKeyCode() == KeyEvent.VK_INSERT)&&(ke.isShiftDown()) ){
                 String paste = jFrame.getClipboard();
                 if (paste!=null){
-                    doc.insertString(jif.getCaretPosition() , paste , jframe.getAttr());
+                    jif.getDocument().insertString(jif.getCaretPosition() , paste , jframe.getAttr());
                 }
             }
 

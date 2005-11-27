@@ -30,6 +30,7 @@
  *
  */
 
+import java.awt.Color;
 import java.io.File;
 
 /**
@@ -37,32 +38,32 @@ import java.io.File;
  * @author Alessandro Schillaci
  */
 public class Constants {
-
+    
     /**
      * JIF Version
      */
     public static final String JIFVERSION = "3.0 beta 3 (build 20051125)";
-
+    
     /**
      * File Separator, depending on which Operative System is executing JIF
      */
     public static final String SEP = File.separator;
-
+    
     /**
      * MAX dimension of the copy/paste menu
      */
     public static final int MAX_DIMENSION_PASTE_MENU = 20;
-
+    
     /**
      * Token for mark a line as a comment
      */
     public static final String TOKENCOMMENT = "#";
-
+    
     /**
      * Token for mark a line in the search function in all project files
      */
     public static final String TOKENSEARCH = "*";
-
+    
     /**
      * Token for mark a line as a command
      */
@@ -71,10 +72,20 @@ public class Constants {
     /**
      * Empty project
      */
-    public static final String PROJECTEMPTY="blank";   
-
+    public static final String PROJECTEMPTY="blank";
+    
     /**
      * User dir /home/xxx/.jif or c:\documents and settings\xxx\.jif
      */
     public static final String userDir=System.getProperty("user.home")+SEP+".jif"+SEP;
+    
+    /**
+     * Errors color highlightning
+     */
+    public static final Color colorErrors = Color.red;
+    
+    /**
+     * Warning color highlightning
+     */
+    public static final Color colorWarnings = Color.blue;
 }
