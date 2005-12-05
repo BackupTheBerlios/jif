@@ -122,7 +122,7 @@ public class Utils {
                     FileInputStream fis = new FileInputStream(file);
                     FileChannel fc = fis.getChannel();
                     ByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, (int) fc.size());
-                    Charset cs = Charset.forName("ISO-8859-1");
+                    Charset cs = Charset.forName(Constants.fileFormat);
                     CharsetDecoder cd = cs.newDecoder();
                     CharBuffer cb = cd.decode(bb);
                     Matcher m = patt.matcher(cb);
@@ -297,7 +297,7 @@ public class Utils {
         try{
             String riga;
             int lineCount=0;
-            BufferedReader br = new BufferedReader(new FileReader(file));
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
             while ((riga = br.readLine())!=null){
                 lineCount++;
                 if (Utils.IgnoreCaseIndexOf(riga,target)!=-1){
