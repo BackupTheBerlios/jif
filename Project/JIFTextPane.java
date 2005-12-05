@@ -43,8 +43,6 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This is a sub-class of JTextPane, with the Inform source management.
@@ -85,7 +83,7 @@ public class JIFTextPane extends JTextPane{
         hlighterBookmarks = new HighlightBookmark(this,new Color(51, 100, 255));
         hlighterErrors = new HighlightText(this, Constants.colorErrors);
         hlighterWarnings = new HighlightText(this, Constants.colorWarnings);
-        hlighter = new HighlightText(this,new Color(255, 153, 50));
+        hlighter = new HighlightText(this, Constants.colorJumpto);
         this.bookmarks = new ArrayList();
         this.setPaths(this.pathfile);
         
@@ -134,7 +132,7 @@ public class JIFTextPane extends JTextPane{
         //System.out.println("Tempo impiegato= "+(System.currentTimeMillis()-tempo1));
         
         undoF = new UndoManager();
-        undoF.setLimit(10000);
+        undoF.setLimit(5000);
         //Document doc = getDocument();
         
         dsdoc.addUndoableEditListener(new UndoableEditListener() {
@@ -234,15 +232,24 @@ public class JIFTextPane extends JTextPane{
                 StringBuffer sb = new StringBuffer();
                 String riga;
                 sb.setLength(0);
-                //BufferedReader br = new BufferedReader(new FileReader(file));
-                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
                 while ((riga = br.readLine())!=null){
                     sb.append(riga).append("\n");
                 }
                 br.close();
                 //setText(sb.toString());
                 SimpleAttributeSet sas = new SimpleAttributeSet();
-                dsdoc.insertString(0,sb.toString(), sas);
+                
+                // Check for \t characters
+                if (sb.indexOf("\t")!=-1){
+                    jframe.jTextAreaOutput.setText("Warning: this file contains TAB characters. " +
+                            "\nThis means it has been modified and saved within another text editor." +
+                            "\nJif will expands TAB into "+jframe.tabSize+" spaces. (See the options)");
+                    dsdoc.insertString(0, Utils.replace(sb.toString(),"\t",Utils.spacesForTab(jframe.tabSize-1)), sas);
+                } else{
+                    dsdoc.insertString(0,sb.toString(), sas);
+                }
+                
             }catch(Exception e){
                 System.out.println("ERR: " + e.getMessage());
                 e.printStackTrace();
@@ -252,7 +259,7 @@ public class JIFTextPane extends JTextPane{
     }
     
     public CharBuffer getCharBuffer(){
-        Charset charset = Charset.forName("ISO-8859-1");
+        Charset charset = Charset.forName(Constants.fileFormat);
         CharsetEncoder encoder = charset.newEncoder();
         CharsetDecoder decoder = charset.newDecoder();
         CharBuffer cb;
@@ -682,7 +689,7 @@ public class JIFTextPane extends JTextPane{
             this.hlighterBrackets.removeHighlights(this);
         }
     }
-
+    
     /**
      * Remove current highlighterErrors from the JIFTextPane
      */
@@ -690,8 +697,8 @@ public class JIFTextPane extends JTextPane{
         if (null != this.hlighterErrors){
             this.hlighterErrors.removeHighlights(this);
         }
-    }    
-
+    }
+    
     /**
      * Remove current highlighterWarnings from the JIFTextPane
      */
@@ -699,7 +706,7 @@ public class JIFTextPane extends JTextPane{
         if (null != this.hlighterWarnings){
             this.hlighterWarnings.removeHighlights(this);
         }
-    }   
+    }
     
     /**
      * This method will fix the current selection
@@ -932,7 +939,6 @@ public class JIFTextPane extends JTextPane{
      * @param file The Output File (i.e. "translate.txt")
      */
     public void ExtractTranslate(File file){
-        PrintStream ps;
         StringBuffer translate = new StringBuffer();
         String appoggio;
         String testo = getText();
@@ -960,9 +966,10 @@ public class JIFTextPane extends JTextPane{
         }
         try{
             FileOutputStream fos = new FileOutputStream(file);
-            ps = new PrintStream( fos );
-            ps.println(translate.toString());
-            ps.close();
+            Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
+            out.write(translate.toString());
+            out.flush();
+            out.close();
             JOptionPane.showMessageDialog(null,"OK","Message", JOptionPane.INFORMATION_MESSAGE);
         } catch(IOException e ){
             System.out.println(e.getMessage());
@@ -983,8 +990,7 @@ public class JIFTextPane extends JTextPane{
     public void InsertTranslate(File file, File fileout){
         String testo = getText();
         try{
-            //BufferedReader br = new BufferedReader(new FileReader(file));
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
             boolean chiave = false;
             String key = null;
             String obj = null;
@@ -1052,12 +1058,12 @@ public class JIFTextPane extends JTextPane{
         }
         
         // saving the output file
-        PrintStream ps;
         try{
             FileOutputStream fos = new FileOutputStream(fileout);
-            ps = new PrintStream( fos );
-            ps.println(testo);
-            ps.close();
+            Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
+            out.write(testo);
+            out.flush();
+            out.close();              
             JOptionPane.showMessageDialog(null,"OK","Message", JOptionPane.INFORMATION_MESSAGE);
         } catch(IOException e ){
             System.out.println(e.getMessage());

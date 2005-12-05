@@ -42,7 +42,12 @@ public class Constants {
     /**
      * JIF Version
      */
-    public static final String JIFVERSION = "3.0 beta 3 (build 20051125)";
+    public static final String JIFVERSION = "3.0 beta 4 (build 20051202)";
+    
+    /**
+     * Max files in the recent file menu
+     */
+    public static final int RECENTFILES = 5;
     
     /**
      * File Separator, depending on which Operative System is executing JIF
@@ -52,7 +57,7 @@ public class Constants {
     /**
      * MAX dimension of the copy/paste menu
      */
-    public static final int MAX_DIMENSION_PASTE_MENU = 20;
+    public static final int MAX_DIMENSION_PASTE_MENU = 10;
     
     /**
      * Token for mark a line as a comment
@@ -82,10 +87,65 @@ public class Constants {
     /**
      * Errors color highlightning
      */
-    public static final Color colorErrors = Color.red;
+    public static final Color colorErrors = new Color(255,102,102);
     
     /**
      * Warning color highlightning
      */
-    public static final Color colorWarnings = Color.blue;
+    public static final Color colorWarnings = new Color(102,153,255);
+
+    /**
+     * Jump tree color highlighting
+     */
+    public static final Color colorJumpto = new Color(102,153,255);    
+    
+    /**
+     * File format used by JIF in read/write action
+     */
+    public static final String fileFormat = "ISO-8859-1";   
+    
+    /**
+     * Token for mark a line as [ALTKEYS]
+     */
+    public static final String ALTKEYSTOKEN = "[ALTKEYS]";    
+    
+    /**
+     * Token for mark a line as [HELPEDCODE]
+     */
+    public static final String HELPEDCODETOKEN = "[HELPEDCODE]";   
+        /**
+     * Token for mark a line as [MAPPING]
+     */
+    public static final String MAPPINGTOKEN = "[MAPPING]";   
+        /**
+     * Token for mark a line as [MENU]
+     */
+    public static final String MENUTOKEN = "[MENU]";   
+        /**
+     * Token for mark a line as [RECENTFILES]
+     */
+    public static final String RECENTFILESTOKEN = "[RECENTFILES]";   
+        /**
+     * Token for mark a line as [SWITCH]
+     */
+    public static final String SWITCHTOKEN = "[SWITCH]";   
+    
+    /**
+     * Token for mark a line as [SYNTAX]
+     */
+    public static final String SYNTAXTOKEN = "[SYNTAX]";   
+    
+    /**
+     * Token for mark a line as [SYMBOLS]
+     */
+    public static final String SYMBOLSTOKEN = "[SYMBOLS]";  
+    /**
+     * Token for mark a line as [PATH]
+     */
+    public static final String PATHTOKEN = "[PATH]";  
+    /**
+     * Token for mark a line as [SETTINGS]
+     */
+    public static final String SETTINGSTOKEN = "[SETTINGS]";  
+   
 }

@@ -31,6 +31,12 @@
  */
 
 import javax.swing.text.*;
+import java.nio.*;
+import java.nio.charset.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 /**
  * An extension of DefaultStyledDocument for the Inform Syntax Highlight
@@ -41,7 +47,7 @@ import javax.swing.text.*;
 	 * 
 	 */
 	private static final long serialVersionUID = 5856047697369563208L;
-		jFrame jframe;
+        jFrame jframe;
         DefaultStyledDocument doc;
         MutableAttributeSet normal;
         MutableAttributeSet keyword;
@@ -51,7 +57,6 @@ import javax.swing.text.*;
         MutableAttributeSet verb;
         MutableAttributeSet comment;
         MutableAttributeSet quote;
-        MutableAttributeSet error;
 
         /**
          * Creates an InformDocument with a default syntax highlighting.
@@ -60,18 +65,7 @@ import javax.swing.text.*;
         public InformDocument(jFrame parent){
             doc = this;
             this.jframe = parent;
-
-            //imposto il TAB!
-//            TabStop[] stops = new TabStop[30];
-//            for (int i=0; i<30; i++) {
-//                stops[ i ]=new TabStop((i+1)*30, TabStop.ALIGN_LEFT, TabStop.LEAD_NONE);
-//            }
-//            TabSet tabSet = new TabSet(stops);
-//            SimpleAttributeSet attributes = new SimpleAttributeSet();
-//            StyleConstants.setTabSet(attributes, tabSet);
-//            setParagraphAttributes(0, getLength(), attributes, false);
-
-
+            
             putProperty( DefaultEditorKit.EndOfLineStringProperty, "\n" );
             normal = new SimpleAttributeSet();
             StyleConstants.setFontFamily(normal , jframe.defaultFont.getName());
@@ -107,11 +101,6 @@ import javax.swing.text.*;
             StyleConstants.setForeground(quote, jframe.colorNormal);
             StyleConstants.setBold(quote, true);
 
-            error = new SimpleAttributeSet();
-            StyleConstants.setFontFamily(error , jframe.defaultFont.getName());
-            StyleConstants.setFontSize(error, jframe.defaultFont.getSize());
-            StyleConstants.setForeground(error, jframe.colorNormal);
-            StyleConstants.setUnderline(error, true);
             }
 
             /**
@@ -122,6 +111,12 @@ import javax.swing.text.*;
              * @throws BadLocationException If the insert action fails
              */
                 public void insertString(int offset, String str, AttributeSet a) throws BadLocationException{
+                        if (str.equals("{")){
+                            str = addMatchingBrace("{",offset);
+                        }
+                        if (str.equals("[")){
+                            str = addMatchingBrace("[",offset);
+                        }
                         super.insertString(offset, str, a);
                         processChangedLines(offset, str.length());
                 }
@@ -158,6 +153,7 @@ import javax.swing.text.*;
                 }
 
 
+                
                 /**
                  * Apply the syntax highlighting to a String
                  * @param content The content text to be processed
@@ -176,9 +172,16 @@ import javax.swing.text.*;
                     //  set normal attributes for the line
                     doc.setCharacterAttributes(startOffset, lineLength, normal, true);
 
+                    
                     //  check for single line comment
                     String singleLineDelimiter = "!";
                     index = content.indexOf( singleLineDelimiter, startOffset );
+
+//                    if ( (index > -1) && (index < endOffset) ){
+//                        doc.setCharacterAttributes(index, endOffset - index + 1, comment, false);
+//                        endOffset = index - 1;
+//                    }
+                    
 
                     // if there's a "!" in the String
                     if ( (index > -1) && (index < endOffset) ){
@@ -387,4 +390,21 @@ import javax.swing.text.*;
 
                     return endOfToken + 1;
                 }
+                
+        protected String addMatchingBrace(String brace,int offset) throws BadLocationException {
+		StringBuffer whiteSpace = new StringBuffer();
+		int line = getDefaultRootElement().getElementIndex(offset);
+		int i = doc.getDefaultRootElement().getElement(line).getStartOffset();
+		while (true) {
+			String temp = doc.getText(i, 1);
+			if (temp.equals(" ") || temp.equals("\t")) {
+				whiteSpace.append(temp);
+				i++;
+			} else
+				break;
+		}
+		return (brace.equals("{")?"{":"[")+"\n" + whiteSpace.toString() + whiteSpace.toString() + "\n"
+				+ whiteSpace.toString() + (brace.equals("{")?"}":"]");
+	}                
+                
 	}
