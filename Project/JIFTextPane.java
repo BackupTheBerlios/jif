@@ -253,7 +253,6 @@ public class JIFTextPane extends JTextPane{
             }catch(Exception e){
                 System.out.println("ERR: " + e.getMessage());
                 e.printStackTrace();
-                System.err.println(e.getMessage());
             }
         }
     }
@@ -268,7 +267,6 @@ public class JIFTextPane extends JTextPane{
             cb = decoder.decode(bbuf);
         } catch (Exception e){
             System.out.println("ERR:"+e.getMessage());
-            System.err.println(e.getMessage());
             return null;
         }
         return cb;
@@ -288,7 +286,7 @@ public class JIFTextPane extends JTextPane{
             el = getDocument().getDefaultRootElement().getElement(ind);
             lastRow = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
         } catch(BadLocationException e){
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage());
         }
         return lastRow;
     }
@@ -307,7 +305,7 @@ public class JIFTextPane extends JTextPane{
             el = getDocument().getDefaultRootElement().getElement(ind);
             lastRow = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
         } catch(BadLocationException e){
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage());
         }
         return lastRow;
     }
@@ -325,8 +323,8 @@ public class JIFTextPane extends JTextPane{
             el = getDocument().getDefaultRootElement().getElement(ind);
             lastRow = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
         } catch(BadLocationException e){
-            System.err.println(e.getMessage());
-            System.err.println("position = "+posizione);
+            System.out.println(e.getMessage());
+            System.out.println("position = "+posizione);
         }
         return lastRow.toUpperCase();
     }
@@ -642,7 +640,6 @@ public class JIFTextPane extends JTextPane{
             }
         } catch (BadLocationException e)  {
             System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
         }
     }
     
@@ -765,7 +762,6 @@ public class JIFTextPane extends JTextPane{
             
         } catch(BadLocationException e){
             System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
         }
     }
     
@@ -816,7 +812,6 @@ public class JIFTextPane extends JTextPane{
             }
         } catch(BadLocationException e){
             System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
         }
     }
     
@@ -856,7 +851,6 @@ public class JIFTextPane extends JTextPane{
             
         } catch(BadLocationException e){
             System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
         }
     }
     
@@ -904,7 +898,6 @@ public class JIFTextPane extends JTextPane{
             
         } catch(BadLocationException e){
             System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
         }
     }
     
@@ -973,7 +966,6 @@ public class JIFTextPane extends JTextPane{
             JOptionPane.showMessageDialog(null,"OK","Message", JOptionPane.INFORMATION_MESSAGE);
         } catch(IOException e ){
             System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
         }
     }
     
@@ -1054,7 +1046,6 @@ public class JIFTextPane extends JTextPane{
             
         } catch(IOException e){
             System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
         }
         
         // saving the output file
@@ -1067,7 +1058,6 @@ public class JIFTextPane extends JTextPane{
             JOptionPane.showMessageDialog(null,"OK","Message", JOptionPane.INFORMATION_MESSAGE);
         } catch(IOException e ){
             System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
         }
     }
     
@@ -1110,7 +1100,7 @@ public class JIFTextPane extends JTextPane{
             scrollRectToVisible(modelToView(ele.getStartOffset()));
             setCaretPosition(ele.getStartOffset());
         } catch (BadLocationException ble){
-            System.err.println(ble);
+            System.out.println(ble);
         }
     }
     

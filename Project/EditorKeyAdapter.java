@@ -221,7 +221,7 @@ public class EditorKeyAdapter extends KeyAdapter {
                 }
                 ultima_word = ultima_word.trim();
 //System.out.println("ultima_word =["+ultima_word+"]");                
-                comando = (String)jframe.getHelpCode().get(ultima_word);
+                comando = (String)jframe.getHelpcode().get(ultima_word);
                 int positionCaret = comando.indexOf("@");
                 comando = Utils.assistCode(comando);
                 

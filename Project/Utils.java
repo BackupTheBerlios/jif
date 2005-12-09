@@ -31,19 +31,17 @@
  */
 
 import java.io.*;
-import java.nio.channels.FileChannel.MapMode;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 import javax.swing.text.*;
 import java.awt.*;
 import java.util.*;
 import java.nio.*;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
 import java.nio.channels.FileChannel;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 
 /**
@@ -51,6 +49,8 @@ import java.util.regex.Pattern;
  * @author Alessandro Schillaci
  */
 public class Utils {
+    
+    jFrame jframe;
     
     /** Creates a new instance of Utils */
     public Utils() {
@@ -130,10 +130,11 @@ public class Utils {
                         //System.out.println("Found new class: "+m.group(1));
                         vett.add(m.group(1));
                     }
+                    fc.close();
+                    fis.close();
                 } catch(Exception e){
                     System.out.println("ERR: " + e.getMessage());
                     e.printStackTrace();
-                    System.err.println(e.getMessage());
                 }
             }
         } // end IF
@@ -141,40 +142,7 @@ public class Utils {
     }
     
     
-    
-//    /** Zip function */
-//    public static void zippa(String source,String target){
-//        //System.out.println(source+ "-"+target);
-//
-//        // Create a buffer for reading the files
-//        byte[] buf = new byte[1024];
-//        try {
-//            // Create the ZIP file
-//            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(target));
-//            out.setComment("Compressed with Jif (C) Copyright 2003 - Schillaci Alessandro\n\nAT Backup Utility");
-//            out.setLevel(9);
-//            // Compress the files
-//            FileInputStream in = new FileInputStream(source);
-//
-//            // Add ZIP entry to output stream.
-//            out.putNextEntry(new ZipEntry(source));
-//
-//            // Transfer bytes from the file to the ZIP file
-//            int len;
-//            while ((len = in.read(buf)) > 0) {
-//                out.write(buf, 0, len);
-//            }
-//            // Complete the entry
-//            out.closeEntry();
-//            in.close();
-//            // Complete the ZIP file
-//            out.close();
-//            } catch (IOException e) {
-//                System.out.println(e.getMessage());
-//                System.err.println(e.getMessage());
-//            }
-//    }
-    
+  
     
     public void printInform(jFrame jframe,String title, JTextComponent jif){
         Properties prop = new Properties();
@@ -307,12 +275,13 @@ public class Utils {
             br.close();
         } catch(IOException e){
             System.out.println(e.getMessage());
-            System.err.println(e.getMessage());
         }
         if (out.length() == 0){
             return null; // find no string "target" in the current file
         } else return (head+out.toString()+"\n");
         //return out.toString();
     }
+    
+
     
 }

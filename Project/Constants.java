@@ -42,7 +42,7 @@ public class Constants {
     /**
      * JIF Version
      */
-    public static final String JIFVERSION = "3.0 beta 4 (build 20051202)";
+    public static final String JIFVERSION = "3.0 beta 5 (build 20051209)";
     
     /**
      * Max files in the recent file menu
@@ -68,11 +68,6 @@ public class Constants {
      * Token for mark a line in the search function in all project files
      */
     public static final String TOKENSEARCH = "*";
-    
-    /**
-     * Token for mark a line as a command
-     */
-    public static final String TOKENCOMMAND = "[execute]=";
     
     /**
      * Empty project
@@ -104,48 +99,60 @@ public class Constants {
      */
     public static final String fileFormat = "ISO-8859-1";   
     
-    /**
-     * Token for mark a line as [ALTKEYS]
-     */
-    public static final String ALTKEYSTOKEN = "[ALTKEYS]";    
+    // Configuration INI file, read by Regular Expressions
+    public static final String ALTKEYSTOKEN              = "\\[ALTKEYS\\]";    
+    public static final String EXECUTETOKEN              = "\\[EXECUTE\\]";        
+    public static final String HELPEDCODETOKEN           = "\\[HELPEDCODE\\]";   
+    public static final String MAPPINGTOKEN              = "\\[MAPPING\\]";   
+    public static final String MENUTOKEN                 = "\\[MENU\\]";   
+    public static final String RECENTFILESTOKEN          = "\\[RECENTFILES\\]";   
+    public static final String SWITCHTOKEN               = "\\[SWITCH\\]";   
+    public static final String SYNTAXTOKEN               = "\\[SYNTAX\\]";   
+    public static final String SYMBOLSTOKEN              = "\\[SYMBOLS\\]";  
+    public static final String SETTINGSTOKEN             = "\\[SETTINGS\\]";  
+    public static final String LIBRAYPATHTOKEN           = "\\[LIBRAYPATH\\]";  
+    public static final String LIBRAYPATHSECONDARY1TOKEN = "\\[LIBRAYPATHSECONDARY1\\]";  
+    public static final String LIBRAYPATHSECONDARY2TOKEN = "\\[LIBRAYPATHSECONDARY2\\]";  
+    public static final String LIBRAYPATHSECONDARY3TOKEN = "\\[LIBRAYPATHSECONDARY3\\]";      
+    public static final String COMPILEDPATHTOKEN         = "\\[COMPILEDPATH\\]";  
+    public static final String INTERPRETERZCODEPATHTOKEN = "\\[INTERPRETERZCODEPATH\\]";  
+    public static final String INTERPRETERGLULXPATHTOKEN = "\\[INTERPRETERGLULXPATH\\]";  
+    public static final String COMPILERPATHTOKEN         = "\\[COMPILERPATH\\]";  
+    public static final String BRESPATHTOKEN             = "\\[BRESPATH\\]";      
+    public static final String BLCPATHTOKEN              = "\\[BLCPATH\\]";      
+    public static final String WRAPLINESTOKEN            = "\\[WRAPLINES\\]"; 
+    public static final String SYNTAXCHECKTOKEN          = "\\[SYNTAXCHECK\\]"; 
+    public static final String HELPEDCODECHECKTOKEN      = "\\[HELPEDCODECHECK\\]"; 
+    public static final String MAPPINGCODETOKEN          = "\\[MAPPINGCODE\\]"; 
+    public static final String NUMBERLINESTOKEN          = "\\[NUMBERLINES\\]"; 
+    public static final String PROJECTSCANFORCLASSESTOKEN= "\\[PROJECTSCANFORCLASSES\\]"; 
+    public static final String PROJECTOPENALLFILESTOKEN  = "\\[PROJECTOPENALLFILES\\]"; 
+    public static final String USECOMPILEDPATHTOKEN      = "\\[USECOMPILEDPATH\\]"; 
+    public static final String OPENLASTFILETOKEN         = "\\[OPENLASTFILE\\]"; 
+    public static final String CREATENEWFILETOKEN        = "\\[CREATENEWFILE\\]"; 
+    public static final String MAKEALWAYSRESOURCETOKEN   = "\\[MAKEALWAYSRESOURCE\\]"; 
+    public static final String TABSIZETOKEN              = "\\[TABSIZE\\]"; 
+    public static final String COLORKEYWORDTOKEN         = "\\[COLORKEYWORD\\]"; 
+    public static final String COLORATTRIBUTETOKEN       = "\\[COLORATTRIBUTE\\]"; 
+    public static final String COLORPROPERTYTOKEN        = "\\[COLORPROPERTY\\]"; 
+    public static final String COLORVERBTOKEN            = "\\[COLORVERB\\]"; 
+    public static final String COLORNORMALTOKEN          = "\\[COLORNORMAL\\]"; 
+    public static final String COLORCOMMENTTOKEN         = "\\[COLORCOMMENT\\]"; 
+    public static final String COLORBACKGROUNDTOKEN      = "\\[COLORBACKGROUND\\]"; 
+    public static final String DEFAULTFONTTOKEN          = "\\[DEFAULTFONT\\]"; 
+    public static final String LOCATIONXTOKEN            = "\\[LOCATIONX\\]";     
+    public static final String LOCATIONYTOKEN            = "\\[LOCATIONY\\]"; 
+    public static final String WIDTHTOKEN                = "\\[WIDTH\\]"; 
+    public static final String HEIGHTTOKEN               = "\\[HEIGHT\\]";     
+    public static final String MODETOKEN                 = "\\[MODE\\]";     
+    public static final String OUTPUTTOKEN               = "\\[OUTPUT\\]";     
+    public static final String JTOOLBARTOKEN             = "\\[JTOOLBAR\\]";     
+    public static final String JTREETOKEN                = "\\[JTREE\\]";     
+    public static final String DIVIDER1TOKEN             = "\\[DIVIDER1\\]";             
+    public static final String DIVIDER3TOKEN             = "\\[DIVIDER3\\]";             
+    public static final String LASTFILETOKEN             = "\\[LASTFILE\\]";     
+    public static final String LASTPROJECTTOKEN          = "\\[LASTPROJECT\\]";     
     
-    /**
-     * Token for mark a line as [HELPEDCODE]
-     */
-    public static final String HELPEDCODETOKEN = "[HELPEDCODE]";   
-        /**
-     * Token for mark a line as [MAPPING]
-     */
-    public static final String MAPPINGTOKEN = "[MAPPING]";   
-        /**
-     * Token for mark a line as [MENU]
-     */
-    public static final String MENUTOKEN = "[MENU]";   
-        /**
-     * Token for mark a line as [RECENTFILES]
-     */
-    public static final String RECENTFILESTOKEN = "[RECENTFILES]";   
-        /**
-     * Token for mark a line as [SWITCH]
-     */
-    public static final String SWITCHTOKEN = "[SWITCH]";   
-    
-    /**
-     * Token for mark a line as [SYNTAX]
-     */
-    public static final String SYNTAXTOKEN = "[SYNTAX]";   
-    
-    /**
-     * Token for mark a line as [SYMBOLS]
-     */
-    public static final String SYMBOLSTOKEN = "[SYMBOLS]";  
-    /**
-     * Token for mark a line as [PATH]
-     */
-    public static final String PATHTOKEN = "[PATH]";  
-    /**
-     * Token for mark a line as [SETTINGS]
-     */
-    public static final String SETTINGSTOKEN = "[SETTINGS]";  
+   
    
 }
