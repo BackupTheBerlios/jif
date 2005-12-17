@@ -542,6 +542,7 @@ public class jFrame extends JFrame {
         jMenuItemRemoveFromProject = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JSeparator();
         jMenuItemLastProject = new javax.swing.JMenuItem();
+        jMenuProjectProperties = new javax.swing.JMenuItem();
         jMenuMode = new javax.swing.JMenu();
         jCheckBoxInformMode = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxGlulxMode = new javax.swing.JCheckBoxMenuItem();
@@ -2777,6 +2778,15 @@ public class jFrame extends JFrame {
 
         jMenuProject.add(jMenuItemLastProject);
 
+        jMenuProjectProperties.setText("Project Properties");
+        jMenuProjectProperties.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuProjectPropertiesActionPerformed(evt);
+            }
+        });
+
+        jMenuProject.add(jMenuProjectProperties);
+
         jMenuBar1.add(jMenuProject);
 
         jMenuMode.setText("Mode");
@@ -2985,6 +2995,17 @@ public class jFrame extends JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jMenuProjectPropertiesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuProjectPropertiesActionPerformed
+        // if project != null, open the jpf file for manual editing
+        if (null != currentProject && !currentProject.equals(Constants.PROJECTEMPTY)) {
+            try{
+                editFileIni(currentProject);
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }            
+        }        
+    }//GEN-LAST:event_jMenuProjectPropertiesActionPerformed
     
     private void jMenuItemGCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemGCActionPerformed
         System.gc();
@@ -3958,6 +3979,7 @@ public class jFrame extends JFrame {
     
     private void jMenuItemClearRecentFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemClearRecentFilesActionPerformed
         getJMenuRecentFiles().removeAll();
+        saveConfigNew();
     }//GEN-LAST:event_jMenuItemClearRecentFilesActionPerformed
     
     private void jMenuItemReplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemReplaceActionPerformed
@@ -7645,6 +7667,7 @@ public class jFrame extends JFrame {
     private javax.swing.JMenu jMenuOptions;
     private javax.swing.JMenu jMenuPaste;
     private javax.swing.JMenu jMenuProject;
+    private javax.swing.JMenuItem jMenuProjectProperties;
     private javax.swing.JMenu jMenuRecentFiles;
     private javax.swing.JMenu jMenuView;
     private javax.swing.JPanel jPanel1;
