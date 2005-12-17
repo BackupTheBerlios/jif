@@ -60,8 +60,9 @@ public class EditorKeyAdapter extends KeyAdapter {
     public void keyPressed(KeyEvent ke) {
         if (ke.getKeyChar() == KeyEvent.VK_TAB && !ke.isShiftDown()){
             try{
+                MutableAttributeSet attr = new SimpleAttributeSet();
                 if (jif.getSelectedText() == null){
-                    jif.getDocument().insertString(jif.getCaretPosition(), Utils.spacesForTab(jframe.tabSize-1), jframe.getAttr());   
+                    jif.getDocument().insertString(jif.getCaretPosition(), Utils.spacesForTab(jframe.tabSize-1), attr);   
                 }                
                 else{
                     jif.tabSelection();
@@ -98,7 +99,8 @@ public class EditorKeyAdapter extends KeyAdapter {
             if (jif.getCurrentRow().indexOf("!")==-1){
                 if (jframe.getMapping().containsKey(ke.getKeyChar()+"")){
                         try{
-                            jif.getDocument().insertString(jif.getCaretPosition(), (String)jframe.getMapping().get(ke.getKeyChar()+""), jframe.getAttr());
+                            MutableAttributeSet attr = new SimpleAttributeSet();
+                            jif.getDocument().insertString(jif.getCaretPosition(), (String)jframe.getMapping().get(ke.getKeyChar()+""), attr);
                         } catch(BadLocationException e){
                             System.out.println(e.getMessage());
                         }
@@ -119,7 +121,8 @@ public class EditorKeyAdapter extends KeyAdapter {
             // Keyboard Mapping ALT
             if(ke.isAltDown()){                
                 if(jframe.getAltkeys().containsKey(""+ke.getKeyChar())){
-                    jif.getDocument().insertString(jif.getCaretPosition() , (String)jframe.getAltkeys().get(""+ke.getKeyChar()) , jframe.getAttr());                    
+                    MutableAttributeSet attr = new SimpleAttributeSet();
+                    jif.getDocument().insertString(jif.getCaretPosition() , (String)jframe.getAltkeys().get(""+ke.getKeyChar()) , attr);                    
                 }
                 
                 // Commands to run
@@ -255,7 +258,8 @@ public class EditorKeyAdapter extends KeyAdapter {
             else if( (ke.getKeyCode() == KeyEvent.VK_INSERT)&&(ke.isShiftDown()) ){
                 String paste = jFrame.getClipboard();
                 if (paste!=null){
-                    jif.getDocument().insertString(jif.getCaretPosition() , paste , jframe.getAttr());
+                    MutableAttributeSet attr = new SimpleAttributeSet();
+                    jif.getDocument().insertString(jif.getCaretPosition() , paste , attr);
                 }
             }
 
