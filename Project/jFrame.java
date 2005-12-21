@@ -3082,8 +3082,7 @@ public class jFrame extends JFrame {
             JOptionPane.showMessageDialog(jDialogProjectProperties,java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE1"), java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE2") , JOptionPane.INFORMATION_MESSAGE);
         } catch(IOException e ){
             System.out.println(e.getMessage());
-        }
-        
+        }        
     }//GEN-LAST:event_jButton14ActionPerformed
     
     private void jMenuProjectSwitchesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuProjectSwitchesActionPerformed
@@ -4083,6 +4082,7 @@ public class jFrame extends JFrame {
     
     private void jMenuItemClearRecentFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemClearRecentFilesActionPerformed
         getJMenuRecentFiles().removeAll();
+        getRecentFiles().clear();
         saveConfigNew();
     }//GEN-LAST:event_jMenuItemClearRecentFilesActionPerformed
     
@@ -4967,6 +4967,7 @@ public class jFrame extends JFrame {
             HashSet properties_cs     = new HashSet();
             HashSet verbs_cs          = new HashSet();
             HashSet symbols           = new HashSet();
+            HashSet recentFiles       = new HashSet();
             
             StringBuffer sb = new StringBuffer();
             String riga;
@@ -5171,6 +5172,7 @@ public class jFrame extends JFrame {
             
             // Recentfiles
             getJMenuRecentFiles().removeAll();
+            recentFiles.clear();
             patt = Pattern.compile("\n"+Constants.RECENTFILESTOKEN+"(.+)");
             m = patt.matcher(cb);
             while (m.find()){
@@ -5182,6 +5184,7 @@ public class jFrame extends JFrame {
                     }
                 });
                 getJMenuRecentFiles().add(mi);
+                recentFiles.add(m.group(1));
             }
             
             
@@ -5400,6 +5403,7 @@ public class jFrame extends JFrame {
             setVerbs_cs(verbs_cs);
             getJListSymbols().setListData(vettoresimboli);
             setSymbols(symbols);
+            setRecentFiles(recentFiles);
             jTextAreaOutput.setText("Configuration file ["+file.getAbsolutePath()+"] loaded.");
             
         } catch(Exception e){
@@ -5802,7 +5806,7 @@ public class jFrame extends JFrame {
                 .append("# ________________ #\n");
         Checkbox ch;
         for(int count=0; count < getJPanelProjectSwitch().getComponentCount(); count++){
-            ch = (Checkbox) jPanelSwitch1.getComponent(count);
+            ch = (Checkbox) getJPanelProjectSwitch().getComponent(count);
             if (ch.getState()){
                 make.append("[SWITCH]"+ch.getLabel()+",on\n");
             } else{
@@ -5998,7 +6002,11 @@ public class jFrame extends JFrame {
     }
     
     // append last opened file
-    public void appendLastFile(String recentfileToAppend){
+    // Ignore a file is present
+    public void appendLastFile(String recentfileToAppend){       
+        if (getRecentFiles().contains(recentfileToAppend)){
+            return;
+        }        
         if (getJMenuRecentFiles().getMenuComponentCount() < maxRecentFiles){
             JMenuItem mi = new JMenuItem(recentfileToAppend);
             mi.setName(recentfileToAppend);
@@ -6008,6 +6016,7 @@ public class jFrame extends JFrame {
                 }
             });
             getJMenuRecentFiles().add(mi);
+            getRecentFiles().add(recentfileToAppend);
         }
     }
     
@@ -6440,6 +6449,7 @@ public class jFrame extends JFrame {
         saveProject(false);
     }
     
+    // The project inherits the default switches
     public void newProject(){
         try{
             JFileChooser chooser;
@@ -6473,8 +6483,8 @@ public class jFrame extends JFrame {
                 file.delete();
             }
             
-            file.createNewFile();
-            currentProject = file.getAbsolutePath();
+            //file.createNewFile();
+            currentProject = file.getAbsolutePath();            
             updateProjectTitle("Project: "+
                     currentProject.substring(
                     currentProject.lastIndexOf(Constants.SEP)+1
@@ -6483,6 +6493,32 @@ public class jFrame extends JFrame {
                     );
             
             jScrollPaneProject.setEnabled(true);
+            
+            // Save the default switches from the config.ini
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileini), Constants.fileFormat));
+            while ((riga = br.readLine())!=null){
+                sb.append(riga).append("\n");
+            }
+            br.close();
+            Charset charset = Charset.forName(Constants.fileFormat);
+            CharsetEncoder encoder = charset.newEncoder();
+            CharsetDecoder decoder = charset.newDecoder();
+            ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(sb.toString()));
+            CharBuffer cb = decoder.decode(bbuf);
+            Pattern patt = Pattern.compile("\n"+Constants.SWITCHTOKEN+"([^,]+),([^\n]+)");
+            Matcher m = patt.matcher(cb);
+            getJPanelProjectSwitch().removeAll();
+            Checkbox check;
+            while (m.find()){
+                switches.put(m.group(1),m.group(2));
+                check = new Checkbox(m.group(1));
+                check.setFont(new Font("Monospaced", Font.PLAIN, 11));
+                check.setState(m.group(2).trim().equals("on") ? true : false);
+                    getJPanelProjectSwitch().add(check);
+            }
+            
+            saveProject(true);
+            
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -6662,8 +6698,7 @@ public class jFrame extends JFrame {
                     currentProject.length())+")");
             
             
-        } catch (Exception e) { }
-        
+        } catch (Exception e) {}        
     }
     
     // Opening a project: the switches are overwritten by the project
@@ -6840,8 +6875,7 @@ public class jFrame extends JFrame {
             
             out.write("# ----------------- #\n");
             out.write("# -  Jif Project  - #\n");
-            out.write("# ----------------- #\n");
-            out.write("# You can edit *only* the switches section!!!\n");
+            out.write("# ----------------- #\n");            
             out.write("\n");
             out.write("# Files for the project "+currentProject+"\n");
             out.write("");
@@ -6853,8 +6887,10 @@ public class jFrame extends JFrame {
             out.write("\n");
             
             // The project Switches
+            out.write("# WARNING! You can edit *only* this switches section!!!\n");
             StringBuffer make = getSwitchesForSavingProject();
             out.write(make.toString());
+            out.write("# WARNING! You can edit *only* this switches section!!!\n");
             out.flush();
             out.close();
         }catch(Exception e ){
@@ -8103,6 +8139,7 @@ public class jFrame extends JFrame {
     private Hashtable mapping;
     private Hashtable switches;
     private Hashtable projectSwitches;
+    private HashSet recentFiles;
     // Syntax highlight
     private HashSet attributes;
     private HashSet properties;
@@ -8125,7 +8162,7 @@ public class jFrame extends JFrame {
     private JFrame JWindowSymbols;
     private JList jListSymbols;
     // titolo di JIF, serve per aggiungerci il nome del progetto aperto
-    private String jifVersion = "Jif "+ Constants.JIFVERSION + "     Inform Mode";
+    private String jifVersion = "Jif "+ Constants.JIFVERSION;
     
     // COLORS
     public Color colorKeyword;
@@ -8136,21 +8173,11 @@ public class jFrame extends JFrame {
     public Color colorComment;
     public Color colorBackground;
     public Font defaultFont;
-    
-//    // vettore che memorizza i flag di tipo -v5,-v6 ecc
-//    private Vector flags;
-//
-//    // vettore che memorizza i flag di tipo +language_name= ecc
-//    private Vector flags_language;
-    
-    // ultimo file aperto...
     private String lastFile;
-    private int maxRecentFiles=10;
+    private int maxRecentFiles=20;
     public int tabSize = 4;
     private String lastProject;
     private String lastOpenedProjectPath = null;
-    
-    // ultima dir usata per aprire un file
     private String lastDir = null;
     
     // PROJECT VARIABLES
@@ -8162,7 +8189,6 @@ public class jFrame extends JFrame {
     private Vector objTree;
     // hack variable
     private int int_var = 0;
-    
     
     public String getJifVersion() {
         return jifVersion;
@@ -8406,5 +8432,13 @@ public class jFrame extends JFrame {
     
     public void setProjectSwitches(Hashtable projectSwitches) {
         this.projectSwitches = projectSwitches;
+    }
+
+    public HashSet getRecentFiles() {
+        return recentFiles;
+    }
+
+    public void setRecentFiles(HashSet recentFiles) {
+        this.recentFiles = recentFiles;
     }
 }
