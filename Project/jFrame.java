@@ -52,7 +52,6 @@ import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -74,7 +73,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
-import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
@@ -119,9 +117,9 @@ public class jFrame extends JFrame {
     
     private static final long serialVersionUID = 7544939067324000307L;
     
-    public jFrame(String dir) {
+    public jFrame() {
         
-        screensize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/runInterpreter.png")));
         workingDir = System.getProperty("user.dir");
         
@@ -259,8 +257,8 @@ public class jFrame extends JFrame {
         jPanelSwitch1 = new javax.swing.JPanel();
         jPanelSwitch2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        jButton4 = new javax.swing.JButton();
         jButton15 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
         jDialogText = new JDialog (this, "", false);
         jPanel8 = new javax.swing.JPanel();
         jButton6 = new javax.swing.JButton();
@@ -417,6 +415,17 @@ public class jFrame extends JFrame {
         jScrollPane7 = new javax.swing.JScrollPane();
         jEditorPaneTutorial = new javax.swing.JEditorPane();
         jLabelTutorial = new javax.swing.JLabel();
+        jDialogProjectSwitches = new javax.swing.JDialog();
+        jPanelProjectSwitches = new javax.swing.JPanel();
+        jPanel13 = new javax.swing.JPanel();
+        jButton7 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jDialogProjectProperties = new javax.swing.JDialog();
+        jPanel9 = new javax.swing.JPanel();
+        jButton14 = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextAreaProjectProperties = new javax.swing.JTextArea();
         jPanel22 = new javax.swing.JPanel();
         jButtonNew = new javax.swing.JButton();
         OpenButton = new javax.swing.JButton();
@@ -543,6 +552,7 @@ public class jFrame extends JFrame {
         jSeparator5 = new javax.swing.JSeparator();
         jMenuItemLastProject = new javax.swing.JMenuItem();
         jMenuProjectProperties = new javax.swing.JMenuItem();
+        jMenuProjectSwitches = new javax.swing.JMenuItem();
         jMenuMode = new javax.swing.JMenu();
         jCheckBoxInformMode = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxGlulxMode = new javax.swing.JCheckBoxMenuItem();
@@ -757,15 +767,6 @@ public class jFrame extends JFrame {
 
         jDialogSwitches.getContentPane().add(jPanel11, java.awt.BorderLayout.CENTER);
 
-        jButton4.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_OK"));
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-
-        jPanel4.add(jButton4);
-
         jButton15.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
         jButton15.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -774,6 +775,15 @@ public class jFrame extends JFrame {
         });
 
         jPanel4.add(jButton15);
+
+        jButton4.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        jPanel4.add(jButton4);
 
         jDialogSwitches.getContentPane().add(jPanel4, java.awt.BorderLayout.SOUTH);
 
@@ -1508,7 +1518,7 @@ public class jFrame extends JFrame {
 
         jDialogOption.getContentPane().add(jTabbedPaneOption, java.awt.BorderLayout.CENTER);
 
-        jButton10.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_OK"));
+        jButton10.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
         jButton10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton10ActionPerformed(evt);
@@ -1579,6 +1589,52 @@ public class jFrame extends JFrame {
 
         jLabelTutorial.setText("jLabel5");
         jDialogTutorial.getContentPane().add(jLabelTutorial, java.awt.BorderLayout.NORTH);
+
+        jPanelProjectSwitches.setLayout(new java.awt.GridLayout(0, 4));
+
+        jDialogProjectSwitches.getContentPane().add(jPanelProjectSwitches, java.awt.BorderLayout.CENTER);
+
+        jButton7.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
+        jPanel13.add(jButton7);
+
+        jButton5.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jPanel13.add(jButton5);
+
+        jDialogProjectSwitches.getContentPane().add(jPanel13, java.awt.BorderLayout.SOUTH);
+
+        jDialogProjectProperties.setTitle("Project Properties");
+        jDialogProjectProperties.setModal(true);
+        jButton14.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
+        jButton14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton14ActionPerformed(evt);
+            }
+        });
+
+        jPanel9.add(jButton14);
+
+        jButton8.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
+        jPanel9.add(jButton8);
+
+        jDialogProjectProperties.getContentPane().add(jPanel9, java.awt.BorderLayout.SOUTH);
+
+        jTextAreaProjectProperties.setColumns(20);
+        jTextAreaProjectProperties.setRows(5);
+        jScrollPane1.setViewportView(jTextAreaProjectProperties);
+
+        jDialogProjectProperties.getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(getJifVersion());
@@ -2098,8 +2154,8 @@ public class jFrame extends JFrame {
         jTextFieldRowCol.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jTextFieldRowCol.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jTextFieldRowCol.setDisabledTextColor(new java.awt.Color(212, 208, 200));
-        jTextFieldRowCol.setMaximumSize(new java.awt.Dimension(100, 20));
-        jTextFieldRowCol.setMinimumSize(new java.awt.Dimension(50, 20));
+        jTextFieldRowCol.setMaximumSize(new java.awt.Dimension(100, 34));
+        jTextFieldRowCol.setMinimumSize(new java.awt.Dimension(50, 34));
         jTextFieldRowCol.setPreferredSize(new java.awt.Dimension(50, 20));
         jToolBarCommon.add(jTextFieldRowCol);
 
@@ -2152,6 +2208,7 @@ public class jFrame extends JFrame {
         jPanelMainFile.setLayout(new javax.swing.BoxLayout(jPanelMainFile, javax.swing.BoxLayout.Y_AXIS));
 
         jScrollPaneProject.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Project", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
+        jScrollPaneProject.setFont(new java.awt.Font("Dialog", 0, 11));
         jScrollPaneProject.setPreferredSize(new java.awt.Dimension(90, 131));
         jListProject.setFont(new java.awt.Font("Dialog", 0, 11));
         jListProject.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -2167,7 +2224,7 @@ public class jFrame extends JFrame {
 
         jPanelMainFile.add(jScrollPaneProject);
 
-        jLabelMainFile.setFont(new java.awt.Font("Dialog", 0, 10));
+        jLabelMainFile.setFont(new java.awt.Font("Dialog", 0, 11));
         jLabelMainFile.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabelMainFile.setText("Main:");
         jLabelMainFile.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
@@ -2295,17 +2352,16 @@ public class jFrame extends JFrame {
         jTextAreaOutput.setEditable(false);
         jTextAreaOutput.setFont(new java.awt.Font("Tahoma", 0, 11));
         jTextAreaOutput.setTabSize(4);
-        jTextAreaOutput.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_OUTPUT"));
         jTextAreaOutput.setAutoscrolls(false);
         jTextAreaOutput.setMinimumSize(new java.awt.Dimension(0, 45));
-        jTextAreaOutput.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTextAreaOutputMouseClicked(evt);
-            }
-        });
         jTextAreaOutput.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jTextAreaOutputMouseMoved(evt);
+            }
+        });
+        jTextAreaOutput.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTextAreaOutputMouseClicked(evt);
             }
         });
 
@@ -2787,6 +2843,15 @@ public class jFrame extends JFrame {
 
         jMenuProject.add(jMenuProjectProperties);
 
+        jMenuProjectSwitches.setText("Project Switches");
+        jMenuProjectSwitches.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuProjectSwitchesActionPerformed(evt);
+            }
+        });
+
+        jMenuProject.add(jMenuProjectSwitches);
+
         jMenuBar1.add(jMenuProject);
 
         jMenuMode.setText("Mode");
@@ -2995,16 +3060,48 @@ public class jFrame extends JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        jDialogProjectSwitches.setVisible(false);
+    }//GEN-LAST:event_jButton5ActionPerformed
+    
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        jDialogProjectProperties.setVisible(false);
+    }//GEN-LAST:event_jButton8ActionPerformed
+    
+    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
+        // save the current project and reload the switches
+        File file = new File(currentProject);
+        try{
+            FileOutputStream fos = new FileOutputStream(file);
+            Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
+            out.write(jTextAreaProjectProperties.getText());
+            out.flush();
+            out.close();
+            reloadProject(currentProject);
+            JOptionPane.showMessageDialog(jDialogProjectProperties,java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE1"), java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE2") , JOptionPane.INFORMATION_MESSAGE);
+        } catch(IOException e ){
+            System.out.println(e.getMessage());
+        }
+        
+    }//GEN-LAST:event_jButton14ActionPerformed
+    
+    private void jMenuProjectSwitchesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuProjectSwitchesActionPerformed
+        jDialogProjectSwitches.pack();
+        jDialogProjectSwitches.setLocationRelativeTo(this);
+        jDialogProjectSwitches.setVisible(true);
+        jDialogProjectSwitches.setTitle("Project Switches");
+    }//GEN-LAST:event_jMenuProjectSwitchesActionPerformed
+    
     private void jMenuProjectPropertiesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuProjectPropertiesActionPerformed
         // if project != null, open the jpf file for manual editing
         if (null != currentProject && !currentProject.equals(Constants.PROJECTEMPTY)) {
             try{
-                editFileIni(currentProject);
+                editProjectProperties(currentProject);
             } catch (Exception e){
                 System.out.println(e.getMessage());
-            }            
-        }        
+            }
+        }
     }//GEN-LAST:event_jMenuProjectPropertiesActionPerformed
     
     private void jMenuItemGCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemGCActionPerformed
@@ -3020,10 +3117,6 @@ public class jFrame extends JFrame {
     
     private void jTextAreaOutputMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextAreaOutputMouseMoved
         try{
-            String nome="";
-            int riga = 0;
-            boolean found=false;
-            
             // Rescues the correct line
             el = jTextAreaOutput.getDocument().getDefaultRootElement();
             int ind = el.getElementIndex(jTextAreaOutput.viewToModel(evt.getPoint()));
@@ -3591,9 +3684,17 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jButtonKeywordActionPerformed
     
     private void jButtonSwitchManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSwitchManagerActionPerformed
-        jDialogSwitches.pack();
-        jDialogSwitches.setLocationRelativeTo(this);
-        jDialogSwitches.setVisible(true);
+        // if a project exists, Jif will launch the project properties dialog
+        if (currentProject == null || currentProject.equals(Constants.PROJECTEMPTY)){
+            jDialogSwitches.pack();
+            jDialogSwitches.setLocationRelativeTo(this);
+            jDialogSwitches.setVisible(true);
+        } else{
+            jDialogProjectSwitches.pack();
+            jDialogProjectSwitches.setLocationRelativeTo(this);
+            jDialogProjectSwitches.setVisible(true);
+            jDialogProjectSwitches.setTitle("Project Switches");
+        }
     }//GEN-LAST:event_jButtonSwitchManagerActionPerformed
     
     private void jMenuItemPopupOpenSelectedFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupOpenSelectedFilesActionPerformed
@@ -3888,7 +3989,9 @@ public class jFrame extends JFrame {
                     }
                     
                     if (!found) {
-                        openFile(nome);
+                        synchronized (this) {
+                            openFile(nome);
+                        }
                     }
                     
                     JIFTextPane jif = getCurrentJIFTextPane();
@@ -3944,8 +4047,9 @@ public class jFrame extends JFrame {
                 }
                 
                 if (!found) {
-                    // The file (with the error) is closed and JIF has to open is
-                    openFile(nome);
+                    synchronized (this) {
+                        openFile(nome);
+                    }
                 }
                 
                 // Find the line with the error
@@ -4190,21 +4294,10 @@ public class jFrame extends JFrame {
      */
     public static void main(String args[]) {
         try{
-            //System.out.println(System.getProperty("os.name"));
-            //System.out.println(UIManager.getSystemLookAndFeelClassName());
             try {
-                // test if looks.jar library is present
-//                Class.forName("com.jgoodies.looks.LookUtils");
-//                String lafName =
-//                        LookUtils.IS_OS_WINDOWS_XP
-//                        ? Options.getCrossPlatformLookAndFeelClassName()
-//                        : Options.getSystemLookAndFeelClassName();
-//                UIManager.setLookAndFeel(lafName);
-                
                 javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
                 //javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
                 //javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-                //com.sun.java.swing.plaf.motif.MotifLookAndFeel
             } catch (Exception e) {
                 System.out.println("Can't set look & feel:" + e);
             }
@@ -4212,11 +4305,7 @@ public class jFrame extends JFrame {
         } catch(Exception e){
             System.out.println("ERROR: "+e.getMessage());
         }
-        if (args.length > 0)  {
-            new jFrame(args[0]).show();
-        } else{
-            new jFrame(null).show();
-        }
+        new jFrame().show();
     }
     
     /**
@@ -4322,20 +4411,23 @@ public class jFrame extends JFrame {
             return;
         }
         
-        // se l'utente ha tolto la visto della TextAreaOutput, la rendo visible..
-        // Ma verrà sempre nascosa ad ogni evento sul TextPane
+        // Show TextAreaOutput
         if (!jCheckBoxOutput.getState()){
             jSplitPane3.setBottomComponent(jTabbedPane2);
             jTabbedPane2.setVisible(true);
         }
-        //imposto il focus sulla tabbedWindow della compilazione
         jTabbedPane2.setSelectedComponent(jScrollPane2);
-        
-        //recupero l'attuale file name
         fileInf = getCurrentFilename();
         
-        // imposto il file di uscita: es 3.1.z5
-        makeSwitches();     // recupero il tipo di estensione
+        // Project compilation or normal?
+        if (currentProject==null || currentProject.equals(Constants.PROJECTEMPTY)){
+            makeSwitches();
+            switchString = makeSwitches().split(" ");
+        } else{
+            makeSwitchesForProject();
+            switchString = makeSwitchesForProject().split(" ");
+        }
+        
         String estensione = "";
         if (tipoz.equals("-v3")) estensione=".z3";
         if (tipoz.equals("-v4")) estensione=".z4";
@@ -4379,8 +4471,6 @@ public class jFrame extends JFrame {
         if (!getLibrarypathsecondary3().trim().equals("")){
             lib = lib+","+getLibrarypathsecondary3();
         }
-        
-        switchString=makeSwitches().split(" ");
         
         auxV.add(getCompilerpath());
         for(int i=1;i<switchString.length;i++) //i=1 to avoid the first " "
@@ -4710,7 +4800,7 @@ public class jFrame extends JFrame {
             for (Iterator it = getHelpcode().keySet().iterator(); it.hasNext();) {
                 String key = (String) it.next();
                 String value = (String)getHelpcode().get(key);
-                output.append("[HELPCODE]"+key+","+value+"\n");
+                output.append("[HELPEDCODE]"+key+","+value+"\n");
             }
             
             // MAPPING Section
@@ -5326,8 +5416,11 @@ public class jFrame extends JFrame {
             return;
         }
         
-        openFile(file);
-        JIFTextPane jif = getCurrentJIFTextPane();
+        JIFTextPane jif ;
+        synchronized (this) {
+            openFile(file);
+            jif  = getCurrentJIFTextPane();
+        }
         
         // clycle on the tree's nodes
         for (int c=0; c < top.getChildCount(); c++){
@@ -5348,9 +5441,10 @@ public class jFrame extends JFrame {
                         if ( ins.Ilabel.equals(key)  ){
                             try{
                                 if (ins != null){
-                                    jif = getCurrentJIFTextPane();
-                                    //jif.getHlighter().highlightFromTo(jif, ins.Iposition , ins.IpositionEnd);
-                                    el = jif.getDocument().getDefaultRootElement();
+                                    int pos = el.getElementIndex(ins.Iposition);
+                                    el = jif.getDocument().getDefaultRootElement().getElement(pos);
+                                    jif.getHlighter().highlightFromTo(jif, el.getStartOffset() , el.getEndOffset());
+                                    
                                     jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                                     jif.scrollRectToVisible(jif.modelToView(ins.Iposition));
                                 }
@@ -5367,9 +5461,10 @@ public class jFrame extends JFrame {
                     if ( ins.Ilabel.equals(key)  ){
                         try{
                             if (ins != null){
-                                jif = getCurrentJIFTextPane();
-                                //jif.getHlighter().highlightFromTo(jif, ins.Iposition , ins.IpositionEnd);
-                                el = jif.getDocument().getDefaultRootElement();
+                                int pos = el.getElementIndex(ins.Iposition);
+                                el = jif.getDocument().getDefaultRootElement().getElement(pos);
+                                jif.getHlighter().highlightFromTo(jif, el.getStartOffset() , el.getEndOffset());
+                                
                                 jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                                 jif.scrollRectToVisible(jif.modelToView(ins.Iposition));
                             }
@@ -5645,6 +5740,31 @@ public class jFrame extends JFrame {
         }
     }
     
+    public void editProjectProperties(String filename){
+        try{
+            File file = new File(filename);
+            if (!(file.exists())){
+                System.out.println(java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1")+filename);
+                return;
+            }
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
+            sb.setLength(0);
+            while ((riga = br.readLine())!=null){
+                sb.append(riga).append("\n");
+            }
+            jTextAreaProjectProperties.setText(sb.toString());
+            br.close();
+            jTextAreaProjectProperties.setCaretPosition(0);
+            
+            jDialogProjectProperties.setSize(500,500);
+            jDialogProjectProperties.setLocationRelativeTo(this);
+            jDialogProjectProperties.setVisible(true);
+            
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        
+    }
     
     
     public void editFileIni(String filename){
@@ -5678,27 +5798,49 @@ public class jFrame extends JFrame {
     public StringBuffer getSwitchesForSavingProject(){
         StringBuffer make = new StringBuffer();
         make
-                .append("# **************** #\n")
                 .append("# PROJECT SWITCHES #\n")
-                .append("# **************** #\n");
+                .append("# ________________ #\n");
         Checkbox ch;
-        for(int count=0; count < jPanelSwitch1.getComponentCount(); count++){
+        for(int count=0; count < getJPanelProjectSwitch().getComponentCount(); count++){
             ch = (Checkbox) jPanelSwitch1.getComponent(count);
             if (ch.getState()){
-                make.append("[SWITCH]="+ch.getLabel()+",on\n");
+                make.append("[SWITCH]"+ch.getLabel()+",on\n");
             } else{
-                make.append("[SWITCH]="+ch.getLabel()+",off\n");
-            }
-        }
-        for(int count=0; count < jPanelSwitch2.getComponentCount(); count++){
-            ch = (Checkbox) jPanelSwitch2.getComponent(count);
-            if (ch.getState()){
-                make.append("[SWITCH]="+ch.getLabel()+",on\n");
-            } else{
-                make.append("[SWITCH]="+ch.getLabel()+",off\n");
+                make.append("[SWITCH]"+ch.getLabel()+",off\n");
             }
         }
         return make;
+    }
+    
+    public String makeSwitchesForProject(){
+        StringBuffer make = new StringBuffer();
+        Checkbox ch;
+        for(int count=0; count < jPanelProjectSwitches.getComponentCount(); count++){
+            ch = (Checkbox) jPanelProjectSwitches.getComponent(count);
+            if (ch.getState()){
+                // INFORM MODE
+                if (jCheckBoxInformMode.isSelected()){
+                    make.append(" "+ch.getLabel());
+                }
+                // GLULX MODE
+                else if (ch.getLabel().indexOf("-v")==-1){
+                    make.append(" "+ch.getLabel());
+                }
+                if (ch.getLabel().indexOf("-v")!=-1){
+                    tipoz = ch.getLabel();
+                }
+            }
+        }
+        
+        // dopo il ciclo se nessuno swith di tipo -v2, -v3  -v8
+        // è stato selezionato assumo per default lo swith -v5
+        if (tipoz.equals("")) tipoz="-v5";
+        
+        // If in GLULX MODE, a "-G" switch is to be added
+        if (jCheckBoxGlulxMode.isSelected()){
+            make.append(" -G");
+        }
+        return make.toString();
     }
     
     // Make the string with switches to pass to the compiler
@@ -6349,13 +6491,184 @@ public class jFrame extends JFrame {
     
     public void updateProjectTitle(String title){
         TitledBorder tb = new TitledBorder(title);
-        tb.setTitleFont(new Font("Dialog",Font.PLAIN,10));
+        tb.setTitleFont(new Font("Dialog",Font.PLAIN,11));
         jScrollPaneProject.setBorder(tb);
     }
     
+    // Reload just the project switchs
+    public void reloadProject(String projectFile){
+        File file = new File(projectFile);
+        StringBuffer sb = new StringBuffer();
+        String riga;
+        sb.setLength(0);
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
+            while ((riga = br.readLine())!=null){
+                sb.append(riga).append("\n");
+            }
+            br.close();
+            Charset charset = Charset.forName(Constants.fileFormat);
+            CharsetEncoder encoder = charset.newEncoder();
+            CharsetDecoder decoder = charset.newDecoder();
+            ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(sb.toString()));
+            CharBuffer cb = decoder.decode(bbuf);
+            
+            // Load project switches
+            Hashtable switches        = new Hashtable();
+            Pattern patt = Pattern.compile("\n"+Constants.SWITCHTOKEN+"([^,]+),([^\n]+)");
+            Matcher m = patt.matcher(cb);
+            getJPanelProjectSwitch().removeAll();
+            Checkbox check;
+            while (m.find()){
+                switches.put(m.group(1),m.group(2));
+                check = new Checkbox(m.group(1));
+                check.setFont(new Font("Monospaced", Font.PLAIN, 11));
+                check.setState(m.group(2).trim().equals("on") ? true : false);
+                getJPanelProjectSwitch().add(check);
+            }
+            setProjectSwitches(switches);
+            
+        } catch (Exception e){}
+    }
     
-    // Opening a project and loading the saved configuration
     public void openProject(String projectFile){
+        // Check for a poject opened
+        if (currentProject!=null && !currentProject.equals(Constants.PROJECTEMPTY)){
+            // Ask for saving before closing
+            saveProject(false);
+            closeProject();
+        }
+        
+        
+        projectClass = new Vector();
+        File file;
+        String auxFile;
+        if (null == projectFile){
+            JFileChooser chooser = new JFileChooser(lastOpenedProjectPath);
+            JifFileFilter infFilter = new JifFileFilter("jpf", "Jif Project File");
+            chooser.setFileFilter(infFilter);
+            int returnVal = chooser.showOpenDialog(this);
+            if(returnVal == JFileChooser.CANCEL_OPTION) {
+                return;
+            }
+            file = new File(chooser.getSelectedFile().getAbsolutePath());
+        } else{
+            file = new File(projectFile);
+        }
+        
+        // Loading the JPF file and use regular expressions to find config
+        StringBuffer sb = new StringBuffer();
+        String riga;
+        sb.setLength(0);
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
+            while ((riga = br.readLine())!=null){
+                sb.append(riga).append("\n");
+            }
+            br.close();
+            Charset charset = Charset.forName(Constants.fileFormat);
+            CharsetEncoder encoder = charset.newEncoder();
+            CharsetDecoder decoder = charset.newDecoder();
+            ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(sb.toString()));
+            CharBuffer cb = decoder.decode(bbuf);
+            Vector fileToOpen=new Vector();
+            
+            // project files
+            Pattern patt = Pattern.compile("\n\\[FILE\\]([^\n]+)");
+            Matcher m = patt.matcher(cb);
+            while (m.find()){
+                projectFiles.add(new FileProject(m.group(1)));
+                if (jCheckBoxScanProjectFiles.isSelected()){
+                    Utils.seekClass(projectClass, new File(m.group(1)));
+                }
+                fileToOpen.add(m.group(1));
+            }
+            
+            // Find the Main class file
+            patt = Pattern.compile("\n\\[MAINFILE\\]([^\n]+)");
+            m = patt.matcher(cb);
+            while (m.find()){
+                mainFile = m.group(1);
+                if (mainFile.equals("null")){
+                    mainFile = null;
+                    jLabelMainFile.setText("Main: "+mainFile);
+                } else{
+                    jLabelMainFile.setText("Main: " + mainFile.substring(mainFile.lastIndexOf(Constants.SEP)+1,mainFile.length()));
+                }
+            }
+            
+            
+            // Load project switches
+            Hashtable switches        = new Hashtable();
+            patt = Pattern.compile("\n"+Constants.SWITCHTOKEN+"([^,]+),([^\n]+)");
+            m = patt.matcher(cb);
+            getJPanelProjectSwitch().removeAll();
+            Checkbox check;
+            while (m.find()){
+                switches.put(m.group(1),m.group(2));
+                check = new Checkbox(m.group(1));
+                check.setFont(new Font("Monospaced", Font.PLAIN, 11));
+                check.setState(m.group(2).trim().equals("on") ? true : false);
+                getJPanelProjectSwitch().add(check);
+            }
+            setProjectSwitches(switches);
+            
+            // ordino il vettore
+            Collections.sort(projectFiles,new Comparator(){
+                public int compare(Object a, Object b) {
+                    String id1 = ((FileProject)a).toString();
+                    String id2 = ((FileProject)b).toString();
+                    return (id1).compareToIgnoreCase(id2) ;
+                }
+            });
+            
+            jListProject.setListData(projectFiles);
+            
+            //open files if necesarry
+            if (jCheckBoxProjectOpenAllFiles.isSelected()){
+                for(int i=0;i<fileToOpen.size();i++){
+                    auxFile=(String)fileToOpen.elementAt(i);
+                    
+                    // don't open automatically *.h files
+                    if (!auxFile.endsWith(".h")){
+                        openFile(auxFile);
+                    }
+                    //in OpenFile riga is seted to null
+                }
+                jTabbedPane1.setSelectedIndex(0);
+            }
+            
+            currentProject = file.getAbsolutePath();
+            
+            updateProjectTitle("Project: "+
+                    currentProject.substring(
+                    currentProject.lastIndexOf(Constants.SEP)+1
+                    ,
+                    currentProject.length())
+                    );
+            
+            jScrollPaneProject.setEnabled(true);
+            
+            // View the Project Panel
+            jTabbedPaneLeft.setSelectedIndex(1);
+            
+            // Last Project closed
+            lastProject = file.getAbsolutePath();
+            lastOpenedProjectPath = file.getAbsolutePath();
+            jMenuItemLastProject.setText(
+                    java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_OPEN") +" ("+
+                    currentProject.substring(
+                    currentProject.lastIndexOf(Constants.SEP)+1 ,
+                    currentProject.length())+")");
+            
+            
+        } catch (Exception e) { }
+        
+    }
+    
+    // Opening a project: the switches are overwritten by the project
+    // settings
+    public void openProjectOld(String projectFile){
         // creo un nuovo vettore per le classi
         projectClass = new Vector();
         File file;
@@ -6396,16 +6709,8 @@ public class jFrame extends JFrame {
                         }
                         // provo ad aprire il file, se il checkbox relativo è impostato
                         // a TRUE
-                        
                         fileToOpen.add(riga.substring(riga.indexOf("[FILE]=")+7));
                         
-                 /*           if (jCheckBoxProjectOpenAllFiles.isSelected()){
-                                auxFile=riga;
-                                openFile(riga.substring(riga.indexOf("[FILE]=")+7));
-                                //in OpenFile riga is seted to null
-                                riga=auxFile;
-                            }
-                  */
                     }
                     if (riga.indexOf("[MAINFILE]=")!=-1){
                         mainFile = riga.substring(riga.indexOf("[MAINFILE]=")+11);
@@ -6503,9 +6808,7 @@ public class jFrame extends JFrame {
     // relativi ad un progetto quando si chiude il progetto stesso
     public void closeProject(){
         currentProject = Constants.PROJECTEMPTY;
-        
         updateProjectTitle("Project: ");
-        
         projectFiles.removeAllElements();
         // ordino il vettore
         Collections.sort(projectFiles,new Comparator(){
@@ -6515,17 +6818,11 @@ public class jFrame extends JFrame {
                 return (id1).compareToIgnoreCase(id2) ;
             }
         });
-        
         jListProject.setListData(projectFiles);
         jScrollPaneProject.setEnabled(false);
-        
-        // se il checkbox close_all_files è attivo, chiudo tutti i files
         closeAllFiles();
         loadConfigNew(new File(fileini));
-        
-        // When closing a project the "projectClass" vector has to be cleared
         projectClass = null;
-        // also the mainFile of the project and the Main File label
         mainFile = null;
         jLabelMainFile.setText("Main:");
     }
@@ -6541,52 +6838,25 @@ public class jFrame extends JFrame {
             FileOutputStream fos = new FileOutputStream(file);
             Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
             
-            out.write("# ***************** #\n");
-            out.write("# *  Jif Project  * #\n");
-            out.write("# ***************** #\n");
-            out.write("# DO NOT EDIT\n");
+            out.write("# ----------------- #\n");
+            out.write("# -  Jif Project  - #\n");
+            out.write("# ----------------- #\n");
+            out.write("# You can edit *only* the switches section!!!\n");
             out.write("\n");
             out.write("# Files for the project "+currentProject+"\n");
             out.write("");
             for (int i=0; i<projectFiles.size();i++)  {
-                out.write("[FILE]=" + ((FileProject)projectFiles.elementAt(i)).path+"\n");
+                out.write("[FILE]" + ((FileProject)projectFiles.elementAt(i)).path+"\n");
             }
-            out.write("[MAINFILE]="+mainFile+"\n");
+            out.write("[MAINFILE]"+mainFile+"\n");
             out.write("\n");
             out.write("\n");
-            // The project configuration
-            out.write("# ********************* #\n");
-            out.write("# PROJECT CONFIGURATION #\n");
-            out.write("# ********************* #\n");
-            out.write("WRAPLINES="+ jCheckBoxWrapLines.isSelected()+"\n");
-            out.write("SYNTAX="+ jCheckBoxSyntax.isSelected()+"\n");
-            out.write("HELPEDCODE="+ jCheckBoxHelpedCode.isSelected()+"\n");
-            out.write("MAPPINGEDITING="+ jCheckBoxMappingLive.isSelected()+"\n");
-            out.write("NUMBERLINES="+ jCheckBoxNumberLines.isSelected()+"\n");
-            out.write("SCANPROJECTFILESFORCLASSES="+ jCheckBoxScanProjectFiles.isSelected()+"\n");
-            out.write("PROJECTOPENALLFILE="+ jCheckBoxProjectOpenAllFiles.isSelected()+"\n");
-            out.write("OPENLASTFILE="+ jCheckBoxOpenLastFile.isSelected()+"\n");
-            out.write("CREATENEWFILE="+ jCheckBoxCreateNewFile.isSelected()+"\n");
-            out.write("TABSIZE="+ this.jTextFieldTabSize.getText()+"\n");
-            out.write("[colorKeyword]="+colorKeyword.getRed()+","+colorKeyword.getGreen()+","+colorKeyword.getBlue()+"\n");
-            out.write("[colorAttribute]="+colorAttribute.getRed()+","+colorAttribute.getGreen()+","+colorAttribute.getBlue()+"\n");
-            out.write("[colorProperty]="+colorProperty.getRed()+","+colorProperty.getGreen()+","+colorProperty.getBlue()+"\n");
-            out.write("[colorVerb]="+colorVerb.getRed()+","+colorVerb.getGreen()+","+colorVerb.getBlue()+"\n");
-            out.write("[colorNormal]="+colorNormal.getRed()+","+colorNormal.getGreen()+","+colorNormal.getBlue()+"\n");
-            out.write("[colorComment]="+colorComment.getRed()+","+colorComment.getGreen()+","+colorComment.getBlue()+"\n");
-            out.write("[colorBackground]="+colorBackground.getRed()+","+colorBackground.getGreen()+","+colorBackground.getBlue()+"\n");
-            out.write("[defaultFont]="+ defaultFont.getName()+","+defaultFont.getStyle()+","+defaultFont.getSize()+"\n");
-            out.write("CHECKBOXMAKERESOURCE="+ jCheckBoxMakeResource.isSelected()+"\n");
             
-            out.write("\n");
-            out.write("\n");
             // The project Switches
             StringBuffer make = getSwitchesForSavingProject();
             out.write(make.toString());
-            
             out.flush();
             out.close();
-            
         }catch(Exception e ){
             System.out.println(e.getMessage());
         }
@@ -7493,6 +7763,7 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
+    private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton17;
@@ -7508,7 +7779,10 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButton28;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JButton jButtonAttribute;
     private javax.swing.JButton jButtonBackground;
@@ -7562,6 +7836,8 @@ public class jFrame extends JFrame {
     private javax.swing.JDialog jDialogEditFileIni;
     private javax.swing.JDialog jDialogInfo;
     public javax.swing.JDialog jDialogOption;
+    private javax.swing.JDialog jDialogProjectProperties;
+    private javax.swing.JDialog jDialogProjectSwitches;
     private javax.swing.JDialog jDialogReplace;
     private javax.swing.JDialog jDialogSwitches;
     private javax.swing.JDialog jDialogText;
@@ -7668,12 +7944,14 @@ public class jFrame extends JFrame {
     private javax.swing.JMenu jMenuPaste;
     private javax.swing.JMenu jMenuProject;
     private javax.swing.JMenuItem jMenuProjectProperties;
+    private javax.swing.JMenuItem jMenuProjectSwitches;
     private javax.swing.JMenu jMenuRecentFiles;
     private javax.swing.JMenu jMenuView;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
@@ -7703,6 +7981,7 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JPanel jPanelColor;
     private javax.swing.JPanel jPanelDefaultDark;
     private javax.swing.JPanel jPanelDefinition;
@@ -7710,6 +7989,7 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanelGeneralOptions;
     private javax.swing.JPanel jPanelMainFile;
     private javax.swing.JPanel jPanelPath;
+    private javax.swing.JPanel jPanelProjectSwitches;
     private javax.swing.JPanel jPanelSearch;
     private javax.swing.JPanel jPanelSearchProject;
     private javax.swing.JPanel jPanelSwitch1;
@@ -7717,6 +7997,7 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanelTreeControl;
     public javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu jPopupMenuProject;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -7755,6 +8036,7 @@ public class jFrame extends JFrame {
     private javax.swing.JTextArea jTextAreaConfig;
     private javax.swing.JTextArea jTextAreaInfo;
     public javax.swing.JTextArea jTextAreaOutput;
+    private javax.swing.JTextArea jTextAreaProjectProperties;
     private javax.swing.JTextField jTextFieldBlc;
     private javax.swing.JTextField jTextFieldBres;
     private javax.swing.JTextField jTextFieldDefinition;
@@ -7790,7 +8072,6 @@ public class jFrame extends JFrame {
     private String brespath;
     private String blcpath;
     
-    private String configDir = "";
     private String fileInf = "";
     private String insertnewdir="";    // JIF si ricorda dell'ultima directory scelta per "insert new"
     protected DefaultStyledDocument doc;
@@ -7821,6 +8102,7 @@ public class jFrame extends JFrame {
     private Hashtable operations;
     private Hashtable mapping;
     private Hashtable switches;
+    private Hashtable projectSwitches;
     // Syntax highlight
     private HashSet attributes;
     private HashSet properties;
@@ -7833,9 +8115,6 @@ public class jFrame extends JFrame {
     private HashSet keywords_cs;
     private HashSet symbols;
     
-    
-    private boolean loaded=false;   //serve per sapere se ho già caricato il prog.
-    //private MutableAttributeSet attr;
     // per scegliere l'estensione del file da passare all'interprete
     private String tipoz = "";
     // Vettore che contiene i nomi delle nuove classi all'interno del sorgente
@@ -7879,13 +8158,8 @@ public class jFrame extends JFrame {
     private Vector projectFiles ;
     private Vector projectClass = new Vector();
     private String mainFile="";
-    
-    // Main file for the compiling process
-    private Dimension screensize;
-    
     // alphabetical sorting
     private Vector objTree;
-    
     // hack variable
     private int int_var = 0;
     
@@ -7928,6 +8202,10 @@ public class jFrame extends JFrame {
     
     public void setOperations(Hashtable operations) {
         this.operations = operations;
+    }
+    
+    public javax.swing.JPanel getJPanelProjectSwitch() {
+        return jPanelProjectSwitches;
     }
     
     public javax.swing.JPanel getJPanelSwitch1() {
@@ -8120,5 +8398,13 @@ public class jFrame extends JFrame {
     
     public void setFileini(String fileini) {
         this.fileini = fileini;
+    }
+    
+    public Hashtable getProjectSwitches() {
+        return projectSwitches;
+    }
+    
+    public void setProjectSwitches(Hashtable projectSwitches) {
+        this.projectSwitches = projectSwitches;
     }
 }

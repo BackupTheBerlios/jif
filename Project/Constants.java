@@ -42,7 +42,7 @@ public class Constants {
     /**
      * JIF Version
      */
-    public static final String JIFVERSION = "3.0 beta 7 (build 20051217)";
+    public static final String JIFVERSION = "3.0 beta 7 (build 20051221)";
     
     /**
      * Max files in the recent file menu
