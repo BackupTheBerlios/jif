@@ -1,0 +1,40 @@
+These Images are copyright by everaldo
+
+See the official site www.everaldo.com, for use license
+=========================================================
+
+check.png
+compfile.png
+configure.png
+edit.png
+fileclose.png
+filecloseAll.png
+filefind.png
+filenew.png
+fileopen.png
+filesave.png
+filesaveall.png
+filesaveas.png
+find.png
+insertFunction.png
+insertObject.png
+insertSymbol.png
+launch.png
+redo.png
+runInterpreter.png
+undo.png
+
+
+These images are under the GNU GPL license
+==========================================
+
+about.png
+comment.png
+delete.png
+leftIndent.png
+rightIndent.png
+tree_menu.png
+TREE_objects.png
+uncomment.png
+
+
