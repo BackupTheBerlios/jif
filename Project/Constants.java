@@ -42,12 +42,12 @@ public class Constants {
     /**
      * JIF Version
      */
-    public static final String JIFVERSION = "3.0 beta 7 (build 20051221)";
+    public static final String JIFVERSION = "3.0 beta 8 (build 20060101)";
     
     /**
      * Max files in the recent file menu
      */
-    public static final int RECENTFILES = 5;
+    public static final int MAXRECENTFILES = 15;
     
     /**
      * File Separator, depending on which Operative System is executing JIF
