@@ -68,7 +68,7 @@ public  class PopupListener extends MouseAdapter {
         
         // hiding JWindowSymbols
         if (null != jframe.getJWindowSymbols()  && jframe.getJWindowSymbols().isVisible()) {
-            jframe.getJWindowSymbols().hide();
+            jframe.getJWindowSymbols().setVisible(false);
         }
 
         // if the JtextAreaOutput is hidden

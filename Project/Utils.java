@@ -30,18 +30,30 @@
  *
  */
 
-import java.io.*;
-import javax.swing.text.*;
-import java.awt.*;
-import java.util.*;
-import java.nio.*;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.PrintGraphics;
+import java.awt.PrintJob;
+import java.io.BufferedReader;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.StringReader;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.nio.channels.FileChannel;
+import java.util.Properties;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+
+import javax.swing.text.JTextComponent;
 
 
 /**

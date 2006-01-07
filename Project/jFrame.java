@@ -117,7 +117,7 @@ public class jFrame extends JFrame {
     
     public jFrame() {
         
-        Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
+        //Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/runInterpreter.png")));
         workingDir = System.getProperty("user.dir");
         
@@ -153,13 +153,13 @@ public class jFrame extends JFrame {
                         if (jCheckBoxMappingLive.isSelected()&&getMapping().containsKey((String)getJListSymbols().getSelectedValue())){
                             getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)getMapping().get((String)getJListSymbols().getSelectedValue()), attr);
                         } else getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)getJListSymbols().getSelectedValue() , attr);
-                        JWindowSymbols.hide();
+                        JWindowSymbols.setVisible(false);
                     } catch(BadLocationException e){
                         System.out.println(e.getMessage());
                     }
                 }
                 if ((ke.getKeyCode()==KeyEvent.VK_ESCAPE)){
-                    JWindowSymbols.hide();
+                    JWindowSymbols.setVisible(false);
                 }
             }
         });
@@ -177,7 +177,7 @@ public class jFrame extends JFrame {
                         if (jCheckBoxMappingLive.isSelected()&&getMapping().containsKey((String)getJListSymbols().getSelectedValue())){
                             getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)getMapping().get((String)getJListSymbols().getSelectedValue()), attr);
                         } else getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)getJListSymbols().getSelectedValue() , attr);
-                        JWindowSymbols.hide();
+                        JWindowSymbols.setVisible(false);
                     } catch(BadLocationException e){
                         System.out.println(e.getMessage());
                     }
@@ -4334,7 +4334,7 @@ public class jFrame extends JFrame {
         } catch(Exception e){
             System.out.println("ERROR: "+e.getMessage());
         }
-        new jFrame().show();
+        new jFrame().setVisible(true);
     }
     
     /**
@@ -4358,7 +4358,6 @@ public class jFrame extends JFrame {
                 CharsetDecoder decoder = charset.newDecoder();
                 ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(sb.toString()));
                 CharBuffer cb = decoder.decode(bbuf);
-                Vector fileToOpen=new Vector();
 
                 // project files
                 Pattern patt = Pattern.compile("\n\\[FILE\\]([^\n]+)");
@@ -5533,7 +5532,6 @@ public class jFrame extends JFrame {
         treePath4 = new TreePath(treeModel.getPathToRoot(category4));
         treePath5 = new TreePath(treeModel.getPathToRoot(category5));
         treePath7 = new TreePath(treeModel.getPathToRoot(category7));
-        String testo = getCurrentJIFTextPane().getText();
         
         // Using the regexp
         CharBuffer cb = getCurrentJIFTextPane().getCharBuffer();
@@ -5695,7 +5693,6 @@ public class jFrame extends JFrame {
         String nomefile = getCurrentFilename();
         top.setUserObject(nomefile.substring(nomefile.lastIndexOf(Constants.SEP)+1));
         treeModel.reload();
-        String testo = getCurrentJIFTextPane().getText();
         CharBuffer cb = getCurrentJIFTextPane().getCharBuffer();
         objTree = new Vector();
         Pattern patt;
@@ -6361,7 +6358,7 @@ public class jFrame extends JFrame {
             JWindowSymbols.setLocation((int)getCurrentJIFTextPane().getLocationOnScreen().getX()+pointx, (int)getCurrentJIFTextPane().getLocationOnScreen().getY() +pointy+15);
             JWindowSymbols.setSize(230,200);
             JWindowSymbols.requestFocus();
-            JWindowSymbols.show();
+            JWindowSymbols.setVisible(true);
         } catch(BadLocationException e){
             System.out.println(e.getMessage());
         }

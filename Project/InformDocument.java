@@ -30,13 +30,14 @@
  *
  */
 
-import javax.swing.text.*;
-import java.nio.*;
-import java.nio.charset.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Element;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 /**
  * An extension of DefaultStyledDocument for the Inform Syntax Highlight
