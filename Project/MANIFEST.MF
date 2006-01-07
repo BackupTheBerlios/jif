@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: jFrame
-Created-By: 1.4.2_04-b05 (Sun Microsystems Inc.)
-Ant-Version: Apache Ant 1.6.1
-Class-Path: ./looks.jar
