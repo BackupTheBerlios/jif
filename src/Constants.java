@@ -90,10 +90,15 @@ public class Constants {
     public static final Color colorJumpto = new Color(102,153,255);
     
     /**
-     * File format used by JIF in read/write action
+     * Config File Name
      */
-    public static final String fileFormat = "ISO-8859-1";
+    public static final String configFileName = "Jif.cfg";
     
+   /**
+    * File format used by JIF in read/write action
+    */
+    public static final String fileFormat = "ISO-8859-1";
+
     // Configuration INI file, read by Regular Expressions
     public static final String ALTKEYSTOKEN              = "\\[ALTKEYS\\]";
     public static final String EXECUTETOKEN              = "\\[EXECUTE\\]";

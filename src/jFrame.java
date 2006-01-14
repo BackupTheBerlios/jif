@@ -9,7 +9,7 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2005  Alessandro Schillaci
+ * Copyright (C) 2003-2006  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
  * e-m@il: silver.slade@tiscalinet.it
@@ -48,7 +48,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -112,39 +114,48 @@ import java.util.regex.Pattern;
  * @version 3.0
  */
 public class jFrame extends JFrame {
-    
+
     private static final long serialVersionUID = 7544939067324000307L;
-    
+
     public jFrame() {
-        
+
         //Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/runInterpreter.png")));
         workingDir = System.getProperty("user.dir");
-        
-        // To Force another location for the config.ini file just run this:
+
+        // To Force another location for the Jif.cfg file just run this:
         // java.exe -Duser.language=en -Duser.region=US -Djif.configuration=[NEWPATH] -cp . -jar Jif.jar
-        // where [NEWPATH] is the config.ini path
+        // where [NEWPATH] is the Jif.cfg file path
         if (System.getProperty("jif.configuration") != null){
             System.out.println("Load new config file: "+System.getProperty("jif.configuration"));
             fileini = System.getProperty("jif.configuration");
         } else{
-            fileini = workingDir+Constants.SEP+"config.ini";
+            fileini = workingDir+Constants.SEP+Constants.configFileName;
+        }
+
+        // Jif will test if the Jif.cfg exists
+        // if not, jif will create a default one
+        File testconfig = new File(fileini);
+        if (!testconfig.exists()){
+            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("JIF_CONFIG_NOT_EXITS"),
+                    "Warning", JOptionPane.WARNING_MESSAGE);
+            fileini = Utils.createNewConfigFile(workingDir+Constants.SEP+Constants.configFileName);
         }
         
         initComponents();
         disableComponents();
         disableProject();
         setJListSymbols(new JList());
-        
+
         loadConfigNew(new File(fileini));
         projectFiles = new Vector();
         updateProjectTitle("Project: "+ currentProject);
-        
+
         JWindowSymbols = new JFrame();
         JWindowSymbols.setResizable(false);
         JWindowSymbols.setBackground(Color.LIGHT_GRAY);
         JWindowSymbols.setUndecorated(true);
-        
+
         getJListSymbols().addKeyListener(new java.awt.event.KeyAdapter(){
             MutableAttributeSet attr = new SimpleAttributeSet();;
             public void keyPressed(java.awt.event.KeyEvent ke){
@@ -184,18 +195,18 @@ public class jFrame extends JFrame {
                 }
             }
         });
-        
+
         JScrollPane jsp1 = new JScrollPane();
         jsp1.setPreferredSize(new java.awt.Dimension(30, 30));
         jsp1.setMinimumSize(new java.awt.Dimension(0, 0));
         jsp1.setViewportView(getJListSymbols());
         JWindowSymbols.getContentPane().add(jsp1);
         JWindowSymbols.toFront();
-        
+
         //attr = new SimpleAttributeSet();
         hlighterOutputErrors    = new HighlightText(Constants.colorErrors);
         hlighterOutputWarnings  = new HighlightText(Constants.colorWarnings);
-        
+
         // Opens the last file opened
         if (jCheckBoxOpenLastFile.isSelected() && (null!=lastFile && !lastFile.equals("null"))){
             // JIF opens the file only if exists
@@ -204,15 +215,15 @@ public class jFrame extends JFrame {
                 openFile(lastFile);
             }
         }
-        
+
         //  Creates a new file when JIF is loaded
         if (jCheckBoxCreateNewFile.isSelected()){
             newAdventure();
         }
     }
-    
-    
-    
+
+
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -605,6 +616,7 @@ public class jFrame extends JFrame {
 
         jPopupMenu1.add(jSeparator3);
 
+        jMenuItemCut1.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemCut1.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EDIT_CUT"));
         jMenuItemCut1.setActionCommand("KEY JFRAME_EDIT_CUT : RB JIF");
         jMenuItemCut1.addActionListener(new java.awt.event.ActionListener() {
@@ -671,6 +683,7 @@ public class jFrame extends JFrame {
 
         jPopupMenu1.add(jMenuItemPopupCloseAllFiles);
 
+        jMenuItemJumpToSource.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemJumpToSource.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_JUMP_TO_SOURCE"));
         jMenuItemJumpToSource.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -978,7 +991,6 @@ public class jFrame extends JFrame {
 
         jDialogOption.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SETTING"));
         jDialogOption.setModal(true);
-        jDialogOption.setResizable(false);
         jTabbedPaneOption.setMinimumSize(new java.awt.Dimension(535, 535));
         jTabbedPaneOption.setPreferredSize(new java.awt.Dimension(535, 535));
         jPanelGeneral.setLayout(new javax.swing.BoxLayout(jPanelGeneral, javax.swing.BoxLayout.X_AXIS));
@@ -2107,12 +2119,6 @@ public class jFrame extends JFrame {
         jTextFieldFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
         jTextFieldFind.setMaximumSize(new java.awt.Dimension(111, 20));
         jTextFieldFind.setMinimumSize(new java.awt.Dimension(10, 22));
-        jTextFieldFind.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldFindActionPerformed(evt);
-            }
-        });
-
         jToolBarCommon.add(jTextFieldFind);
 
         jButtonFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png")));
@@ -2191,11 +2197,6 @@ public class jFrame extends JFrame {
         jTree1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jTree1.setFont(new java.awt.Font("Courier New", 0, 12));
         jTree1.setMaximumSize(new java.awt.Dimension(0, 0));
-        jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jTree1MouseEntered(evt);
-            }
-        });
         jTree1.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
             public void treeCollapsed(javax.swing.event.TreeExpansionEvent evt) {
             }
@@ -2208,12 +2209,17 @@ public class jFrame extends JFrame {
                 jTree1ValueChanged(evt);
             }
         });
+        jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jTree1MouseEntered(evt);
+            }
+        });
 
         jScrollPane3.setViewportView(jTree1);
 
         jPanelTreeControl.add(jScrollPane3);
 
-        jTabbedPaneLeft.addTab("Tree", jPanelTreeControl);
+        jTabbedPaneLeft.addTab(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_TREE"), jPanelTreeControl);
 
         jPanelMainFile.setLayout(new javax.swing.BoxLayout(jPanelMainFile, javax.swing.BoxLayout.Y_AXIS));
 
@@ -2240,24 +2246,24 @@ public class jFrame extends JFrame {
         jLabelMainFile.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         jPanelMainFile.add(jLabelMainFile);
 
-        jTabbedPaneLeft.addTab("Project", jPanelMainFile);
+        jTabbedPaneLeft.addTab(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_PROJECT"), jPanelMainFile);
 
         jPanelSearch.setLayout(new javax.swing.BoxLayout(jPanelSearch, javax.swing.BoxLayout.Y_AXIS));
 
         jPanelSearch.setMaximumSize(new java.awt.Dimension(1800, 220));
         jPanelSearch.setMinimumSize(new java.awt.Dimension(180, 220));
         jPanelSearch.setPreferredSize(new java.awt.Dimension(180, 220));
-        jPanelSearchProject.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
+        jPanelSearchProject.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 0, 0));
 
         jPanelSearchProject.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search all project files", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
         jPanelSearchProject.setMaximumSize(new java.awt.Dimension(180, 55));
         jPanelSearchProject.setMinimumSize(new java.awt.Dimension(180, 55));
         jPanelSearchProject.setPreferredSize(new java.awt.Dimension(180, 55));
-        jTextFieldFindAll.setColumns(15);
         jTextFieldFindAll.setFont(new java.awt.Font("Courier New", 0, 12));
         jTextFieldFindAll.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
-        jTextFieldFindAll.setMaximumSize(new java.awt.Dimension(111, 20));
-        jTextFieldFindAll.setMinimumSize(new java.awt.Dimension(10, 22));
+        jTextFieldFindAll.setMaximumSize(new java.awt.Dimension(150, 20));
+        jTextFieldFindAll.setMinimumSize(new java.awt.Dimension(30, 22));
+        jTextFieldFindAll.setPreferredSize(new java.awt.Dimension(90, 20));
         jPanelSearchProject.add(jTextFieldFindAll);
 
         jButtonSearchProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/fileprojectfind.png")));
@@ -2285,14 +2291,16 @@ public class jFrame extends JFrame {
 
         jPanelSearch.add(jPanelSearchProject);
 
-        jPanelDefinition.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
+        jPanelDefinition.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 0, 0));
 
         jPanelDefinition.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search for Definition", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
         jPanelDefinition.setMaximumSize(new java.awt.Dimension(180, 55));
         jPanelDefinition.setMinimumSize(new java.awt.Dimension(180, 55));
         jPanelDefinition.setPreferredSize(new java.awt.Dimension(180, 55));
-        jTextFieldDefinition.setColumns(15);
         jTextFieldDefinition.setFont(new java.awt.Font("Courier New", 0, 12));
+        jTextFieldDefinition.setMaximumSize(new java.awt.Dimension(150, 20));
+        jTextFieldDefinition.setMinimumSize(new java.awt.Dimension(30, 20));
+        jTextFieldDefinition.setPreferredSize(new java.awt.Dimension(90, 20));
         jTextFieldDefinition.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextFieldDefinitionActionPerformed(evt);
@@ -2325,7 +2333,7 @@ public class jFrame extends JFrame {
 
         jPanelSearch.add(jPanelDefinition);
 
-        jTabbedPaneLeft.addTab("Search", jPanelSearch);
+        jTabbedPaneLeft.addTab(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH"), jPanelSearch);
 
         jSplitPane1.setLeftComponent(jTabbedPaneLeft);
 
@@ -2594,7 +2602,7 @@ public class jFrame extends JFrame {
 
         jMenuEdit.add(jSeparator16);
 
-        jMenuItemCommentSelection.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItemCommentSelection.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PERIOD, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItemCommentSelection.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemCommentSelection.setText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENUITEM_COMMENT"));
         jMenuItemCommentSelection.addActionListener(new java.awt.event.ActionListener() {
@@ -2605,7 +2613,7 @@ public class jFrame extends JFrame {
 
         jMenuEdit.add(jMenuItemCommentSelection);
 
-        jMenuItemUncommentSelection.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItemUncommentSelection.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_COMMA, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItemUncommentSelection.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemUncommentSelection.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EDIT_UNCOMMENT_SELECTION"));
         jMenuItemUncommentSelection.addActionListener(new java.awt.event.ActionListener() {
@@ -2760,7 +2768,7 @@ public class jFrame extends JFrame {
         jMenuProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_PROJECT"));
         jMenuProject.setDelay(0);
         jMenuProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemNewProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItemNewProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItemNewProject.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemNewProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_NEW_PROJECT"));
         jMenuItemNewProject.addActionListener(new java.awt.event.ActionListener() {
@@ -2771,7 +2779,7 @@ public class jFrame extends JFrame {
 
         jMenuProject.add(jMenuItemNewProject);
 
-        jMenuItemOpenProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
+        jMenuItemOpenProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, 0));
         jMenuItemOpenProject.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemOpenProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_PROJECT"));
         jMenuItemOpenProject.addActionListener(new java.awt.event.ActionListener() {
@@ -2834,6 +2842,7 @@ public class jFrame extends JFrame {
 
         jMenuProject.add(jMenuItemRemoveFromProject);
 
+        jMenuProjectProperties.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuProjectProperties.setText("Project Properties");
         jMenuProjectProperties.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2843,6 +2852,7 @@ public class jFrame extends JFrame {
 
         jMenuProject.add(jMenuProjectProperties);
 
+        jMenuProjectSwitches.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuProjectSwitches.setText("Project Switches");
         jMenuProjectSwitches.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2854,6 +2864,7 @@ public class jFrame extends JFrame {
 
         jMenuProject.add(jSeparator5);
 
+        jMenuItemLastProject.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemLastProject.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemLastProjectActionPerformed(evt);
@@ -2981,6 +2992,7 @@ public class jFrame extends JFrame {
 
         jMenuGlulx.add(jSeparator15);
 
+        jMenuItemRunUlx.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
         jMenuItemRunUlx.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemRunUlx.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_ULX"));
         jMenuItemRunUlx.addActionListener(new java.awt.event.ActionListener() {
@@ -2991,6 +3003,7 @@ public class jFrame extends JFrame {
 
         jMenuGlulx.add(jMenuItemRunUlx);
 
+        jMenuItemRunBlb.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItemRunBlb.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemRunBlb.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_BLB"));
         jMenuItemRunBlb.addActionListener(new java.awt.event.ActionListener() {
@@ -3007,7 +3020,7 @@ public class jFrame extends JFrame {
         jMenuOptions.setDelay(0);
         jMenuOptions.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemConfigFile.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemConfigFile.setText("JIF Ini file");
+        jMenuItemConfigFile.setText("Jif.cfg file");
         jMenuItemConfigFile.setToolTipText("Edit configuration file for JIF");
         jMenuItemConfigFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3029,6 +3042,7 @@ public class jFrame extends JFrame {
 
         jMenuOptions.add(jSeparator12);
 
+        jMenuItemGC.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemGC.setText("Garbage Collector");
         jMenuItemGC.setToolTipText("Free unused object from the memory");
         jMenuItemGC.addActionListener(new java.awt.event.ActionListener() {
@@ -3070,15 +3084,15 @@ public class jFrame extends JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         jDialogProjectSwitches.setVisible(false);
     }//GEN-LAST:event_jButton5ActionPerformed
-    
+
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         jDialogProjectProperties.setVisible(false);
     }//GEN-LAST:event_jButton8ActionPerformed
-    
+
     private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
         // save the current project and reload the switches
         File file = new File(currentProject);
@@ -3092,16 +3106,16 @@ public class jFrame extends JFrame {
             JOptionPane.showMessageDialog(jDialogProjectProperties,java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE1"), java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE2") , JOptionPane.INFORMATION_MESSAGE);
         } catch(IOException e ){
             System.out.println(e.getMessage());
-        }        
+        }
     }//GEN-LAST:event_jButton14ActionPerformed
-    
+
     private void jMenuProjectSwitchesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuProjectSwitchesActionPerformed
         jDialogProjectSwitches.pack();
         jDialogProjectSwitches.setLocationRelativeTo(this);
         jDialogProjectSwitches.setVisible(true);
         jDialogProjectSwitches.setTitle("Project Switches");
     }//GEN-LAST:event_jMenuProjectSwitchesActionPerformed
-    
+
     private void jMenuProjectPropertiesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuProjectPropertiesActionPerformed
         // if project != null, open the jpf file for manual editing
         if (null != currentProject && !currentProject.equals(Constants.PROJECTEMPTY)) {
@@ -3112,18 +3126,18 @@ public class jFrame extends JFrame {
             }
         }
     }//GEN-LAST:event_jMenuProjectPropertiesActionPerformed
-    
+
     private void jMenuItemGCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemGCActionPerformed
         System.gc();
     }//GEN-LAST:event_jMenuItemGCActionPerformed
-    
+
     private void jMenuItemLastProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLastProjectActionPerformed
         if (null != ((javax.swing.JMenuItem)evt.getSource()).getText() &&
                 ((javax.swing.JMenuItem)evt.getSource()).getText().length()>0){
             openProject(lastProject);
         }
     }//GEN-LAST:event_jMenuItemLastProjectActionPerformed
-    
+
     private void jTextAreaOutputMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextAreaOutputMouseMoved
         try{
             // Rescues the correct line
@@ -3131,9 +3145,9 @@ public class jFrame extends JFrame {
             int ind = el.getElementIndex(jTextAreaOutput.viewToModel(evt.getPoint()));
             el = jTextAreaOutput.getDocument().getDefaultRootElement().getElement(ind);
             ultima = jTextAreaOutput.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
-            
+
             if (ultima.startsWith(Constants.TOKENCOMMENT) || ultima.startsWith(Constants.TOKENSEARCH) ){
-                
+
                 // In case of errors
                 if (Utils.IgnoreCaseIndexOf(ultima,"error")!=-1){
                     hlighterOutputWarnings.removeHighlights(jTextAreaOutput);
@@ -3151,7 +3165,7 @@ public class jFrame extends JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_jTextAreaOutputMouseMoved
-    
+
     private void jTree1TreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_jTree1TreeExpanded
         CharBuffer cb = getCurrentJIFTextPane().getCharBuffer();
         Pattern patt;
@@ -3181,7 +3195,7 @@ public class jFrame extends JFrame {
         evt = null;
         return;
     }//GEN-LAST:event_jTree1TreeExpanded
-    
+
     private void jCheckBoxOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxOutputActionPerformed
         if (!jCheckBoxOutput.getState()) {
             jTabbedPane2.setVisible(false);
@@ -3191,19 +3205,19 @@ public class jFrame extends JFrame {
             jTabbedPane2.setVisible(true);
         }
     }//GEN-LAST:event_jCheckBoxOutputActionPerformed
-    
+
     private void jMenuItemTranslateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemTranslateActionPerformed
         getCurrentJIFTextPane().InsertTranslate(new File(getCurrentFilename()+"_translate.txt"), new File(getCurrentFilename()+"_translated.inf"));
     }//GEN-LAST:event_jMenuItemTranslateActionPerformed
-    
+
     private void jMenuItemExtractStringsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemExtractStringsActionPerformed
         getCurrentJIFTextPane().ExtractTranslate(new File(getCurrentFilename()+"_translate.txt"));
     }//GEN-LAST:event_jMenuItemExtractStringsActionPerformed
-    
+
     private void jButtonFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFindActionPerformed
         getCurrentJIFTextPane().findString(this);
     }//GEN-LAST:event_jButtonFindActionPerformed
-    
+
     private void jButtonSearchProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSearchProjectActionPerformed
         String target = this.jTextFieldFindAll.getText();
         if(null!=target && !target.trim().equals("")){
@@ -3215,17 +3229,17 @@ public class jFrame extends JFrame {
             this.searchAllFiles(target);
         }
     }//GEN-LAST:event_jButtonSearchProjectActionPerformed
-    
+
     private void jButtonDefinitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDefinitionActionPerformed
         if (!jTextFieldDefinition.getText().equals("")){
             checkTree(jTextFieldDefinition.getText());
         }
     }//GEN-LAST:event_jButtonDefinitionActionPerformed
-    
+
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         jDialogReplace.setVisible(false);
     }//GEN-LAST:event_jButton3ActionPerformed
-    
+
     private void jButtonReplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReplaceActionPerformed
         if (getCurrentJIFTextPane().getSelectedText()!= null){
             jTextFieldReplaceFind.setText(getCurrentJIFTextPane().getSelectedText());
@@ -3236,20 +3250,20 @@ public class jFrame extends JFrame {
         jDialogReplace.setLocationRelativeTo(this);
         jDialogReplace.setVisible(true);
     }//GEN-LAST:event_jButtonReplaceActionPerformed
-    
+
     private void jMenuItemSearchAllFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSearchAllFilesActionPerformed
         // se è presente una stringa uso quella altrimenti la prendo da quella selezionata
         // No: vince quella selezionata
         String target = null;
-        if (null != jTextFieldFindAll.getText() && 
+        if (null != jTextFieldFindAll.getText() &&
             null != getCurrentJIFTextPane().getSelectedText()){
             target = getCurrentJIFTextPane().getSelectedText();
         }
-        
+
         if (null == target ){
-            target = jTextFieldFindAll.getText();    
+            target = jTextFieldFindAll.getText();
         }
-        
+
         if (null==target || target.trim().equals("")){
             target = getCurrentJIFTextPane().getSelectedText();
         }
@@ -3262,7 +3276,7 @@ public class jFrame extends JFrame {
             searchAllFiles(target);
         }
     }//GEN-LAST:event_jMenuItemSearchAllFilesActionPerformed
-    
+
     private void jMenuItemSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSearchActionPerformed
         String selezione = getCurrentJIFTextPane().getSelectedText();
         if (selezione!=null){
@@ -3270,35 +3284,35 @@ public class jFrame extends JFrame {
         }
         getCurrentJIFTextPane().findString(this);
     }//GEN-LAST:event_jMenuItemSearchActionPerformed
-    
+
     private void jCheckBoxNumberLinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxNumberLinesActionPerformed
         if (jCheckBoxNumberLines.isSelected()){
             jCheckBoxWrapLines.setSelected(false);
         }
     }//GEN-LAST:event_jCheckBoxNumberLinesActionPerformed
-    
+
     private void jMenuItemCut1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCut1ActionPerformed
         getCurrentJIFTextPane().cut();
     }//GEN-LAST:event_jMenuItemCut1ActionPerformed
-    
+
     private void jCheckBoxWrapLinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxWrapLinesActionPerformed
         if (jCheckBoxWrapLines.isSelected()){
             jCheckBoxNumberLines.setSelected(false);
         }
     }//GEN-LAST:event_jCheckBoxWrapLinesActionPerformed
-    
+
     private void jMenuItemLeftShiftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLeftShiftActionPerformed
         if (null != getCurrentJIFTextPane()){
             getCurrentJIFTextPane().removeTabSelection();
         }
     }//GEN-LAST:event_jMenuItemLeftShiftActionPerformed
-    
+
     private void jMenuItemRightShiftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRightShiftActionPerformed
         if (null != getCurrentJIFTextPane()){
             getCurrentJIFTextPane().tabSelection();
         }
     }//GEN-LAST:event_jMenuItemRightShiftActionPerformed
-    
+
     private void jCheckBoxToggleFullscreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxToggleFullscreenActionPerformed
         if (!jCheckBoxToggleFullscreen.getState()) {
             jCheckBoxOutput.setSelected(true);
@@ -3313,26 +3327,26 @@ public class jFrame extends JFrame {
         jCheckBoxJToolBarActionPerformed(evt);
         jCheckBoxJTreeActionPerformed(evt);
     }//GEN-LAST:event_jCheckBoxToggleFullscreenActionPerformed
-    
+
     private void jMenuItemNextBookmarkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNextBookmarkActionPerformed
         if (null != getCurrentJIFTextPane()){
             getCurrentJIFTextPane().nextBookmark();
         }
     }//GEN-LAST:event_jMenuItemNextBookmarkActionPerformed
-    
+
     private void jMenuItemSetBookmarkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSetBookmarkActionPerformed
         if (null != getCurrentJIFTextPane()){
             getCurrentJIFTextPane().setBookmark();
         }
     }//GEN-LAST:event_jMenuItemSetBookmarkActionPerformed
-    
+
     private void jTextFieldDefinitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldDefinitionActionPerformed
 //        // Search for definition
 //        if (!jTextFieldDefinition.getText().equals("")){
 //            checkTree(jTextFieldDefinition.getText());
 //        }
     }//GEN-LAST:event_jTextFieldDefinitionActionPerformed
-    
+
     private void jButtonLibraryPath3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLibraryPath3ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -3344,7 +3358,7 @@ public class jFrame extends JFrame {
             setLibrarypathsecondary3(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_jButtonLibraryPath3ActionPerformed
-    
+
     private void jButtonLibraryPath2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLibraryPath2ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -3356,7 +3370,7 @@ public class jFrame extends JFrame {
             setLibrarypathsecondary2(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_jButtonLibraryPath2ActionPerformed
-    
+
     private void jMenuItemJumpToSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemJumpToSourceActionPerformed
         try{
             checkTree(getCurrentJIFTextPane().getCurrentWord());
@@ -3364,11 +3378,11 @@ public class jFrame extends JFrame {
             System.out.println(ble);
         }
     }//GEN-LAST:event_jMenuItemJumpToSourceActionPerformed
-    
+
     private void jTree1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseEntered
         refreshTreeIncremental();
     }//GEN-LAST:event_jTree1MouseEntered
-    
+
     private void jButtonDefaultDarkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDefaultDarkActionPerformed
         // Dark settings
         colorKeyword = new Color(51,102,255);
@@ -3381,27 +3395,27 @@ public class jFrame extends JFrame {
         updateColor();
         updateColorEditor();
     }//GEN-LAST:event_jButtonDefaultDarkActionPerformed
-    
+
     private void jButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonMouseExited
         ((JButton)evt.getSource()).setBorderPainted(false);
     }//GEN-LAST:event_jButtonMouseExited
-    
+
     private void jButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonMouseEntered
         ((JButton)evt.getSource()).setBorderPainted(true);
     }//GEN-LAST:event_jButtonMouseEntered
-    
+
     private void SaveButtonAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveButtonAllActionPerformed
         saveAll();
         saveProject(false);
     }//GEN-LAST:event_SaveButtonAllActionPerformed
-    
+
     private void jMenuItemRemoveMainClassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRemoveMainClassActionPerformed
         // Removes the Main file
         mainFile = null;
         JOptionPane.showMessageDialog(this,"Removing Main file","Main file", JOptionPane.INFORMATION_MESSAGE);
         jLabelMainFile.setText("Main: ");
     }//GEN-LAST:event_jMenuItemRemoveMainClassActionPerformed
-    
+
     private void jMenuItemSetMainClassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSetMainClassActionPerformed
         FileProject fp = (FileProject)jListProject.getSelectedValue();
         if (null==fp) return;
@@ -3410,7 +3424,7 @@ public class jFrame extends JFrame {
             jLabelMainFile.setText("Main: "+fp.name);
         }
     }//GEN-LAST:event_jMenuItemSetMainClassActionPerformed
-    
+
     private void jMenuItemBuildAllGlulxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBuildAllGlulxActionPerformed
         saveAll();
         if (jCheckBoxMakeResource.isSelected()){
@@ -3419,31 +3433,31 @@ public class jFrame extends JFrame {
         rebuildAll();           // Compile ULX file
         makeBlb();              // Make BLB file
     }//GEN-LAST:event_jMenuItemBuildAllGlulxActionPerformed
-    
+
     private void jMenuItemRunBlbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRunBlbActionPerformed
         saveFile();
         runBlb();
     }//GEN-LAST:event_jMenuItemRunBlbActionPerformed
-    
+
     private void jMenuItemRunUlxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRunUlxActionPerformed
         saveFile();
         runAdventure();
     }//GEN-LAST:event_jMenuItemRunUlxActionPerformed
-    
+
     private void jMenuItemCompileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCompileActionPerformed
         saveAll();
         rebuildAll();
     }//GEN-LAST:event_jMenuItemCompileActionPerformed
-    
+
     private void jMenuItemMakeBlbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMakeBlbActionPerformed
         makeBlb();
     }//GEN-LAST:event_jMenuItemMakeBlbActionPerformed
-    
+
     private void jMenuItemMakeResourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMakeResourceActionPerformed
         // make the resource file and visualize the log in the output window
         makeResources();
     }//GEN-LAST:event_jMenuItemMakeResourceActionPerformed
-    
+
     private void jButtonBlcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBlcActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         int_var = chooser.showOpenDialog(this);
@@ -3451,10 +3465,10 @@ public class jFrame extends JFrame {
             return;
         } else {
             jTextFieldBlc.setText(chooser.getSelectedFile().getAbsolutePath());
-            setBlcpath(chooser.getSelectedFile().getAbsolutePath());            
+            setBlcpath(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_jButtonBlcActionPerformed
-    
+
     private void jButtonBresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBresActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         int_var = chooser.showOpenDialog(this);
@@ -3462,10 +3476,10 @@ public class jFrame extends JFrame {
             return;
         } else {
             jTextFieldBres.setText(chooser.getSelectedFile().getAbsolutePath());
-            setBrespath(chooser.getSelectedFile().getAbsolutePath());            
+            setBrespath(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_jButtonBresActionPerformed
-    
+
     private void jButtonGlulxPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGlulxPathActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         int_var = chooser.showOpenDialog(this);
@@ -3476,7 +3490,7 @@ public class jFrame extends JFrame {
             setInterpreterglulxpath(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_jButtonGlulxPathActionPerformed
-    
+
     private void jCheckBoxInformModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxInformModeActionPerformed
         if (jCheckBoxInformMode.getState()){
             setInformMode();
@@ -3486,7 +3500,7 @@ public class jFrame extends JFrame {
             refreshTree();
         }
     }//GEN-LAST:event_jCheckBoxInformModeActionPerformed
-    
+
     private void jCheckBoxGlulxModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxGlulxModeActionPerformed
         if (jCheckBoxGlulxMode.getState()){
             setGlulxMode();
@@ -3496,7 +3510,7 @@ public class jFrame extends JFrame {
             refreshTree();
         }
     }//GEN-LAST:event_jCheckBoxGlulxModeActionPerformed
-    
+
     private void jButtonLibraryPath1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLibraryPath1ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -3508,27 +3522,27 @@ public class jFrame extends JFrame {
             setLibrarypathsecondary1(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_jButtonLibraryPath1ActionPerformed
-    
+
     private void jMenuItemPopupCloseAllFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupCloseAllFilesActionPerformed
         closeAllFiles();
     }//GEN-LAST:event_jMenuItemPopupCloseAllFilesActionPerformed
-    
+
     private void jButtonBracketCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBracketCheckActionPerformed
         getCurrentJIFTextPane().checkbrackets(this);
     }//GEN-LAST:event_jButtonBracketCheckActionPerformed
-    
+
     private void jCheckBoxJTreeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxJTreeActionPerformed
         if (!jCheckBoxJTree.getState()) jSplitPane1.setDividerLocation(0);
         if (jCheckBoxJTree.getState()) jSplitPane1.setDividerLocation(180);
     }//GEN-LAST:event_jCheckBoxJTreeActionPerformed
-    
+
     private void jButtonBackgroundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackgroundActionPerformed
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorBackground);
         if (temp != null) colorBackground= temp;
         updateColor();
         updateColorEditor();
     }//GEN-LAST:event_jButtonBackgroundActionPerformed
-    
+
     private void jMenuItemAddNewToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAddNewToProjectActionPerformed
         // Creates a new file and append this to the project
         newAdventure();
@@ -3547,7 +3561,7 @@ public class jFrame extends JFrame {
         // Update and save the project
         saveProject(false);
     }//GEN-LAST:event_jMenuItemAddNewToProjectActionPerformed
-    
+
     private void jMenuItemPopupAddNewToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupAddNewToProjectActionPerformed
         // Creates a new file and append this to the project
         newAdventure();
@@ -3564,33 +3578,33 @@ public class jFrame extends JFrame {
         });
         jListProject.setListData(projectFiles);
     }//GEN-LAST:event_jMenuItemPopupAddNewToProjectActionPerformed
-    
+
     private void jButtonLeftTabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLeftTabActionPerformed
         if (null != getCurrentJIFTextPane()){
             getCurrentJIFTextPane().removeTabSelection();
         }
     }//GEN-LAST:event_jButtonLeftTabActionPerformed
-    
+
     private void jButtonRightTabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRightTabActionPerformed
         if (null != getCurrentJIFTextPane()){
             getCurrentJIFTextPane().tabSelection();
         }
     }//GEN-LAST:event_jButtonRightTabActionPerformed
-    
+
     private void jButtonPrintTutorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPrintTutorialActionPerformed
         new Utils().printInform(this,"Jif - "+jDialogTutorial.getTitle(), jEditorPaneTutorial);
     }//GEN-LAST:event_jButtonPrintTutorialActionPerformed
-    
+
     private void jButtonRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRedoActionPerformed
         if (getCurrentJIFTextPane()!=null)
             ((Action)(getCurrentJIFTextPane().getActionMap().get("Redo"))).actionPerformed(evt);
     }//GEN-LAST:event_jButtonRedoActionPerformed
-    
+
     private void jButtonUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUndoActionPerformed
         if (getCurrentJIFTextPane()!=null)
             ((Action)(getCurrentJIFTextPane().getActionMap().get("Undo"))).actionPerformed(evt);
     }//GEN-LAST:event_jButtonUndoActionPerformed
-    
+
     private void jButtonOptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionActionPerformed
         jTextFieldPathLib.setText(getLibrarypath());
         jTextFieldPathLibSecondary1.setText(getLibrarypathsecondary1());
@@ -3602,37 +3616,37 @@ public class jFrame extends JFrame {
         jTextFieldPathGlulx.setText(getInterpreterglulxpath());
         jTextFieldBres.setText(getBrespath());
         jTextFieldBlc.setText(getBlcpath());
-        
+
         // set the colors
         updateColor();
         updateColorEditor();
         Font tmpFont = defaultFont;
         jComboBoxFont.setSelectedItem(tmpFont.getName());
         jComboBoxFontSize.setSelectedItem(String.valueOf(tmpFont.getSize()));
-        
+
         jDialogOption.pack();
         //jDialogOption.setSize(580,560);
         //jDialogOption.setSize(580,540);
         jDialogOption.setLocationRelativeTo(this);
         jDialogOption.setVisible(true);
     }//GEN-LAST:event_jButtonOptionActionPerformed
-    
+
     private void jButton24ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton24ActionPerformed
         jDialogTutorial.setVisible(false);
     }//GEN-LAST:event_jButton24ActionPerformed
-    
+
     private void jComboBoxFontSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxFontSizeActionPerformed
         defaultFont = new Font((String)jComboBoxFont.getSelectedItem(),Font.PLAIN,Integer.parseInt((String)jComboBoxFontSize.getSelectedItem()));
         updateColor();
         updateColorEditor();
     }//GEN-LAST:event_jComboBoxFontSizeActionPerformed
-    
+
     private void jComboBoxFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxFontActionPerformed
         defaultFont = new Font((String)jComboBoxFont.getSelectedItem(),Font.PLAIN,Integer.parseInt((String)jComboBoxFontSize.getSelectedItem()));
         updateColor();
         updateColorEditor();
     }//GEN-LAST:event_jComboBoxFontActionPerformed
-    
+
     private void jButton23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton23ActionPerformed
         unquote();
         // Updates colors
@@ -3650,7 +3664,7 @@ public class jFrame extends JFrame {
         jTextFieldTabSize.setText("4");
         defaultOptions();
     }//GEN-LAST:event_jButton23ActionPerformed
-    
+
     private void jButtonCommentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCommentActionPerformed
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorComment);
         if (temp != null) {
@@ -3659,7 +3673,7 @@ public class jFrame extends JFrame {
         updateColor();
         updateColorEditor();
     }//GEN-LAST:event_jButtonCommentActionPerformed
-    
+
     private void jButtonNormalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNormalActionPerformed
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorNormal );
         if (temp != null) {
@@ -3668,7 +3682,7 @@ public class jFrame extends JFrame {
         updateColor();
         updateColorEditor();
     }//GEN-LAST:event_jButtonNormalActionPerformed
-    
+
     private void jButtonVerbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVerbActionPerformed
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorVerb  );
         if (temp != null) {
@@ -3677,7 +3691,7 @@ public class jFrame extends JFrame {
         updateColor();
         updateColorEditor();
     }//GEN-LAST:event_jButtonVerbActionPerformed
-    
+
     private void jButtonPropertyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPropertyActionPerformed
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorProperty    );
         if (temp != null) {
@@ -3686,7 +3700,7 @@ public class jFrame extends JFrame {
         updateColor();
         updateColorEditor();
     }//GEN-LAST:event_jButtonPropertyActionPerformed
-    
+
     private void jButtonAttributeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAttributeActionPerformed
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorAttribute    );
         if (temp != null) {
@@ -3695,7 +3709,7 @@ public class jFrame extends JFrame {
         updateColor();
         updateColorEditor();
     }//GEN-LAST:event_jButtonAttributeActionPerformed
-    
+
     private void jButtonKeywordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonKeywordActionPerformed
         Color temp = JColorChooser.showDialog(this, "Color Dialog", colorKeyword);
         if (temp != null) {
@@ -3704,7 +3718,7 @@ public class jFrame extends JFrame {
         updateColor();
         updateColorEditor();
     }//GEN-LAST:event_jButtonKeywordActionPerformed
-    
+
     private void jButtonSwitchManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSwitchManagerActionPerformed
         // if a project exists, Jif will launch the project properties dialog
         if (currentProject == null || currentProject.equals(Constants.PROJECTEMPTY)){
@@ -3718,7 +3732,7 @@ public class jFrame extends JFrame {
             jDialogProjectSwitches.setTitle("Project Switches");
         }
     }//GEN-LAST:event_jButtonSwitchManagerActionPerformed
-    
+
     private void jMenuItemPopupOpenSelectedFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupOpenSelectedFilesActionPerformed
         Object[] oggetti = jListProject.getSelectedValues();
         if (oggetti.length == 0) return;
@@ -3728,11 +3742,11 @@ public class jFrame extends JFrame {
             }
         }
     }//GEN-LAST:event_jMenuItemPopupOpenSelectedFilesActionPerformed
-    
+
     private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
         saveConfigNew();
     }//GEN-LAST:event_jButton15ActionPerformed
-    
+
     private void jListProjectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListProjectMouseEntered
         // Just One click: shows the tooltip
         FileProject fp = (FileProject)jListProject.getSelectedValue();
@@ -3742,49 +3756,49 @@ public class jFrame extends JFrame {
             jListProject.setToolTipText(null);
         }
     }//GEN-LAST:event_jListProjectMouseEntered
-    
+
     private void jButtonInterpreterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInterpreterActionPerformed
         runInterpreter();
     }//GEN-LAST:event_jButtonInterpreterActionPerformed
-    
+
     private void jButton21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton21ActionPerformed
         jDialogInfo.setVisible(false);
     }//GEN-LAST:event_jButton21ActionPerformed
-    
+
     private void jMenuItemPopupCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupCloseActionPerformed
         closeFile();
         refreshTree();
         System.gc();
     }//GEN-LAST:event_jMenuItemPopupCloseActionPerformed
-    
+
     private void jTabbedPane1ComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jTabbedPane1ComponentShown
         refreshTree();
     }//GEN-LAST:event_jTabbedPane1ComponentShown
-    
+
     private void jTabbedPane1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTabbedPane1MouseClicked
         refreshTree();
     }//GEN-LAST:event_jTabbedPane1MouseClicked
-    
+
     private void jMenuItemRemoveFromProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRemoveFromProjectActionPerformed
         removeFileFromProject();
     }//GEN-LAST:event_jMenuItemRemoveFromProjectActionPerformed
-    
+
     private void jMenuItemPopupSaveProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupSaveProjectActionPerformed
         saveProject(true);
     }//GEN-LAST:event_jMenuItemPopupSaveProjectActionPerformed
-    
+
     private void jMenuItemPopupCloseProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupCloseProjectActionPerformed
         closeProject();
     }//GEN-LAST:event_jMenuItemPopupCloseProjectActionPerformed
-    
+
     private void jMenuItemPopupOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupOpenProjectActionPerformed
         openProject(null);
     }//GEN-LAST:event_jMenuItemPopupOpenProjectActionPerformed
-    
+
     private void jMenuItemPopupNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupNewProjectActionPerformed
         newProject();
     }//GEN-LAST:event_jMenuItemPopupNewProjectActionPerformed
-    
+
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         jDialogOption.setVisible(false);
         try{
@@ -3795,7 +3809,7 @@ public class jFrame extends JFrame {
         unquote();
         saveConfigNew();
     }//GEN-LAST:event_jButton10ActionPerformed
-    
+
     private void jMenuItemSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSettingsActionPerformed
         jTextFieldPathLib.setText(getLibrarypath());
         jTextFieldPathLibSecondary1.setText(getLibrarypathsecondary1());
@@ -3818,17 +3832,17 @@ public class jFrame extends JFrame {
         jDialogOption.setLocationRelativeTo(this);
         jDialogOption.setVisible(true);
     }//GEN-LAST:event_jMenuItemSettingsActionPerformed
-    
+
     private void jButtonCloseAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCloseAllActionPerformed
         closeAllFiles();
     }//GEN-LAST:event_jButtonCloseAllActionPerformed
-    
+
     private void jButtonCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCloseActionPerformed
         closeFile();
         refreshTree();
         System.gc();
     }//GEN-LAST:event_jButtonCloseActionPerformed
-    
+
     private void jListProjectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListProjectMouseClicked
         // Double clicking JIF opens the selected file
         if (evt.getClickCount()==2){
@@ -3845,112 +3859,112 @@ public class jFrame extends JFrame {
             }
         }
     }//GEN-LAST:event_jListProjectMouseClicked
-    
+
     private void jMenuItemCloseProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCloseProjectActionPerformed
         closeProject();
     }//GEN-LAST:event_jMenuItemCloseProjectActionPerformed
-    
+
     private void jMenuItemPrint1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPrint1ActionPerformed
         new Utils().printInform(this,"Jif print - "+getCurrentFilename(), getCurrentJIFTextPane());
     }//GEN-LAST:event_jMenuItemPrint1ActionPerformed
-    
+
     private void SaveAsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveAsButtonActionPerformed
         saveAs();
     }//GEN-LAST:event_SaveAsButtonActionPerformed
-    
+
     private void jMenuItemNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNewProjectActionPerformed
         newProject();
     }//GEN-LAST:event_jMenuItemNewProjectActionPerformed
-    
+
     private void jMenuItemSaveProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveProjectActionPerformed
         saveProject(true);
     }//GEN-LAST:event_jMenuItemSaveProjectActionPerformed
-    
+
     private void jMenuItemPopupRemoveFromProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupRemoveFromProjectActionPerformed
         removeFileFromProject();
     }//GEN-LAST:event_jMenuItemPopupRemoveFromProjectActionPerformed
-    
+
     private void jMenuItemPopupAddToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupAddToProjectActionPerformed
         addFilesToProject();
     }//GEN-LAST:event_jMenuItemPopupAddToProjectActionPerformed
-    
+
     private void jMenuItemAddFileToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAddFileToProjectActionPerformed
         addFilesToProject();
     }//GEN-LAST:event_jMenuItemAddFileToProjectActionPerformed
-    
+
     private void jMenuItemOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemOpenProjectActionPerformed
         openProject(null);
     }//GEN-LAST:event_jMenuItemOpenProjectActionPerformed
-    
+
     private void jMenuItemInsertSymbol1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemInsertSymbol1ActionPerformed
         showJWindowSymbol();
     }//GEN-LAST:event_jMenuItemInsertSymbol1ActionPerformed
-    
+
     private void jButtonInsertSymbolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInsertSymbolActionPerformed
         showJWindowSymbol();
     }//GEN-LAST:event_jButtonInsertSymbolActionPerformed
-    
+
     private void jMenuItemInsertSymbolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemInsertSymbolActionPerformed
         showJWindowSymbol();
     }//GEN-LAST:event_jMenuItemInsertSymbolActionPerformed
-    
+
     private void jButtonNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNewActionPerformed
         newAdventure();
     }//GEN-LAST:event_jButtonNewActionPerformed
-    
+
     private void jMenuItemUncommentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemUncommentSelectionActionPerformed
         getCurrentJIFTextPane().unCommentSelection();
     }//GEN-LAST:event_jMenuItemUncommentSelectionActionPerformed
-    
+
     private void jButtonUncommentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUncommentSelectionActionPerformed
         getCurrentJIFTextPane().unCommentSelection();
     }//GEN-LAST:event_jButtonUncommentSelectionActionPerformed
-    
+
     private void jButtonCommentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCommentSelectionActionPerformed
         getCurrentJIFTextPane().commentSelection();
     }//GEN-LAST:event_jButtonCommentSelectionActionPerformed
-    
+
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
         // Replacing....only if there is a selected TEXT
         if (getCurrentJIFTextPane().getSelectedText()!= null){
             getCurrentJIFTextPane().replaceSelection(jTextFieldReplace.getText());
         }
     }//GEN-LAST:event_jButton12ActionPerformed
-    
+
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         if (jTextFieldReplaceFind.getText().equals("")){
             JOptionPane.showMessageDialog(this,java.util.ResourceBundle.getBundle("JIF").getString("ERR_EMPTY_STRING"));
         }
         findString(jTextFieldReplaceFind.getText());
     }//GEN-LAST:event_jButton11ActionPerformed
-    
+
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
         replaceAll();
         refreshTree();
     }//GEN-LAST:event_jButton13ActionPerformed
-    
+
     private void jMenuItemCommentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCommentSelectionActionPerformed
         getCurrentJIFTextPane().commentSelection();
     }//GEN-LAST:event_jMenuItemCommentSelectionActionPerformed
-    
+
     private void jMenuItemInsertFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemInsertFromFileActionPerformed
         insertFromFile();
     }//GEN-LAST:event_jMenuItemInsertFromFileActionPerformed
-    
+
     private void jMenuItemInsertFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemInsertFileActionPerformed
         insertFromFile();
     }//GEN-LAST:event_jMenuItemInsertFileActionPerformed
-    
+
     private void jMenuItemPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPrintActionPerformed
         new Utils().printInform(this,"Jif print - "+getCurrentFilename(), getCurrentJIFTextPane());
     }//GEN-LAST:event_jMenuItemPrintActionPerformed
-    
+
     private void jTree1ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree1ValueChanged
         if (getCurrentJIFTextPane() == null){
             clearTree();
             return;
         }
-        
+
         getCurrentJIFTextPane().removeHighlighter();
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)jTree1.getLastSelectedPathComponent();
         if (node == null || !(node.getUserObject() instanceof Inspect)){
@@ -3965,7 +3979,7 @@ public class jFrame extends JFrame {
                 int_var = el.getElementIndex(insp.Iposition);
                 el = jif.getDocument().getDefaultRootElement().getElement(int_var);
                 jif.getHlighter().highlightFromTo(jif, el.getStartOffset() , el.getEndOffset());
-                
+
                 jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                 jif.scrollRectToVisible(jif.modelToView(insp.Iposition));
                 jif.requestFocus();
@@ -3975,32 +3989,32 @@ public class jFrame extends JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_jTree1ValueChanged
-    
+
     private void jTextAreaOutputMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextAreaOutputMouseClicked
         // When user clicks on errors/warnings, JIF jumps to the correct line in the source
         try{
             String nome="";
             int riga = 0;
             boolean found=false;
-            
+
             // Rescues the correct line
             el = jTextAreaOutput.getDocument().getDefaultRootElement();
             int ind = el.getElementIndex(jTextAreaOutput.viewToModel(evt.getPoint()));
             el = jTextAreaOutput.getDocument().getDefaultRootElement().getElement(ind);
             ultima = jTextAreaOutput.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
-            
+
             // Only if the line starts with the "#" char
             if (ultima.indexOf(Constants.TOKENCOMMENT)!=-1 && ((ultima.indexOf(".inf")!=-1) || (ultima.indexOf(".h")!=-1))){
-                
+
                 // Errors in E1 format
                 if(Utils.IgnoreCaseIndexOf(ultima,"line ")==-1){
                     // Removing all the selected text in the output window
                     hlighterOutputErrors.removeHighlights(jTextAreaOutput);
-                    
+
                     StringTokenizer stok = new StringTokenizer(ultima,"#()");
                     nome=stok.nextToken();
                     riga=Integer.parseInt(stok.nextToken());
-                    
+
                     // checks if the file exists
                     int selected = jTabbedPane1.getTabCount();
                     for (int_var=0; int_var < selected; int_var++){
@@ -4009,20 +4023,20 @@ public class jFrame extends JFrame {
                             jTabbedPane1.setSelectedIndex(int_var);
                         }
                     }
-                    
+
                     if (!found) {
                         synchronized (this) {
                             openFile(nome);
                         }
                     }
-                    
+
                     JIFTextPane jif = getCurrentJIFTextPane();
-                    
+
                     // Find the line with the error
                     el = jif.getDocument().getDefaultRootElement();
                     el = el.getElement(riga-1);
                     jif.setCaretPosition(el.getStartOffset());
-                    
+
                     if (Utils.IgnoreCaseIndexOf(ultima,"warning")==-1){
                         jif.removeHighlighterErrors();
                         jif.getHlighterErrors().highlightFromTo(getCurrentJIFTextPane(),el.getStartOffset(),el.getEndOffset() );
@@ -4030,7 +4044,7 @@ public class jFrame extends JFrame {
                         jif.removeHighlighterWarnings();
                         jif.getHlighterWarnings().highlightFromTo(getCurrentJIFTextPane(),el.getStartOffset(),el.getEndOffset() );
                     }
-                    
+
                     if (jif.modelToView(jif.getDocument().getLength()) != null){
                         jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                         jif.scrollRectToVisible(jif.modelToView(el.getStartOffset()));
@@ -4051,14 +4065,14 @@ public class jFrame extends JFrame {
             else if (ultima.startsWith(Constants.TOKENSEARCH)){
                 // Removing all the selected text in the output window
                 hlighterOutputErrors.removeHighlights(jTextAreaOutput);
-                
+
                 // Highlight the correct line
                 hlighterOutputErrors.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );
-                
+
                 StringTokenizer stok = new StringTokenizer(ultima,Constants.TOKENSEARCH);
                 nome=stok.nextToken();
                 riga=Integer.parseInt(stok.nextToken());
-                
+
                 // checks if the file exists
                 int selected = jTabbedPane1.getTabCount();
                 for (int_var=0; int_var < selected; int_var++){
@@ -4067,22 +4081,22 @@ public class jFrame extends JFrame {
                         jTabbedPane1.setSelectedIndex(int_var);
                     }
                 }
-                
+
                 if (!found) {
                     synchronized (this) {
                         openFile(nome);
                     }
                 }
-                
+
                 // Find the line with the error
                 JIFTextPane jif = getCurrentJIFTextPane();
                 el = jif.getDocument().getDefaultRootElement();
                 el = el.getElement(riga-1);
                 jif.setCaretPosition(el.getStartOffset());
-                
+
                 // Removing all the selected text
                 jif.removeHighlighter();
-                
+
                 // Highlight the line which has product the error during compiling
                 jif.getHlighter().highlightFromTo(jif,el.getStartOffset(),el.getEndOffset() );
                 jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
@@ -4092,23 +4106,23 @@ public class jFrame extends JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_jTextAreaOutputMouseClicked
-    
+
     private void jMenuItemClearAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemClearAllActionPerformed
         if (JOptionPane.showConfirmDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("MSG_DELETE1") , java.util.ResourceBundle.getBundle("JIF").getString("MSG_DELETE2") , JOptionPane.OK_CANCEL_OPTION) ==0 ){
             getCurrentJIFTextPane().setText("");
         }
     }//GEN-LAST:event_jMenuItemClearAllActionPerformed
-    
+
     private void jMenuItemSelectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSelectAllActionPerformed
         getCurrentJIFTextPane().selectAll();
     }//GEN-LAST:event_jMenuItemSelectAllActionPerformed
-    
+
     private void jMenuItemClearRecentFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemClearRecentFilesActionPerformed
         getJMenuRecentFiles().removeAll();
         getRecentFiles().clear();
         saveConfigNew();
     }//GEN-LAST:event_jMenuItemClearRecentFilesActionPerformed
-    
+
     private void jMenuItemReplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemReplaceActionPerformed
         getCurrentJIFTextPane().requestFocus();
         getCurrentJIFTextPane().setCaretPosition(0);
@@ -4116,15 +4130,15 @@ public class jFrame extends JFrame {
         jDialogReplace.setLocationRelativeTo(this);
         jDialogReplace.setVisible(true);
     }//GEN-LAST:event_jMenuItemReplaceActionPerformed
-    
+
     private void jMenuItemSaveAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveAllActionPerformed
         saveAll();
     }//GEN-LAST:event_jMenuItemSaveAllActionPerformed
-    
+
     private void jMenuItemCloseAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCloseAllActionPerformed
         closeAllFiles();
     }//GEN-LAST:event_jMenuItemCloseAllActionPerformed
-    
+
     private void jButtonInterpreterPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInterpreterPathActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         int returnVal = chooser.showOpenDialog(this);
@@ -4132,10 +4146,10 @@ public class jFrame extends JFrame {
             return;
         } else {
             jTextFieldPathInterpreter.setText(chooser.getSelectedFile().getAbsolutePath());
-            setInterpreterzcodepath(chooser.getSelectedFile().getAbsolutePath());            
+            setInterpreterzcodepath(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_jButtonInterpreterPathActionPerformed
-    
+
     private void jButtonCompilerPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompilerPathActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         int returnVal = chooser.showOpenDialog(this);
@@ -4143,10 +4157,10 @@ public class jFrame extends JFrame {
             return;
         } else {
             jTextFieldPathCompiler.setText(chooser.getSelectedFile().getAbsolutePath());
-            setCompilerpath(chooser.getSelectedFile().getAbsolutePath());            
+            setCompilerpath(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_jButtonCompilerPathActionPerformed
-    
+
     private void jButtonCompiledPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompiledPathActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -4155,10 +4169,10 @@ public class jFrame extends JFrame {
             return;
         } else {
             jTextFieldPathGames.setText(chooser.getSelectedFile().getAbsolutePath());
-            setCompiledpath(chooser.getSelectedFile().getAbsolutePath());            
+            setCompiledpath(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_jButtonCompiledPathActionPerformed
-    
+
     private void jButtonLibraryPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLibraryPathActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -4170,37 +4184,38 @@ public class jFrame extends JFrame {
             setLibrarypath(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_jButtonLibraryPathActionPerformed
-    
-    private void jTextFieldFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldFindActionPerformed
-        getCurrentJIFTextPane().findString(this);
-        evt=null;
-    }//GEN-LAST:event_jTextFieldFindActionPerformed
-    
+
     private void jMenuItemCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCloseActionPerformed
         closeFile();
         refreshTree();
         System.gc();
     }//GEN-LAST:event_jMenuItemCloseActionPerformed
-    
+
     private void jMenuItemCopy1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCopy1ActionPerformed
         copyToClipBoard();
     }//GEN-LAST:event_jMenuItemCopy1ActionPerformed
-    
+
     private void jMenuItemReadMeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemReadMeActionPerformed
-        String filename = workingDir+Constants.SEP+"readme.txt";
-        showFile(filename);
+        InputStream is = null;
+        try {
+            // Load the readme.txt file from the jar file
+            is = ClassLoader.getSystemClassLoader().getResource("readme.txt").openStream();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        showFile(is);
     }//GEN-LAST:event_jMenuItemReadMeActionPerformed
-    
+
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         jDialogText.setVisible(false);
         jTextArea4.setText("");
         jLabel5.setText("");
     }//GEN-LAST:event_jButton6ActionPerformed
-    
+
     private void SaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveAsActionPerformed
         saveAs();
     }//GEN-LAST:event_SaveAsActionPerformed
-    
+
     private void jMenuItemConfigFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemConfigFileActionPerformed
         try{
             editFileIni(getFileini());
@@ -4208,17 +4223,17 @@ public class jFrame extends JFrame {
             System.out.println(e.getMessage());
         }
     }//GEN-LAST:event_jMenuItemConfigFileActionPerformed
-    
+
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         jDialogSwitches.setVisible(false);
     }//GEN-LAST:event_jButton4ActionPerformed
-    
+
     private void jMenuItemSwitchesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSwitchesActionPerformed
         jDialogSwitches.pack();
         jDialogSwitches.setLocationRelativeTo(this);
         jDialogSwitches.setVisible(true);
     }//GEN-LAST:event_jMenuItemSwitchesActionPerformed
-    
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // Saving file
         File file = new File(jLabel2.getText());
@@ -4235,89 +4250,89 @@ public class jFrame extends JFrame {
             System.out.println(e.getMessage());
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-    
+
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         jDialogEditFileIni.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
-    
+
     private void NewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NewActionPerformed
         newAdventure();
     }//GEN-LAST:event_NewActionPerformed
-    
+
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         jDialogAbout.pack();
         jDialogAbout.setLocationRelativeTo(this);
         jDialogAbout.setVisible(false);
     }//GEN-LAST:event_jButton9ActionPerformed
-    
+
     private void jMenuItemClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemClearActionPerformed
         jMenuPaste.removeAll();
     }//GEN-LAST:event_jMenuItemClearActionPerformed
-    
+
     private void jMenuItemCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCopyActionPerformed
         copyToClipBoard();
     }//GEN-LAST:event_jMenuItemCopyActionPerformed
-    
+
     private void jCheckBoxJToolBarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxJToolBarActionPerformed
         if (!jCheckBoxJToolBar.getState()) jToolBarCommon.setVisible(false);
         if (jCheckBoxJToolBar.getState()) jToolBarCommon.setVisible(true);
     }//GEN-LAST:event_jCheckBoxJToolBarActionPerformed
-    
+
     private void AboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AboutActionPerformed
         jDialogAbout.pack();
         jDialogAbout.setLocationRelativeTo(this);
         jDialogAbout.setVisible(true);
     }//GEN-LAST:event_AboutActionPerformed
-    
+
     private void RunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunButtonActionPerformed
         saveAll();
         rebuildAll();
         runAdventure();
     }//GEN-LAST:event_RunButtonActionPerformed
-    
+
     private void OpenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenButtonActionPerformed
         openFile();
     }//GEN-LAST:event_OpenButtonActionPerformed
-    
+
     private void SaveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveButtonActionPerformed
         saveFile();
     }//GEN-LAST:event_SaveButtonActionPerformed
-    
+
     private void RebuildButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RebuildButtonActionPerformed
         saveAll();
         rebuildAll();
     }//GEN-LAST:event_RebuildButtonActionPerformed
-    
+
     private void RunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunActionPerformed
         clearOutput();
         saveAll();
         rebuildAll();
         runAdventure();
     }//GEN-LAST:event_RunActionPerformed
-    
+
     private void ExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExitActionPerformed
         exitJif();
     }//GEN-LAST:event_ExitActionPerformed
-    
+
     private void SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveActionPerformed
         clearOutput();
         saveFile();
     }//GEN-LAST:event_SaveActionPerformed
-    
+
     private void BuildAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuildAllActionPerformed
         saveAll();
         rebuildAll();
     }//GEN-LAST:event_BuildAllActionPerformed
-    
+
     private void OpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenActionPerformed
         openFile();
     }//GEN-LAST:event_OpenActionPerformed
-    
+
     /** Exit the Application */
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
         exitJif();
     }//GEN-LAST:event_exitForm
-    
+
     /**
      * @param args the command line arguments
      */
@@ -4336,14 +4351,14 @@ public class jFrame extends JFrame {
         }
         new jFrame().setVisible(true);
     }
-    
+
     /**
      * Search for a string in all files of project
      */
     public void searchAllFiles(String target){
         if (null != currentProject && !currentProject.equals(Constants.PROJECTEMPTY)) {
             StringBuffer output = new StringBuffer();
-            File file = new File(currentProject);                       
+            File file = new File(currentProject);
             StringBuffer sb = new StringBuffer();
             String riga;
             sb.setLength(0);
@@ -4363,18 +4378,18 @@ public class jFrame extends JFrame {
                 Pattern patt = Pattern.compile("\n\\[FILE\\]([^\n]+)");
                 Matcher m = patt.matcher(cb);
                 String result;
-                while (m.find()){                
+                while (m.find()){
                     result = Utils.searchString(target, new File(m.group(1)));
                     if (null!=result){
                         output.append(result+"\n");
-                    }                
+                    }
                 }
-            } catch (Exception e) {}        
+            } catch (Exception e) {}
             jTextAreaOutput.setText(output.toString());
             jTextAreaOutput.setCaretPosition(0);
         }
     }
-    
+
     public void saveFile() {
         if (jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).endsWith("*")){
             //getCurrentFilename().indexOf("*")!=-1){
@@ -4383,7 +4398,7 @@ public class jFrame extends JFrame {
                     );
         }
         clearOutput();
-        
+
         File file = new File(getCurrentFilename());
         try{
             // Replaces the "\n" chars with System.getProperty("line.separator")
@@ -4393,40 +4408,40 @@ public class jFrame extends JFrame {
             out.write(tmp);
             out.flush();
             out.close();
-            
+
             StringBuffer strb=new StringBuffer(java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE3"));
             strb.append(getCurrentFilename());
             strb.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE4"));
             jTextAreaOutput.append(strb.toString());
-            
+
             // rendo visibile la finestra di output
             jTabbedPane2.setSelectedComponent(jScrollPane2);
-            
+
             setTitle(getJifVersion() +" - " + getCurrentFilename());
-            
+
         } catch(IOException e){
             System.out.println("ERRORE: "+e.getMessage());
         }
-        
+
     }
-    
-    
+
+
     public void saveAll(){
         // Remember the file selected
         Component comp = jTabbedPane1.getSelectedComponent();
-        
+
         int componenti = jTabbedPane1.getTabCount();
         for (int_var=0; int_var < componenti; int_var++){
             jTabbedPane1.setSelectedIndex(int_var);
             if (getCurrentTitle().indexOf("*")!=-1)
                 saveFile(); //Only save modified files
         }
-        
+
         // reassign the selected component
         jTabbedPane1.setSelectedComponent(comp);
     }
-    
-    
+
+
     public void rebuildAll() {
         // Clearing the OutputWindow
         this.jTextAreaOutput.setText("");
@@ -4440,12 +4455,12 @@ public class jFrame extends JFrame {
             JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1")+getCompilerpath()+java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         if (null == getCompiledpath() || getCompiledpath().equals("")){
             JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_GAMESPATH"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_GENERIC"), JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         // Show TextAreaOutput
         if (!jCheckBoxOutput.getState()){
             jSplitPane3.setBottomComponent(jTabbedPane2);
@@ -4453,7 +4468,7 @@ public class jFrame extends JFrame {
         }
         jTabbedPane2.setSelectedComponent(jScrollPane2);
         fileInf = getCurrentFilename();
-        
+
         // Project compilation or normal?
         if (currentProject==null || currentProject.equals(Constants.PROJECTEMPTY)){
             makeSwitches();
@@ -4462,19 +4477,19 @@ public class jFrame extends JFrame {
             makeSwitchesForProject();
             switchString = makeSwitchesForProject().split(" ");
         }
-        
+
         String estensione = "";
         if (tipoz.equals("-v3")) estensione=".z3";
         if (tipoz.equals("-v4")) estensione=".z4";
         if (tipoz.equals("-v5")) estensione=".z5";
         if (tipoz.equals("-v6")) estensione=".z6";
         if (tipoz.equals("-v8")) estensione=".z8";
-        
+
         // Check Mode: If this is Glulx Mode... extension is ULX
         if (jCheckBoxGlulxMode.isSelected()){
             estensione=".ulx";
         }
-        
+
         // If compiling a project but there isn't a main file, it warning
         if (!currentProject.equals(Constants.PROJECTEMPTY)){
             if (mainFile != null && !mainFile.equals("")){
@@ -4488,14 +4503,14 @@ public class jFrame extends JFrame {
         String fileOut = fileInf.substring(0,fileInf.lastIndexOf(".")) + estensione;
         jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
         String lib;
-        
+
         String dir = "";
         if(jCheckBoxAdventInLib.isSelected()){
             dir=fileInf.substring(0,fileInf.lastIndexOf(Constants.SEP))+",";
         }
-        
+
         lib = dir+getLibrarypath();
-        
+
         // Secondary 1-2-3 Library Path
         if (!getLibrarypathsecondary1().trim().equals("")){
             lib = lib+","+getLibrarypathsecondary1();
@@ -4506,28 +4521,28 @@ public class jFrame extends JFrame {
         if (!getLibrarypathsecondary3().trim().equals("")){
             lib = lib+","+getLibrarypathsecondary3();
         }
-        
+
         auxV.add(getCompilerpath());
         for(int i=1;i<switchString.length;i++) //i=1 to avoid the first " "
             auxV.add(switchString[i]);
-        
+
         auxV.add("+include_path="+lib);
         auxV.add(fileInf);
         auxV.add(fileOut);
-        
+
         process_string=new String[auxV.size()];
         for(int i=0;i<auxV.size();i++){
             process_string[i]=new String((String)auxV.get(i));
             jTextAreaOutput.append(process_string[i]+" ");
         }
         jTextAreaOutput.append("\n");
-        
+
         try{
             Runtime rt = Runtime.getRuntime();
             Process proc = rt.exec(process_string, null, new File(getCompiledpath()));
             String line="";
             BufferedReader br= new BufferedReader( new InputStreamReader( proc.getInputStream(), Constants.fileFormat));
-            
+
             while ( (line = br.readLine() )!=null ){
                 // in caso di errore o warning metto il cancelletto #
                 if ( (line.indexOf("Error")!=-1) || (line.indexOf("error")!=-1)) {
@@ -4536,50 +4551,50 @@ public class jFrame extends JFrame {
                     jTextAreaOutput.append(Constants.TOKENCOMMENT+line+"\n");
                 } else jTextAreaOutput.append(line+"\n");
             }
-            
+
             jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
             jTextAreaOutput.append("\n");
             setTitle(getJifVersion() +" - " + getCurrentFilename());
-            
+
         } catch(IOException e){
             System.out.println(e.getMessage());
         }
     }
-    
+
     // Agggiunto il controllo sul MODE (Inform/Glulx)
     public void runAdventure() {
-        
+
         String inter="";    // interpreterzcodepath
         if (jCheckBoxInformMode.isSelected()){
             inter = getInterpreterzcodepath();
         } else {
             inter = getInterpreterglulxpath();
         }
-        
-        // controllo che esista l'interprete con il path  inserito nella config.ini
+
+        // controllo che esista l'interprete con il path  inserito nella Jif.cfg
         // se non esiste visualizzo un messaggio di warning
         File test = new File(inter);
         if (!test.exists()){
             JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1")+inter+java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         //recupero l'attuale file name
         fileInf = getCurrentFilename();
-        
+
         // se è impostato il file main lo uso
         if (mainFile != null && !mainFile.equals("")){
             jTextAreaOutput.append("Using main file "+mainFile+" to running...");
             fileInf = mainFile;
         }
-        
+
         clearOutput();
         jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_RUN1"));
-        
+
         try{
             Runtime rt = Runtime.getRuntime();
             String command[]=new String[2];
-            
+
             // in base al tipo di file di uscita, scelgo l'estensione del file da passare all'interprete
             String estensione ="";
             if (tipoz.equals("-v3")) estensione=".z3";
@@ -4587,14 +4602,14 @@ public class jFrame extends JFrame {
             if (tipoz.equals("-v5")) estensione=".z5";
             if (tipoz.equals("-v6")) estensione=".z6";
             if (tipoz.equals("-v8")) estensione=".z8";
-            
+
             if (jCheckBoxGlulxMode.isSelected()){
                 estensione = ".ulx";
             }
-            
+
             command[0]= new String(inter);
             command[1]= new String(fileInf.substring(0,fileInf.indexOf(".inf"))+estensione);
-            
+
             jTextAreaOutput.append(command[0]+" "+command[1]+"\n");
             rt.exec(command);
             jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
@@ -4602,8 +4617,8 @@ public class jFrame extends JFrame {
             System.out.println(e.getMessage());
         }
     }
-    
-    
+
+
     class PopupListenerProject extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
             maybeShowPopup(e);
@@ -4618,7 +4633,7 @@ public class jFrame extends JFrame {
             }
         }
     }
-    
+
     class MenuListener extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
             MutableAttributeSet attr = new SimpleAttributeSet();
@@ -4639,8 +4654,8 @@ public class jFrame extends JFrame {
             }
         }
     }
-    
-    
+
+
     // funzione per l'apertura di file
     private void openFile(){
         JFileChooser chooser;
@@ -4649,26 +4664,26 @@ public class jFrame extends JFrame {
         } else {
             chooser = new JFileChooser(getCompiledpath());
         }
-        
+
         JifFileFilter infFilter = new JifFileFilter("inf", java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF7"));
         infFilter.addExtension("h");
         infFilter.addExtension("res");
         infFilter.addExtension("txt");
         chooser.setFileFilter(infFilter);
         chooser.setMultiSelectionEnabled(true);
-        
+
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.CANCEL_OPTION) {
             fileInf = null;
             return;
         }
-        
+
         File[] files = chooser.getSelectedFiles();
-        
+
         // imposto lastDir se != null
         String tmp = files[0].getAbsolutePath();
         lastDir = tmp.substring(0,tmp.lastIndexOf(Constants.SEP));
-        
+
         File file;
         for (int_var=0 ; int_var < files.length; int_var++){
             file = files[int_var];
@@ -4690,10 +4705,10 @@ public class jFrame extends JFrame {
                     }
                 };
             }
-            
+
             JIFScrollPane scroll= new JIFScrollPane(jtp,jtp.pathfile);
             scroll.setViewportView(jtp);
-            
+
             //aggiungo la textarea per rowheader solo se il checkbox relativo è true
             if (jCheckBoxNumberLines.isSelected()){
                 LineNumber lineNumber = new LineNumber( jtp );
@@ -4701,28 +4716,28 @@ public class jFrame extends JFrame {
             }
             jTabbedPane1.add(scroll, jtp.subPath);
             jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
-            
+
             appendLastFile(file.getAbsolutePath());
-            
+
             fileInf = chooser.getSelectedFile().getAbsolutePath();
             // cursore sulla prima riga
             jtp.setCaretPosition(0);
             lastFile = file.getAbsolutePath();
-            
+
         } // end for
         enableComponents();
         refreshTree();
     }
-    
+
     public void openFile(String nomefile){
-        
+
         File file = new File(nomefile);
         if (!file.exists()){
             JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE2")+nomefile+java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE3") , java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1") , JOptionPane.ERROR_MESSAGE);
             return;
         }
         if (checkOpenFile(file.getAbsoluteFile().toString())) return;
-        
+
         JIFTextPane jtp;
         if (jCheckBoxWrapLines.isSelected()){
             jtp = new JIFTextPane(this, file);
@@ -4739,10 +4754,10 @@ public class jFrame extends JFrame {
                 }
             };
         }
-        
+
         JIFScrollPane scroll= new JIFScrollPane(jtp,jtp.pathfile);
         scroll.setViewportView(jtp);
-        
+
         //aggiungo la textarea per rowheader solo se il checkbox relativo è true
         if (jCheckBoxNumberLines.isSelected()){
             LineNumber lineNumber = new LineNumber( jtp );
@@ -4750,15 +4765,15 @@ public class jFrame extends JFrame {
         }
         jTabbedPane1.add(scroll, jtp.subPath);
         jTabbedPane1.setSelectedComponent(scroll);
-        
+
         appendLastFile(file.getAbsolutePath());
-        
+
         jtp.setCaretPosition(0);
         enableComponents();
         refreshTree();
         lastFile = file.getAbsolutePath();
     }
-    
+
     private void newAdventure(){
         fileInf = getCompiledpath()+Constants.SEP+java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE3")+(countNewFile++)+".inf";
         JIFTextPane jtp;
@@ -4777,11 +4792,11 @@ public class jFrame extends JFrame {
                 }
             };
         }
-        
+
         jtp.setPaths(fileInf);
         JIFScrollPane scroll= new JIFScrollPane(jtp,jtp.pathfile);
         scroll.setViewportView(jtp);
-        
+
         //aggiungo la textarea per rowheader solo se il checkbox relativo è true
         if (jCheckBoxNumberLines.isSelected()){
             LineNumber lineNumber = new LineNumber( jtp );
@@ -4792,11 +4807,11 @@ public class jFrame extends JFrame {
         enableComponents();
         refreshTree();
     }
-    
+
     private void clearOutput(){
         jTextAreaOutput.setText("");
     }
-    
+
     public void saveConfigNew() {
         try{
             File file = new File(fileini);
@@ -4806,13 +4821,13 @@ public class jFrame extends JFrame {
                 jTextAreaOutput.setText("Error opening "+file.getAbsolutePath());
                 return;
             }
-            
+
             StringBuffer output = new StringBuffer();
             output
                     .append("############################################################################\n")
                     .append("# Main Jif configuration file                                               \n")
                     .append("############################################################################\n")
-                    
+
                     // ALTKEYS SECTION
                     .append("\n# [ALTKEYS] Section\n\n");
             for (Iterator it = getAltkeys().keySet().iterator(); it.hasNext();) {
@@ -4825,7 +4840,7 @@ public class jFrame extends JFrame {
                 String value = (String)getExecutecommands().get(key);
                 output.append("[EXECUTE]"+key+","+value+"\n");
             }
-            
+
             // HELPEDCODE SECTION
             output
                     .append("\n# [HELPEDCODE] Section\n\n")
@@ -4837,7 +4852,7 @@ public class jFrame extends JFrame {
                 String value = (String)getHelpcode().get(key);
                 output.append("[HELPEDCODE]"+key+","+value+"\n");
             }
-            
+
             // MAPPING Section
             output
                     .append("\n# [MAPPING] Section\n\n");
@@ -4846,7 +4861,7 @@ public class jFrame extends JFrame {
                 String value = (String)getMapping().get(key);
                 output.append("[MAPPING]"+key+","+value+"\n");
             }
-            
+
             // MENU SECTION
             output
                     .append("\n# [MENU] Section\n\n");
@@ -4858,7 +4873,7 @@ public class jFrame extends JFrame {
                     output.append("[MENU]["+jmenu.getName()+"]"+jmenuitem.getName()+","+getOperations().get(jmenuitem.getName())+"\n");
                 }
             }
-            
+
             // # [SWITCH] Section
             output.append("\n# [SWITCH] Section\n\n");
             for(int count=0; count < jPanelSwitch1.getComponentCount(); count++){
@@ -4877,7 +4892,7 @@ public class jFrame extends JFrame {
                     output.append("[SWITCH]"+ch.getLabel()+",off\n");
                 }
             }
-            
+
             // # [SYNTAX] Section
             output
                     .append("\n# [SYNTAX] Section\n\n");
@@ -4897,7 +4912,7 @@ public class jFrame extends JFrame {
                 String key = (String) it.next();
                 output.append("[SYNTAX][verb]"+key+"\n");
             }
-            
+
             //# [SYMBOLS] Section
             output
                     .append("\n# [SYMBOLS] Section\n\n");
@@ -4905,7 +4920,7 @@ public class jFrame extends JFrame {
                 String key = (String) it.next();
                 output.append("[SYMBOLS]"+key+"\n");
             }
-            
+
             // PATHS section
             output
                     .append("\n# [PATH] Section\n\n")
@@ -4919,7 +4934,7 @@ public class jFrame extends JFrame {
                     .append("[COMPILERPATH]"+compilerpath+"\n")
                     .append("[BRESPATH]"+brespath+"\n")
                     .append("[BLCPATH]"+blcpath+"\n");
-            
+
             // SETTINGS section
             output
                     .append("\n# [SETTINGS] Section\n\n")
@@ -4955,14 +4970,14 @@ public class jFrame extends JFrame {
                     .append("[DIVIDER3]"+ jSplitPane3.getDividerLocation()+"\n")
                     .append("[LASTFILE]"+(lastFile!=null?lastFile:"")+"\n")
                     .append("[LASTPROJECT]"+(lastProject!=null?lastProject:"")+"\n");
-            
+
             // Recent files section
             output.append("\n# [RECENTFILES] Section\n\n");
             for(int i=0; i<getJMenuRecentFiles().getMenuComponentCount();i++){
                 JMenuItem jmenuitem = (JMenuItem) getJMenuRecentFiles().getItem(i);
                 output.append("\n[RECENTFILES]"+jmenuitem.getName()+"\n");
             }
-            
+
             //System.out.println(output.toString());
             FileOutputStream fos = new FileOutputStream(fileini);
             Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
@@ -4970,13 +4985,13 @@ public class jFrame extends JFrame {
             out.flush();
             out.close();
             jTextAreaOutput.setText(file.getAbsolutePath()+" saved.");
-            
+
         } catch(Exception e){
             System.out.println("ERR: " + e.getMessage());
             e.printStackTrace();
         }
     }
-    
+
     // New method
     public void loadConfigNew(File file) {
         try{
@@ -4985,7 +5000,7 @@ public class jFrame extends JFrame {
                 jTextAreaOutput.setText("Error opening "+file.getAbsolutePath());
                 return;
             }
-            
+
             // Initialize objects
             Hashtable altkeys         = new Hashtable();
             Hashtable executecommands = new Hashtable();
@@ -5003,7 +5018,7 @@ public class jFrame extends JFrame {
             HashSet verbs_cs          = new HashSet();
             HashSet symbols           = new HashSet();
             HashSet recentFiles       = new HashSet();
-            
+
             StringBuffer sb = new StringBuffer();
             String riga;
             sb.setLength(0);
@@ -5018,35 +5033,35 @@ public class jFrame extends JFrame {
             CharsetDecoder decoder = charset.newDecoder();
             ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(configuration));
             CharBuffer cb = decoder.decode(bbuf);
-            
+
             // Altkeys configuration
             Pattern patt = Pattern.compile("\n"+Constants.ALTKEYSTOKEN+"([^,]+),([^\n]+)");
             Matcher m = patt.matcher(cb);
             while (m.find()){
                 altkeys.put(m.group(1),m.group(2));
             }
-            
+
             // execute
             patt = Pattern.compile("\n"+Constants.EXECUTETOKEN+"([^,]+),([^\n]+)");
             m = patt.matcher(cb);
             while (m.find()){
                 executecommands.put(m.group(1),m.group(2));
             }
-            
+
             // helpedcode
             patt = Pattern.compile("\n"+Constants.HELPEDCODETOKEN+"([^,]+),([^\n]+)");
             m = patt.matcher(cb);
             while (m.find()){
                 helpcode.put(m.group(1),m.group(2));
             }
-            
+
             // mapping
             patt = Pattern.compile("\n"+Constants.MAPPINGTOKEN+"([^,]+),([^\n]+)");
             m = patt.matcher(cb);
             while (m.find()){
                 mapping.put(m.group(1),m.group(2));
             }
-            
+
             // Menu Insert New
             getJMenuInsertNew().removeAll();
             patt = Pattern.compile("\n"+Constants.MENUTOKEN+"\\[(.+)\\]\\*");
@@ -5060,6 +5075,7 @@ public class jFrame extends JFrame {
                 String elem = (String) it.next();
                 JMenu menu = new JMenu(elem);
                 menu.setName(elem);
+                menu.setFont(new java.awt.Font("Dialog", 0, 11));
                 patt = Pattern.compile("\n"+Constants.MENUTOKEN+"\\["+elem+"\\]([^,*]+),([^\n]+)");
                 m = patt.matcher(cb);
                 while (m.find()){
@@ -5070,8 +5086,8 @@ public class jFrame extends JFrame {
                 }
                 getJMenuInsertNew().add(menu);
             }
-            
-            
+
+
             // switches
             patt = Pattern.compile("\n"+Constants.SWITCHTOKEN+"([^,]+),([^\n]+)");
             m = patt.matcher(cb);
@@ -5089,8 +5105,8 @@ public class jFrame extends JFrame {
                     getJPanelSwitch2().add(check);
                 }
             }
-            
-            
+
+
             // Syntax - attribute
             patt = Pattern.compile("\n"+Constants.SYNTAXTOKEN+"\\[attribute\\](.+)");
             m = patt.matcher(cb);
@@ -5098,7 +5114,7 @@ public class jFrame extends JFrame {
                 attributes.add(m.group(1).toLowerCase());
                 attributes_cs.add(m.group(1));
             }
-            
+
             // Syntax - keyword
             patt = Pattern.compile("\n"+Constants.SYNTAXTOKEN+"\\[keyword\\](.+)");
             m = patt.matcher(cb);
@@ -5106,7 +5122,7 @@ public class jFrame extends JFrame {
                 keywords.add(m.group(1).toLowerCase());
                 keywords_cs.add(m.group(1));
             }
-            
+
             // Syntax - property
             patt = Pattern.compile("\n"+Constants.SYNTAXTOKEN+"\\[property\\](.+)");
             m = patt.matcher(cb);
@@ -5114,7 +5130,7 @@ public class jFrame extends JFrame {
                 properties.add(m.group(1).toLowerCase());
                 properties_cs.add(m.group(1));
             }
-            
+
             // Syntax - verb
             patt = Pattern.compile("\n"+Constants.SYNTAXTOKEN+"\\[verb\\](.+)");
             m = patt.matcher(cb);
@@ -5122,7 +5138,7 @@ public class jFrame extends JFrame {
                 verbs.add(m.group(1).toLowerCase());
                 verbs_cs.add(m.group(1));
             }
-            
+
             // Symbols
             patt = Pattern.compile("\n"+Constants.SYMBOLSTOKEN+"(.+)");
             m = patt.matcher(cb);
@@ -5131,8 +5147,8 @@ public class jFrame extends JFrame {
                 vettoresimboli.add(m.group(1));
                 symbols.add(m.group(1));
             }
-            
-            
+
+
             // PATHS - LIBRAYPATH
             patt = Pattern.compile("\n"+Constants.LIBRAYPATHTOKEN+"(.+)");
             m = patt.matcher(cb);
@@ -5203,8 +5219,8 @@ public class jFrame extends JFrame {
             while (m.find()){
                 setBlcpath(m.group(1).trim());
             }
-            
-            
+
+
             // Recentfiles
             getJMenuRecentFiles().removeAll();
             recentFiles.clear();
@@ -5221,8 +5237,8 @@ public class jFrame extends JFrame {
                 getJMenuRecentFiles().add(mi);
                 recentFiles.add(m.group(1));
             }
-            
-            
+
+
             // Settings - WRAPLINES
             patt = Pattern.compile("\n"+Constants.WRAPLINESTOKEN+"(.+)");
             m = patt.matcher(cb);
@@ -5420,7 +5436,7 @@ public class jFrame extends JFrame {
                         lastProject.lastIndexOf(Constants.SEP)+1 ,
                         lastProject.length())+")");
             }
-            
+
             // Set JIF configuration
             setAltkeys(altkeys);
             setExecutecommands(executecommands);
@@ -5440,13 +5456,13 @@ public class jFrame extends JFrame {
             setSymbols(symbols);
             setRecentFiles(recentFiles);
             jTextAreaOutput.setText("Configuration file ["+file.getAbsolutePath()+"] loaded.");
-            
+
         } catch(Exception e){
             System.out.println("ERR: " + e.getMessage());
             e.printStackTrace();
         }
     }
-    
+
     public void checkTree(String key){
         key = key.toLowerCase();
         String file;
@@ -5454,23 +5470,23 @@ public class jFrame extends JFrame {
         if (null == file){
             return;
         }
-        
+
         JIFTextPane jif ;
         synchronized (this) {
             openFile(file);
             jif  = getCurrentJIFTextPane();
         }
-        
+
         // clycle on the tree's nodes
         for (int c=0; c < top.getChildCount(); c++){
             DefaultMutableTreeNode mainnode = (DefaultMutableTreeNode)top.getChildAt(c);
-            
+
             for (int k=0; k < mainnode.getChildCount(); k++){
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)mainnode.getChildAt(k);
                 if (node == null){
                     continue;
                 }
-                
+
                 // for the classes node
                 if(node.children().hasMoreElements()){
                     for (int j=0; j < node.getChildCount(); j++){
@@ -5483,17 +5499,17 @@ public class jFrame extends JFrame {
                                     int pos = el.getElementIndex(ins.Iposition);
                                     el = jif.getDocument().getDefaultRootElement().getElement(pos);
                                     jif.getHlighter().highlightFromTo(jif, el.getStartOffset() , el.getEndOffset());
-                                    
+
                                     jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                                     jif.scrollRectToVisible(jif.modelToView(ins.Iposition));
                                 }
-                                
+
                             }catch(Exception e){
                                 System.out.println(e.getMessage());
                             }
                         }
                     }
-                    
+
                 } else{
                     Object nodo = node.getUserObject();
                     Inspect ins = (Inspect) nodo;
@@ -5503,11 +5519,11 @@ public class jFrame extends JFrame {
                                 int pos = el.getElementIndex(ins.Iposition);
                                 el = jif.getDocument().getDefaultRootElement().getElement(pos);
                                 jif.getHlighter().highlightFromTo(jif, el.getStartOffset() , el.getEndOffset());
-                                
+
                                 jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                                 jif.scrollRectToVisible(jif.modelToView(ins.Iposition));
                             }
-                            
+
                         }catch(Exception e){
                             System.out.println(e.getMessage());
                         }
@@ -5516,8 +5532,8 @@ public class jFrame extends JFrame {
             }
         }
     }
-    
-    
+
+
     public void refreshTreeIncremental(){
         String currentName = getCurrentFilename();
         if (jTabbedPane1.getTabCount()==0 ||
@@ -5525,55 +5541,55 @@ public class jFrame extends JFrame {
                 currentName.endsWith(".res")){
             return;
         }
-        
+
         DefaultTreeModel treeModel = (DefaultTreeModel) jTree1.getModel();
         treePath1 = new TreePath(treeModel.getPathToRoot(category1));
         treePath2 = new TreePath(treeModel.getPathToRoot(category2));
         treePath4 = new TreePath(treeModel.getPathToRoot(category4));
         treePath5 = new TreePath(treeModel.getPathToRoot(category5));
         treePath7 = new TreePath(treeModel.getPathToRoot(category7));
-        
+
         // Using the regexp
         CharBuffer cb = getCurrentJIFTextPane().getCharBuffer();
         objTree = new Vector();
         Pattern patt;
         Matcher m;
-        
+
         // GLOBALS
         if(jTree1.isExpanded(treePath1) || category1.isLeaf()){
             patt = Pattern.compile("\n+\\s*Global\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
             m = patt.matcher(cb);
             refreshGlobals(patt,m);
         }
-        
+
         // CONSTANTS
         if(jTree1.isExpanded(treePath2) || category2.isLeaf()){
             patt = Pattern.compile("\n*\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
             m = patt.matcher(cb);
             refreshConstants(patt,m);
         }
-        
+
         // OBJECTS
         if(jTree1.isExpanded(treePath4) || category4.isLeaf()){
             patt = Pattern.compile("\n+\\s*Object\\s+(->\\s+)*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
             m = patt.matcher(cb);
             refreshObjects(patt,m);
         }
-        
+
         // FUNCTIONS
         if(jTree1.isExpanded(treePath5) || category5.isLeaf()){
             patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
             m = patt.matcher(cb);
             refreshFunctions(patt,m);
         }
-        
+
         // CLASSES
         if(jTree1.isExpanded(treePath7) || category7.isLeaf()){
             Vector classi_locali= new Vector();
             patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
             m = patt.matcher(cb);
             refreshClasses(patt,m,classi_locali);
-            
+
             // se ho impostato il flag jCheckBoxScanProjectFiles a true
             if (jCheckBoxScanProjectFiles.isSelected() && null != projectClass){
                 //Aggiungo tutte le classi degli altri file del progetto che non sono contenute in classi_locali
@@ -5589,8 +5605,8 @@ public class jFrame extends JFrame {
             }
         }
     }
-    
-    
+
+
     public void refreshGlobals(Pattern patt, Matcher m){
         objTree.clear();
         while (m.find()){
@@ -5600,7 +5616,7 @@ public class jFrame extends JFrame {
         sortNodes(objTree,category1);
         treeModel.reload(category1);
     }
-    
+
     public void refreshConstants(Pattern patt, Matcher m){
         objTree.clear();
         while (m.find()){
@@ -5610,7 +5626,7 @@ public class jFrame extends JFrame {
         sortNodes(objTree,category2);
         treeModel.reload(category2);
     }
-    
+
     public void refreshObjects(Pattern patt, Matcher m){
         objTree.clear();
         while (m.find()){
@@ -5620,7 +5636,7 @@ public class jFrame extends JFrame {
         sortNodes(objTree,category4);
         treeModel.reload(category4);
     }
-    
+
     public void refreshFunctions(Pattern patt, Matcher m){
         objTree.clear();
         while (m.find()){
@@ -5630,7 +5646,7 @@ public class jFrame extends JFrame {
         sortNodes(objTree,category5);
         treeModel.reload(category5);
     }
-    
+
     public void refreshClasses(Pattern patt, Matcher m, Vector classi_locali){
         category7.removeAllChildren();
         while (m.find()){
@@ -5640,7 +5656,7 @@ public class jFrame extends JFrame {
             getClasses(tmp_nodo,m.group(1));
         }
     }
-    
+
     public void clearTree(){
         category1.removeAllChildren();
         category2.removeAllChildren();
@@ -5654,21 +5670,21 @@ public class jFrame extends JFrame {
         this.setTitle(getJifVersion());
         jTree1.setEnabled(false);
     }
-    
-    
+
+
     // Modified to Use the Regular Expressions
     public void refreshTree(){
         // long tempo1=System.currentTimeMillis();
-        
+
         // Reset the tree
         if (jTabbedPane1.getTabCount() == 0){
             clearTree();
             return;
         }
-        
+
         String currentName = getCurrentFilename();
         setTitle(getJifVersion() +" - " + currentName);
-        
+
         // is this an Inform file?
         if (currentName.endsWith(".txt")||currentName.endsWith(".res")){
             category1.removeAllChildren();
@@ -5681,15 +5697,15 @@ public class jFrame extends JFrame {
             jTree1.setEnabled(false);
             return;
         }
-        
+
         jTree1.setEnabled(true);
-        
+
         category1.removeAllChildren();
         category2.removeAllChildren();
         category4.removeAllChildren();
         category5.removeAllChildren();
         category7.removeAllChildren();
-        
+
         String nomefile = getCurrentFilename();
         top.setUserObject(nomefile.substring(nomefile.lastIndexOf(Constants.SEP)+1));
         treeModel.reload();
@@ -5697,33 +5713,33 @@ public class jFrame extends JFrame {
         objTree = new Vector();
         Pattern patt;
         Matcher m;
-        
+
         // GLOBALS
         patt = Pattern.compile("\n+\\s*Global\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
         refreshGlobals(patt,m);
-        
+
         // CONSTANTS
         patt = Pattern.compile("\n*\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
         refreshConstants(patt,m);
-        
+
         // OBJECTS
         patt = Pattern.compile("\n+\\s*Object\\s+(->\\s+)*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
         refreshObjects(patt,m);
-        
+
         // FUNCTIONS
         patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
         refreshFunctions(patt,m);
-        
+
         // CLASSES
         Vector classi_locali= new Vector();
         patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
         refreshClasses(patt,m,classi_locali);
-        
+
         // se ho impostato il flag jCheckBoxScanProjectFiles a true
         if (jCheckBoxScanProjectFiles.isSelected() && null != projectClass){
             //Aggiungo tutte le classi degli altri file del progetto che non sono contenute in classi_locali
@@ -5737,12 +5753,12 @@ public class jFrame extends JFrame {
                 }
             }
         }
-        
+
         expandAll(jTree1, true);
         //System.out.println("Tempo impiegato= "+(System.currentTimeMillis()-tempo1));
     }
-    
-    
+
+
     public void sortNodes(Vector vettore, DefaultMutableTreeNode nodo ){
         Collections.sort(vettore,new Comparator(){
             public int compare(Object a, Object b) {
@@ -5756,7 +5772,7 @@ public class jFrame extends JFrame {
             nodo.add(new DefaultMutableTreeNode((Inspect)vettore.get(count)));
         }
     }
-    
+
     public void expandAll(JTree tree, boolean expand) {
         TreeNode root = (TreeNode)tree.getModel().getRoot();
         expandAll(tree, new TreePath(root), expand);
@@ -5776,7 +5792,7 @@ public class jFrame extends JFrame {
             tree.collapsePath(parent);
         }
     }
-    
+
     public void editProjectProperties(String filename){
         try{
             File file = new File(filename);
@@ -5792,18 +5808,18 @@ public class jFrame extends JFrame {
             jTextAreaProjectProperties.setText(sb.toString());
             br.close();
             jTextAreaProjectProperties.setCaretPosition(0);
-            
+
             jDialogProjectProperties.setSize(500,500);
             jDialogProjectProperties.setLocationRelativeTo(this);
             jDialogProjectProperties.setVisible(true);
-            
+
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
-        
+
     }
-    
-    
+
+
     public void editFileIni(String filename){
         try{
             File file = new File(filename);
@@ -5811,14 +5827,14 @@ public class jFrame extends JFrame {
                 System.out.println(java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1")+filename);
                 return;
             }
-            
+
             jDialogEditFileIni.setSize(600,550);
             jDialogEditFileIni.setLocationRelativeTo(this);
             jDialogEditFileIni.setVisible(true);
-            
+
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
             sb.setLength(0);
-            
+
             while ((riga = br.readLine())!=null){
                 sb.append(riga).append("\n");
             }
@@ -5826,12 +5842,12 @@ public class jFrame extends JFrame {
             jLabel2.setText(filename);
             br.close();
             jTextAreaConfig.setCaretPosition(0);
-            
+
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
-    
+
     public StringBuffer getSwitchesForSavingProject(){
         StringBuffer make = new StringBuffer();
         Checkbox ch;
@@ -5845,7 +5861,7 @@ public class jFrame extends JFrame {
         }
         return make;
     }
-    
+
     public String makeSwitchesForProject(){
         StringBuffer make = new StringBuffer();
         Checkbox ch;
@@ -5865,18 +5881,18 @@ public class jFrame extends JFrame {
                 }
             }
         }
-        
+
         // dopo il ciclo se nessuno swith di tipo -v2, -v3  -v8
         // è stato selezionato assumo per default lo swith -v5
         if (tipoz.equals("")) tipoz="-v5";
-        
+
         // If in GLULX MODE, a "-G" switch is to be added
         if (jCheckBoxGlulxMode.isSelected()){
             make.append(" -G");
         }
         return make.toString();
     }
-    
+
     // Make the string with switches to pass to the compiler
     public String makeSwitches(){
         // In questo metodo recupero il formato del file .z3,.z4,.z5,.z6,.z8
@@ -5898,7 +5914,7 @@ public class jFrame extends JFrame {
                 }
             }
         }
-        
+
         for(int count=0; count < jPanelSwitch2.getComponentCount(); count++){
             ch = (Checkbox) jPanelSwitch2.getComponent(count);
             if (ch.getState()){
@@ -5907,24 +5923,24 @@ public class jFrame extends JFrame {
                 if (ch.getLabel().indexOf("-v")!=-1)    tipoz = ch.getLabel();
             }
         }
-        
+
         // dopo il ciclo se nessuno swith di tipo -v2, -v3  -v8
         // è stato selezionato assumo per default lo swith -v5
         if (tipoz.equals("")) tipoz="-v5";
-        
+
         // If in GLULX MODE, a "-G" switch is to be added
         if (jCheckBoxGlulxMode.isSelected()){
             make.append(" -G");
         }
         return make.toString();
     }
-    
+
     public void exitJif(){
         if ((fileInf==null) ||  (jTabbedPane1.getTabCount())==0) {
             saveConfigNew();
             System.exit(0);
         }
-        
+
         // controllo che non ci sia almeno un file da salvare con "*" nel nome
         boolean ok = true;
         int numberOfComponents = jTabbedPane1.getTabCount();
@@ -5937,13 +5953,13 @@ public class jFrame extends JFrame {
             saveConfigNew();
             System.exit(0);
         }
-        
+
         String[] scelte = new String[3];
         scelte[0] = java.util.ResourceBundle.getBundle("JIF").getString("MSG_SAVE_AND_EXIT");
         scelte[1] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF10");
         scelte[2] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF11");
         int result = JOptionPane.showOptionDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF12") , java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF13") , 0 , JOptionPane.INFORMATION_MESSAGE , null , scelte , scelte[2]);
-        
+
         if (result==0){
             // Save and Exit
             saveAll();
@@ -5957,10 +5973,10 @@ public class jFrame extends JFrame {
             System.exit(0);
         }
     }
-    
+
     // Per ogni classe nuova aggiungo al nodo passato, il nome degli oggetti di quella classe
     public void getClasses(DefaultMutableTreeNode nodo, String nome){
-        
+
         // Using the regexp
         Charset charset = Charset.forName(Constants.fileFormat);
         CharsetEncoder encoder = charset.newEncoder();
@@ -5974,7 +5990,7 @@ public class jFrame extends JFrame {
         } catch (Exception e){
             System.out.println("ERR:"+e.getMessage());
         }
-        
+
         // Classes
         Pattern patt = Pattern.compile("\n+\\s*"+nome+"\\s+(->\\s+)*(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         Matcher m = patt.matcher(cb);
@@ -5983,9 +5999,9 @@ public class jFrame extends JFrame {
         }
         treeModel.reload(nodo);
     }
-    
-    
-    
+
+
+
     public static final JIFTextPane getCurrentJIFTextPane(){
         if (jTabbedPane1.getTabCount()==0){
             return null;
@@ -5993,7 +6009,7 @@ public class jFrame extends JFrame {
             return (JIFTextPane)((JScrollPane)jTabbedPane1.getSelectedComponent()).getViewport().getComponent(0);
         }
     }
-    
+
     public static final DefaultStyledDocument getCurrentDoc(){
         if (jTabbedPane1.getTabCount()==0){
             return null;
@@ -6001,15 +6017,15 @@ public class jFrame extends JFrame {
             return (DefaultStyledDocument)(((JIFTextPane)((JScrollPane)jTabbedPane1.getSelectedComponent()).getViewport().getComponent(0)).getDocument() );
         }
     }
-    
+
     public static final String getCurrentTitle(){
         return(jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()));
     }
-    
+
     public static final String getTitleAt(int aTabNumber){
         return(jTabbedPane1.getTitleAt(aTabNumber));
     }
-    
+
     public static final String getCurrentFilename(){
         JIFScrollPane aScrollPane;
         if (jTabbedPane1.getTabCount() == 0){
@@ -6019,7 +6035,7 @@ public class jFrame extends JFrame {
             return(aScrollPane.getFile());
         }
     }
-    
+
     public static final String getFilenameAt(int aTabNumber){
         JIFScrollPane aScrollPane;
         if (jTabbedPane1.getTabCount() == 0){
@@ -6030,13 +6046,13 @@ public class jFrame extends JFrame {
             //return jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex());
         }
     }
-    
+
     // append last opened file
     // Ignore a file is present
-    public void appendLastFile(String recentfileToAppend){       
+    public void appendLastFile(String recentfileToAppend){
         if (getRecentFiles().contains(recentfileToAppend)){
             return;
-        }        
+        }
         if (getJMenuRecentFiles().getMenuComponentCount() < Constants.MAXRECENTFILES){
             JMenuItem mi = new JMenuItem(recentfileToAppend);
             mi.setName(recentfileToAppend);
@@ -6049,8 +6065,8 @@ public class jFrame extends JFrame {
             getRecentFiles().add(recentfileToAppend);
         }
     }
-    
-    
+
+
     public boolean checkOpenFile(String file){
         //Controllo che non sia stato già aperto un file
         int found = -1;
@@ -6074,8 +6090,8 @@ public class jFrame extends JFrame {
         }
         return false;
     }
-    
-    
+
+
     public void disableComponents(){
         // disabilito i componenti che devono essere disbilitati, quando non ci sono file aperti
         SaveButton.setEnabled(false);
@@ -6093,7 +6109,7 @@ public class jFrame extends JFrame {
         jButtonLeftTab.setEnabled(false);
         jButtonRightTab.setEnabled(false);
         jButtonBracketCheck.setEnabled(false);
-        
+
         //menu
         jMenuEdit.setEnabled(false);
         jMenuBuild.setEnabled(false);
@@ -6112,8 +6128,8 @@ public class jFrame extends JFrame {
         jTextFieldDefinition.setEnabled(false);
         jButtonReplace.setEnabled(false);
     }
-    
-    
+
+
     public void enableComponents(){
         // disabilito i componenti che devono essere disbilitati, quando non ci sono file aperti
         SaveButton.setEnabled(true);
@@ -6147,12 +6163,12 @@ public class jFrame extends JFrame {
         jTextFieldDefinition.setEnabled(true);
         jButtonReplace.setEnabled(true);
     }
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     // dal dialog Replace
     public void findString(String pattern){
         // rimuovo tutti gli highligh
@@ -6162,7 +6178,7 @@ public class jFrame extends JFrame {
         try{
             String text = getCurrentDoc().getText(0, getCurrentDoc().getLength());
             boolean trovato = false;
-            
+
             while ( ( (pos = text.indexOf(pattern, pos)) >= 0) && (!trovato)){
                 //while ( ( (pos = Utils.IgnoreCaseIndexOf(text,pattern, pos)) >= 0) && (!trovato)){
                 getCurrentJIFTextPane().requestFocus();
@@ -6174,7 +6190,7 @@ public class jFrame extends JFrame {
                 trovato=true;
                 jDialogReplace.requestFocus();
             }
-            
+
             //se non lo trovo comunico che sono alla fine del file
             if (!trovato) {
                 String[] scelte = new String[2];
@@ -6191,9 +6207,9 @@ public class jFrame extends JFrame {
             System.out.println(e.getMessage());
         }
     }
-    
-    
-    
+
+
+
     public void insertFromFile(){
         try{
             JFileChooser chooser = new JFileChooser(insertnewdir);
@@ -6202,11 +6218,11 @@ public class jFrame extends JFrame {
             if(returnVal == JFileChooser.CANCEL_OPTION) {
                 return;
             }
-            
+
             MutableAttributeSet attr = new SimpleAttributeSet();
             sb.setLength(0);
             String result = chooser.getSelectedFile().getAbsolutePath();
-            
+
             //imposto la insertnewdir= a quella selezionata l'ultima volta
             insertnewdir = result.substring(0, result.lastIndexOf(Constants.SEP));
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(result)), Constants.fileFormat));
@@ -6214,16 +6230,16 @@ public class jFrame extends JFrame {
                 sb.append(riga+"\n");
             }
             getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), sb.toString(), attr);
-            
+
             // aggiorno albero
             refreshTree();
         } catch (Exception e){
             System.out.println(e.getMessage());
-            
+
         }
     }
-    
-    
+
+
     public void closeFile(){
         // se i il file non contiene * allora posso chiudere senza salvare
         if (getCurrentTitle().indexOf("*")!=-1){
@@ -6254,9 +6270,9 @@ public class jFrame extends JFrame {
             return;
         }
     }
-    
-    
-    
+
+
+
     // 1.cerco la prima occorrenza se non esiste esci
     // 2. replace string e vai al punto 1.
     public void replaceAll(){
@@ -6270,13 +6286,13 @@ public class jFrame extends JFrame {
             }
         }
     }
-    
+
     // dal dialog ReplaceAll
     public boolean findAllString(String pattern){
         // rimuovo tutti gli highligh
         // recupero la posizione del cursore
         // eeguo la ricerca e l'highlight del testo trovato
-        
+
         int pos = getCurrentJIFTextPane().getCaretPosition();   // current position
         try{
             String text = getCurrentDoc().getText(0, getCurrentDoc().getLength());
@@ -6291,7 +6307,7 @@ public class jFrame extends JFrame {
                 trovato=true;
                 jDialogReplace.requestFocus();
             }
-            
+
             //se non lo trovo comunico che sono alla fine del file
             if (!trovato) {
                 return true;
@@ -6301,29 +6317,29 @@ public class jFrame extends JFrame {
         }
         return false;
     }
-    
-    
+
+
     public void copyToClipBoard(){
         // Prendo il testo selezionato e prendo la substring fino al primo carattere \n
         // e lo inserisco come testo del menu
-        
+
         // controllo che che non venga superato il limite max di entry nel menu PASTE
         if (jMenuPaste.getMenuComponentCount() > Constants.MAX_DIMENSION_PASTE_MENU) {
             //System.out.println("superato dimensione max per menu");
             return;
         }
-        
+
         // come titolo del menu, limito al max a 8 caratteri
         // il testo incollato, sarà contenuto nel tooltip, opportunamente
         // modificato PLAIN -> HTML  e HTML -> PLAIN
         String test = getCurrentJIFTextPane().getSelectedText();
-        
+
         StringSelection ss = new StringSelection(test);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
-        
+
         if (test.trim().length()> 25) test = test.trim().substring(0,25)+"...";
         JMenuItem mi = new JMenuItem(test.trim());
-        
+
         //Come tool tip del menu metto tutto il codice selezionato
         String tmp = getCurrentJIFTextPane().getSelectedText();
         // per vederlo tutto su più righe....lo trasformo il testo in formato HTML
@@ -6335,7 +6351,7 @@ public class jFrame extends JFrame {
                 try{
                     //String id = ((javax.swing.JMenuItem)evt.getSource()).getText();
                     String id = ((javax.swing.JMenuItem)evt.getSource()).getToolTipText();
-                    
+
                     //ricostruisco la stringa... da html a plain text
                     id = Utils.replace(id,"<br>","\n");
                     id = Utils.replace(id,"<html>","");
@@ -6348,9 +6364,9 @@ public class jFrame extends JFrame {
             }
         });
     }
-    
-    
-    
+
+
+
     public void showJWindowSymbol(){
         try{
             int pointx = (int)getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getCaretPosition()).getX();
@@ -6363,12 +6379,12 @@ public class jFrame extends JFrame {
             System.out.println(e.getMessage());
         }
     }
-    
-    
+
+
     public void saveAs(){
         // recupero il nuovo nome del file e lo salvo....
         // String result = JOptionPane.showInputDialog(this , java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE1")+compiledpath, java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE2"), JOptionPane.OK_CANCEL_OPTION);
-        
+
         JFileChooser chooser;
         if (lastDir!=null && !lastDir.equals("")){
             chooser  = new JFileChooser(lastDir);
@@ -6379,25 +6395,25 @@ public class jFrame extends JFrame {
             chooser.setDialogTitle(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEAS"));
             chooser.setApproveButtonText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
         }
-        
+
         // Selezione Multipla
         chooser.setMultiSelectionEnabled(false);
-        
+
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.CANCEL_OPTION) {
             return;
         }
-        
+
         File file = chooser.getSelectedFile();
         String result = file.getAbsolutePath();
         lastDir = result.substring(0,result.lastIndexOf(Constants.SEP));
-        
-        
+
+
         // se il file non ha estensione: gliela inserisco io INF
         if (result.lastIndexOf(".")==-1){
             result = result+".inf";
         }
-        
+
         // se l'utente ha inserito una cosa del tipo...
         // nome.cognome -> il nome viene convertito in nome.cognome.inf
         // controllo che l'utente non abbia scritto nome.txt, nome.res ecc
@@ -6414,27 +6430,27 @@ public class jFrame extends JFrame {
                 )){
             result = result+".inf";
         }
-        
-        
+
+
         // controllo che non esista già un file con quel nome
         //File file = new File(compiledpath+Constants.SEP+result);
-        
+
         if (file.exists()){
             int overwrite = JOptionPane.showConfirmDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE4"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE2") , JOptionPane.ERROR_MESSAGE);
             if (overwrite == 1) return;
         }
-        
+
         //salvataggio
         //jTabbedPane1.setTitleAt( jTabbedPane1.getSelectedIndex(), compiledpath+Constants.SEP+result);
         //PROBLEMA
         jTabbedPane1.setTitleAt( jTabbedPane1.getSelectedIndex(), result);
         saveFile();
-        
+
         // Refresh Tree
         refreshTree();
     }
-    
-    
+
+
     // funzione che gestisce l'inserimento di files in un progetto
     // supporta la seleziona multipla
     public void addFilesToProject(){
@@ -6446,7 +6462,7 @@ public class jFrame extends JFrame {
         chooser.setFileFilter(infFilter);
         // Selezione Multipla
         chooser.setMultiSelectionEnabled(true);
-        
+
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.CANCEL_OPTION) {
             //imposto a null il nome del file e return
@@ -6455,14 +6471,14 @@ public class jFrame extends JFrame {
         }
         File[] files = chooser.getSelectedFiles();
         File file;
-        
+
         for (int i=0 ; i<files.length; i++){
             file = files[i];
             // apro il file e lo aggiungo alla lista se il checkbox è attivo
             if (jCheckBoxProjectOpenAllFiles.isSelected()){
                 openFile(file.getAbsolutePath());
             }
-            
+
             projectFiles.add(new FileProject(file.getAbsolutePath()));
             jListProject.removeAll();
             // ordino il vettore
@@ -6478,7 +6494,7 @@ public class jFrame extends JFrame {
         // Update and save the project
         saveProject(false);
     }
-    
+
     // The project inherits the default switches
     public void newProject(){
         try{
@@ -6492,7 +6508,7 @@ public class jFrame extends JFrame {
                 return;
             }
             File file = chooser.getSelectedFile();
-            
+
             if (file.getName().indexOf(".jpf")==-1){
                 JOptionPane.showMessageDialog(
                         this,
@@ -6501,7 +6517,7 @@ public class jFrame extends JFrame {
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             if (file.exists()){
                 int res =  JOptionPane.showConfirmDialog(this,
                         java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_PROJECT_EXISTS_OVERWRITE"),
@@ -6512,19 +6528,19 @@ public class jFrame extends JFrame {
                 }
                 file.delete();
             }
-            
+
             //file.createNewFile();
-            currentProject = file.getAbsolutePath();            
+            currentProject = file.getAbsolutePath();
             updateProjectTitle("Project: "+
                     currentProject.substring(
                     currentProject.lastIndexOf(Constants.SEP)+1
                     ,
                     currentProject.length())
                     );
-            
+
             jScrollPaneProject.setEnabled(true);
-            
-            // Save the default switches from the config.ini
+
+            // Save the default switches from the Jif.cfg
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileini), Constants.fileFormat));
             while ((riga = br.readLine())!=null){
                 sb.append(riga).append("\n");
@@ -6545,15 +6561,15 @@ public class jFrame extends JFrame {
                 check.setFont(new Font("Monospaced", Font.PLAIN, 11));
                 check.setState(m.group(2).trim().equals("on") ? true : false);
                     getJPanelProjectSwitch().add(check);
-            }            
+            }
             saveProject(true);
-            
+
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
-    
-    
+
+
     // Enables components when a project is open or created
     public void enableProject(){
         jMenuItemSaveProject.setEnabled(true);
@@ -6575,14 +6591,14 @@ public class jFrame extends JFrame {
         jMenuProjectProperties.setEnabled(false);
         jMenuProjectSwitches.setEnabled(false);
     }
-    
-    
+
+
     public void updateProjectTitle(String title){
         TitledBorder tb = new TitledBorder(title);
         tb.setTitleFont(new Font("Dialog",Font.PLAIN,11));
         jScrollPaneProject.setBorder(tb);
     }
-    
+
     // Reload just the project switchs
     public void reloadProject(String projectFile){
         File file = new File(projectFile);
@@ -6600,7 +6616,7 @@ public class jFrame extends JFrame {
             CharsetDecoder decoder = charset.newDecoder();
             ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(sb.toString()));
             CharBuffer cb = decoder.decode(bbuf);
-            
+
             // Load project switches
             Hashtable switches        = new Hashtable();
             Pattern patt = Pattern.compile("\n"+Constants.SWITCHTOKEN+"([^,]+),([^\n]+)");
@@ -6615,10 +6631,10 @@ public class jFrame extends JFrame {
                 getJPanelProjectSwitch().add(check);
             }
             setProjectSwitches(switches);
-            
+
         } catch (Exception e){}
     }
-    
+
     public void openProject(String projectFile){
         // Check for a poject opened
         if (currentProject!=null && !currentProject.equals(Constants.PROJECTEMPTY)){
@@ -6626,7 +6642,7 @@ public class jFrame extends JFrame {
             saveProject(false);
             closeProject();
         }
-        
+
         projectClass = new Vector();
         File file;
         String auxFile;
@@ -6642,7 +6658,7 @@ public class jFrame extends JFrame {
         } else{
             file = new File(projectFile);
         }
-        
+
         // Loading the JPF file and use regular expressions to find config
         StringBuffer sb = new StringBuffer();
         String riga;
@@ -6659,7 +6675,7 @@ public class jFrame extends JFrame {
             ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(sb.toString()));
             CharBuffer cb = decoder.decode(bbuf);
             Vector fileToOpen=new Vector();
-            
+
             // project files
             Pattern patt = Pattern.compile("\n\\[FILE\\]([^\n]+)");
             Matcher m = patt.matcher(cb);
@@ -6670,7 +6686,7 @@ public class jFrame extends JFrame {
                 }
                 fileToOpen.add(m.group(1));
             }
-            
+
             // Find the Main class file
             patt = Pattern.compile("\n\\[MAINFILE\\]([^\n]+)");
             m = patt.matcher(cb);
@@ -6683,7 +6699,7 @@ public class jFrame extends JFrame {
                     jLabelMainFile.setText("Main: " + mainFile.substring(mainFile.lastIndexOf(Constants.SEP)+1,mainFile.length()));
                 }
             }
-            
+
             // Set the Mode saved
             patt = Pattern.compile("\n"+Constants.MODETOKEN+"(.+)");
             m = patt.matcher(cb);
@@ -6696,8 +6712,8 @@ public class jFrame extends JFrame {
                     jCheckBoxGlulxMode.setState(true);
                 }
             }
-            
-            
+
+
             // Load project switches
             Hashtable switches        = new Hashtable();
             patt = Pattern.compile("\n"+Constants.SWITCHTOKEN+"([^,]+),([^\n]+)");
@@ -6712,7 +6728,7 @@ public class jFrame extends JFrame {
                 getJPanelProjectSwitch().add(check);
             }
             setProjectSwitches(switches);
-            
+
             // ordino il vettore
             Collections.sort(projectFiles,new Comparator(){
                 public int compare(Object a, Object b) {
@@ -6721,14 +6737,14 @@ public class jFrame extends JFrame {
                     return (id1).compareToIgnoreCase(id2) ;
                 }
             });
-            
+
             jListProject.setListData(projectFiles);
-            
+
             //open files if necesarry
             if (jCheckBoxProjectOpenAllFiles.isSelected()){
                 for(int i=0;i<fileToOpen.size();i++){
                     auxFile=(String)fileToOpen.elementAt(i);
-                    
+
                     // don't open automatically *.h files
                     if (!auxFile.endsWith(".h")){
                         openFile(auxFile);
@@ -6737,21 +6753,21 @@ public class jFrame extends JFrame {
                 }
                 jTabbedPane1.setSelectedIndex(0);
             }
-            
+
             currentProject = file.getAbsolutePath();
-            
+
             updateProjectTitle("Project: "+
                     currentProject.substring(
                     currentProject.lastIndexOf(Constants.SEP)+1
                     ,
                     currentProject.length())
                     );
-            
+
             jScrollPaneProject.setEnabled(true);
-            
+
             // View the Project Panel
             jTabbedPaneLeft.setSelectedIndex(1);
-            
+
             // Last Project closed
             lastProject = file.getAbsolutePath();
             lastOpenedProjectPath = file.getAbsolutePath();
@@ -6760,18 +6776,18 @@ public class jFrame extends JFrame {
                     currentProject.substring(
                     currentProject.lastIndexOf(Constants.SEP)+1 ,
                     currentProject.length())+")");
-            
-            enableProject();            
-        } catch (Exception e) {}        
+
+            enableProject();
+        } catch (Exception e) {}
     }
-    
+
     // Opening a project: the switches are overwritten by the project
     // settings
     public void openProjectOld(String projectFile){
         // creo un nuovo vettore per le classi
         projectClass = new Vector();
         File file;
-        
+
         if (null == projectFile){
             JFileChooser chooser = new JFileChooser(lastOpenedProjectPath);
             JifFileFilter infFilter = new JifFileFilter("jpf", "Jif Project File");
@@ -6784,7 +6800,7 @@ public class jFrame extends JFrame {
         } else{
             file = new File(projectFile);
         }
-        
+
         try{
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
             projectFiles = new Vector();
@@ -6793,14 +6809,14 @@ public class jFrame extends JFrame {
             String auxFile;
             Checkbox ch;
             Vector fileToOpen=new Vector(15);
-            
+
             while ((riga = br.readLine())!=null){
                 if (!(riga.startsWith(Constants.TOKENCOMMENT))&&!(riga.equals(""))){
                     if (riga.indexOf("[FILE]=")!=-1){
                         projectFiles.add(
                                 new FileProject(riga.substring(riga.indexOf("[FILE]=")+7))
                                 );
-                        
+
                         // qui lancio un metodo che mi apre il file e mi cerca le classi
                         // se ho impostato il flag jCheckBoxScanProjectFiles a true
                         if (jCheckBoxScanProjectFiles.isSelected()){
@@ -6809,7 +6825,7 @@ public class jFrame extends JFrame {
                         // provo ad aprire il file, se il checkbox relativo è impostato
                         // a TRUE
                         fileToOpen.add(riga.substring(riga.indexOf("[FILE]=")+7));
-                        
+
                     }
                     if (riga.indexOf("[MAINFILE]=")!=-1){
                         mainFile = riga.substring(riga.indexOf("[MAINFILE]=")+11);
@@ -6820,8 +6836,8 @@ public class jFrame extends JFrame {
                             jLabelMainFile.setText("Main: " + mainFile.substring(mainFile.lastIndexOf(Constants.SEP)+1,mainFile.length()));
                         }
                     }
-                    
-                    
+
+
                     // Load project switches
                     if (riga.indexOf("[SWITCH]=")!=-1){
                         st = new StringTokenizer(riga.substring(riga.indexOf("[SWITCH]=")+9) , ",");
@@ -6845,9 +6861,9 @@ public class jFrame extends JFrame {
                     }
                 }
             }
-            
+
             br.close();
-            
+
             // ordino il vettore
             Collections.sort(projectFiles,new Comparator(){
                 public int compare(Object a, Object b) {
@@ -6856,14 +6872,14 @@ public class jFrame extends JFrame {
                     return (id1).compareToIgnoreCase(id2) ;
                 }
             });
-            
+
             jListProject.setListData(projectFiles);
-            
+
             //open files if necesarry
             if (jCheckBoxProjectOpenAllFiles.isSelected()){
                 for(int i=0;i<fileToOpen.size();i++){
                     auxFile=(String)fileToOpen.elementAt(i);
-                    
+
                     // don't open automatically *.h files
                     if (!auxFile.endsWith(".h")){
                         openFile(auxFile);
@@ -6872,26 +6888,26 @@ public class jFrame extends JFrame {
                 }
                 jTabbedPane1.setSelectedIndex(0);
             }
-            
+
         } catch(IOException e){
             System.out.println(e.getMessage());
         }
-        
+
         //currentProject = chooser.getSelectedFile().getAbsolutePath();
         currentProject = file.getAbsolutePath();
-        
+
         updateProjectTitle("Project: "+
                 currentProject.substring(
                 currentProject.lastIndexOf(Constants.SEP)+1
                 ,
                 currentProject.length())
                 );
-        
+
         jScrollPaneProject.setEnabled(true);
-        
+
         // View the Project Panel
         jTabbedPaneLeft.setSelectedIndex(1);
-        
+
         // Last Project closed
         lastProject = file.getAbsolutePath();
         lastOpenedProjectPath = file.getAbsolutePath();
@@ -6900,9 +6916,9 @@ public class jFrame extends JFrame {
                 currentProject.substring(
                 currentProject.lastIndexOf(Constants.SEP)+1 ,
                 currentProject.length())+")");
-        
+
     }
-    
+
     // chiude un progetto. Inserire un flag per chiudere tutti i files
     // relativi ad un progetto quando si chiude il progetto stesso
     public void closeProject(){
@@ -6924,8 +6940,8 @@ public class jFrame extends JFrame {
         mainFile = null;
         jLabelMainFile.setText("Main:");
     }
-    
-    
+
+
     public void saveProject(boolean message){
         try{
             if (currentProject.equals(Constants.PROJECTEMPTY)){
@@ -6945,7 +6961,7 @@ public class jFrame extends JFrame {
             out.write("[MAINFILE]"+mainFile+"\n");
             out.write("[MODE]"+ (jCheckBoxInformMode.isSelected() ? "INFORM":"GLULX") +"\n");
             out.write("\n");
-            
+
             // The project Switches
             out.write("# WARNING! You can edit *only* this switches section!!!\n");
             StringBuffer make = getSwitchesForSavingProject();
@@ -6956,7 +6972,7 @@ public class jFrame extends JFrame {
         }catch(Exception e ){
             System.out.println(e.getMessage());
         }
-        
+
         // silent save?
         if (message){
             JOptionPane.showMessageDialog(
@@ -6966,8 +6982,8 @@ public class jFrame extends JFrame {
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }
-    
-    
+
+
     public void removeFileFromProject(){
         FileProject fp = (FileProject)jListProject.getSelectedValue();
         if (null==fp) return;
@@ -6987,14 +7003,14 @@ public class jFrame extends JFrame {
                     return (id1).compareToIgnoreCase(id2) ;
                 }
             });
-            
+
             jListProject.setListData(projectFiles);
-            
+
             // Update and save the project
             saveProject(false);
         }
     }
-    
+
     public void closeAllFiles(){
         int numberOfComponents = jTabbedPane1.getTabCount();
         for (int count=0; count < numberOfComponents; count++){
@@ -7003,7 +7019,7 @@ public class jFrame extends JFrame {
         refreshTree();
         System.gc();
     }
-    
+
     // Lancia l'interprete senza passargli il file AT (.inf)
     // This method has to be splitted in 2
     public void runInterpreter() {
@@ -7011,7 +7027,7 @@ public class jFrame extends JFrame {
             runInformInterpreter();
         } else runGlulxInterpreter();
     }
-    
+
     public void runGlulxInterpreter(){
         // Check out if a glulx interpreter exists
         String auxGlux[]=new String[1];
@@ -7028,11 +7044,11 @@ public class jFrame extends JFrame {
             System.out.println(e.getMessage());
         }
     }
-    
-    
-    
+
+
+
     public void runInformInterpreter(){
-        // controllo che esista l'interprete con il path  inserito nella config.ini
+        // controllo che esista l'interprete con il path  inserito nella Jif.cfg
         // se non esiste visualizzo un messaggio di warning
         String auxInter[]=new String[1];
 //        File test = new File(interpreterzcodepath); unused
@@ -7048,23 +7064,18 @@ public class jFrame extends JFrame {
             System.out.println(e.getMessage());
         }
     }
-    
+
     // visualizza un file con tasto OK
     // senza la syntax highlight
-    public void showFile(String filename){
-        File file = new File(filename);
-        if (!(file.exists())){
-            System.out.println(java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1") + filename);
-            return;
-        }
+    public void showFile(InputStream is){
         jEditorPaneTutorial.setEditorKit(new StyledEditorKit());
         jEditorPaneTutorial.setBackground(colorBackground);
-        jDialogTutorial.setTitle(filename);
+        jDialogTutorial.setTitle("Readme");
         jDialogTutorial.setSize(700,550);
         jDialogTutorial.setLocationRelativeTo(this);
         jDialogTutorial.setVisible(true);
         try{
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, Constants.fileFormat));
             sb.setLength(0);
             while ((riga = br.readLine())!=null){
                 sb.append(riga).append("\n");
@@ -7077,9 +7088,9 @@ public class jFrame extends JFrame {
             System.out.println(e.getMessage());
         }
     }
-    
-    
-    
+
+
+
     public void updateColor(){
         jLabelKeyword.setForeground(colorKeyword);
         jButtonKeyword.setBackground(colorKeyword);
@@ -7096,8 +7107,8 @@ public class jFrame extends JFrame {
         jLabelBackground.setForeground(colorBackground);
         jButtonBackground.setBackground(colorBackground);
     }
-    
-    
+
+
     public void updateColorEditor(){
         jEditorPaneColor.setFont(defaultFont);
         jEditorPaneColor.setDoubleBuffered(false);
@@ -7118,9 +7129,9 @@ public class jFrame extends JFrame {
                 .append("has   light;\n");
         jEditorPaneColor.setText(sb.toString());
     }
-    
-    
-    
+
+
+
     // If a string is on the system clipboard, this method returns it;
     // otherwise it returns null.
     public static String getClipboard() {
@@ -7137,10 +7148,10 @@ public class jFrame extends JFrame {
         }
         return null;
     }
-    
-    
-    
-    
+
+
+
+
     // funzione che testa se TUTTI gli switch +language_name.....sono DISATTIVATI...
     // true : tutti spenti
     // false : almeno uno acceso
@@ -7152,7 +7163,7 @@ public class jFrame extends JFrame {
         boolean ritorno = true;
         int numeroSwitch=jPanelSwitch2.getComponentCount();
         Checkbox ch;
-        
+
         for(int count=0; count < numeroSwitch; count++){
             ch = (Checkbox) jPanelSwitch2.getComponent(count);
             if (ch.getLabel().startsWith("+language_name") && ch.getState()){
@@ -7161,8 +7172,8 @@ public class jFrame extends JFrame {
         }
         return ritorno;
     }
-    
-    
+
+
     // questa funzione toglie i doppi apici o i singoli apici
     // dai campi di PATH
     public void unquote(){
@@ -7173,39 +7184,39 @@ public class jFrame extends JFrame {
         String libsec1 = jTextFieldPathLibSecondary1.getText();
         String libsec2 = jTextFieldPathLibSecondary2.getText();
         String libsec3 = jTextFieldPathLibSecondary3.getText();
-        
+
         compiler = Utils.replace(compiler , "\"", "");
         compiler = Utils.replace(compiler , "'", "");
         jTextFieldPathCompiler.setText(compiler);
-        
+
         games = Utils.replace(games , "\"", "");
         games = Utils.replace(games , "'", "");
         jTextFieldPathGames.setText(games);
-        
+
         interpreter = Utils.replace(interpreter , "\"", "");
         interpreter = Utils.replace(interpreter , "'", "");
         jTextFieldPathInterpreter.setText(interpreter);
-        
+
         lib = Utils.replace(lib , "\"", "");
         lib = Utils.replace(lib , "'", "");
         jTextFieldPathLib.setText(lib);
-        
+
         libsec1 = Utils.replace(libsec1 , "\"", "");
         libsec1 = Utils.replace(libsec1 , "'", "");
         jTextFieldPathLibSecondary1.setText(libsec1);
-        
+
         libsec2 = Utils.replace(libsec2 , "\"", "");
         libsec2 = Utils.replace(libsec2 , "'", "");
         jTextFieldPathLibSecondary2.setText(libsec2);
-        
+
         libsec3 = Utils.replace(libsec3 , "\"", "");
         libsec3 = Utils.replace(libsec3 , "'", "");
         jTextFieldPathLibSecondary3.setText(libsec3);
-        
-        
+
+
     }
-    
-    
+
+
     public void defaultOptions(){
         jCheckBoxOpenLastFile.setSelected(false);
         jCheckBoxCreateNewFile.setSelected(false);
@@ -7217,19 +7228,19 @@ public class jFrame extends JFrame {
         jCheckBoxSyntax.setSelected(true);
         jCheckBoxWrapLines.setSelected(false);
     }
-    
-    
+
+
     // run BLC SOURCE.blc source.blb to make blb (GLULX MODE)
     public void makeBlb() {//AQUI!!
-        
-        // controllo che esista il compilatore con il path  inserito nella config.ini
+
+        // controllo che esista il compilatore con il path  inserito nella Jif.cfg
         // se non esiste visualizzo un messaggio di warning
         File test = new File(getBlcpath());
         if (!test.exists()){
             JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1")+getCompilerpath()+java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         // se l'utente ha tolto la visto della TextAreaOutput, la rendo visible..
         if (!jCheckBoxOutput.getState()){
             //jCheckBoxOutput.setState(true);
@@ -7238,32 +7249,32 @@ public class jFrame extends JFrame {
         }
         //imposto il focus sulla tabbedWindow della compilazione
         jTabbedPane2.setSelectedComponent(jScrollPane2);
-        
+
         //recupero l'attuale file name
         if (mainFile != null && !mainFile.equals("")){
             jTextAreaOutput.append("Using main file "+mainFile+" to compiling...\n");
             fileInf = mainFile;
         } else
             fileInf = getCurrentFilename(); //jTabbedPane1.getTitleAt( jTabbedPane1.getSelectedIndex());
-        
+
         // Source file name
         String source = fileInf.substring(0,fileInf.lastIndexOf("."));
         String pathForCd=fileInf.substring(0,fileInf.lastIndexOf(Constants.SEP));
         //jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
         String process_string[]=new String[3];
-        
+
         process_string[0] = getBlcpath();
         process_string[1] = new String(source+".blc");
         process_string[2] = new String(source +".blb");
-        
+
         jTextAreaOutput.append(getBlcpath() + " " + source+".blc "+ source +".blb\n");
-        
+
         try{
             Runtime rt = Runtime.getRuntime();
             Process proc = rt.exec(process_string, null, new File(pathForCd));
             String line="";
             BufferedReader br= new BufferedReader( new InputStreamReader( proc.getInputStream(), Constants.fileFormat));
-            
+
             while ( (line = br.readLine() )!=null ){
                 jTextAreaOutput.append(line+"\n");
             }
@@ -7277,18 +7288,18 @@ public class jFrame extends JFrame {
             System.out.println(e.getMessage());
         }
     }
-    
+
     // run BRE SOURCE to make resource (GLULX MODE) //aqui
     public void makeResources() {
-        
-        // controllo che esista il compilatore con il path  inserito nella config.ini
+
+        // controllo che esista il compilatore con il path  inserito nella Jif.cfg
         // se non esiste visualizzo un messaggio di warning
         File test = new File(getBrespath());
         if (!test.exists()){
             JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1")+" "+getBrespath()+" "+java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         // se l'utente ha tolto la visto della TextAreaOutput, la rendo visible..
         if (!jCheckBoxOutput.getState()){
             //jCheckBoxOutput.setState(true);
@@ -7297,35 +7308,35 @@ public class jFrame extends JFrame {
         }
         //imposto il focus sulla tabbedWindow della compilazione
         jTabbedPane2.setSelectedComponent(jScrollPane2);
-        
+
         if (mainFile != null && !mainFile.equals("")){
             jTextAreaOutput.append("Using main file "+mainFile+" to compiling...\n");
             fileInf = mainFile;
         } else
             //recupero l'attuale file name
             fileInf = getCurrentFilename(); //jTabbedPane1.getTitleAt( jTabbedPane1.getSelectedIndex());
-        
+
         // Source file name
         String source = fileInf.substring(0,fileInf.lastIndexOf("."));
-        
+
         //jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
         String process_string[]=new String[2];
         process_string[0] = getBrespath();
         process_string[1] = source;
-        
+
         jTextAreaOutput.append(getBrespath() + " " + source+"\n");
-        
+
         try{
             Runtime rt = Runtime.getRuntime();
             Process proc = rt.exec(process_string, null, new File(getCompiledpath()));
-            
+
             String line="";
             BufferedReader br= new BufferedReader( new InputStreamReader( proc.getInputStream(), Constants.fileFormat));
-            
+
             while ( (line = br.readLine() )!=null ){
                 jTextAreaOutput.append(line+"\n");
             }
-            
+
             proc.waitFor(); //int i = unused
             jTextAreaOutput.append("\n");
             jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
@@ -7336,8 +7347,8 @@ public class jFrame extends JFrame {
             System.out.println(e.getMessage());
         }
     }
-    
-    
+
+
     // Set INFORM MODE
     public void setInformMode(){
         jMenuGlulx.setEnabled(false);
@@ -7348,7 +7359,7 @@ public class jFrame extends JFrame {
         jMenuItemRunUlx.setEnabled(false);
         jMenuItemCompile.setEnabled(false);
     }
-    
+
     // Set GLUX MODE
     public void setGlulxMode(){
         if(jTabbedPane1.getTabCount()>0){
@@ -7361,51 +7372,51 @@ public class jFrame extends JFrame {
             jMenuItemCompile.setEnabled(true);
         }
     }
-    
+
     // Esegue il file blb
     public void runBlb() {
         String inter = getInterpreterglulxpath();
-        
-        // controllo che esista l'interprete con il path  inserito nella config.ini
+
+        // controllo che esista l'interprete con il path  inserito nella Jif.cfg
         // se non esiste visualizzo un messaggio di warning
         File test = new File(inter);
         if (!test.exists()){
             JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1")+" "+inter+" "+java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         //recupero l'attuale file name
         if (mainFile != null && !mainFile.equals("")){
             jTextAreaOutput.append("Using main file "+mainFile+"...\n");
             fileInf = mainFile;
         } else
             fileInf = getCurrentFilename();//jTabbedPane1.getTitleAt( jTabbedPane1.getSelectedIndex());
-        
+
         clearOutput();
         jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_RUN1"));
-        
+
         try{
             Runtime rt = Runtime.getRuntime();
             String command[]=new String[2];
             command[0]=inter;
             // in base al tipo di file di uscita, scelgo l'estensione del file da passare all'interprete
             String estensione = ".blb";
-            
+
             command[1] = new String(fileInf.substring(0,fileInf.indexOf(".inf"))+estensione);
-            
+
             jTextAreaOutput.append(command[0]+" "+command[1]+"\n");
-            
+
             rt.exec(command); //Process proc = unused
             //String line=""; unused
             //String out=""; unused
-            
+
             jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
         } catch(IOException e){
             System.out.println(e.getMessage());
         }
     }
-    
-    
+
+
     public String checkDefinitionCurrentFile(String entity){
         String file ="", main ="";
         file = getCurrentFilename();
@@ -7417,7 +7428,7 @@ public class jFrame extends JFrame {
                 String riga;
                 sb.setLength(0);
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
-                
+
                 while ((riga = br.readLine())!=null){
                     sb.append(riga).append("\n");
                 }
@@ -7430,7 +7441,7 @@ public class jFrame extends JFrame {
                 String appoggio;
                 int pos = 0;
                 StringTokenizer sttok;
-                
+
                 while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){
                     appoggio = main.substring(pos,main.indexOf("\n",pos));
                     int posizione_freccia=0;
@@ -7441,7 +7452,7 @@ public class jFrame extends JFrame {
                         if (posizione_freccia==-1) {
                             posizione_freccia=0;
                         } else posizione_freccia -=3;
-                        
+
                         tmp = main.substring(pos+pattern.length()-1+posizione_freccia);
                         if (tmp.trim().startsWith("\"")){
                             sttok = new StringTokenizer(tmp.trim(),"\"");
@@ -7456,9 +7467,9 @@ public class jFrame extends JFrame {
                     }
                     pos += pattern.length();
                 }
-                
-                
-                
+
+
+
                 // ***************************************************
                 pattern = "Global ";
                 appoggio="";
@@ -7475,8 +7486,8 @@ public class jFrame extends JFrame {
                     pos += pattern.length();
                 }
                 // ***************************************************
-                
-                
+
+
                 // ***************************************************
                 pattern = "Constant ";
                 pos = 0;
@@ -7492,8 +7503,8 @@ public class jFrame extends JFrame {
                     pos += pattern.length();
                 }
                 // ***************************************************
-                
-                
+
+
                 // ***************************************************
                 pattern = "Sub";
                 pos = 0;
@@ -7511,7 +7522,7 @@ public class jFrame extends JFrame {
                     pos += pattern.length();
                 }
                 // ***************************************************
-                
+
                 // ***************************************************
                 pattern = "Class ";
                 pos = 0;
@@ -7529,8 +7540,8 @@ public class jFrame extends JFrame {
                     pos += pattern.length();
                 }
                 // ***************************************************
-                
-                
+
+
                 // ***************************************************
                 // ****** Functions
                 pattern="[";
@@ -7557,7 +7568,7 @@ public class jFrame extends JFrame {
                     pos += pattern.length();
                 }
                 // ***************************************************
-                
+
                 // ***************************************************
                 for (int j=0 ; j < projectClass.size(); j++){
                     //String classe = (String) projectClass.get(j);
@@ -7580,29 +7591,29 @@ public class jFrame extends JFrame {
                     }
                 }
                 // ***************************************************
-                
-                
+
+
             }catch(Exception e){
                 e.printStackTrace();
             }
         }
         return null;
     }
-    
+
     // This method seeks for the definition of "entity" within the whole project
     public String checkDefinition(String entity){
-        
+
         // before I'll try the current filename
         String current = checkDefinitionCurrentFile(entity);
         if (current != null){
             return current;
         }
-        
+
         String file ="";
         String main ="";
         for (int i=0; i<projectFiles.size();i++)  {
             file = ((FileProject)projectFiles.elementAt(i)).path;
-            
+
             // check only if the file is an INF or h file
             // and if isn't the current file
             if ( (file.indexOf(".inf")!=-1) || (file.indexOf(".INF")!=-1) || !file.equals(current)){
@@ -7625,7 +7636,7 @@ public class jFrame extends JFrame {
                     String appoggio;
                     int pos = 0;
                     StringTokenizer sttok;
-                    
+
                     while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){
                         appoggio = main.substring(pos,main.indexOf("\n",pos));
                         int posizione_freccia=0;
@@ -7636,7 +7647,7 @@ public class jFrame extends JFrame {
                             if (posizione_freccia==-1) {
                                 posizione_freccia=0;
                             } else posizione_freccia -=3;
-                            
+
                             tmp = main.substring(pos+pattern.length()-1+posizione_freccia);
                             if (tmp.trim().startsWith("\"")){
                                 sttok = new StringTokenizer(tmp.trim(),"\"");
@@ -7651,9 +7662,9 @@ public class jFrame extends JFrame {
                         }
                         pos += pattern.length();
                     }
-                    
-                    
-                    
+
+
+
                     // ***************************************************
                     pattern = "Global ";
                     appoggio="";
@@ -7670,8 +7681,8 @@ public class jFrame extends JFrame {
                         pos += pattern.length();
                     }
                     // ***************************************************
-                    
-                    
+
+
                     // ***************************************************
                     pattern = "Constant ";
                     pos = 0;
@@ -7687,8 +7698,8 @@ public class jFrame extends JFrame {
                         pos += pattern.length();
                     }
                     // ***************************************************
-                    
-                    
+
+
                     // ***************************************************
                     pattern = "Sub";
                     pos = 0;
@@ -7706,7 +7717,7 @@ public class jFrame extends JFrame {
                         pos += pattern.length();
                     }
                     // ***************************************************
-                    
+
                     // ***************************************************
                     pattern = "Class ";
                     pos = 0;
@@ -7724,8 +7735,8 @@ public class jFrame extends JFrame {
                         pos += pattern.length();
                     }
                     // ***************************************************
-                    
-                    
+
+
                     // ***************************************************
                     // ****** Functions
                     pattern="[";
@@ -7752,7 +7763,7 @@ public class jFrame extends JFrame {
                         pos += pattern.length();
                     }
                     // ***************************************************
-                    
+
                     // ***************************************************
                     for (int j=0 ; j < projectClass.size(); j++){
                         //String classe = (String) projectClass.get(j);
@@ -7775,8 +7786,8 @@ public class jFrame extends JFrame {
                         }
                     }
                     // ***************************************************
-                    
-                    
+
+
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -7784,12 +7795,12 @@ public class jFrame extends JFrame {
         }
         return null;
     }
-    
-    
+
+
     // It will reload the current file to make it with a refreshed syntax
     public void refreshSyntax(){
         JIFTextPane jif = getCurrentJIFTextPane();
-        
+
         // Save the current Cursor Position
         int position = jif.getCaretPosition();
         String main = jif.getText();
@@ -7797,32 +7808,32 @@ public class jFrame extends JFrame {
         jif.setText(main);
         jif.setCaretPosition(position);
     }
-    
+
     public JTabbedPane getTabbed(){
         return jTabbedPane1;
     }
-    
+
     public JTabbedPane getTabbed2(){
         return jTabbedPane2;
     }
-    
-    
+
+
     public Hashtable getMapping(){
         return this.mapping;
     }
-    
+
     public Hashtable getAltkeys(){
         return this.altkeys;
     }
-    
+
     public Hashtable getExecutecommands(){
         return this.executecommands;
     }
-    
+
     public JCheckBoxMenuItem getCheckBoxOutput(){
         return jCheckBoxOutput;
     }
-    
+
     /**
      * Getter for property JWindowSymbols.
      * @return Value of property JWindowSymbols.
@@ -7830,7 +7841,7 @@ public class jFrame extends JFrame {
     public javax.swing.JFrame getJWindowSymbols() {
         return JWindowSymbols;
     }
-    
+
     /**
      * Setter for property JWindowSymbols.
      * @param JWindowSymbols New value of property JWindowSymbols.
@@ -7838,7 +7849,7 @@ public class jFrame extends JFrame {
     public void setJWindowSymbols(javax.swing.JFrame JWindowSymbols) {
         this.JWindowSymbols = JWindowSymbols;
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem About;
     private javax.swing.JMenuItem BuildAll;
@@ -8153,7 +8164,7 @@ public class jFrame extends JFrame {
     private static final javax.swing.JToolBar jToolBarCommon = new javax.swing.JToolBar();
     private static javax.swing.JTree jTree1;
     // End of variables declaration//GEN-END:variables
-    
+
     // PATHS
     private String fileini;
     private String workingDir;
@@ -8167,19 +8178,19 @@ public class jFrame extends JFrame {
     private String compilerpath;
     private String brespath;
     private String blcpath;
-    
+
     private String fileInf = "";
     private String insertnewdir="";    // JIF si ricorda dell'ultima directory scelta per "insert new"
     protected DefaultStyledDocument doc;
     MouseListener popupListenerProject = new PopupListenerProject();
     MouseListener menuListener  = new MenuListener();
-    
+
     // gestione syntax highlights on/off
     protected StringBuffer sb = new StringBuffer();
-    
+
     // element per mostrare il numero di riga
     private Element el;
-    
+
     // gestione albero INSPECT
     private DefaultMutableTreeNode top,category1,category2,category4,category5,category7;
     private TreePath treePath1,treePath2,treePath4,treePath5,treePath7;
@@ -8187,10 +8198,10 @@ public class jFrame extends JFrame {
     private StringTokenizer st;
     private DefaultTreeModel treeModel;
     private volatile String riga;
-    
+
     // gestione aggiunta automatica codice assistito
     private String ultima;          // ultima keyword digitata
-    
+
     // Jif ini configuration
     private Hashtable altkeys;
     private Hashtable executecommands;
@@ -8211,7 +8222,7 @@ public class jFrame extends JFrame {
     private HashSet verbs_cs;
     private HashSet keywords_cs;
     private HashSet symbols;
-    
+
     // per scegliere l'estensione del file da passare all'interprete
     private String tipoz = "";
     // Vettore che contiene i nomi delle nuove classi all'interno del sorgente
@@ -8223,7 +8234,7 @@ public class jFrame extends JFrame {
     private JList jListSymbols;
     // titolo di JIF, serve per aggiungerci il nome del progetto aperto
     private String jifVersion = "Jif "+ Constants.JIFVERSION;
-    
+
     // COLORS
     public Color colorKeyword;
     public Color colorAttribute;
@@ -8238,7 +8249,7 @@ public class jFrame extends JFrame {
     private String lastProject;
     private String lastOpenedProjectPath = null;
     private String lastDir = null;
-    
+
     // PROJECT VARIABLES
     private String currentProject = Constants.PROJECTEMPTY;
     private Vector projectFiles ;
@@ -8248,247 +8259,247 @@ public class jFrame extends JFrame {
     private Vector objTree;
     // hack variable
     private int int_var = 0;
-    
+
     public String getJifVersion() {
         return jifVersion;
     }
-    
+
     public void setJifVersion(String jifVersion) {
         this.jifVersion = jifVersion;
     }
-    
+
     public void setAltkeys(Hashtable altkeys) {
         this.altkeys = altkeys;
     }
-    
+
     public void setExecutecommands(Hashtable executecommands) {
         this.executecommands = executecommands;
     }
-    
+
     public Hashtable getHelpcode() {
         return helpcode;
     }
-    
+
     public void setHelpcode(Hashtable helpcode) {
         this.helpcode = helpcode;
     }
-    
+
     public void setMapping(Hashtable mapping) {
         this.mapping = mapping;
     }
-    
+
     public javax.swing.JMenu getJMenuInsertNew() {
         return jMenuInsertNew;
     }
-    
+
     public Hashtable getOperations() {
         return operations;
     }
-    
+
     public void setOperations(Hashtable operations) {
         this.operations = operations;
     }
-    
+
     public javax.swing.JPanel getJPanelProjectSwitch() {
         return jPanelProjectSwitches;
     }
-    
+
     public javax.swing.JPanel getJPanelSwitch1() {
         return jPanelSwitch1;
     }
-    
+
     public javax.swing.JPanel getJPanelSwitch2() {
         return jPanelSwitch2;
     }
-    
+
     public Hashtable getSwitches() {
         return switches;
     }
-    
+
     public void setSwitches(Hashtable switches) {
         this.switches = switches;
     }
-    
+
     public HashSet getSymbols() {
         return symbols;
     }
-    
+
     public void setSymbols(HashSet symbols) {
         this.symbols = symbols;
     }
-    
+
     public HashSet getAttributes() {
         return attributes;
     }
-    
+
     public void setAttributes(HashSet attributes) {
         this.attributes = attributes;
     }
-    
+
     public HashSet getProperties() {
         return properties;
     }
-    
+
     public void setProperties(HashSet properties) {
         this.properties = properties;
     }
-    
+
     public HashSet getVerbs() {
         return verbs;
     }
-    
+
     public void setVerbs(HashSet verbs) {
         this.verbs = verbs;
     }
-    
+
     public HashSet getKeywords() {
         return keywords;
     }
-    
+
     public void setKeywords(HashSet keywords) {
         this.keywords = keywords;
     }
-    
+
     public HashSet getAttributes_cs() {
         return attributes_cs;
     }
-    
+
     public void setAttributes_cs(HashSet attributes_cs) {
         this.attributes_cs = attributes_cs;
     }
-    
+
     public HashSet getProperties_cs() {
         return properties_cs;
     }
-    
+
     public void setProperties_cs(HashSet properties_cs) {
         this.properties_cs = properties_cs;
     }
-    
+
     public HashSet getVerbs_cs() {
         return verbs_cs;
     }
-    
+
     public void setVerbs_cs(HashSet verbs_cs) {
         this.verbs_cs = verbs_cs;
     }
-    
+
     public HashSet getKeywords_cs() {
         return keywords_cs;
     }
-    
+
     public void setKeywords_cs(HashSet keywords_cs) {
         this.keywords_cs = keywords_cs;
     }
-    
+
     public JList getJListSymbols() {
         return jListSymbols;
     }
-    
+
     public void setJListSymbols(JList jListSymbols) {
         this.jListSymbols = jListSymbols;
     }
-    
+
     public String getLibrarypath() {
         return librarypath;
     }
-    
+
     public void setLibrarypath(String librarypath) {
         this.librarypath = librarypath;
     }
-    
+
     public String getLibrarypathsecondary1() {
         return librarypathsecondary1;
     }
-    
+
     public void setLibrarypathsecondary1(String librarypathsecondary1) {
         this.librarypathsecondary1 = librarypathsecondary1;
     }
-    
+
     public String getLibrarypathsecondary2() {
         return librarypathsecondary2;
     }
-    
+
     public void setLibrarypathsecondary2(String librarypathsecondary2) {
         this.librarypathsecondary2 = librarypathsecondary2;
     }
-    
+
     public String getLibrarypathsecondary3() {
         return librarypathsecondary3;
     }
-    
+
     public void setLibrarypathsecondary3(String librarypathsecondary3) {
         this.librarypathsecondary3 = librarypathsecondary3;
     }
-    
+
     public String getCompiledpath() {
         return compiledpath;
     }
-    
+
     public void setCompiledpath(String compiledpath) {
         this.compiledpath = compiledpath;
     }
-    
+
     public String getInterpreterzcodepath() {
         return interpreterzcodepath;
     }
-    
+
     public void setInterpreterzcodepath(String interpreterzcodepath) {
         this.interpreterzcodepath = interpreterzcodepath;
     }
-    
+
     public String getInterpreterglulxpath() {
         return interpreterglulxpath;
     }
-    
+
     public void setInterpreterglulxpath(String interpreterglulxpath) {
         this.interpreterglulxpath = interpreterglulxpath;
     }
-    
+
     public String getCompilerpath() {
         return compilerpath;
     }
-    
+
     public void setCompilerpath(String compilerpath) {
         this.compilerpath = compilerpath;
     }
-    
+
     public String getBrespath() {
         return brespath;
     }
-    
+
     public void setBrespath(String brespath) {
         this.brespath = brespath;
     }
-    
+
     public String getBlcpath() {
         return blcpath;
     }
-    
+
     public void setBlcpath(String blcpath) {
         this.blcpath = blcpath;
     }
-    
+
     public javax.swing.JMenu getJMenuRecentFiles() {
         return jMenuRecentFiles;
     }
-    
+
     public void setJMenuRecentFiles(javax.swing.JMenu jMenuRecentFiles) {
         this.jMenuRecentFiles = jMenuRecentFiles;
     }
-    
+
     public String getFileini() {
         return fileini;
     }
-    
+
     public void setFileini(String fileini) {
         this.fileini = fileini;
     }
-    
+
     public Hashtable getProjectSwitches() {
         return projectSwitches;
     }
-    
+
     public void setProjectSwitches(Hashtable projectSwitches) {
         this.projectSwitches = projectSwitches;
     }

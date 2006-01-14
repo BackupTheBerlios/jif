@@ -68,7 +68,6 @@ public class JIFTextPane extends JTextPane{
     java.util.List bookmarks;
     private DefaultStyledDocument dsdoc;
     
-    
     /**
      * Creates a new instance of JIFTextPane
      * @param parent The instance of main jFrame
@@ -624,6 +623,7 @@ public class JIFTextPane extends JTextPane{
                 this.requestFocus();
             }
             
+            
             // If the string not found, JIF will move the Caret position to 0 (zero)
             if (!found){
                 // if at least one string is found
@@ -638,6 +638,7 @@ public class JIFTextPane extends JTextPane{
                     parent.jTextAreaOutput.setText("String \""+parent.jTextFieldFind.getText()+"\" not found");
                 }
             }
+            
         } catch (BadLocationException e)  {
             System.out.println(e.getMessage());
         }

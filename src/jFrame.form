@@ -52,6 +52,9 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="jMenuItemCut1">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Dialog" size="11" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="JIF.properties" key="JFRAME_EDIT_CUT" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
@@ -140,6 +143,9 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="jMenuItemJumpToSource">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Dialog" size="11" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="JIF.properties" key="MENU_JUMP_TO_SOURCE" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
@@ -767,7 +773,6 @@
           <ResourceString bundle="JIF.properties" key="JFRAME_SETTING" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
         <Property name="modal" type="boolean" value="true"/>
-        <Property name="resizable" type="boolean" value="false"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JDialog (this, &quot;&quot;, false);"/>
@@ -2326,7 +2331,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemCommentSelection">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Ctrl+W"/>
+                  <KeyStroke key="Ctrl+PERIOD"/>
                 </Property>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="11" style="0"/>
@@ -2342,7 +2347,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemUncommentSelection">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Ctrl+E"/>
+                  <KeyStroke key="Ctrl+COMMA"/>
                 </Property>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="11" style="0"/>
@@ -2564,7 +2569,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewProject">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Ctrl+F5"/>
+                  <KeyStroke key="Ctrl+F4"/>
                 </Property>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="11" style="0"/>
@@ -2580,7 +2585,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemOpenProject">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="F5"/>
+                  <KeyStroke key="F4"/>
                 </Property>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="11" style="0"/>
@@ -2662,6 +2667,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuProjectProperties">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="11" style="0"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Project Properties"/>
               </Properties>
               <Events>
@@ -2670,6 +2678,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuProjectSwitches">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="11" style="0"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Project Switches"/>
               </Properties>
               <Events>
@@ -2679,6 +2690,11 @@
             <MenuItem class="javax.swing.JSeparator" name="jSeparator5">
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemLastProject">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="11" style="0"/>
+                </Property>
+              </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemLastProjectActionPerformed"/>
               </Events>
@@ -2863,6 +2879,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemRunUlx">
               <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="F5"/>
+                </Property>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="11" style="0"/>
                 </Property>
@@ -2876,6 +2895,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemRunBlb">
               <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Ctrl+F5"/>
+                </Property>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="11" style="0"/>
                 </Property>
@@ -2905,7 +2927,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="11" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="JIF Ini file"/>
+                <Property name="text" type="java.lang.String" value="Jif.cfg file"/>
                 <Property name="toolTipText" type="java.lang.String" value="Edit configuration file for JIF"/>
               </Properties>
               <Events>
@@ -2929,6 +2951,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemGC">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="11" style="0"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Garbage Collector"/>
                 <Property name="toolTipText" type="java.lang.String" value="Free unused object from the memory"/>
               </Properties>
@@ -3560,9 +3585,6 @@
                   <Dimension value="[10, 22]"/>
                 </Property>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextFieldFindActionPerformed"/>
-              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
               </AuxValues>
@@ -3704,7 +3726,9 @@
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                       <JTabbedPaneConstraints tabName="Tree">
-                        <Property name="tabTitle" type="java.lang.String" value="Tree"/>
+                        <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="JIF.properties" key="JFRAME_TREE" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                        </Property>
                       </JTabbedPaneConstraints>
                     </Constraint>
                   </Constraints>
@@ -3744,9 +3768,9 @@
                             </Property>
                           </Properties>
                           <Events>
-                            <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTree1MouseEntered"/>
                             <EventHandler event="treeExpanded" listener="javax.swing.event.TreeExpansionListener" parameters="javax.swing.event.TreeExpansionEvent" handler="jTree1TreeExpanded"/>
                             <EventHandler event="valueChanged" listener="javax.swing.event.TreeSelectionListener" parameters="javax.swing.event.TreeSelectionEvent" handler="jTree1ValueChanged"/>
+                            <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTree1MouseEntered"/>
                           </Events>
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_CreateCodePost" type="java.lang.String" value="    // Creo la root per Inspect&#xa;    top = new DefaultMutableTreeNode(&quot;Inspect&quot;);&#xa;    category1 = new DefaultMutableTreeNode(&quot;Globals    &quot;);&#xa;    top.add(category1);    &#xa;    category2 = new DefaultMutableTreeNode(&quot;Constants    &quot;);&#xa;    top.add(category2);    &#xa;    category4 = new DefaultMutableTreeNode(&quot;Objects    &quot;);&#xa;    top.add(category4);   &#xa;    category5 = new DefaultMutableTreeNode(&quot;Functions    &quot;);&#xa;    top.add(category5);    &#xa;    category7 = new DefaultMutableTreeNode(&quot;Classes    &quot;);&#xa;    top.add(category7);&#xa;    &#xa;    //Create a tree that allows one selection at a time.&#xa;    treeModel = new DefaultTreeModel(top);&#xa;    jTree1 = new JTree(treeModel);&#xa;        &#xa;    jTree1.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);    &#xa;    jTree1.setCellRenderer(renderer);&#xa;"/>
@@ -3762,7 +3786,9 @@
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                       <JTabbedPaneConstraints tabName="Project">
-                        <Property name="tabTitle" type="java.lang.String" value="Project"/>
+                        <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="JIF.properties" key="PROJECT_PROJECT" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                        </Property>
                       </JTabbedPaneConstraints>
                     </Constraint>
                   </Constraints>
@@ -3833,7 +3859,9 @@
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                       <JTabbedPaneConstraints tabName="Search">
-                        <Property name="tabTitle" type="java.lang.String" value="Search"/>
+                        <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="JIF.properties" key="JFRAME_SEARCH" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                        </Property>
                       </JTabbedPaneConstraints>
                     </Constraint>
                   </Constraints>
@@ -3863,14 +3891,13 @@
                       </Properties>
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
-                        <Property name="alignment" type="int" value="0"/>
+                        <Property name="alignment" type="int" value="2"/>
                         <Property name="horizontalGap" type="int" value="0"/>
                         <Property name="verticalGap" type="int" value="0"/>
                       </Layout>
                       <SubComponents>
                         <Component class="javax.swing.JTextField" name="jTextFieldFindAll">
                           <Properties>
-                            <Property name="columns" type="int" value="15"/>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                               <Font name="Courier New" size="12" style="0"/>
                             </Property>
@@ -3878,10 +3905,13 @@
                               <ResourceString bundle="JIF.properties" key="JTOOLBAR_SEARCH" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                              <Dimension value="[111, 20]"/>
+                              <Dimension value="[150, 20]"/>
                             </Property>
                             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                              <Dimension value="[10, 22]"/>
+                              <Dimension value="[30, 22]"/>
+                            </Property>
+                            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                              <Dimension value="[90, 20]"/>
                             </Property>
                           </Properties>
                           <AuxValues>
@@ -3941,16 +3971,24 @@
                       </Properties>
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
-                        <Property name="alignment" type="int" value="0"/>
+                        <Property name="alignment" type="int" value="2"/>
                         <Property name="horizontalGap" type="int" value="0"/>
                         <Property name="verticalGap" type="int" value="0"/>
                       </Layout>
                       <SubComponents>
                         <Component class="javax.swing.JTextField" name="jTextFieldDefinition">
                           <Properties>
-                            <Property name="columns" type="int" value="15"/>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                               <Font name="Courier New" size="12" style="0"/>
+                            </Property>
+                            <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                              <Dimension value="[150, 20]"/>
+                            </Property>
+                            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                              <Dimension value="[30, 20]"/>
+                            </Property>
+                            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                              <Dimension value="[90, 20]"/>
                             </Property>
                           </Properties>
                           <Events>

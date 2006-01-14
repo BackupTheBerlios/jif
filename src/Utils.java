@@ -39,10 +39,14 @@ import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
@@ -154,7 +158,7 @@ public class Utils {
     }
     
     
-  
+    
     
     public void printInform(jFrame jframe,String title, JTextComponent jif){
         Properties prop = new Properties();
@@ -291,9 +295,41 @@ public class Utils {
         if (out.length() == 0){
             return null; // find no string "target" in the current file
         } else return (head+out.toString()+"\n");
-        //return out.toString();
     }
     
-
+    /**
+     * Creates a Jif.cfg file if not exists.
+     */
+    public static String createNewConfigFile(String filename) {
+        InputStream is = null;
+        StringBuffer sb = new StringBuffer();
+        String riga = "";
+        File cfgfile = null;
+                
+        try {
+            // Load the Jif.cfg file from the jar file to restore it
+            is = ClassLoader.getSystemClassLoader().getResource(Constants.configFileName).openStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, Constants.fileFormat));
+            sb.setLength(0);
+            while ((riga = br.readLine())!=null){
+                sb.append(riga).append("\n");
+            }
+            br.close();
+            
+            // Saving the new file
+            cfgfile = new File(filename);
+            FileOutputStream fos = new FileOutputStream(cfgfile);
+            Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
+            out.write(sb.toString());
+            out.flush();
+            out.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        
+        return cfgfile.getAbsolutePath();
+    }
+    
+    
     
 }
