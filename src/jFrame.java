@@ -2119,12 +2119,6 @@ public class jFrame extends JFrame {
         jTextFieldFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
         jTextFieldFind.setMaximumSize(new java.awt.Dimension(111, 20));
         jTextFieldFind.setMinimumSize(new java.awt.Dimension(10, 22));
-        jTextFieldFind.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                jTextFieldFindKeyTyped(evt);
-            }
-        });
-
         jToolBarCommon.add(jTextFieldFind);
 
         jButtonFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png")));
@@ -3091,18 +3085,6 @@ public class jFrame extends JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextFieldFindKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldFindKeyTyped
-        if (null != getCurrentJIFTextPane().getSelectedText()) {
-            int pos = getCurrentJIFTextPane().getSelectionStart();
-            getCurrentJIFTextPane().setSelectionEnd(pos);
-            getCurrentJIFTextPane().setSelectionStart(pos);            
-        } else {
-            getCurrentJIFTextPane().setSelectionEnd(0);
-            getCurrentJIFTextPane().setSelectionStart(0);            
-        }
-
-    }//GEN-LAST:event_jTextFieldFindKeyTyped
-
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         jDialogProjectSwitches.setVisible(false);
     }//GEN-LAST:event_jButton5ActionPerformed
@@ -3297,9 +3279,21 @@ public class jFrame extends JFrame {
 
     private void jMenuItemSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSearchActionPerformed
         String selezione = getCurrentJIFTextPane().getSelectedText();
-        if (selezione!=null){
-            jTextFieldFind.setText(selezione);
+        String box = jTextFieldFind.getText();
+        String target = null;
+        // vince la box
+        if (box != null && !box.equals("")){
+            target = box;
         }
+        else{
+            target = selezione;
+        }
+        
+        if (getCurrentJIFTextPane().isFocusOwner()) {
+            target = selezione;
+        } 
+        
+        jTextFieldFind.setText(target);
         getCurrentJIFTextPane().findString(this);
     }//GEN-LAST:event_jMenuItemSearchActionPerformed
 
@@ -8277,7 +8271,7 @@ public class jFrame extends JFrame {
     private Vector objTree;
     // hack variable
     private int int_var = 0;
-
+    
     public String getJifVersion() {
         return jifVersion;
     }
