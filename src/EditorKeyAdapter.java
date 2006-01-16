@@ -98,12 +98,14 @@ public class EditorKeyAdapter extends KeyAdapter {
             // If the current row is a comment, skip
             if (jif.getCurrentRow().indexOf("!")==-1){
                 if (jframe.getMapping().containsKey(ke.getKeyChar()+"")){
-                        try{
+//                        try{
                             MutableAttributeSet attr = new SimpleAttributeSet();
-                            jif.getDocument().insertString(jif.getCaretPosition(), (String)jframe.getMapping().get(ke.getKeyChar()+""), attr);
-                        } catch(BadLocationException e){
-                            System.out.println(e.getMessage());
-                        }
+                            jif.replaceSelection((String)jframe.getMapping().get(ke.getKeyChar()+""));
+                            //jif.getDocument().insertString(jif.getCaretPosition(), (String)jframe.getMapping().get(ke.getKeyChar()+""), attr);
+//                        } 
+//                        catch(BadLocationException e){
+//                            System.out.println(e.getMessage());
+//                        }
                         ke.consume();
                 }
             }
