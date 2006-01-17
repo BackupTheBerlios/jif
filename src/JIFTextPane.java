@@ -629,7 +629,7 @@ public class JIFTextPane extends JTextPane{
                 // if at least one string is found
                 if (Utils.IgnoreCaseIndexOf(text,pattern, 0)!=-1){
                     // append a message in the outputwindow
-                    parent.jTextAreaOutput.setText("END of file reached. Jump to the beginning");
+                    parent.jTextAreaOutput.setText(java.util.ResourceBundle.getBundle("JIF").getString("JIF_END_OF_FILE"));
                     setCaretPosition(0);
                     findString(parent);
                 } else{

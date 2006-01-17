@@ -3,14 +3,28 @@ CHANGELOG
 [NF]  New Feature
 [FIX] Bug Fixed
 
-JIF 2.3 (oct 2005)
+
+
+
+JIF 3.0 (Jan 2006)
 ==================
 
+
+- [NF]  Main Layout changed
+- [FIX] Tree's algorithm improved.
+- [NF]  TAB spacing customizable. The TAB character is expanded into spaces (customizable)
+- [NF]  ISO-8859-1 file format (note by linux user)
+- [FIX] Now you can choos where to save your project files (no more "projects" directory)
+- [FIX] Many bugfixes
+- [NF]  "Run garbage collector" Menu Item
+- [NF]  Every project has its own switches management
+- [NF]  Added the "mode" in the project file
+- [NF]  Configuration file now is Jif.cfg. If not exits, Jif will create a default one
+        (If there are some erros, you can delete the Jif.cfg file and restart Jif)
+        All Jif configuration is stored into this file. No more hundreds of config files.
+        For the linux users: now you can pass to JIF which config file to use. So you can
+        customize Jif to be used by different users.
 - [FIX] Translation Process: now JIF sort the strings to be translated before translation process
-
-JIF 2.2 (jul 2005)
-==================
-
 - [FIX] The findString method doesn't warning if the searching has arrived to the beginning of the current file
 - [FIX] The ReplaceAll method, now starts from the beginning of the current file
 - [FIX] Removed the Template Manager Management
@@ -20,12 +34,7 @@ JIF 2.2 (jul 2005)
 - [NF]  Added a new Menu (Search String)
 - [FIX] Bug #4416 FIX: Search string with F3, JIF will select the found string and give the focus
         When click on an object in the tree, the current window will receive the Focus
-
-JIF 2.1 (jul 2005)
-==================
-
 - [NF]  You can select "Wrap Line" option or "Show Line number" option (not both of them)
-- [NF]  Added a internationalized String JTEXTOUTPUT_CONFIG_SAVED = "Jif configuration file saved."
 - [NF]  Added a message to the Outputwindow when JIF saves the configuration file
 - [FIX] Fixed code Removed the update flag (not used)
 - [NF]  The names of files in tabs are shorted with "..."
@@ -33,7 +42,12 @@ JIF 2.1 (jul 2005)
 - [FIX] When closing a project, the main file is properly cleared
 - [FIX] Cut option added to right click menu
 - [FIX] Spanish syntax bugfixing
-- [FIX] Code beauting
+- [FIX] Added Keywords (to the syntax highlighter): 
+        Array, Replace, Release, Serial, Attribute, Property, Additive, End, Extend, 
+        Fake_Action, Import, Lowstring, Meta, NULL, Reverse, creature, held, multi, multiexcept, 
+        multiheld, multiinside, scope, special, topic, AskFor, AskTo, CommandsOn, CommandsOff, 
+        CommandsRead, Empty, GoIn, Transfer, Version, Yes, NotUnderstood, PluralFound
+
 
 JIF 2.0 (may 2005)
 ==================
