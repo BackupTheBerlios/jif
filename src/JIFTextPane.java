@@ -241,9 +241,7 @@ public class JIFTextPane extends JTextPane{
                 
                 // Check for \t characters
                 if (sb.indexOf("\t")!=-1){
-                    jframe.jTextAreaOutput.setText("Warning: this file contains TAB characters. " +
-                            "\nThis means it has been modified and saved within another text editor." +
-                            "\nJif will expands TAB into "+jframe.tabSize+" spaces. (See the options)");
+                    jframe.jTextAreaOutput.setText(java.util.ResourceBundle.getBundle("JIF").getString("JIF_TAB_WARNING"));
                     dsdoc.insertString(0, Utils.replace(sb.toString(),"\t",Utils.spacesForTab(jframe.tabSize-1)), sas);
                 } else{
                     dsdoc.insertString(0,sb.toString(), sas);

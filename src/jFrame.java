@@ -3818,6 +3818,18 @@ public class jFrame extends JFrame {
         } catch(Exception e){
             tabSize = 4;
         }
+        
+        setLibrarypath(jTextFieldPathLib.getText());
+        setLibrarypathsecondary1(jTextFieldPathLibSecondary1.getText());
+        setLibrarypathsecondary2(jTextFieldPathLibSecondary2.getText());
+        setLibrarypathsecondary3(jTextFieldPathLibSecondary3.getText());
+        setCompiledpath(jTextFieldPathCompiler.getText());
+        setInterpreterzcodepath(jTextFieldPathInterpreter.getText());
+        setInterpreterglulxpath(jTextFieldPathGlulx.getText());
+        setCompiledpath(jTextFieldPathGames.getText());
+        setBrespath(jTextFieldBres.getText());
+        setBlcpath(jTextFieldBlc.getText());
+        
         unquote();
         saveConfigNew();
     }//GEN-LAST:event_jButton10ActionPerformed
