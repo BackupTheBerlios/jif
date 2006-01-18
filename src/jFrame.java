@@ -231,8 +231,6 @@ public class jFrame extends JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
-
         jPopupMenu1 = new javax.swing.JPopupMenu();
         jMenuInsertNew = new javax.swing.JMenu();
         jMenuItemInsertSymbol = new javax.swing.JMenuItem();
@@ -991,58 +989,34 @@ public class jFrame extends JFrame {
 
         jDialogOption.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SETTING"));
         jDialogOption.setModal(true);
+        jDialogOption.setResizable(false);
         jTabbedPaneOption.setMinimumSize(new java.awt.Dimension(535, 535));
         jTabbedPaneOption.setPreferredSize(new java.awt.Dimension(535, 535));
         jPanelGeneral.setLayout(new javax.swing.BoxLayout(jPanelGeneral, javax.swing.BoxLayout.X_AXIS));
 
         jPanelGeneral.setMinimumSize(new java.awt.Dimension(277, 800));
-        jPanelGeneralOptions.setLayout(new java.awt.GridBagLayout());
+        jPanelGeneralOptions.setLayout(new java.awt.GridLayout(6, 2));
 
         jPanelGeneralOptions.setBorder(javax.swing.BorderFactory.createTitledBorder("General"));
         jPanelGeneralOptions.setMinimumSize(new java.awt.Dimension(205, 410));
         jPanelGeneralOptions.setPreferredSize(new java.awt.Dimension(205, 410));
         jCheckBoxOpenLastFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_LAST_OPEN_FILE"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGeneralOptions.add(jCheckBoxOpenLastFile, gridBagConstraints);
+        jPanelGeneralOptions.add(jCheckBoxOpenLastFile);
 
         jCheckBoxCreateNewFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("OPTION_CREATE_A_NEW_FILE"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGeneralOptions.add(jCheckBoxCreateNewFile, gridBagConstraints);
+        jPanelGeneralOptions.add(jCheckBoxCreateNewFile);
 
         jCheckBoxMappingLive.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_MAPPINGLIVE"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGeneralOptions.add(jCheckBoxMappingLive, gridBagConstraints);
+        jPanelGeneralOptions.add(jCheckBoxMappingLive);
 
         jCheckBoxHelpedCode.setSelected(true);
         jCheckBoxHelpedCode.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE"));
         jCheckBoxHelpedCode.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE_TOOLTIP"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGeneralOptions.add(jCheckBoxHelpedCode, gridBagConstraints);
+        jPanelGeneralOptions.add(jCheckBoxHelpedCode);
 
         jCheckBoxSyntax.setSelected(true);
         jCheckBoxSyntax.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SYNTAX"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGeneralOptions.add(jCheckBoxSyntax, gridBagConstraints);
+        jPanelGeneralOptions.add(jCheckBoxSyntax);
 
         jCheckBoxNumberLines.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_NUMBEROFLINES"));
         jCheckBoxNumberLines.addActionListener(new java.awt.event.ActionListener() {
@@ -1051,20 +1025,10 @@ public class jFrame extends JFrame {
             }
         });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGeneralOptions.add(jCheckBoxNumberLines, gridBagConstraints);
+        jPanelGeneralOptions.add(jCheckBoxNumberLines);
 
         jCheckBoxScanProjectFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SCAN_PROJECT"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGeneralOptions.add(jCheckBoxScanProjectFiles, gridBagConstraints);
+        jPanelGeneralOptions.add(jCheckBoxScanProjectFiles);
 
         jCheckBoxWrapLines.setText("Wrap Lines");
         jCheckBoxWrapLines.addActionListener(new java.awt.event.ActionListener() {
@@ -1073,42 +1037,22 @@ public class jFrame extends JFrame {
             }
         });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGeneralOptions.add(jCheckBoxWrapLines, gridBagConstraints);
+        jPanelGeneralOptions.add(jCheckBoxWrapLines);
 
         jCheckBoxProjectOpenAllFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_ALL_FILES"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGeneralOptions.add(jCheckBoxProjectOpenAllFiles, gridBagConstraints);
+        jPanelGeneralOptions.add(jCheckBoxProjectOpenAllFiles);
 
         jCheckBoxMakeResource.setText(java.util.ResourceBundle.getBundle("JIF").getString("GLULX_MAKE_RESOURCE_WHEN_BUILD_ALL"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGeneralOptions.add(jCheckBoxMakeResource, gridBagConstraints);
+        jPanelGeneralOptions.add(jCheckBoxMakeResource);
 
         jCheckBoxAdventInLib.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_ADVENT_IN_LIB"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGeneralOptions.add(jCheckBoxAdventInLib, gridBagConstraints);
+        jPanelGeneralOptions.add(jCheckBoxAdventInLib);
 
         jPanelGeneral.add(jPanelGeneralOptions);
 
         jTabbedPaneOption.addTab("General", jPanelGeneral);
 
-        jPanelPath.setLayout(new java.awt.GridBagLayout());
+        jPanelPath.setLayout(new javax.swing.BoxLayout(jPanelPath, javax.swing.BoxLayout.Y_AXIS));
 
         jPanel16.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1127,9 +1071,7 @@ public class jFrame extends JFrame {
 
         jPanel16.add(jButtonLibraryPath);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanelPath.add(jPanel16, gridBagConstraints);
+        jPanelPath.add(jPanel16);
 
         jPanel43.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1148,11 +1090,7 @@ public class jFrame extends JFrame {
 
         jPanel43.add(jButtonLibraryPath1);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanelPath.add(jPanel43, gridBagConstraints);
+        jPanelPath.add(jPanel43);
 
         jPanel45.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1171,11 +1109,7 @@ public class jFrame extends JFrame {
 
         jPanel45.add(jButtonLibraryPath2);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanelPath.add(jPanel45, gridBagConstraints);
+        jPanelPath.add(jPanel45);
 
         jPanel49.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1194,11 +1128,7 @@ public class jFrame extends JFrame {
 
         jPanel49.add(jButtonLibraryPath3);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanelPath.add(jPanel49, gridBagConstraints);
+        jPanelPath.add(jPanel49);
 
         jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1217,11 +1147,7 @@ public class jFrame extends JFrame {
 
         jPanel17.add(jButtonCompiledPath);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanelPath.add(jPanel17, gridBagConstraints);
+        jPanelPath.add(jPanel17);
 
         jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1240,11 +1166,7 @@ public class jFrame extends JFrame {
 
         jPanel18.add(jButtonCompilerPath);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanelPath.add(jPanel18, gridBagConstraints);
+        jPanelPath.add(jPanel18);
 
         jPanel19.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1263,11 +1185,7 @@ public class jFrame extends JFrame {
 
         jPanel19.add(jButtonInterpreterPath);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanelPath.add(jPanel19, gridBagConstraints);
+        jPanelPath.add(jPanel19);
 
         jPanel44.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1288,11 +1206,7 @@ public class jFrame extends JFrame {
 
         jPanel44.add(jButtonGlulxPath);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanelPath.add(jPanel44, gridBagConstraints);
+        jPanelPath.add(jPanel44);
 
         jPanel46.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1312,11 +1226,7 @@ public class jFrame extends JFrame {
 
         jPanel46.add(jButtonBres);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanelPath.add(jPanel46, gridBagConstraints);
+        jPanelPath.add(jPanel46);
 
         jPanel47.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1336,11 +1246,7 @@ public class jFrame extends JFrame {
 
         jPanel47.add(jButtonBlc);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanelPath.add(jPanel47, gridBagConstraints);
+        jPanelPath.add(jPanel47);
 
         jTabbedPaneOption.addTab("Path", jPanelPath);
 
@@ -1351,11 +1257,12 @@ public class jFrame extends JFrame {
         jPanelColor.setPreferredSize(new java.awt.Dimension(277, 260));
         jEditorPaneColor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jEditorPaneColor.setEditable(false);
-        jEditorPaneColor.setMaximumSize(new java.awt.Dimension(100, 100));
-        jEditorPaneColor.setPreferredSize(new java.awt.Dimension(102, 12));
+        jEditorPaneColor.setMaximumSize(new java.awt.Dimension(50, 50));
+        jEditorPaneColor.setMinimumSize(new java.awt.Dimension(50, 50));
+        jEditorPaneColor.setPreferredSize(new java.awt.Dimension(50, 50));
         jPanelColor.add(jEditorPaneColor, java.awt.BorderLayout.CENTER);
 
-        jPanel14.setLayout(new java.awt.GridLayout(8, 0));
+        jPanel14.setLayout(new java.awt.GridLayout(2, 4));
 
         jPanelDefaultDark.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1501,7 +1408,7 @@ public class jFrame extends JFrame {
 
         jPanel14.add(jPanel26);
 
-        jPanelColor.add(jPanel14, java.awt.BorderLayout.EAST);
+        jPanelColor.add(jPanel14, java.awt.BorderLayout.NORTH);
 
         jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
@@ -3289,7 +3196,7 @@ public class jFrame extends JFrame {
             target = selezione;
         }
         
-        if (getCurrentJIFTextPane().isFocusOwner()) {
+        if (getCurrentJIFTextPane().isFocusOwner() && selezione != null) {
             target = selezione;
         } 
         
@@ -3636,8 +3543,8 @@ public class jFrame extends JFrame {
         jComboBoxFont.setSelectedItem(tmpFont.getName());
         jComboBoxFontSize.setSelectedItem(String.valueOf(tmpFont.getSize()));
 
-        jDialogOption.pack();
-        //jDialogOption.setSize(580,560);
+        //jDialogOption.pack();
+        jDialogOption.setSize(580,560);
         //jDialogOption.setSize(580,540);
         jDialogOption.setLocationRelativeTo(this);
         jDialogOption.setVisible(true);
@@ -3850,8 +3757,8 @@ public class jFrame extends JFrame {
         Font tmpFont = defaultFont;
         jComboBoxFont.setSelectedItem(tmpFont.getName());
         jComboBoxFontSize.setSelectedItem(String.valueOf(tmpFont.getSize()));
-        jDialogOption.pack();
-        //jDialogOption.setSize(580,560);
+        //jDialogOption.pack();
+        jDialogOption.setSize(580,560);
         //jDialogOption.setSize(580,540);
         jDialogOption.setLocationRelativeTo(this);
         jDialogOption.setVisible(true);
@@ -5104,6 +5011,7 @@ public class jFrame extends JFrame {
                 m = patt.matcher(cb);
                 while (m.find()){
                     JMenuItem mi = new JMenuItem(m.group(1));
+                    mi.setFont(new java.awt.Font("Dialog", 0, 11));
                     mi.setName(m.group(1));
                     menu.add(mi).addMouseListener(menuListener);
                     operations.put(m.group(1),m.group(2));
@@ -6432,7 +6340,6 @@ public class jFrame extends JFrame {
         String result = file.getAbsolutePath();
         lastDir = result.substring(0,result.lastIndexOf(Constants.SEP));
 
-
         // se il file non ha estensione: gliela inserisco io INF
         if (result.lastIndexOf(".")==-1){
             result = result+".inf";
@@ -6457,8 +6364,6 @@ public class jFrame extends JFrame {
 
 
         // controllo che non esista già un file con quel nome
-        //File file = new File(compiledpath+Constants.SEP+result);
-
         if (file.exists()){
             int overwrite = JOptionPane.showConfirmDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE4"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE2") , JOptionPane.ERROR_MESSAGE);
             if (overwrite == 1) return;
@@ -6534,12 +6439,8 @@ public class jFrame extends JFrame {
             File file = chooser.getSelectedFile();
 
             if (file.getName().indexOf(".jpf")==-1){
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Project File must have a '.jpf' extension.",
-                        "Error" ,
-                        JOptionPane.ERROR_MESSAGE);
-                return;
+                // Add the .jpf extension
+                file = new File(file.getAbsolutePath()+".jpf");
             }
 
             if (file.exists()){
@@ -6587,7 +6488,7 @@ public class jFrame extends JFrame {
                     getJPanelProjectSwitch().add(check);
             }
             saveProject(true);
-
+            enableProject();
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
