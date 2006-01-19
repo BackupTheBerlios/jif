@@ -3464,8 +3464,12 @@ public class jFrame extends JFrame {
 
     private void jMenuItemAddNewToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAddNewToProjectActionPerformed
         // Creates a new file and append this to the project
+        if (null == currentProject || currentProject.equals(Constants.PROJECTEMPTY)) {
+            return;
+        }                
         newAdventure();
-        saveAs();
+        String dir = currentProject.substring(0,currentProject.lastIndexOf(Constants.SEP));
+        saveAs(dir);
         projectFiles.add(new FileProject(jFrame.getCurrentFilename()));
         jListProject.removeAll();
         // Sorting the vector
@@ -3483,8 +3487,12 @@ public class jFrame extends JFrame {
 
     private void jMenuItemPopupAddNewToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupAddNewToProjectActionPerformed
         // Creates a new file and append this to the project
+        if (null == currentProject || currentProject.equals(Constants.PROJECTEMPTY)) {
+            return;
+        }                
         newAdventure();
-        saveAs();
+        String dir = currentProject.substring(0,currentProject.lastIndexOf(Constants.SEP));
+        saveAs(dir);
         projectFiles.add(new FileProject(jFrame.getCurrentFilename()));
         jListProject.removeAll();
         // Sorting the vector
@@ -3800,7 +3808,7 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jMenuItemPrint1ActionPerformed
 
     private void SaveAsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveAsButtonActionPerformed
-        saveAs();
+        saveAs(null);
     }//GEN-LAST:event_SaveAsButtonActionPerformed
 
     private void jMenuItemNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNewProjectActionPerformed
@@ -4144,7 +4152,7 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void SaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveAsActionPerformed
-        saveAs();
+        saveAs(null);
     }//GEN-LAST:event_SaveAsActionPerformed
 
     private void jMenuItemConfigFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemConfigFileActionPerformed
@@ -4323,7 +4331,6 @@ public class jFrame extends JFrame {
 
     public void saveFile() {
         if (jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).endsWith("*")){
-            //getCurrentFilename().indexOf("*")!=-1){
             jTabbedPane1.setTitleAt(jTabbedPane1.getSelectedIndex(),
                     jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).substring(0,jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).length()-1)
                     );
@@ -6313,20 +6320,20 @@ public class jFrame extends JFrame {
     }
 
 
-    public void saveAs(){
+    public void saveAs(String directory){
         // recupero il nuovo nome del file e lo salvo....
         // String result = JOptionPane.showInputDialog(this , java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE1")+compiledpath, java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE2"), JOptionPane.OK_CANCEL_OPTION);
-
         JFileChooser chooser;
-        if (lastDir!=null && !lastDir.equals("")){
+        if (null != directory){
+            chooser  = new JFileChooser(directory);
+        }        
+        else if (lastDir!=null && !lastDir.equals("")){
             chooser  = new JFileChooser(lastDir);
-            chooser.setDialogTitle(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEAS"));
-            chooser.setApproveButtonText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
         } else {
             chooser = new JFileChooser(this.getCompiledpath());
-            chooser.setDialogTitle(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEAS"));
-            chooser.setApproveButtonText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
         }
+        chooser.setDialogTitle(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEAS"));
+        chooser.setApproveButtonText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));            
 
         // Selezione Multipla
         chooser.setMultiSelectionEnabled(false);
@@ -6362,17 +6369,15 @@ public class jFrame extends JFrame {
             result = result+".inf";
         }
 
-
         // controllo che non esista già un file con quel nome
         if (file.exists()){
             int overwrite = JOptionPane.showConfirmDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE4"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE2") , JOptionPane.ERROR_MESSAGE);
             if (overwrite == 1) return;
         }
 
-        //salvataggio
-        //jTabbedPane1.setTitleAt( jTabbedPane1.getSelectedIndex(), compiledpath+Constants.SEP+result);
-        //PROBLEMA
         jTabbedPane1.setTitleAt( jTabbedPane1.getSelectedIndex(), result);
+        JIFScrollPane aScrollPane=(JIFScrollPane)jTabbedPane1.getComponentAt(jTabbedPane1.getSelectedIndex());        
+        aScrollPane.setFile(result);
         saveFile();
 
         // Refresh Tree
@@ -6383,7 +6388,13 @@ public class jFrame extends JFrame {
     // funzione che gestisce l'inserimento di files in un progetto
     // supporta la seleziona multipla
     public void addFilesToProject(){
-        JFileChooser chooser = new JFileChooser(getCompiledpath());
+        // If a project is null, return
+        if (null == currentProject || currentProject.equals(Constants.PROJECTEMPTY)) {
+            return;
+        }        
+        // Open the project file dir to add the files
+        String dir = currentProject.substring(0,currentProject.lastIndexOf(Constants.SEP));
+        JFileChooser chooser = new JFileChooser(dir);
         JifFileFilter infFilter = new JifFileFilter("inf", java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF7"));
         infFilter.addExtension("h");
         infFilter.addExtension("res");

@@ -34,10 +34,10 @@ import javax.swing.*;
 
 public class JIFScrollPane extends JScrollPane{
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = -4897501931771671145L;
-	String filePath;
+    * 
+    */
+    private static final long serialVersionUID = -4897501931771671145L;
+    String filePath;
     /** Creates a new instance of JIFScrollPane */
     public JIFScrollPane(JIFTextPane aJIFTextPane,String aPath) {
         super(aJIFTextPane);
@@ -46,5 +46,8 @@ public class JIFScrollPane extends JScrollPane{
     }
     String getFile(){
         return filePath;
+    }
+    void setFile(String filename){
+        this.filePath = filename;
     }
 }
