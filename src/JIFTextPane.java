@@ -140,6 +140,8 @@ public class JIFTextPane extends JTextPane{
                 // adding a "*" to the file name, when the file has changed but not saved
                 if (jframe.getTabbed().getComponentCount()!=0  && jFrame.getCurrentFilename().indexOf("*")==-1){
                     jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), subPath+"*");
+//                    JIFScrollPane aScrollPane=(JIFScrollPane)jframe.getTabbed().getComponentAt(jframe.getTabbed().getSelectedIndex());        
+//                    aScrollPane.setFile(subPath+"*");                                
                     jframe.setTitle(jframe.getJifVersion() +" - " + jFrame.getCurrentFilename());
                 }
             }
@@ -157,6 +159,8 @@ public class JIFTextPane extends JTextPane{
                         // adding a "*" to the file name, when the file has changed but not saved
                         if (jframe.getTabbed().getComponentCount()!=0  && jFrame.getCurrentFilename().indexOf("*")==-1){
                             jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), subPath+"*");
+//                            JIFScrollPane aScrollPane=(JIFScrollPane)jframe.getTabbed().getComponentAt(jframe.getTabbed().getSelectedIndex());        
+//                            aScrollPane.setFile(subPath+"*");                                                            
                             jframe.setTitle(jframe.getJifVersion() +" - " + jFrame.getCurrentFilename());
                         }
                     }

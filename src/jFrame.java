@@ -47,6 +47,7 @@ import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -2208,12 +2209,6 @@ public class jFrame extends JFrame {
         jTextFieldDefinition.setMaximumSize(new java.awt.Dimension(150, 20));
         jTextFieldDefinition.setMinimumSize(new java.awt.Dimension(30, 20));
         jTextFieldDefinition.setPreferredSize(new java.awt.Dimension(90, 20));
-        jTextFieldDefinition.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldDefinitionActionPerformed(evt);
-            }
-        });
-
         jPanelDefinition.add(jTextFieldDefinition);
 
         jButtonDefinition.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png")));
@@ -3259,13 +3254,6 @@ public class jFrame extends JFrame {
         }
     }//GEN-LAST:event_jMenuItemSetBookmarkActionPerformed
 
-    private void jTextFieldDefinitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldDefinitionActionPerformed
-//        // Search for definition
-//        if (!jTextFieldDefinition.getText().equals("")){
-//            checkTree(jTextFieldDefinition.getText());
-//        }
-    }//GEN-LAST:event_jTextFieldDefinitionActionPerformed
-
     private void jButtonLibraryPath3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLibraryPath3ActionPerformed
         JFileChooser chooser = new JFileChooser(workingDir);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -3552,7 +3540,7 @@ public class jFrame extends JFrame {
         jComboBoxFontSize.setSelectedItem(String.valueOf(tmpFont.getSize()));
 
         //jDialogOption.pack();
-        jDialogOption.setSize(580,560);
+        jDialogOption.setSize(600,560);
         //jDialogOption.setSize(580,540);
         jDialogOption.setLocationRelativeTo(this);
         jDialogOption.setVisible(true);
@@ -3766,7 +3754,7 @@ public class jFrame extends JFrame {
         jComboBoxFont.setSelectedItem(tmpFont.getName());
         jComboBoxFontSize.setSelectedItem(String.valueOf(tmpFont.getSize()));
         //jDialogOption.pack();
-        jDialogOption.setSize(580,560);
+        jDialogOption.setSize(600,560);
         //jDialogOption.setSize(580,540);
         jDialogOption.setLocationRelativeTo(this);
         jDialogOption.setVisible(true);
@@ -4331,9 +4319,10 @@ public class jFrame extends JFrame {
 
     public void saveFile() {
         if (jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).endsWith("*")){
-            jTabbedPane1.setTitleAt(jTabbedPane1.getSelectedIndex(),
-                    jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).substring(0,jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).length()-1)
-                    );
+            String newtitle = jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).substring(0,jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).length()-1);
+            jTabbedPane1.setTitleAt(jTabbedPane1.getSelectedIndex(), newtitle);
+//            JIFScrollPane aScrollPane=(JIFScrollPane)jTabbedPane1.getComponentAt(jTabbedPane1.getSelectedIndex());        
+//            aScrollPane.setFile(newtitle);            
         }
         clearOutput();
 
@@ -5436,6 +5425,7 @@ public class jFrame extends JFrame {
                             try{
                                 if (ins != null){
                                     int pos = el.getElementIndex(ins.Iposition);
+                                    Element el = jif.getDocument().getDefaultRootElement(); 
                                     el = jif.getDocument().getDefaultRootElement().getElement(pos);
                                     jif.getHlighter().highlightFromTo(jif, el.getStartOffset() , el.getEndOffset());
 
@@ -5455,12 +5445,15 @@ public class jFrame extends JFrame {
                     if ( ins.Ilabel.equals(key)  ){
                         try{
                             if (ins != null){
+                                el = jif.getDocument().getDefaultRootElement();
                                 int pos = el.getElementIndex(ins.Iposition);
                                 el = jif.getDocument().getDefaultRootElement().getElement(pos);
                                 jif.getHlighter().highlightFromTo(jif, el.getStartOffset() , el.getEndOffset());
 
                                 jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                                 jif.scrollRectToVisible(jif.modelToView(ins.Iposition));
+                                jif.requestFocus();
+                                jif.setCaretPosition(ins.Iposition);                                
                             }
 
                         }catch(Exception e){
@@ -6378,6 +6371,7 @@ public class jFrame extends JFrame {
         jTabbedPane1.setTitleAt( jTabbedPane1.getSelectedIndex(), result);
         JIFScrollPane aScrollPane=(JIFScrollPane)jTabbedPane1.getComponentAt(jTabbedPane1.getSelectedIndex());        
         aScrollPane.setFile(result);
+        getCurrentJIFTextPane().setPaths(result); // BUG in the TAB title
         saveFile();
 
         // Refresh Tree
