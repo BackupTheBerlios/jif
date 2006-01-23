@@ -2287,7 +2287,7 @@ public class jFrame extends JFrame {
 
         jScrollPane2.setViewportView(jTextAreaOutput);
 
-        jTabbedPane2.addTab("Compiler Output", jScrollPane2);
+        jTabbedPane2.addTab(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_OUTPUT"), jScrollPane2);
         jScrollPane2.getAccessibleContext().setAccessibleParent(jTabbedPane2);
 
         jSplitPane3.setBottomComponent(jTabbedPane2);
