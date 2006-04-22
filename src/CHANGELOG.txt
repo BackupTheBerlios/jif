@@ -4,17 +4,27 @@ CHANGELOG
 [FIX] Bug Fixed
 
 
+JIF 3.1 (Apr 2006)
+==================
+
+- [FIX] Syntax highlighting algorithm improved.
+- [NF]  String syntax highlighting added.
+- [NF]  String syntax customizabled
+- [FIX] Spaces in message (BUG6321)
+- [FIX] Error in saving the compiler path
+- [FIX] Tool tip text fixed (BUG6323)
+- [FIX] CTRL + INS double insert error
+- [FIX] Constant into a comment, visualized into the object tree
 
 
 JIF 3.0 (Jan 2006)
 ==================
 
-
 - [NF]  Main Layout changed
 - [FIX] Tree's algorithm improved.
 - [NF]  TAB spacing customizable. The TAB character is expanded into spaces (customizable)
 - [NF]  ISO-8859-1 file format (note by linux user)
-- [FIX] Now you can choos where to save your project files (no more "projects" directory)
+- [FIX] Now you can choose where to save your project files (no more "projects" directory)
 - [FIX] Many bugfixes
 - [NF]  "Run garbage collector" Menu Item
 - [NF]  Every project has its own switches management

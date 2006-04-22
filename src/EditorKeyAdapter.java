@@ -9,10 +9,10 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2005  Alessandro Schillaci
+ * Copyright (C) 2004-2006  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
- * e-m@il: silver.slade@tiscalinet.it
+ * e-m@il: silver.slade@tiscali.it
  *
  * Jif is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,9 +30,13 @@
  *
  */
 
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-import javax.swing.text.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
 
 /**
  * EditorKeyAdapter for the JIFTextPane
@@ -99,7 +103,7 @@ public class EditorKeyAdapter extends KeyAdapter {
             if (jif.getCurrentRow().indexOf("!")==-1){
                 if (jframe.getMapping().containsKey(ke.getKeyChar()+"")){
 //                        try{
-                            MutableAttributeSet attr = new SimpleAttributeSet();
+                            //MutableAttributeSet attr = new SimpleAttributeSet();
                             jif.replaceSelection((String)jframe.getMapping().get(ke.getKeyChar()+""));
                             //jif.getDocument().insertString(jif.getCaretPosition(), (String)jframe.getMapping().get(ke.getKeyChar()+""), attr);
 //                        } 
@@ -135,7 +139,7 @@ public class EditorKeyAdapter extends KeyAdapter {
             }
             
             
-            // Automatic JUMP to object, if present into the object tree
+            // Automatic JUMP to object, if present in the object tree
             if (ke.getKeyCode() == KeyEvent.VK_J && ke.isControlDown()) {
                 jframe.checkTree(jif.getCurrentWord());
             }
@@ -185,24 +189,24 @@ public class EditorKeyAdapter extends KeyAdapter {
 
                 // Search for open parenthesis
                 if (jif.getText(jif.getCaretPosition()-1,1).equals("{")){
-                    jif.searchCloseBraket("{","}");
+                    jif.searchCloseBracket("{","}");
                 }
                 if (jif.getText(jif.getCaretPosition()-1,1).equals("[")){
-                    jif.searchCloseBraket("[","]");
+                    jif.searchCloseBracket("[","]");
                 }
                 if (jif.getText(jif.getCaretPosition()-1,1).equals("(")){
-                    jif.searchCloseBraket("(",")");
+                    jif.searchCloseBracket("(",")");
                 }
 
                 // Search for closed parenthesis
                 if (jif.getText(jif.getCaretPosition()-1,1).equals("}")){
-                    jif.searchOpenBraket("}","{");
+                    jif.searchOpenBracket("}","{");
                 }
                 if (jif.getText(jif.getCaretPosition()-1,1).equals("]")){
-                    jif.searchOpenBraket("]","[");
+                    jif.searchOpenBracket("]","[");
                 }
                 if (jif.getText(jif.getCaretPosition()-1,1).equals(")")){
-                    jif.searchOpenBraket(")","(");
+                    jif.searchOpenBracket(")","(");
                 }
                 return;
             }
@@ -257,13 +261,13 @@ public class EditorKeyAdapter extends KeyAdapter {
                 jframe.copyToClipBoard();
             }
             // SHIFT+INS for "paste" command
-            else if( (ke.getKeyCode() == KeyEvent.VK_INSERT)&&(ke.isShiftDown()) ){
-                String paste = jFrame.getClipboard();
-                if (paste!=null){
-                    MutableAttributeSet attr = new SimpleAttributeSet();
-                    jif.getDocument().insertString(jif.getCaretPosition() , paste , attr);
-                }
-            }
+//            else if( (ke.getKeyCode() == KeyEvent.VK_INSERT)&&(ke.isShiftDown()) ){
+//                String paste = jFrame.getClipboard();
+//                if (paste!=null){
+//                    MutableAttributeSet attr = new SimpleAttributeSet();
+//                    jif.getDocument().insertString(jif.getCaretPosition() , paste , attr);
+//                }
+//            }
 
         } catch(Exception ble) {
             System.out.println(ble.getMessage());

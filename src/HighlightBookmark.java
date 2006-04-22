@@ -9,10 +9,10 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004  Alessandro Schillaci
+ * Copyright (C) 2004-2006  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
- * e-m@il: silver.slade@tiscalinet.it
+ * e-m@il: silver.slade@tiscali.it
  *
  * Jif is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

@@ -1,7 +1,7 @@
 _______________________________________________________________________________________________
                         >>>>>>> JIF - a java editor for Inform <<<<<<<
                                         Version 3.0 
-                           © Copyright 2003-2005 Alessandro Schillaci
+                           © Copyright 2003-2006 Alessandro Schillaci
 _______________________________________________________________________________________________
 
 >>> Last Update of this document: 2006-01-12 at 19:35<<<
@@ -503,7 +503,7 @@ Warning!!! Do not edit this section by hand. Use the configuration Panel.
 Copyright (C) 2003-2005  Alessandro Schillaci
 
 WeB   : http://www.slade.altervista.org/JIF/
-e-m@il: silver.slade@tiscalinet.it
+e-m@il: silver.slade@tiscali.it
 
 Jif is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

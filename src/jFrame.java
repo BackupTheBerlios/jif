@@ -9,10 +9,10 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2003-2006  Alessandro Schillaci
+ * Copyright (C) 2004-2006  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
- * e-m@il: silver.slade@tiscalinet.it
+ * e-m@il: silver.slade@tiscali.it
  *
  * Jif is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,12 +46,18 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -60,6 +66,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -89,17 +97,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-
-import java.io.FileInputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /*
@@ -232,6 +229,8 @@ public class jFrame extends JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
+
         jPopupMenu1 = new javax.swing.JPopupMenu();
         jMenuInsertNew = new javax.swing.JMenu();
         jMenuItemInsertSymbol = new javax.swing.JMenuItem();
@@ -301,7 +300,6 @@ public class jFrame extends JFrame {
         jDialogOption = new JDialog (this, "", false);
         jTabbedPaneOption = new javax.swing.JTabbedPane();
         jPanelGeneral = new javax.swing.JPanel();
-        jPanelGeneralOptions = new javax.swing.JPanel();
         jCheckBoxOpenLastFile = new javax.swing.JCheckBox();
         jCheckBoxCreateNewFile = new javax.swing.JCheckBox();
         jCheckBoxMappingLive = new javax.swing.JCheckBox();
@@ -313,47 +311,6 @@ public class jFrame extends JFrame {
         jCheckBoxProjectOpenAllFiles = new javax.swing.JCheckBox();
         jCheckBoxMakeResource = new javax.swing.JCheckBox();
         jCheckBoxAdventInLib = new javax.swing.JCheckBox();
-        jPanelPath = new javax.swing.JPanel();
-        jPanel16 = new javax.swing.JPanel();
-        jLabel13 = new javax.swing.JLabel();
-        jTextFieldPathLib = new javax.swing.JTextField();
-        jButtonLibraryPath = new javax.swing.JButton();
-        jPanel43 = new javax.swing.JPanel();
-        jLabel18 = new javax.swing.JLabel();
-        jTextFieldPathLibSecondary1 = new javax.swing.JTextField();
-        jButtonLibraryPath1 = new javax.swing.JButton();
-        jPanel45 = new javax.swing.JPanel();
-        jLabel20 = new javax.swing.JLabel();
-        jTextFieldPathLibSecondary2 = new javax.swing.JTextField();
-        jButtonLibraryPath2 = new javax.swing.JButton();
-        jPanel49 = new javax.swing.JPanel();
-        jLabel21 = new javax.swing.JLabel();
-        jTextFieldPathLibSecondary3 = new javax.swing.JTextField();
-        jButtonLibraryPath3 = new javax.swing.JButton();
-        jPanel17 = new javax.swing.JPanel();
-        jLabel14 = new javax.swing.JLabel();
-        jTextFieldPathGames = new javax.swing.JTextField();
-        jButtonCompiledPath = new javax.swing.JButton();
-        jPanel18 = new javax.swing.JPanel();
-        jLabel15 = new javax.swing.JLabel();
-        jTextFieldPathCompiler = new javax.swing.JTextField();
-        jButtonCompilerPath = new javax.swing.JButton();
-        jPanel19 = new javax.swing.JPanel();
-        jLabel16 = new javax.swing.JLabel();
-        jTextFieldPathInterpreter = new javax.swing.JTextField();
-        jButtonInterpreterPath = new javax.swing.JButton();
-        jPanel44 = new javax.swing.JPanel();
-        jLabel19 = new javax.swing.JLabel();
-        jTextFieldPathGlulx = new javax.swing.JTextField();
-        jButtonGlulxPath = new javax.swing.JButton();
-        jPanel46 = new javax.swing.JPanel();
-        jLabelBres = new javax.swing.JLabel();
-        jTextFieldBres = new javax.swing.JTextField();
-        jButtonBres = new javax.swing.JButton();
-        jPanel47 = new javax.swing.JPanel();
-        jLabelBlc = new javax.swing.JLabel();
-        jTextFieldBlc = new javax.swing.JTextField();
-        jButtonBlc = new javax.swing.JButton();
         jPanelColor = new javax.swing.JPanel();
         jEditorPaneColor = new javax.swing.JEditorPane();
         jPanel14 = new javax.swing.JPanel();
@@ -381,7 +338,11 @@ public class jFrame extends JFrame {
         jPanel26 = new javax.swing.JPanel();
         jLabelKeyword = new javax.swing.JLabel();
         jButtonKeyword = new javax.swing.JButton();
+        jPanel29 = new javax.swing.JPanel();
+        jLabelString = new javax.swing.JLabel();
+        jButtonString = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
         jComboBoxFont = new javax.swing.JComboBox();
         jComboBoxFont.addItem("Arial");
         jComboBoxFont.addItem("Book Antiqua");
@@ -407,8 +368,51 @@ public class jFrame extends JFrame {
         jComboBoxFontSize.addItem("16");
 
         jPanel10 = new javax.swing.JPanel();
-        jTextFieldTabSize = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
+        jTextFieldTabSize = new javax.swing.JTextField();
+        jPanelPath = new javax.swing.JPanel();
+        jPanel17 = new javax.swing.JPanel();
+        jLabel14 = new javax.swing.JLabel();
+        jTextFieldPathGames = new javax.swing.JTextField();
+        jButtonCompiledPath = new javax.swing.JButton();
+        jPanel18 = new javax.swing.JPanel();
+        jLabel15 = new javax.swing.JLabel();
+        jTextFieldPathCompiler = new javax.swing.JTextField();
+        jButtonCompilerPath = new javax.swing.JButton();
+        jPanel19 = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        jTextFieldPathInterpreter = new javax.swing.JTextField();
+        jButtonInterpreterPath = new javax.swing.JButton();
+        jPanelLibraryPath = new javax.swing.JPanel();
+        jPanel16 = new javax.swing.JPanel();
+        jLabel13 = new javax.swing.JLabel();
+        jTextFieldPathLib = new javax.swing.JTextField();
+        jButtonLibraryPath = new javax.swing.JButton();
+        jPanel43 = new javax.swing.JPanel();
+        jLabel18 = new javax.swing.JLabel();
+        jTextFieldPathLibSecondary1 = new javax.swing.JTextField();
+        jButtonLibraryPath1 = new javax.swing.JButton();
+        jPanel45 = new javax.swing.JPanel();
+        jLabel20 = new javax.swing.JLabel();
+        jTextFieldPathLibSecondary2 = new javax.swing.JTextField();
+        jButtonLibraryPath2 = new javax.swing.JButton();
+        jPanel49 = new javax.swing.JPanel();
+        jLabel21 = new javax.swing.JLabel();
+        jTextFieldPathLibSecondary3 = new javax.swing.JTextField();
+        jButtonLibraryPath3 = new javax.swing.JButton();
+        jPanelGlulxPath = new javax.swing.JPanel();
+        jPanel44 = new javax.swing.JPanel();
+        jLabel19 = new javax.swing.JLabel();
+        jTextFieldPathGlulx = new javax.swing.JTextField();
+        jButtonGlulxPath = new javax.swing.JButton();
+        jPanel46 = new javax.swing.JPanel();
+        jLabelBres = new javax.swing.JLabel();
+        jTextFieldBres = new javax.swing.JTextField();
+        jButtonBres = new javax.swing.JButton();
+        jPanel47 = new javax.swing.JPanel();
+        jLabelBlc = new javax.swing.JLabel();
+        jTextFieldBlc = new javax.swing.JTextField();
+        jButtonBlc = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jButton10 = new javax.swing.JButton();
         jButton23 = new javax.swing.JButton();
@@ -435,6 +439,7 @@ public class jFrame extends JFrame {
         jButton8 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextAreaProjectProperties = new javax.swing.JTextArea();
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel22 = new javax.swing.JPanel();
         jButtonNew = new javax.swing.JButton();
         OpenButton = new javax.swing.JButton();
@@ -716,7 +721,7 @@ public class jFrame extends JFrame {
         jTextArea1.setEditable(false);
         jTextArea1.setFont(new java.awt.Font("MonoSpaced", 0, 11));
         jTextArea1.setRows(5);
-        jTextArea1.setText("JIF, a java editor for Inform Version 3\nby Alessandro Schillaci\nhttp://www.slade.altervista.org/JIF/\n\nDevelopment: \n- Alessandro Schillaci\n- Luis Fernandez\n- Peter F. Piggott\n\nContributors:\nPaolo Lucchesi\nVincenzo Scarpa\nBaltasar Garc\u00eda Perez-Schofield\nChristof Menear\nGiles Boutel\nJavier San Jos\u00e9\nDavid Moreno\nEric Forgeot\nMax Kalus\nAdrien Saurat\nAlex V Flinsch\nDaryl McCullough\nGiancarlo Niccolai\nIgnazio di Napoli\nJoerg Rosenbauer\nMatteo De Simone\nTommaso Caldarola");
+        jTextArea1.setText("JIF, a java editor for Inform\nby Alessandro Schillaci\nhttp://www.slade.altervista.org/JIF/\n\nDevelopment: \n- Alessandro Schillaci\n- Luis Fernandez\n- Peter F. Piggott\n\nContributors:\nPaolo Lucchesi\nVincenzo Scarpa\nBaltasar Garc\u00eda Perez-Schofield\nChristof Menear\nGiles Boutel\nJavier San Jos\u00e9\nDavid Moreno\nEric Forgeot\nMax Kalus\nAdrien Saurat\nAlex V Flinsch\nDaryl McCullough\nGiancarlo Niccolai\nIgnazio di Napoli\nJoerg Rosenbauer\nMatteo De Simone\nTommaso Caldarola");
         jScrollPaneAbout.setViewportView(jTextArea1);
 
         jTabbedPane3.addTab("Credits", jScrollPaneAbout);
@@ -990,34 +995,53 @@ public class jFrame extends JFrame {
 
         jDialogOption.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SETTING"));
         jDialogOption.setModal(true);
-        jDialogOption.setResizable(false);
-        jTabbedPaneOption.setMinimumSize(new java.awt.Dimension(535, 535));
-        jTabbedPaneOption.setPreferredSize(new java.awt.Dimension(535, 535));
-        jPanelGeneral.setLayout(new javax.swing.BoxLayout(jPanelGeneral, javax.swing.BoxLayout.X_AXIS));
+        jTabbedPaneOption.setMinimumSize(new java.awt.Dimension(100, 100));
+        jTabbedPaneOption.setPreferredSize(new java.awt.Dimension(500, 450));
+        jPanelGeneral.setLayout(new java.awt.GridBagLayout());
 
         jPanelGeneral.setMinimumSize(new java.awt.Dimension(277, 800));
-        jPanelGeneralOptions.setLayout(new java.awt.GridLayout(6, 2));
-
-        jPanelGeneralOptions.setBorder(javax.swing.BorderFactory.createTitledBorder("General"));
-        jPanelGeneralOptions.setMinimumSize(new java.awt.Dimension(205, 410));
-        jPanelGeneralOptions.setPreferredSize(new java.awt.Dimension(205, 410));
+        jPanelGeneral.setPreferredSize(new java.awt.Dimension(192, 138));
         jCheckBoxOpenLastFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_LAST_OPEN_FILE"));
-        jPanelGeneralOptions.add(jCheckBoxOpenLastFile);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanelGeneral.add(jCheckBoxOpenLastFile, gridBagConstraints);
 
         jCheckBoxCreateNewFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("OPTION_CREATE_A_NEW_FILE"));
-        jPanelGeneralOptions.add(jCheckBoxCreateNewFile);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanelGeneral.add(jCheckBoxCreateNewFile, gridBagConstraints);
 
         jCheckBoxMappingLive.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_MAPPINGLIVE"));
-        jPanelGeneralOptions.add(jCheckBoxMappingLive);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanelGeneral.add(jCheckBoxMappingLive, gridBagConstraints);
 
         jCheckBoxHelpedCode.setSelected(true);
         jCheckBoxHelpedCode.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE"));
         jCheckBoxHelpedCode.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE_TOOLTIP"));
-        jPanelGeneralOptions.add(jCheckBoxHelpedCode);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanelGeneral.add(jCheckBoxHelpedCode, gridBagConstraints);
 
         jCheckBoxSyntax.setSelected(true);
         jCheckBoxSyntax.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SYNTAX"));
-        jPanelGeneralOptions.add(jCheckBoxSyntax);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanelGeneral.add(jCheckBoxSyntax, gridBagConstraints);
 
         jCheckBoxNumberLines.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_NUMBEROFLINES"));
         jCheckBoxNumberLines.addActionListener(new java.awt.event.ActionListener() {
@@ -1026,10 +1050,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanelGeneralOptions.add(jCheckBoxNumberLines);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanelGeneral.add(jCheckBoxNumberLines, gridBagConstraints);
 
         jCheckBoxScanProjectFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SCAN_PROJECT"));
-        jPanelGeneralOptions.add(jCheckBoxScanProjectFiles);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanelGeneral.add(jCheckBoxScanProjectFiles, gridBagConstraints);
 
         jCheckBoxWrapLines.setText("Wrap Lines");
         jCheckBoxWrapLines.addActionListener(new java.awt.event.ActionListener() {
@@ -1038,99 +1072,320 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanelGeneralOptions.add(jCheckBoxWrapLines);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanelGeneral.add(jCheckBoxWrapLines, gridBagConstraints);
 
         jCheckBoxProjectOpenAllFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_ALL_FILES"));
-        jPanelGeneralOptions.add(jCheckBoxProjectOpenAllFiles);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanelGeneral.add(jCheckBoxProjectOpenAllFiles, gridBagConstraints);
 
         jCheckBoxMakeResource.setText(java.util.ResourceBundle.getBundle("JIF").getString("GLULX_MAKE_RESOURCE_WHEN_BUILD_ALL"));
-        jPanelGeneralOptions.add(jCheckBoxMakeResource);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanelGeneral.add(jCheckBoxMakeResource, gridBagConstraints);
 
         jCheckBoxAdventInLib.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_ADVENT_IN_LIB"));
-        jPanelGeneralOptions.add(jCheckBoxAdventInLib);
-
-        jPanelGeneral.add(jPanelGeneralOptions);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanelGeneral.add(jCheckBoxAdventInLib, gridBagConstraints);
 
         jTabbedPaneOption.addTab("General", jPanelGeneral);
 
-        jPanelPath.setLayout(new javax.swing.BoxLayout(jPanelPath, javax.swing.BoxLayout.Y_AXIS));
+        jPanelColor.setLayout(new java.awt.GridBagLayout());
 
-        jPanel16.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        jPanelColor.setBorder(javax.swing.BorderFactory.createTitledBorder("Color and Font"));
+        jPanelColor.setMinimumSize(new java.awt.Dimension(277, 260));
+        jPanelColor.setPreferredSize(new java.awt.Dimension(277, 260));
+        jEditorPaneColor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jEditorPaneColor.setEditable(false);
+        jEditorPaneColor.setMaximumSize(new java.awt.Dimension(50, 50));
+        jEditorPaneColor.setMinimumSize(new java.awt.Dimension(50, 50));
+        jEditorPaneColor.setPreferredSize(new java.awt.Dimension(50, 150));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelColor.add(jEditorPaneColor, gridBagConstraints);
 
-        jLabel13.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY"));
-        jPanel16.add(jLabel13);
+        jPanel14.setLayout(new java.awt.GridBagLayout());
 
-        jTextFieldPathLib.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel16.add(jTextFieldPathLib);
+        jPanelDefaultDark.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jButtonLibraryPath.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonLibraryPath.addActionListener(new java.awt.event.ActionListener() {
+        jLabelDefaultDark.setText("Black setting");
+        jPanelDefaultDark.add(jLabelDefaultDark);
+
+        jButtonDefaultDark.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonDefaultDark.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonDefaultDark.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonDefaultDark.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonLibraryPathActionPerformed(evt);
+                jButtonDefaultDarkActionPerformed(evt);
             }
         });
 
-        jPanel16.add(jButtonLibraryPath);
+        jPanelDefaultDark.add(jButtonDefaultDark);
 
-        jPanelPath.add(jPanel16);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanel14.add(jPanelDefaultDark, gridBagConstraints);
 
-        jPanel43.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        jPanel32.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabel18.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY1"));
-        jPanel43.add(jLabel18);
+        jLabelComment.setText("Comment");
+        jPanel32.add(jLabelComment);
 
-        jTextFieldPathLibSecondary1.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel43.add(jTextFieldPathLibSecondary1);
-
-        jButtonLibraryPath1.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonLibraryPath1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonComment.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonComment.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonComment.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonComment.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonLibraryPath1ActionPerformed(evt);
+                jButtonCommentActionPerformed(evt);
             }
         });
 
-        jPanel43.add(jButtonLibraryPath1);
+        jPanel32.add(jButtonComment);
 
-        jPanelPath.add(jPanel43);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanel14.add(jPanel32, gridBagConstraints);
 
-        jPanel45.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        jPanel31.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabel20.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY2"));
-        jPanel45.add(jLabel20);
+        jLabelNormal.setText("Normal");
+        jPanel31.add(jLabelNormal);
 
-        jTextFieldPathLibSecondary2.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel45.add(jTextFieldPathLibSecondary2);
-
-        jButtonLibraryPath2.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonLibraryPath2.addActionListener(new java.awt.event.ActionListener() {
+        jButtonNormal.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonNormal.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonNormal.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonNormal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonLibraryPath2ActionPerformed(evt);
+                jButtonNormalActionPerformed(evt);
             }
         });
 
-        jPanel45.add(jButtonLibraryPath2);
+        jPanel31.add(jButtonNormal);
 
-        jPanelPath.add(jPanel45);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanel14.add(jPanel31, gridBagConstraints);
 
-        jPanel49.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        jPanel30.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabel21.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY3"));
-        jPanel49.add(jLabel21);
+        jLabelVerb.setText("Verb");
+        jPanel30.add(jLabelVerb);
 
-        jTextFieldPathLibSecondary3.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel49.add(jTextFieldPathLibSecondary3);
-
-        jButtonLibraryPath3.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonLibraryPath3.addActionListener(new java.awt.event.ActionListener() {
+        jButtonVerb.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonVerb.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonVerb.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonVerb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonLibraryPath3ActionPerformed(evt);
+                jButtonVerbActionPerformed(evt);
             }
         });
 
-        jPanel49.add(jButtonLibraryPath3);
+        jPanel30.add(jButtonVerb);
 
-        jPanelPath.add(jPanel49);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanel14.add(jPanel30, gridBagConstraints);
 
+        jPanel37.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelBackground.setText("Background");
+        jPanel37.add(jLabelBackground);
+
+        jButtonBackground.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonBackground.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonBackground.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonBackground.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBackgroundActionPerformed(evt);
+            }
+        });
+
+        jPanel37.add(jButtonBackground);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanel14.add(jPanel37, gridBagConstraints);
+
+        jPanel28.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelProperty.setText("Property");
+        jPanel28.add(jLabelProperty);
+
+        jButtonProperty.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonProperty.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonProperty.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonProperty.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonPropertyActionPerformed(evt);
+            }
+        });
+
+        jPanel28.add(jButtonProperty);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanel14.add(jPanel28, gridBagConstraints);
+
+        jPanel27.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelAttribute.setText("Attribute");
+        jPanel27.add(jLabelAttribute);
+
+        jButtonAttribute.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonAttribute.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonAttribute.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonAttribute.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAttributeActionPerformed(evt);
+            }
+        });
+
+        jPanel27.add(jButtonAttribute);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanel14.add(jPanel27, gridBagConstraints);
+
+        jPanel26.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelKeyword.setText("Keyword");
+        jPanel26.add(jLabelKeyword);
+
+        jButtonKeyword.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonKeyword.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonKeyword.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonKeyword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonKeywordActionPerformed(evt);
+            }
+        });
+
+        jPanel26.add(jButtonKeyword);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanel14.add(jPanel26, gridBagConstraints);
+
+        jPanel29.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabelString.setText("String");
+        jPanel29.add(jLabelString);
+
+        jButtonString.setMaximumSize(new java.awt.Dimension(35, 15));
+        jButtonString.setMinimumSize(new java.awt.Dimension(35, 15));
+        jButtonString.setPreferredSize(new java.awt.Dimension(35, 15));
+        jButtonString.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonStringActionPerformed(evt);
+            }
+        });
+
+        jPanel29.add(jButtonString);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanel14.add(jPanel29, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelColor.add(jPanel14, gridBagConstraints);
+
+        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        jLabel3.setText("Font");
+        jPanel6.add(jLabel3);
+
+        jComboBoxFont.setMaximumRowCount(10);
+        jComboBoxFont.setMinimumSize(new java.awt.Dimension(100, 21));
+        jComboBoxFont.setPreferredSize(new java.awt.Dimension(120, 21));
+        jComboBoxFont.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxFontActionPerformed(evt);
+            }
+        });
+
+        jPanel6.add(jComboBoxFont);
+
+        jComboBoxFontSize.setMinimumSize(new java.awt.Dimension(100, 21));
+        jComboBoxFontSize.setPreferredSize(new java.awt.Dimension(120, 21));
+        jComboBoxFontSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxFontSizeActionPerformed(evt);
+            }
+        });
+
+        jPanel6.add(jComboBoxFontSize);
+
+        jLabel8.setText("TAB size");
+        jPanel10.add(jLabel8);
+
+        jTextFieldTabSize.setColumns(2);
+        jTextFieldTabSize.setText("4");
+        jPanel10.add(jTextFieldTabSize);
+
+        jPanel6.add(jPanel10);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelColor.add(jPanel6, gridBagConstraints);
+
+        jTabbedPaneOption.addTab("Font", jPanelColor);
+
+        jPanelPath.setLayout(new java.awt.GridBagLayout());
+
+        jPanelPath.setPreferredSize(new java.awt.Dimension(469, 99));
         jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jLabel14.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_ATPATH"));
@@ -1148,7 +1403,13 @@ public class jFrame extends JFrame {
 
         jPanel17.add(jButtonCompiledPath);
 
-        jPanelPath.add(jPanel17);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelPath.add(jPanel17, gridBagConstraints);
 
         jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1167,7 +1428,13 @@ public class jFrame extends JFrame {
 
         jPanel18.add(jButtonCompilerPath);
 
-        jPanelPath.add(jPanel18);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelPath.add(jPanel18, gridBagConstraints);
 
         jPanel19.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1186,8 +1453,122 @@ public class jFrame extends JFrame {
 
         jPanel19.add(jButtonInterpreterPath);
 
-        jPanelPath.add(jPanel19);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelPath.add(jPanel19, gridBagConstraints);
 
+        jTabbedPaneOption.addTab("Compiler Path", jPanelPath);
+
+        jPanelLibraryPath.setLayout(new java.awt.GridBagLayout());
+
+        jPanelLibraryPath.setPreferredSize(new java.awt.Dimension(1889, 33));
+        jPanel16.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabel13.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY"));
+        jPanel16.add(jLabel13);
+
+        jTextFieldPathLib.setPreferredSize(new java.awt.Dimension(280, 21));
+        jPanel16.add(jTextFieldPathLib);
+
+        jButtonLibraryPath.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        jButtonLibraryPath.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonLibraryPathActionPerformed(evt);
+            }
+        });
+
+        jPanel16.add(jButtonLibraryPath);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelLibraryPath.add(jPanel16, gridBagConstraints);
+
+        jPanel43.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabel18.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY1"));
+        jPanel43.add(jLabel18);
+
+        jTextFieldPathLibSecondary1.setPreferredSize(new java.awt.Dimension(280, 21));
+        jPanel43.add(jTextFieldPathLibSecondary1);
+
+        jButtonLibraryPath1.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        jButtonLibraryPath1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonLibraryPath1ActionPerformed(evt);
+            }
+        });
+
+        jPanel43.add(jButtonLibraryPath1);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelLibraryPath.add(jPanel43, gridBagConstraints);
+
+        jPanel45.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabel20.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY2"));
+        jPanel45.add(jLabel20);
+
+        jTextFieldPathLibSecondary2.setPreferredSize(new java.awt.Dimension(280, 21));
+        jPanel45.add(jTextFieldPathLibSecondary2);
+
+        jButtonLibraryPath2.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        jButtonLibraryPath2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonLibraryPath2ActionPerformed(evt);
+            }
+        });
+
+        jPanel45.add(jButtonLibraryPath2);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelLibraryPath.add(jPanel45, gridBagConstraints);
+
+        jPanel49.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabel21.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY3"));
+        jPanel49.add(jLabel21);
+
+        jTextFieldPathLibSecondary3.setPreferredSize(new java.awt.Dimension(280, 21));
+        jPanel49.add(jTextFieldPathLibSecondary3);
+
+        jButtonLibraryPath3.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        jButtonLibraryPath3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonLibraryPath3ActionPerformed(evt);
+            }
+        });
+
+        jPanel49.add(jButtonLibraryPath3);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelLibraryPath.add(jPanel49, gridBagConstraints);
+
+        jTabbedPaneOption.addTab("Library Path", jPanelLibraryPath);
+
+        jPanelGlulxPath.setLayout(new java.awt.GridBagLayout());
+
+        jPanelGlulxPath.setPreferredSize(new java.awt.Dimension(1373, 33));
         jPanel44.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -1207,7 +1588,11 @@ public class jFrame extends JFrame {
 
         jPanel44.add(jButtonGlulxPath);
 
-        jPanelPath.add(jPanel44);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelGlulxPath.add(jPanel44, gridBagConstraints);
 
         jPanel46.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1227,7 +1612,13 @@ public class jFrame extends JFrame {
 
         jPanel46.add(jButtonBres);
 
-        jPanelPath.add(jPanel46);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelGlulxPath.add(jPanel46, gridBagConstraints);
 
         jPanel47.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -1247,204 +1638,15 @@ public class jFrame extends JFrame {
 
         jPanel47.add(jButtonBlc);
 
-        jPanelPath.add(jPanel47);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        jPanelGlulxPath.add(jPanel47, gridBagConstraints);
 
-        jTabbedPaneOption.addTab("Path", jPanelPath);
-
-        jPanelColor.setLayout(new java.awt.BorderLayout());
-
-        jPanelColor.setBorder(javax.swing.BorderFactory.createTitledBorder("Color and Font"));
-        jPanelColor.setMinimumSize(new java.awt.Dimension(277, 260));
-        jPanelColor.setPreferredSize(new java.awt.Dimension(277, 260));
-        jEditorPaneColor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jEditorPaneColor.setEditable(false);
-        jEditorPaneColor.setMaximumSize(new java.awt.Dimension(50, 50));
-        jEditorPaneColor.setMinimumSize(new java.awt.Dimension(50, 50));
-        jEditorPaneColor.setPreferredSize(new java.awt.Dimension(50, 50));
-        jPanelColor.add(jEditorPaneColor, java.awt.BorderLayout.CENTER);
-
-        jPanel14.setLayout(new java.awt.GridLayout(2, 4));
-
-        jPanelDefaultDark.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelDefaultDark.setText("Black setting");
-        jPanelDefaultDark.add(jLabelDefaultDark);
-
-        jButtonDefaultDark.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonDefaultDark.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonDefaultDark.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonDefaultDark.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonDefaultDarkActionPerformed(evt);
-            }
-        });
-
-        jPanelDefaultDark.add(jButtonDefaultDark);
-
-        jPanel14.add(jPanelDefaultDark);
-
-        jPanel32.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelComment.setText("Comment");
-        jPanel32.add(jLabelComment);
-
-        jButtonComment.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonComment.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonComment.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonComment.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCommentActionPerformed(evt);
-            }
-        });
-
-        jPanel32.add(jButtonComment);
-
-        jPanel14.add(jPanel32);
-
-        jPanel31.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelNormal.setText("Normal");
-        jPanel31.add(jLabelNormal);
-
-        jButtonNormal.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonNormal.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonNormal.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonNormal.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonNormalActionPerformed(evt);
-            }
-        });
-
-        jPanel31.add(jButtonNormal);
-
-        jPanel14.add(jPanel31);
-
-        jPanel30.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelVerb.setText("Verb");
-        jPanel30.add(jLabelVerb);
-
-        jButtonVerb.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonVerb.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonVerb.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonVerb.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonVerbActionPerformed(evt);
-            }
-        });
-
-        jPanel30.add(jButtonVerb);
-
-        jPanel14.add(jPanel30);
-
-        jPanel37.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelBackground.setText("Background");
-        jPanel37.add(jLabelBackground);
-
-        jButtonBackground.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonBackground.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonBackground.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonBackground.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBackgroundActionPerformed(evt);
-            }
-        });
-
-        jPanel37.add(jButtonBackground);
-
-        jPanel14.add(jPanel37);
-
-        jPanel28.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelProperty.setText("Property");
-        jPanel28.add(jLabelProperty);
-
-        jButtonProperty.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonProperty.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonProperty.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonProperty.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonPropertyActionPerformed(evt);
-            }
-        });
-
-        jPanel28.add(jButtonProperty);
-
-        jPanel14.add(jPanel28);
-
-        jPanel27.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelAttribute.setText("Attribute");
-        jPanel27.add(jLabelAttribute);
-
-        jButtonAttribute.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonAttribute.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonAttribute.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonAttribute.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAttributeActionPerformed(evt);
-            }
-        });
-
-        jPanel27.add(jButtonAttribute);
-
-        jPanel14.add(jPanel27);
-
-        jPanel26.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jLabelKeyword.setText("Keyword");
-        jPanel26.add(jLabelKeyword);
-
-        jButtonKeyword.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonKeyword.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonKeyword.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonKeyword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonKeywordActionPerformed(evt);
-            }
-        });
-
-        jPanel26.add(jButtonKeyword);
-
-        jPanel14.add(jPanel26);
-
-        jPanelColor.add(jPanel14, java.awt.BorderLayout.NORTH);
-
-        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-
-        jComboBoxFont.setMinimumSize(new java.awt.Dimension(100, 21));
-        jComboBoxFont.setPreferredSize(new java.awt.Dimension(100, 21));
-        jComboBoxFont.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxFontActionPerformed(evt);
-            }
-        });
-
-        jPanel6.add(jComboBoxFont);
-
-        jComboBoxFontSize.setMinimumSize(new java.awt.Dimension(100, 21));
-        jComboBoxFontSize.setPreferredSize(new java.awt.Dimension(100, 21));
-        jComboBoxFontSize.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxFontSizeActionPerformed(evt);
-            }
-        });
-
-        jPanel6.add(jComboBoxFontSize);
-
-        jTextFieldTabSize.setColumns(2);
-        jTextFieldTabSize.setText("4");
-        jPanel10.add(jTextFieldTabSize);
-
-        jLabel8.setText("TAB size");
-        jPanel10.add(jLabel8);
-
-        jPanel6.add(jPanel10);
-
-        jPanelColor.add(jPanel6, java.awt.BorderLayout.SOUTH);
-
-        jTabbedPaneOption.addTab("Font", jPanelColor);
+        jTabbedPaneOption.addTab("Glulx Path", jPanelGlulxPath);
 
         jDialogOption.getContentPane().add(jTabbedPaneOption, java.awt.BorderLayout.CENTER);
 
@@ -2593,7 +2795,7 @@ public class jFrame extends JFrame {
 
         jMenuItemExtractStrings.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemExtractStrings.setText("Extract Strings");
-        jMenuItemExtractStrings.setToolTipText("KEY JFRAME_EXTRACT_STRINGS : RB JIF");
+        jMenuItemExtractStrings.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EXTRACT_STRINGS"));
         jMenuItemExtractStrings.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemExtractStringsActionPerformed(evt);
@@ -2604,7 +2806,7 @@ public class jFrame extends JFrame {
 
         jMenuItemTranslate.setFont(new java.awt.Font("Dialog", 0, 11));
         jMenuItemTranslate.setText("Translate Strings");
-        jMenuItemTranslate.setToolTipText("KEY JFRAME_TRANSLATE : RB JIF");
+        jMenuItemTranslate.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_TRANSLATE"));
         jMenuItemTranslate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemTranslateActionPerformed(evt);
@@ -2987,6 +3189,15 @@ public class jFrame extends JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButtonStringActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStringActionPerformed
+        Color temp = JColorChooser.showDialog(this, "Color Dialog", colorString);
+        if (temp != null) {
+            colorString = temp;
+        }
+        updateColor();
+        updateColorEditor();
+    }//GEN-LAST:event_jButtonStringActionPerformed
+
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         jDialogProjectSwitches.setVisible(false);
     }//GEN-LAST:event_jButton5ActionPerformed
@@ -3077,7 +3288,7 @@ public class jFrame extends JFrame {
             m = patt.matcher(cb);
             refreshGlobals(patt,m);
         } else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(category2)))){
-            patt = Pattern.compile("\n*\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+            patt = Pattern.compile("\n+\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
             m = patt.matcher(cb);
             refreshConstants(patt,m);
         } else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(category4)))){
@@ -3299,6 +3510,7 @@ public class jFrame extends JFrame {
         colorNormal = new Color(102,102,0);
         colorComment = new Color(153,153,153);
         colorBackground = new Color(0,0,0);
+        colorString = new Color(153,102,0);                
         updateColor();
         updateColorEditor();
     }//GEN-LAST:event_jButtonDefaultDarkActionPerformed
@@ -3435,7 +3647,7 @@ public class jFrame extends JFrame {
     }//GEN-LAST:event_jMenuItemPopupCloseAllFilesActionPerformed
 
     private void jButtonBracketCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBracketCheckActionPerformed
-        getCurrentJIFTextPane().checkbrackets(this);
+        getCurrentJIFTextPane().checkBrackets(this);
     }//GEN-LAST:event_jButtonBracketCheckActionPerformed
 
     private void jCheckBoxJTreeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxJTreeActionPerformed
@@ -3539,8 +3751,8 @@ public class jFrame extends JFrame {
         jComboBoxFont.setSelectedItem(tmpFont.getName());
         jComboBoxFontSize.setSelectedItem(String.valueOf(tmpFont.getSize()));
 
-        //jDialogOption.pack();
-        jDialogOption.setSize(600,560);
+        jDialogOption.pack();
+        //jDialogOption.setSize(600,560);
         //jDialogOption.setSize(580,540);
         jDialogOption.setLocationRelativeTo(this);
         jDialogOption.setVisible(true);
@@ -3572,12 +3784,14 @@ public class jFrame extends JFrame {
         colorNormal = new Color(0,0,0);
         colorComment = new Color(153,153,153);
         colorBackground = new Color(255,255,255);
+        colorString = new Color(153,102,0);
         updateColor();
         updateColorEditor();
         jComboBoxFont.setSelectedItem("Courier New");
         jComboBoxFontSize.setSelectedItem("12");
         jTextFieldTabSize.setText("4");
         defaultOptions();
+        this.jDialogOption.setVisible(false);
     }//GEN-LAST:event_jButton23ActionPerformed
 
     private void jButtonCommentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCommentActionPerformed
@@ -3726,7 +3940,7 @@ public class jFrame extends JFrame {
         setLibrarypathsecondary1(jTextFieldPathLibSecondary1.getText());
         setLibrarypathsecondary2(jTextFieldPathLibSecondary2.getText());
         setLibrarypathsecondary3(jTextFieldPathLibSecondary3.getText());
-        setCompiledpath(jTextFieldPathCompiler.getText());
+        setCompilerpath(jTextFieldPathCompiler.getText());
         setInterpreterzcodepath(jTextFieldPathInterpreter.getText());
         setInterpreterglulxpath(jTextFieldPathGlulx.getText());
         setCompiledpath(jTextFieldPathGames.getText());
@@ -3753,8 +3967,8 @@ public class jFrame extends JFrame {
         Font tmpFont = defaultFont;
         jComboBoxFont.setSelectedItem(tmpFont.getName());
         jComboBoxFontSize.setSelectedItem(String.valueOf(tmpFont.getSize()));
-        //jDialogOption.pack();
-        jDialogOption.setSize(600,560);
+        jDialogOption.pack();
+        //jDialogOption.setSize(600,560);
         //jDialogOption.setSize(580,540);
         jDialogOption.setLocationRelativeTo(this);
         jDialogOption.setVisible(true);
@@ -4379,7 +4593,7 @@ public class jFrame extends JFrame {
         // Check out if the compiler exists
         File test = new File(getCompilerpath());
         if (!test.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1")+getCompilerpath()+java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1")+" "+getCompilerpath()+java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -4502,7 +4716,7 @@ public class jFrame extends JFrame {
         // se non esiste visualizzo un messaggio di warning
         File test = new File(inter);
         if (!test.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1")+inter+java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1")+" "+inter+java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -4660,7 +4874,7 @@ public class jFrame extends JFrame {
 
         File file = new File(nomefile);
         if (!file.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE2")+nomefile+java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE3") , java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1") , JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE2")+" "+nomefile+java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE3") , java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1") , JOptionPane.ERROR_MESSAGE);
             return;
         }
         if (checkOpenFile(file.getAbsoluteFile().toString())) return;
@@ -4858,7 +5072,7 @@ public class jFrame extends JFrame {
                     .append("[COMPILEDPATH]"+compiledpath+"\n")
                     .append("[INTERPRETERZCODEPATH]"+interpreterzcodepath+"\n")
                     .append("[INTERPRETERGLULXPATH]"+interpreterglulxpath+"\n")
-                    .append("[COMPILERPATH]"+compilerpath+"\n")
+                    .append("[COMPILERPATH]"+getCompilerpath()+"\n")
                     .append("[BRESPATH]"+brespath+"\n")
                     .append("[BLCPATH]"+blcpath+"\n");
 
@@ -4883,6 +5097,8 @@ public class jFrame extends JFrame {
                     .append("[COLORVERB]"+colorVerb.getRed()+","+colorVerb.getGreen()+","+colorVerb.getBlue()+"\n")
                     .append("[COLORNORMAL]"+colorNormal.getRed()+","+colorNormal.getGreen()+","+colorNormal.getBlue()+"\n")
                     .append("[COLORCOMMENT]"+colorComment.getRed()+","+colorComment.getGreen()+","+colorComment.getBlue()+"\n")
+                    .append("[COLORSTRING]"+colorString.getRed()+","+colorString.getGreen()+","+colorString.getBlue()+"\n")
+                    .append("[COLORWORD]"+colorWord.getRed()+","+colorWord.getGreen()+","+colorWord.getBlue()+"\n")
                     .append("[COLORBACKGROUND]"+colorBackground.getRed()+","+colorBackground.getGreen()+","+colorBackground.getBlue()+"\n")
                     .append("[DEFAULTFONT]"+ defaultFont.getName()+","+defaultFont.getStyle()+","+defaultFont.getSize()+"\n")
                     .append("[LOCATIONX]"+ getX()+"\n")
@@ -5275,6 +5491,16 @@ public class jFrame extends JFrame {
             while (m.find()){
                 colorComment = new Color(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
             }
+            patt = Pattern.compile("\n"+Constants.COLORSTRINGTOKEN+"(.+),(.+),(.+)");
+            m = patt.matcher(cb);
+            while (m.find()){
+                colorString = new Color(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
+            }
+            patt = Pattern.compile("\n"+Constants.COLORWORDTOKEN+"(.+),(.+),(.+)");
+            m = patt.matcher(cb);
+            while (m.find()){
+                colorWord = new Color(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
+            }
             patt = Pattern.compile("\n"+Constants.COLORBACKGROUNDTOKEN+"(.+),(.+),(.+)");
             m = patt.matcher(cb);
             while (m.find()){
@@ -5496,7 +5722,7 @@ public class jFrame extends JFrame {
 
         // CONSTANTS
         if(jTree1.isExpanded(treePath2) || category2.isLeaf()){
-            patt = Pattern.compile("\n*\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+            patt = Pattern.compile("\n+\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
             m = patt.matcher(cb);
             refreshConstants(patt,m);
         }
@@ -5652,7 +5878,7 @@ public class jFrame extends JFrame {
         refreshGlobals(patt,m);
 
         // CONSTANTS
-        patt = Pattern.compile("\n*\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+        patt = Pattern.compile("\n+\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
         m = patt.matcher(cb);
         refreshConstants(patt,m);
 
@@ -6529,7 +6755,7 @@ public class jFrame extends JFrame {
         jScrollPaneProject.setBorder(tb);
     }
 
-    // Reload just the project switchs
+    // Reload just the project switches
     public void reloadProject(String projectFile){
         File file = new File(projectFile);
         StringBuffer sb = new StringBuffer();
@@ -6963,7 +7189,7 @@ public class jFrame extends JFrame {
         String auxGlux[]=new String[1];
         File test = new File(getInterpreterglulxpath());
         if (!test.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1")+getInterpreterzcodepath()+java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1")+" "+getInterpreterzcodepath()+java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
             return;
         }
         try{
@@ -6981,11 +7207,6 @@ public class jFrame extends JFrame {
         // controllo che esista l'interprete con il path  inserito nella Jif.cfg
         // se non esiste visualizzo un messaggio di warning
         String auxInter[]=new String[1];
-//        File test = new File(interpreterzcodepath); unused
-//        if (!test.exists()){
-//            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1")+interpreterzcodepath+java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
         try{
             auxInter[0]=new String(getInterpreterzcodepath());
             Runtime rt = Runtime.getRuntime();
@@ -7035,7 +7256,9 @@ public class jFrame extends JFrame {
         jLabelComment.setForeground(colorComment);
         jButtonComment.setBackground(colorComment);
         jLabelBackground.setForeground(colorBackground);
-        jButtonBackground.setBackground(colorBackground);
+        jButtonBackground.setBackground(colorBackground);        
+        jLabelString.setForeground(colorString);
+        jButtonString.setBackground(colorString);
     }
 
 
@@ -7167,7 +7390,7 @@ public class jFrame extends JFrame {
         // se non esiste visualizzo un messaggio di warning
         File test = new File(getBlcpath());
         if (!test.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1")+getCompilerpath()+java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1")+" "+getCompilerpath()+java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -7795,6 +8018,7 @@ public class jFrame extends JFrame {
     private javax.swing.JButton SaveAsButton;
     private javax.swing.JButton SaveButton;
     private javax.swing.JButton SaveButtonAll;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
@@ -7846,6 +8070,7 @@ public class jFrame extends JFrame {
     private javax.swing.JButton jButtonReplace;
     private javax.swing.JButton jButtonRightTab;
     private javax.swing.JButton jButtonSearchProject;
+    private javax.swing.JButton jButtonString;
     private javax.swing.JButton jButtonSwitchManager;
     private javax.swing.JButton jButtonUncommentSelection;
     private javax.swing.JButton jButtonUndo;
@@ -7891,6 +8116,7 @@ public class jFrame extends JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -7905,6 +8131,7 @@ public class jFrame extends JFrame {
     private javax.swing.JLabel jLabelMainFile;
     private javax.swing.JLabel jLabelNormal;
     private javax.swing.JLabel jLabelProperty;
+    private javax.swing.JLabel jLabelString;
     private javax.swing.JLabel jLabelTutorial;
     private javax.swing.JLabel jLabelVerb;
     private javax.swing.JList jListProject;
@@ -8001,6 +8228,7 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanel26;
     private javax.swing.JPanel jPanel27;
     private javax.swing.JPanel jPanel28;
+    private javax.swing.JPanel jPanel29;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel30;
     private javax.swing.JPanel jPanel31;
@@ -8023,7 +8251,8 @@ public class jFrame extends JFrame {
     private javax.swing.JPanel jPanelDefaultDark;
     private javax.swing.JPanel jPanelDefinition;
     private javax.swing.JPanel jPanelGeneral;
-    private javax.swing.JPanel jPanelGeneralOptions;
+    private javax.swing.JPanel jPanelGlulxPath;
+    private javax.swing.JPanel jPanelLibraryPath;
     private javax.swing.JPanel jPanelMainFile;
     private javax.swing.JPanel jPanelPath;
     private javax.swing.JPanel jPanelProjectSwitches;
@@ -8151,6 +8380,7 @@ public class jFrame extends JFrame {
     private HashSet properties_cs;
     private HashSet verbs_cs;
     private HashSet keywords_cs;
+    // Special symbols
     private HashSet symbols;
 
     // per scegliere l'estensione del file da passare all'interprete
@@ -8172,6 +8402,8 @@ public class jFrame extends JFrame {
     public Color colorVerb;
     public Color colorNormal;
     public Color colorComment;
+    public Color colorString;
+    public Color colorWord;
     public Color colorBackground;
     public Font defaultFont;
     private String lastFile;

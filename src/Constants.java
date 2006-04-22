@@ -9,10 +9,10 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2005  Alessandro Schillaci
+ * Copyright (C) 2004-2006  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
- * e-m@il: silver.slade@tiscalinet.it
+ * e-m@il: silver.slade@tiscali.it
  *
  * Jif is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,7 +42,7 @@ public class Constants {
     /**
      * JIF Version
      */
-    public static final String JIFVERSION = "3.0 RC1 (build 20060120)";
+    public static final String JIFVERSION = "3.1 RC1 (build 20060331)";
     
     /**
      * Max files in the recent file menu
@@ -94,11 +94,11 @@ public class Constants {
      */
     public static final String configFileName = "Jif.cfg";
     
-   /**
-    * File format used by JIF in read/write action
-    */
+    /**
+     * File format used by JIF in read/write action
+     */
     public static final String fileFormat = "ISO-8859-1";
-
+    
     // Configuration INI file, read by Regular Expressions
     public static final String ALTKEYSTOKEN              = "\\[ALTKEYS\\]";
     public static final String EXECUTETOKEN              = "\\[EXECUTE\\]";
@@ -138,6 +138,8 @@ public class Constants {
     public static final String COLORVERBTOKEN            = "\\[COLORVERB\\]";
     public static final String COLORNORMALTOKEN          = "\\[COLORNORMAL\\]";
     public static final String COLORCOMMENTTOKEN         = "\\[COLORCOMMENT\\]";
+    public static final String COLORSTRINGTOKEN          = "\\[COLORSTRING\\]";
+    public static final String COLORWORDTOKEN            = "\\[COLORWORD\\]";
     public static final String COLORBACKGROUNDTOKEN      = "\\[COLORBACKGROUND\\]";
     public static final String DEFAULTFONTTOKEN          = "\\[DEFAULTFONT\\]";
     public static final String LOCATIONXTOKEN            = "\\[LOCATIONX\\]";

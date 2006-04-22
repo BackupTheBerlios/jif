@@ -9,10 +9,10 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2005  Alessandro Schillaci
+ * Copyright (C) 2004-2006  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
- * e-m@il: silver.slade@tiscalinet.it
+ * e-m@il: silver.slade@tiscali.it
  *
  * Jif is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -331,7 +331,7 @@ public class JIFTextPane extends JTextPane{
     }
     
     
-    void searchCloseBraket(String start, String end){
+    void searchCloseBracket(String start, String end){
         try{
             int posizioneIniziale = getCaretPosition()-1;
             int c=1;
@@ -362,7 +362,7 @@ public class JIFTextPane extends JTextPane{
     
     
     // Seek and highlight open brackets
-    void searchOpenBraket(String start, String end){
+    void searchOpenBracket(String start, String end){
         try{
             int posizioneIniziale = getCaretPosition()-1;
             int c=1;
@@ -391,7 +391,7 @@ public class JIFTextPane extends JTextPane{
     }
     
     // Seek and highlight closed brackets
-    int searchCloseBraket(String start, String end, int posizione){
+    int searchCloseBracket(String start, String end, int posizione){
         try{
             int posizioneIniziale = posizione;
             int c=1;
@@ -423,7 +423,7 @@ public class JIFTextPane extends JTextPane{
     }
     
     // Seek and highlight the open bracket
-    int searchOpenBraket(String start, String end, int posizione){
+    int searchOpenBracket(String start, String end, int posizione){
         try{
             int posizioneIniziale = posizione;
             int c=1;
@@ -461,7 +461,7 @@ public class JIFTextPane extends JTextPane{
      * wrong brackets to be fixed.
      * @param parent Instance of Main jFrame
      */
-    public void checkbrackets(jFrame parent){
+    public void checkBrackets(jFrame parent){
         
         // 1. Check the brackets { opened
         String pattern = "{";
@@ -478,7 +478,7 @@ public class JIFTextPane extends JTextPane{
         
         String testo = getText();
         while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
-            if (searchCloseBraket(pattern, close, pos)==-1) {
+            if (searchCloseBracket(pattern, close, pos)==-1) {
                 errore = true;
                 break;
             }
@@ -490,14 +490,14 @@ public class JIFTextPane extends JTextPane{
             errore1=0;
         }
         
-        // 2. Check the brackets [ opened
+        // 2. Check the Brackets [ opened
         pattern = "[";
         close = "]";
         pos = 0;
         errore= false;
         testo = getText();
         while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
-            if (searchCloseBraket(pattern, close, pos)==-1) {
+            if (searchCloseBracket(pattern, close, pos)==-1) {
                 errore = true;
                 break;
             }
@@ -517,7 +517,7 @@ public class JIFTextPane extends JTextPane{
         errore= false;
         testo = getText();
         while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
-            if (searchCloseBraket(pattern, close, pos)==-1) {
+            if (searchCloseBracket(pattern, close, pos)==-1) {
                 errore = true;
                 break;
             }
@@ -539,7 +539,7 @@ public class JIFTextPane extends JTextPane{
         
         
         while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
-            if (searchOpenBraket(pattern, close, pos)==-1) {
+            if (searchOpenBracket(pattern, close, pos)==-1) {
                 errore = true;
                 break;
             }
@@ -559,7 +559,7 @@ public class JIFTextPane extends JTextPane{
         errore= false;
         testo = getText();
         while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
-            if (searchOpenBraket(pattern, close, pos)==-1) {
+            if (searchOpenBracket(pattern, close, pos)==-1) {
                 errore = true;
                 break;
             }
@@ -579,7 +579,7 @@ public class JIFTextPane extends JTextPane{
         errore= false;
         testo = getText();
         while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
-            if (searchOpenBraket(pattern, close, pos)==-1) {
+            if (searchOpenBracket(pattern, close, pos)==-1) {
                 errore = true;
                 break;
             }
@@ -910,7 +910,7 @@ public class JIFTextPane extends JTextPane{
     
     
     /**
-     * This method extracts all strings from source inform code
+     * This method extracts all strings from source Inform code
      * and save them into a new file ("translate.txt")
      *
      * The format is:
@@ -1030,7 +1030,7 @@ public class JIFTextPane extends JTextPane{
             }
             br.close();
             
-            // FIX: sort HashMap by lenght of strings
+            // FIX: sort HashMap by length of strings
             // Before JIF translates the longer strings and then the shorter ones
             Collections.sort(strings,new Comparator(){
                 public int compare(Object a, Object b) {
