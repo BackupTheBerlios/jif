@@ -30,8 +30,11 @@
  *
  */
 
-import javax.swing.text.*;
-import java.awt.*;
+import java.awt.Color;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.JTextComponent;
 
 /**
  * Class for Highlighting text in a JTextComponent
@@ -39,21 +42,27 @@ import java.awt.*;
  */
 public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter {
 
-        JIFTextPane jif;
+        JTextComponent jif;
 
         /**
-         * Creates an Highlighter Object for a JIFTextPane
-         * @param jif The instance of JIFTextPane to apply the highlighting
-         * @param color Color of highlighting
+         * Creates an Highlighter Object for a JTextComponent
+         *
+         *
+         * @param jif
+         *              The instance of JTextComponent to apply the highlighting
+         * @param color
+         *              Color of highlighting
          */
-	public HighlightText(JIFTextPane jif, Color color) {
+        public HighlightText(JTextComponent jif, Color color) {
             super(color);
             this.jif = jif;
         }
 
         /**
          * Creates an Highlighter Object for a generic JTextComponent
-         * @param color Color of highlighting
+         *
+         * @param color
+         *              Color of highlighting
          */
 	public HighlightText(Color color) {
             super(color);
@@ -61,12 +70,15 @@ public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter {
         }
 
         /**
-         * Highlight a string in a JIFTextPane
-         * @param component Instance of JIFTextPane
-         * @param pattern String to be highlighted
+         * Highlight a string in a JifTextComponent
+         *
+         * @param component
+         *              Instance of JifTextComponent
+         * @param pattern
+         *              String to be highlighted
          */
-        public void highlight(JIFTextPane component, String pattern)   {
-            try{
+        public void highlight(JTextComponent component, String pattern)   {
+            try {
                 Highlighter hilite = component.getHighlighter();
                 String text = jif.getText();
                 int pos = 0;
@@ -83,12 +95,16 @@ public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter {
         // si può applicare a qlc JTextComponent
         /**
          * Highlight a string in a JTextComponent
-         * @param component Instance of JTextComponent
-         * @param start Start position to be highlighted
-         * @param end End position to be highlighted
+         *
+         * @param component
+         *              Instance of JTextComponent
+         * @param start
+         *              Start position to be highlighted
+         * @param end
+         *              End position to be highlighted
          */
         public void highlightFromTo(JTextComponent component, int start, int end)   {
-            try{
+            try {
                 Highlighter hilite = component.getHighlighter();
                 hilite.addHighlight(start, end , this);
             } catch (BadLocationException e)  {
@@ -99,7 +115,9 @@ public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter {
 
         /**
          * Remove all the Highlights from a JTextComponent
-         * @param component Instance of JTextComponent
+         *
+         * @param component
+         *              Instance of JTextComponent
          */
         public void removeHighlights(JTextComponent component)  {
             Highlighter hilite = component.getHighlighter();

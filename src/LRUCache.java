@@ -1,18 +1,18 @@
 /*
- * Inspect.java
+ * LRUCache.java
  *
- * This file is part of JIF.
+ * This projectFile is part of JIF.
  *
  * Jif is substantially an editor entirely written in java that allows the
- * file management for the creation of text-adventures based on Graham
+ * projectFile management for the creation of text-adventures based on Graham
  * Nelson's Inform standard [a programming language for Interactive Fiction].
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2006  Alessandro Schillaci
+ * Copyright (C) 2003-2006  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
- * e-m@il: silver.slade@tiscali.it
+ * e-m@il: silver.slade@tiscalinet.it
  *
  * Jif is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,38 +30,35 @@
  *
  */
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
- * A Class for The Object Tree
- * @author Alessandro Schillaci
+ * LRUCache: A least recently used cache. When an entry is added and the cache 
+ * is already full (as defined by maximum enties), the eldest entry is removed
+ * to make space for the new entry.
+ *
+ * @author Peter Piggott
+ * @version 1.0
+ * @since JIF 3.2
  */
-public class Inspect {
-    /**
-     * The Inform keyword to be highlighted when selected from
-     * the Object Tree
-     */
-    public String Ilabel;   //pattern
-    /**
-     * Initial position of the Keyword
-     */
-    public int Iposition;   //posizione iniziale
+public class LRUCache extends LinkedHashMap {
     
+    private int maxEntries;
     
     /**
-     * Creates a new Inspect Object.
-     * The object tree is a tree of Inspect objects
-     * @param label The keyword
-     * @param position Position of keyword in the inform document
+     * Creates a new instance of a least recently used cache
+     *
+     * @param maxEntries
+     *          the maximum number of entries the cache can contain
      */
-    public Inspect(String label, int position) {
-        Ilabel=label;
-        Iposition = position;
+    public LRUCache(int maxEntries) {
+        super(maxEntries + 1);
+        this.maxEntries = maxEntries;
     }
     
-    /**
-     * This method is used by the Object Tree
-     * @return The keyword
-     */
-    public String toString() {
-        return Ilabel;
+    public boolean removeEldestEntry(Map.Entry eldest) {
+        return size() > maxEntries;
     }
+
 }

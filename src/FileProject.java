@@ -35,7 +35,7 @@
  * @author Alessandro Schillaci
  */
 
-    public class FileProject{
+    public class FileProject {
         /**
          * File name, without complete path
          */

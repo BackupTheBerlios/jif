@@ -1,18 +1,18 @@
 /*
- * Inspect.java
+ * JifConfigurationObserver.java
  *
- * This file is part of JIF.
+ * This projectFile is part of JIF.
  *
  * Jif is substantially an editor entirely written in java that allows the
- * file management for the creation of text-adventures based on Graham
+ * projectFile management for the creation of text-adventures based on Graham
  * Nelson's Inform standard [a programming language for Interactive Fiction].
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2006  Alessandro Schillaci
+ * Copyright (C) 2003-2006  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
- * e-m@il: silver.slade@tiscali.it
+ * e-m@il: silver.slade@tiscalinet.it
  *
  * Jif is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,37 +31,11 @@
  */
 
 /**
- * A Class for The Object Tree
- * @author Alessandro Schillaci
+ *
+ * @author Peter Piggott
+ * @version 1.0
+ * @since JIF 3.2
  */
-public class Inspect {
-    /**
-     * The Inform keyword to be highlighted when selected from
-     * the Object Tree
-     */
-    public String Ilabel;   //pattern
-    /**
-     * Initial position of the Keyword
-     */
-    public int Iposition;   //posizione iniziale
-    
-    
-    /**
-     * Creates a new Inspect Object.
-     * The object tree is a tree of Inspect objects
-     * @param label The keyword
-     * @param position Position of keyword in the inform document
-     */
-    public Inspect(String label, int position) {
-        Ilabel=label;
-        Iposition = position;
-    }
-    
-    /**
-     * This method is used by the Object Tree
-     * @return The keyword
-     */
-    public String toString() {
-        return Ilabel;
-    }
+public interface JifConfigurationObserver {
+    void updateConfiguration();
 }

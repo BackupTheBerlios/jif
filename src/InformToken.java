@@ -1,7 +1,7 @@
 /*
  * InformToken.java - Lexical token for the inform language
  *
- * This file is an experimental part of JIF.
+ * This file is part of JIF.
  *
  * Jif is substantially an editor entirely written in java that allows the
  * file management for the creation of text-adventures based on Graham
@@ -40,157 +40,180 @@
  */
 
 public class InformToken {
+    
+    // Token lexeme values
+    
+    public static final Lexeme EOS = new Lexeme("end-of-file");
+    public static final Lexeme AMPERSAND = new Lexeme("ampersand");
+    public static final Lexeme AND = new Lexeme("and");
+    public static final Lexeme ANDAND = new Lexeme("and-and");
+    public static final Lexeme ARROW = new Lexeme("arrow");
+    public static final Lexeme ARROWARROW = new Lexeme("arrow-arrow");
+    public static final Lexeme ARROWEQUAL = new Lexeme("arrow-equal");
+    public static final Lexeme BINARY = new Lexeme("binary");
+    public static final Lexeme CLOSEBRACE = new Lexeme("close-brace");
+    public static final Lexeme CLOSEBRACKET = new Lexeme("close-bracket");
+    public static final Lexeme CLOSEROUTINE = new Lexeme("close-routine");
+    public static final Lexeme COLON = new Lexeme("colon");
+    public static final Lexeme COLONCOLON = new Lexeme("colon-colon");
+    public static final Lexeme COMMA = new Lexeme("comma");
+    public static final Lexeme COMMENT = new Lexeme("comment");
+    public static final Lexeme DIVIDE = new Lexeme("divide");
+    public static final Lexeme DOT = new Lexeme("dot");
+    public static final Lexeme DOTAMPERSAND = new Lexeme("dot-ampersand");
+    public static final Lexeme DOTHASH = new Lexeme("dot-hash");
+    public static final Lexeme DOTDOT = new Lexeme("dot-dot");
+    public static final Lexeme DOTDOTAMPERSAND = new Lexeme("dot-dot-ampersand");
+    public static final Lexeme DOTDOTHASH = new Lexeme("dot-dot-hash");
+    public static final Lexeme EQUAL = new Lexeme("equal");
+    public static final Lexeme EQUALARROW = new Lexeme("equal-arrow");
+    public static final Lexeme EQUALEQUAL = new Lexeme("equal-equal");
+    public static final Lexeme HASH = new Lexeme("hash");
+    public static final Lexeme HASHHASH = new Lexeme("hash-hash");
+    public static final Lexeme HASHADOLLAR = new Lexeme("hash-a-dollar");
+    public static final Lexeme HASHNDOLLAR = new Lexeme("hash-n-dollar");
+    public static final Lexeme HASHRDOLLAR = new Lexeme("hash-r-dollar");
+    public static final Lexeme HASHWDOLLAR = new Lexeme("hash-w-dollar");
+    public static final Lexeme HEXIDECIMAL = new Lexeme("hexidecimal");
+    public static final Lexeme INVALID = new Lexeme("invalid");
+    public static final Lexeme LESS = new Lexeme("less");
+    public static final Lexeme LESSEQUAL = new Lexeme("less-equal");
+    public static final Lexeme LESSLESS = new Lexeme("less-less");
+    public static final Lexeme MINUS = new Lexeme("minus");
+    public static final Lexeme MINUSARROW = new Lexeme("minus-arrow");
+    public static final Lexeme MINUSMINUS = new Lexeme("minus-minus");
+    public static final Lexeme MINUSMINUSARROW = new Lexeme("minus-minus-arrow");
+    public static final Lexeme NEWLINE = new Lexeme("newline");
+    public static final Lexeme NOT = new Lexeme("not");
+    public static final Lexeme NOTEQUAL = new Lexeme("not-equal");
+    public static final Lexeme NOTNOT = new Lexeme("not-not");
+    public static final Lexeme NUMBER = new Lexeme("number");
+    public static final Lexeme OPENBRACE = new Lexeme("open-brace");
+    public static final Lexeme OPENBRACKET = new Lexeme("open-bracket");
+    public static final Lexeme OPENROUTINE = new Lexeme("open-routine");
+    public static final Lexeme OR = new Lexeme("or");
+    public static final Lexeme OROR = new Lexeme("or-or");
+    public static final Lexeme PLUS = new Lexeme("plus");
+    public static final Lexeme PLUSPLUS = new Lexeme("plus-plus");
+    public static final Lexeme REMAINDER = new Lexeme("remainder");
+    public static final Lexeme SEMICOLON = new Lexeme("semicolon");
+    public static final Lexeme STRING = new Lexeme("string");
+    public static final Lexeme SYMBOL = new Lexeme("symbol");
+    public static final Lexeme TIMES = new Lexeme("times");
+    public static final Lexeme WHITESPACE = new Lexeme("whitespace");
+    public static final Lexeme WORD = new Lexeme("word");
+    
+   // Lexical token types
 
-// Lexical token id numbers
+    private static final Lexeme types[] =
+        {EOS,
+         AMPERSAND,
+         AND,
+         ANDAND,
+         ARROW,
+         ARROWARROW,
+         ARROWEQUAL,
+         BINARY,
+         CLOSEBRACE,
+         CLOSEBRACKET,
+         CLOSEROUTINE,
+         COLON,
+         COLONCOLON,
+         COMMA,
+         COMMENT,
+         DIVIDE,
+         DOT,
+         DOTAMPERSAND,
+         DOTHASH,
+         DOTDOT,
+         DOTDOTAMPERSAND,
+         DOTDOTHASH,
+         EQUAL,
+         EQUALARROW,
+         EQUALEQUAL,
+         HASH,
+         HASHHASH,
+         HASHADOLLAR,
+         HASHNDOLLAR,
+         HASHRDOLLAR,
+         HASHWDOLLAR,
+         HEXIDECIMAL,
+         INVALID,
+         LESS,
+         LESSEQUAL,
+         LESSLESS,
+         MINUS,
+         MINUSARROW,
+         MINUSMINUS,
+         MINUSMINUSARROW,
+         NEWLINE,
+         NOT,
+         NOTEQUAL,
+         NOTNOT,
+         NUMBER,
+         OPENBRACE,
+         OPENBRACKET,
+         OPENROUTINE,
+         OR,
+         OROR,
+         PLUS,
+         PLUSPLUS,
+         REMAINDER,
+         SEMICOLON,
+         STRING,
+         SYMBOL,
+         TIMES,
+         WHITESPACE,
+         WORD
+        };
 
-   private static final byte LOWEST = 0;
-   private static final byte HIGHEST = 58;
-
-   public static final byte EOS = 0;
-
-   public static final byte AMPERSAND = 1;
-   public static final byte AND = 2;
-   public static final byte ANDAND = 3;
-   public static final byte ARROW = 4;
-   public static final byte ARROWARROW = 5;
-   public static final byte ARROWEQUAL = 6;
-   public static final byte BINARY = 7;
-   public static final byte CLOSEBRACE = 8;
-   public static final byte CLOSEBRACKET = 9;
-   public static final byte CLOSEROUTINE = 10;
-   public static final byte COLON = 11;
-   public static final byte COLONCOLON = 12;
-   public static final byte COMMA = 13;
-   public static final byte COMMENT = 14;
-   public static final byte DIVIDE = 15;
-   public static final byte DOT = 16;
-   public static final byte DOTAMPERSAND = 17;
-   public static final byte DOTHASH = 18;
-   public static final byte DOTDOT = 19;
-   public static final byte DOTDOTAMPERSAND = 20;
-   public static final byte DOTDOTHASH = 21;
-   public static final byte EQUAL = 22;
-   public static final byte EQUALARROW = 23;
-   public static final byte EQUALEQUAL = 24;
-   public static final byte HASH = 25;
-   public static final byte HASHHASH = 26;
-   public static final byte HASHADOLLAR = 27;
-   public static final byte HASHNDOLLAR = 28;
-   public static final byte HASHRDOLLAR = 29;
-   public static final byte HASHWDOLLAR = 30;
-   public static final byte HEXIDECIMAL = 31;
-   public static final byte INVALID = 32;
-   public static final byte LESS = 33;
-   public static final byte LESSEQUAL = 34;
-   public static final byte LESSLESS = 35;
-   public static final byte MINUS = 36;
-   public static final byte MINUSARROW = 37;
-   public static final byte MINUSMINUS = 38;
-   public static final byte MINUSMINUSARROW = 39;
-   public static final byte NEWLINE = 40;
-   public static final byte NOT = 41;
-   public static final byte NOTEQUAL = 42;
-   public static final byte NOTNOT = 43;
-   public static final byte NUMBER = 44;
-   public static final byte OPENBRACE = 45;
-   public static final byte OPENBRACKET = 46;
-   public static final byte OPENROUTINE = 47;
-   public static final byte OR = 48;
-   public static final byte OROR = 49;
-   public static final byte PLUS = 50;
-   public static final byte PLUSPLUS = 51;
-   public static final byte REMAINDER = 52;
-   public static final byte SEMICOLON = 53;
-   public static final byte STRING = 54;
-   public static final byte SYMBOL = 55;
-   public static final byte TIMES = 56;
-   public static final byte WHITESPACE = 57;
-   public static final byte WORD = 58;
-
-
-// Lexical token names
-
-   private static final String name[] = 
-      {"end-of-file",
-       "ampersand",
-       "and",
-       "and-and",
-       "arrow",
-       "arrow-arrow",
-       "arrow-equal",
-       "binary",
-       "close-brace",
-       "close-bracket",
-       "close-routine",
-       "colon",
-       "colon-colon",
-       "comma",
-       "comment",
-       "divide",
-       "dot",
-       "dot-ampersand",
-       "dot-hash",
-       "dot-dot",
-       "dot-dot-ampersand",
-       "dot-dot-hash",
-       "equal",
-       "equal-arrow",
-       "equal-equal",
-       "hash",
-       "hash-hash",
-       "hash-a-dollar",
-       "hash-n-dollar",
-       "hash-r-dollar",
-       "hash-w-dollar",
-       "hexidecimal",
-       "invalid",
-       "less",
-       "less-equal",
-       "less-less",
-       "minus",
-       "minus-arrow",
-       "minus-minus",
-       "minus-minus-arrow",
-       "newline",
-       "not",
-       "not-equal",
-       "not-not",
-       "number",
-       "open-brace",
-       "open-bracket",
-       "open-routine",
-       "or",
-       "or-or",
-       "plus",
-       "plus-plus",
-       "remainder",
-       "semicolon",
-       "string",
-       "symbol",
-       "times",
-       "whitespace",
-       "word"};
-
+    
+    public static class Lexeme {
+        
+        private static String name;
+        
+        Lexeme(String name) {
+            this.name = name;
+        }
+        
+        public String getName() {
+            return name;
+        }
+        
+        public String toString() {
+            return "Lexeme[name: " + name + "]";
+        }
+ 
+    }
+    
 
 // Class variables
 
-   public byte id;
+   public Lexeme id;
    public int level;
-   public int startPos;
-   public int endPos;
+   public int startPosition;
+   public int endPosition;
    public String content;
 
 
 // Class constructors
 
    /**
-    * Creates a new Inform token object identifying a lexical token within the Inform source code.
-    * @param id A number identifying The type of token.
-    * @param startPos The position of the start of the token text within the Inform source code.
-    * @param endPos The position of the end of the token text within the Inform source code.
-    * @param content The source text of the Inform lexical token.
+    * Creates a new Inform token object identifying a lexical token within the
+    * Inform source code.
+    *
+    * @param id
+    *           A number identifying the type of token.
+    * @param startPosition 
+    *           The position of the start of the token text within the Inform
+    *           source code.
+    * @param endPosition
+    *           The position of the end of the token text within the Inform
+    *           source code.
+    * @param content
+    *           The source text of the Inform lexical token.
     */
-   public InformToken(byte id, int startPos, int endPos, String content) {
+   public InformToken(Lexeme id, int startPos, int endPos, String content) {
 
      this(id, startPos, endPos);
      this.content = content;
@@ -198,16 +221,23 @@ public class InformToken {
    }
 
    /**
-    * Creates a new Inform token object identifying a lexical token within the Inform source code.
-    * @param id A number identifying The type of token.
-    * @param startPos The position of the start of the token text within the Inform source code.
-    * @param endPos The position of the end of the token text within the Inform source code.
+    * Creates a new Inform token object identifying a lexical token within the
+    * Inform source code.
+    *
+    * @param id
+    *           A number identifying the type of token.
+    * @param startPosition
+    *           The position of the start of the token text within the Inform
+    *           source code.
+    * @param endPosition
+    *           The position of the end of the token text within the Inform
+    *           source code.
     */
-   public InformToken(byte id, int startPos, int endPos) {
+   public InformToken(Lexeme id, int startPos, int endPos) {
 
      this.id = id;
-     this.startPos = startPos;
-     this.endPos = endPos;
+     this.startPosition = startPos;
+     this.endPosition = endPos;
 
    }
 // Class methods
@@ -216,22 +246,23 @@ public class InformToken {
     */
    public String getName() {
 
-      return name[id];
+      return id.getName();
    }
 
-   /**Sets the number representing the type of the Inform lexical token.
-    * @param id A number identifying The type of token.
+   /**
+    * Sets the number representing the type of the Inform lexical token.
+    *
+    * @param id 
+    *           A lexeme identifying the type of token.
     */
-   public void setType(byte id) {
+   public void setType(Lexeme id) {
 
-      if (id >= LOWEST && id <= HIGHEST) {
          this.id = id;
-      }
    }
 
-   /**Gets a number representing the type of the Inform lexical token.
+   /**Gets a lexeme representing the type of the Inform lexical token.
     */
-   public byte getType() {
+   public Lexeme getType() {
 
       return id;
    }
@@ -240,14 +271,14 @@ public class InformToken {
     */
    public int getStartPosition() {
 
-      return startPos;
+      return startPosition;
    }
 
    /**Gets the end position of the Inform lexical token.
     */
    public int getEndPosition() {
 
-      return endPos;
+      return endPosition;
    }
 
    /**Gets the source of the Inform lexical token.
@@ -261,6 +292,10 @@ public class InformToken {
     */
    public String toString() {
 
-      return "[id: " + name[id] + ", start: " + startPos + ", end: " + endPos + ", content: " + content + "]";
+      return "InformToken[id: " + id.getName() + 
+              ", start: " + startPosition +
+              ", end: " + endPosition +
+              ", content: " + content + 
+              "]";
    }
 }

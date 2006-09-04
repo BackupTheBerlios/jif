@@ -1,7 +1,7 @@
 /*
  * InformLexer.java
  *
- * This file is an experimental part of JIF.
+ * This file is part of JIF.
  *
  * Jif is substantially an editor entirely written in java that allows the
  * file management for the creation of text-adventures based on Graham
@@ -37,26 +37,26 @@ import java.util.ArrayList;
  * tokens
  * 
  * @author Peter Piggott
- * @version Revision: 1.0
+ * @version Revision: 1.2
  * @since 3.1
  */
 
 public final class InformLexer {
-
+    // Buffer for source
     private char[] source;
-
+    // Position of source buffer within source document
     private int offset = 0;
-
+    // Start position of current token
     private int startPos = 0;
-
+    // Current position of current token (end position when token complete)
     private int endPos = 0;
-
+    // Current token
     private InformToken token;
-
-    private byte tokenType = 0;
-
+    // Current token type
+    private InformToken.Lexeme tokenType;
+    // Current token content
     private String tokenContent = "";
-    // Lexer processing an Inform singled quoted word
+    // Lexer processing an Inform single quoted word
     private boolean inWord = false;
     // Lexer processing an Inform double quoted string
     private boolean inString = false;
@@ -121,6 +121,28 @@ public final class InformLexer {
         this(informSource.toString());
         this.offset = offset;
 
+    }
+
+    /**
+     * Returns an array of tokens representing the tokens of an Inform source
+     * code string. This filters out any comments, whitespace and newlines.
+     */
+    public InformToken[] getTokens() {
+
+        ArrayList tokens = new ArrayList();
+
+        token = nextToken();
+        tokenType = token.getType();
+
+        while (tokenType != InformToken.EOS) {
+
+            tokens.add(token);
+
+            token = nextToken();
+            tokenType = token.getType();
+
+        }
+        return (InformToken[]) tokens.toArray(new InformToken[0]);
     }
 
     /**
@@ -642,8 +664,8 @@ public final class InformLexer {
     }
 
     /**
-     * Set the position within the Inform source code where following nextToken,
-     * nextMarkup, nextElement method calls will start.
+     * Set the position within the Inform source code where the following
+     * nextToken, nextMarkup, nextElement or nextBracket method call will start.
      * 
      * @param newPos
      *            The position in the source code string where following next

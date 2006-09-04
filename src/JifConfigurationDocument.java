@@ -1,5 +1,5 @@
 /*
- * InformDocument.java
+ * JifConfigurationDocument.java
  *
  * This file is part of JIF.
  *
@@ -12,7 +12,7 @@
  * Copyright (C) 2004-2006  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/JIF/
- * e-m@il: silver.slade@tiscalinet.it
+ * e-m@il: silver.slade@tiscali.it
  *
  * Jif is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,25 +30,39 @@
  *
  */
 
+
+import java.util.Hashtable;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
 import javax.swing.text.GapContent;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.StyleContext;
 
 /**
- * An extension of Jif Document for Inform Syntax Highlighting
- * 
+ * An extension of DefaultStyledDocument for the JifConfiguration Syntax Highlight
+ *
  * @author Alessandro Schillaci
- * @author Peter Piggott
+ * @author Peter Piggott 
  */
-public class InformDocument extends JifDocument {
-
-    private static final long serialVersionUID = 5856047697369563208L;
-    
+public class JifConfigurationDocument extends JifDocument {
     /**
-     * Constructs an Inform document with a shared set of styles for syntax
+     *
+     */
+    private static final long serialVersionUID = 4399244071115666713L;
+    jFrame jframe;
+    DefaultStyledDocument doc;
+    MutableAttributeSet normal;
+    MutableAttributeSet keyword;
+    MutableAttributeSet comment;
+    
+    
+    Hashtable keywords;
+
+    /**
+     * Constructs a JifConfiguration document with a shared set of styles for syntax
      * highlighting.
      * 
      * @param c
@@ -57,12 +71,13 @@ public class InformDocument extends JifDocument {
      *            the set of styles for Inform syntax highlighting which may be
      *            shared across documents
      */
-    protected  InformDocument(Content c, StyleContext styles) {
+    protected  JifConfigurationDocument(Content c, StyleContext styles) {
         super(c, styles);
+        putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
     }
 
     /**
-     * Constructs an Inform document with a shared set of styles for syntax
+     * Constructs a JifConfiguration document with a shared set of styles for syntax
      * highlighting.
      * 
      * @param c
@@ -71,47 +86,47 @@ public class InformDocument extends JifDocument {
      *            the set of styles for Inform syntax highlighting which may be
      *            shared across documents
      */
-    public InformDocument(Content c, InformContext styles) {
+    public JifConfigurationDocument(Content c, InformContext styles) {
         this(c, (StyleContext) styles);
     }
 
     /**
-     * Constructs an Inform document with the default content storage
+     * Constructs a JifConfiguration document with the default content storage
      * implementation and a shared set of styles for syntax highlighting.
      * 
      * @param styles
      *            the set of styles for Inform syntax highlighting
      */
-    protected InformDocument(StyleContext styles) {
+    protected JifConfigurationDocument(StyleContext styles) {
         this(new GapContent(BUFFER_SIZE_DEFAULT), styles);
     }
 
     /**
-     * Constructs an Inform document with the default content storage
+     * Constructs a JifConfiguration document with the default content storage
      * implementation and a shared set of styles for syntax highlighting.
      * 
      * @param styles
      *            The set of styles for Inform syntax highlighting
      */
-    public InformDocument(InformContext styles) {
+    public JifConfigurationDocument(InformContext styles) {
         this((StyleContext) styles);
     }
 
     /**
-     * Constructs an Inform document with the default content storage
+     * Constructs a JifConfiguration document with the default content storage
      * implementation and a default set of styles for syntax highlighting.
      * 
      */
-    public InformDocument() {
+    public JifConfigurationDocument() {
         this(new GapContent(BUFFER_SIZE_DEFAULT), (StyleContext) new InformContext());
     }
 
     /**
      * Insert a string with syntax highlighting
-     * @param offset
+     * @param offset 
      *            The offset to insert the string
      * @param str 
-     *            The String to be inserted into the document
+     *            The String to be inserted in the document
      * @param a 
      *            The AttributeSet for the String
      * @throws BadLocationException 
@@ -119,29 +134,28 @@ public class InformDocument extends JifDocument {
      */
     public void insertString(int offset, String str, AttributeSet a)
             throws BadLocationException {
-
+        
         super.insertString(offset, str, getStyle(InformSyntax.Normal.getName()));
         processChangedLines(offset, str.length());
-
     }
-
+    
     /**
      * Remove a String from a document
-     * 
-     * @param offset
+     *
+     * @param offset 
      *            The initial offset
-     * @param length
+     * @param length 
      *            Length of the String to be removed
-     * @throws BadLocationException
+     * @throws BadLocationException 
      *            If the remove action fails
      */
-    public void remove(int offset, int length) throws BadLocationException {
-
+    public void remove(int offset, int length)
+            throws BadLocationException {
+        
         super.remove(offset, length);
         processChangedLines(offset, length);
-
     }
-
+    
     /**
      * Determine the area of the document whose syntax highlighting is impacted
      * by the change of source content
@@ -194,7 +208,7 @@ public class InformDocument extends JifDocument {
         } else {
             line = getParagraphElement(offset);
         }
-        changeLength = line.getEndOffset()-changeOffset; 
+        changeLength = line.getEndOffset() - changeOffset; 
 
         applyHighlighting(changeOffset, changeLength);
 
@@ -202,96 +216,47 @@ public class InformDocument extends JifDocument {
     
     /**
      * Apply inform syntax highlighting to the specified portion of the document
-     * 
-     * 
      * @param offset 
      *            The initial offset at which to apply syntax highlighting
-     * @param changeLength 
-     *            The changeLength of the document text to be highlighted
+     * @param length 
+     *            The length of the document text to be highlighted
      * @throws BadLocationException
      *            If applying highlighting fails
      */
-    public void applyHighlighting(int offset, int length) throws BadLocationException {
+    public void applyHighlighting(int offset, int length)
+            throws BadLocationException {
         
         int startOffset;
         int endOffset;
-        int changeLength;
+        int tokenLength;
         MutableAttributeSet syntax;
         
         String source = getText(offset, length);
-        InformLexer lexer = new InformLexer(source, offset);
-        InformToken token = lexer.nextElement();
+        JifConfigurationLexer lexer = new JifConfigurationLexer(source, offset);
+        JifConfigurationToken token = lexer.nextElement();
         
-        while(token.getType() != InformToken.EOS) {
+        while(token.getType() != JifConfigurationToken.EOS) {
             
             startOffset = token.getStartPosition();
             endOffset = token.getEndPosition();
-            changeLength = endOffset - startOffset;
+            tokenLength = endOffset - startOffset;
             
-            if (token.getType() == InformToken.COMMENT) 
+            if (token.getType() == JifConfigurationToken.COMMENT) {
                 syntax = getStyle(InformSyntax.Comment.getName());
-            else if (token.getType() == InformToken.NUMBER) 
-                syntax = getStyle(InformSyntax.Number.getName());
-            else if (token.getType() == InformToken.STRING)
-                syntax = getStyle(InformSyntax.String.getName());
-            else if (token.getType() == InformToken.SYMBOL) {
-                if (isAttribute(token.getContent()))
-                    syntax = getStyle(InformSyntax.Attribute.getName());
-                else if (isProperty(token.getContent()))
-                    syntax = getStyle(InformSyntax.Property.getName());
-                else if (isVerb(token.getContent()))
-                    syntax = getStyle(InformSyntax.Verb.getName());
-                else if (isKeyword(token.getContent()))
+            } 
+            else if (token.getType() == JifConfigurationToken.SYMBOL) {
+                if (JifConfigurationDAO.isKeyword(token.getContent()))
                     syntax = getStyle(InformSyntax.Keyword.getName());
-                else 
+                else
                     syntax = getStyle(InformSyntax.Normal.getName());
-                }
-            else if (token.getType() == InformToken.WHITESPACE)
+            }
+            else if (token.getType() == JifConfigurationToken.WHITESPACE)
                 syntax = getStyle(InformSyntax.White.getName());
-            else if (token.getType() == InformToken.WORD)
-                syntax = getStyle(InformSyntax.Word.getName());
             else 
                 syntax = getStyle(InformSyntax.Normal.getName());
-
-            setCharacterAttributes(startOffset, changeLength, syntax, true);
+           
+            setCharacterAttributes(startOffset, tokenLength, syntax, true);
             token = lexer.nextElement();
-        }        
-    }
-    
-    private boolean isKeyword(String token) {
-        return Inform.isDirective(token) || Inform.isKeyword(token);
-    }
-
-    // TODO Fix this to include document declared attributes
-    private boolean isAttribute(String token){
-        return Inform.isAttribute(token);
-    }
-    
-    // TODO Fix this to include document declared properties
-    private boolean isProperty(String token){
-        return Inform.isProperty(token);
-    }
-
-    // TODO Fix this to include document declared verbs
-    private boolean isVerb(String token){
-        return Inform.isVerb(token);
-    }
-
-    // TODO Fix automatic bracket and quote completion 
-    protected String addMatchingBrace(String brace,int offset) throws BadLocationException {
-        StringBuffer whiteSpace = new StringBuffer();
-        int line = getDefaultRootElement().getElementIndex(offset);
-        int i = getDefaultRootElement().getElement(line).getStartOffset();
-        while (true) {
-            String temp = getText(i, 1);
-            if (temp.equals(" ") || temp.equals("\t")) {
-                whiteSpace.append(temp);
-                i++;
-            } else
-                break;
         }
-        return (brace.equals("{")?"{":"[")+"\n" + whiteSpace.toString() + whiteSpace.toString() + "\n"
-        + whiteSpace.toString() + (brace.equals("{")?"}":"]");
     }
-    
 }

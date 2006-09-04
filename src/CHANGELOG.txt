@@ -3,18 +3,43 @@ CHANGELOG
 [NF]  New Feature
 [FIX] Bug Fixed
 
+JIF 3.3 (Sep 2006)
+==================
+- [FIX] Compile a single file inf (without a project). Fixed NPE (NULL POINTER EXCEPTION)
+- [NF] added the relative path for compiler, interpreter ecc
+  if checked "use relative path" JIF will search compiler, interpreter ecc ecc in the bin directory
+
+JIF 3.2 (Aug 2006)
+==================
+
+- [FIX] Syntax highlighting algorithm improved.
+- [FIX] Tree display algorithm improved.
+- [FIX] Tree clicks now position the cursor on the name in the source
+- [NF]  Options highlight panel added so selection colours can be customised.
+- [NF]  Number syntax highlighting added.
+- [NF]  All syntax highlighting colours can be customised.
+- [NF]  Default dark setting added to color options.
+- [NF]  Default light setting added to color options.
+- [NF]  Options save now refreshes colours and fonts for all open documents.
+- [NF]  Options colour and font initialised to current settings (not default). 
+- [NF]  Options text changed to include all syntax types.
+- [NF]  Options cancel button added.
+- [NF]  Recent files menu changed to replace eldest when max entries reached.
+
 
 JIF 3.1 (Apr 2006)
 ==================
 
 - [FIX] Syntax highlighting algorithm improved.
 - [NF]  String syntax highlighting added.
-- [NF]  String syntax customizabled
-- [FIX] Spaces in message (BUG6321)
-- [FIX] Error in saving the compiler path
-- [FIX] Tool tip text fixed (BUG6323)
-- [FIX] CTRL + INS double insert error
-- [FIX] Constant into a comment, visualized into the object tree
+- [NF]  Word syntax highlighting added.
+- [NF]  String syntax highlighting colour can be customised.
+- [NF]  Word syntax highlighting colour can be customised.
+- [FIX] Spaces in message (BUG6321).
+- [FIX] Error in saving the compiler path.
+- [FIX] Tool tip text fixed (BUG6323).
+- [FIX] CTRL + INS double insert error.
+- [FIX] Constant into a comment, visualized into the object tree.
 
 
 JIF 3.0 (Jan 2006)

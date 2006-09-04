@@ -1,5 +1,5 @@
 /*
- * Inspect.java
+ * JifNoWrapTextPane.java
  *
  * This file is part of JIF.
  *
@@ -30,38 +30,40 @@
  *
  */
 
+import java.awt.Dimension;
+import java.io.File;
+
 /**
- * A Class for The Object Tree
+ * Version of JifTextPane with text wrapping
+ * 
+ * 
+ * 
  * @author Alessandro Schillaci
+ * @author Peter Piggott
+ * @version 1.0
+ * @since JIF 3.2
  */
-public class Inspect {
-    /**
-     * The Inform keyword to be highlighted when selected from
-     * the Object Tree
-     */
-    public String Ilabel;   //pattern
-    /**
-     * Initial position of the Keyword
-     */
-    public int Iposition;   //posizione iniziale
-    
-    
-    /**
-     * Creates a new Inspect Object.
-     * The object tree is a tree of Inspect objects
-     * @param label The keyword
-     * @param position Position of keyword in the inform document
-     */
-    public Inspect(String label, int position) {
-        Ilabel=label;
-        Iposition = position;
+public class JifNoWrapTextPane extends JifTextPane {
+
+    private static final long serialVersionUID = -7406567099225980317L;
+
+    public JifNoWrapTextPane(jFrame parent, JifFileName fileName, File file, InformContext context) {
+        super(parent, fileName, file, context);
     }
-    
-    /**
-     * This method is used by the Object Tree
-     * @return The keyword
-     */
-    public String toString() {
-        return Ilabel;
+
+    public boolean getScrollableTracksViewportWidth() {
+        if (getSize().width < getParent().getSize().width) {
+            return true;
+        }
+        return false;
     }
+
+    public void setSize(Dimension d) {
+        if (d.width < getParent().getSize().width) {
+            d.width = getParent().getSize().width;
+        }
+        super.setSize(d);
+    }
+
 }
+

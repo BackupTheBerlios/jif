@@ -1,5 +1,5 @@
 /*
- * Inspect.java
+ * JifConfigurationException.java
  *
  * This file is part of JIF.
  *
@@ -31,37 +31,13 @@
  */
 
 /**
- * A Class for The Object Tree
- * @author Alessandro Schillaci
+ * @author Peter Piggott
+ * @version 1.0
+ * @since JIF 3.2
  */
-public class Inspect {
-    /**
-     * The Inform keyword to be highlighted when selected from
-     * the Object Tree
-     */
-    public String Ilabel;   //pattern
-    /**
-     * Initial position of the Keyword
-     */
-    public int Iposition;   //posizione iniziale
+public class JifConfigurationException  extends Exception {
     
-    
-    /**
-     * Creates a new Inspect Object.
-     * The object tree is a tree of Inspect objects
-     * @param label The keyword
-     * @param position Position of keyword in the inform document
-     */
-    public Inspect(String label, int position) {
-        Ilabel=label;
-        Iposition = position;
-    }
-    
-    /**
-     * This method is used by the Object Tree
-     * @return The keyword
-     */
-    public String toString() {
-        return Ilabel;
+    public JifConfigurationException(String message) {
+        super(message);
     }
 }
