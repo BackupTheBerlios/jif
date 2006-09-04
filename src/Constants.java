@@ -42,7 +42,7 @@ public class Constants {
     /**
      * JIF Version
      */
-    public static final String JIFVERSION = "3.1 RC1 (build 20060331)";
+    public static final String JIFVERSION = "Jif 3.3 PFP (build 20060904)";
     
     /**
      * Max files in the recent file menu
@@ -72,22 +72,32 @@ public class Constants {
     /**
      * Empty project
      */
-    public static final String PROJECTEMPTY="blank";
+    public static final String PROJECTEMPTY = "blank";
     
     /**
-     * Errors color highlightning
+     * Bookmarks color highlighting
      */
-    public static final Color colorErrors = new Color(255,102,102);
+    public static final Color colorBookmarks = new Color(51, 102, 255);
     
     /**
-     * Warning color highlightning
+     * Brackets color highlighting
      */
-    public static final Color colorWarnings = new Color(102,153,255);
+    public static final Color colorBrackets = new Color(255, 153, 51);
+    
+    /**
+     * Errors color highlighting
+     */
+    public static final Color colorErrors = new Color(255, 102, 102);
     
     /**
      * Jump tree color highlighting
      */
-    public static final Color colorJumpto = new Color(102,153,255);
+    public static final Color colorJumpto = new Color(102, 153, 255);
+    
+    /**
+     * Warning color highlighting
+     */
+    public static final Color colorWarnings = new Color(102, 153, 255);
     
     /**
      * Config File Name
@@ -100,59 +110,5 @@ public class Constants {
     public static final String fileFormat = "ISO-8859-1";
     
     // Configuration INI file, read by Regular Expressions
-    public static final String ALTKEYSTOKEN              = "\\[ALTKEYS\\]";
-    public static final String EXECUTETOKEN              = "\\[EXECUTE\\]";
-    public static final String HELPEDCODETOKEN           = "\\[HELPEDCODE\\]";
-    public static final String MAPPINGTOKEN              = "\\[MAPPING\\]";
-    public static final String MENUTOKEN                 = "\\[MENU\\]";
-    public static final String RECENTFILESTOKEN          = "\\[RECENTFILES\\]";
-    public static final String SWITCHTOKEN               = "\\[SWITCH\\]";
-    public static final String SYNTAXTOKEN               = "\\[SYNTAX\\]";
-    public static final String SYMBOLSTOKEN              = "\\[SYMBOLS\\]";
-    public static final String SETTINGSTOKEN             = "\\[SETTINGS\\]";
-    public static final String LIBRAYPATHTOKEN           = "\\[LIBRAYPATH\\]";
-    public static final String LIBRAYPATHSECONDARY1TOKEN = "\\[LIBRAYPATHSECONDARY1\\]";
-    public static final String LIBRAYPATHSECONDARY2TOKEN = "\\[LIBRAYPATHSECONDARY2\\]";
-    public static final String LIBRAYPATHSECONDARY3TOKEN = "\\[LIBRAYPATHSECONDARY3\\]";
-    public static final String COMPILEDPATHTOKEN         = "\\[COMPILEDPATH\\]";
-    public static final String INTERPRETERZCODEPATHTOKEN = "\\[INTERPRETERZCODEPATH\\]";
-    public static final String INTERPRETERGLULXPATHTOKEN = "\\[INTERPRETERGLULXPATH\\]";
-    public static final String COMPILERPATHTOKEN         = "\\[COMPILERPATH\\]";
-    public static final String BRESPATHTOKEN             = "\\[BRESPATH\\]";
-    public static final String BLCPATHTOKEN              = "\\[BLCPATH\\]";
-    public static final String WRAPLINESTOKEN            = "\\[WRAPLINES\\]";
-    public static final String SYNTAXCHECKTOKEN          = "\\[SYNTAXCHECK\\]";
-    public static final String HELPEDCODECHECKTOKEN      = "\\[HELPEDCODECHECK\\]";
-    public static final String MAPPINGCODETOKEN          = "\\[MAPPINGCODE\\]";
-    public static final String NUMBERLINESTOKEN          = "\\[NUMBERLINES\\]";
-    public static final String PROJECTSCANFORCLASSESTOKEN= "\\[PROJECTSCANFORCLASSES\\]";
-    public static final String PROJECTOPENALLFILESTOKEN  = "\\[PROJECTOPENALLFILES\\]";
-    public static final String USECOMPILEDPATHTOKEN      = "\\[USECOMPILEDPATH\\]";
-    public static final String OPENLASTFILETOKEN         = "\\[OPENLASTFILE\\]";
-    public static final String CREATENEWFILETOKEN        = "\\[CREATENEWFILE\\]";
-    public static final String MAKEALWAYSRESOURCETOKEN   = "\\[MAKEALWAYSRESOURCE\\]";
-    public static final String TABSIZETOKEN              = "\\[TABSIZE\\]";
-    public static final String COLORKEYWORDTOKEN         = "\\[COLORKEYWORD\\]";
-    public static final String COLORATTRIBUTETOKEN       = "\\[COLORATTRIBUTE\\]";
-    public static final String COLORPROPERTYTOKEN        = "\\[COLORPROPERTY\\]";
-    public static final String COLORVERBTOKEN            = "\\[COLORVERB\\]";
-    public static final String COLORNORMALTOKEN          = "\\[COLORNORMAL\\]";
-    public static final String COLORCOMMENTTOKEN         = "\\[COLORCOMMENT\\]";
-    public static final String COLORSTRINGTOKEN          = "\\[COLORSTRING\\]";
-    public static final String COLORWORDTOKEN            = "\\[COLORWORD\\]";
-    public static final String COLORBACKGROUNDTOKEN      = "\\[COLORBACKGROUND\\]";
-    public static final String DEFAULTFONTTOKEN          = "\\[DEFAULTFONT\\]";
-    public static final String LOCATIONXTOKEN            = "\\[LOCATIONX\\]";
-    public static final String LOCATIONYTOKEN            = "\\[LOCATIONY\\]";
-    public static final String WIDTHTOKEN                = "\\[WIDTH\\]";
-    public static final String HEIGHTTOKEN               = "\\[HEIGHT\\]";
-    public static final String MODETOKEN                 = "\\[MODE\\]";
-    public static final String OUTPUTTOKEN               = "\\[OUTPUT\\]";
-    public static final String JTOOLBARTOKEN             = "\\[JTOOLBAR\\]";
-    public static final String JTREETOKEN                = "\\[JTREE\\]";
-    public static final String DIVIDER1TOKEN             = "\\[DIVIDER1\\]";
-    public static final String DIVIDER3TOKEN             = "\\[DIVIDER3\\]";
-    public static final String LASTFILETOKEN             = "\\[LASTFILE\\]";
-    public static final String LASTPROJECTTOKEN          = "\\[LASTPROJECT\\]";
-    
+
 }
