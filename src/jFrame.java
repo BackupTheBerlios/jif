@@ -46,25 +46,17 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,13 +69,15 @@ import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JList;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
+import javax.swing.JViewport;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -106,122 +100,105 @@ import javax.swing.tree.TreeSelectionModel;
  */
 
 
-/** Main Class for Jif application.
+/**
+ * Main Class for Jif application.
  * Jif is a Java Editor for Inform
  * @author Alessandro Schillaci
- * @version 3.0
+ * @version 3.2
  */
-public class jFrame extends JFrame {
-
+public class jFrame extends JFrame implements JifConfigurationObserver, JifProjectObserver {
+    
     private static final long serialVersionUID = 7544939067324000307L;
-
+    
     public jFrame() {
-
+        
         //Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/runInterpreter.png")));
-        workingDir = System.getProperty("user.dir");
-
+        
+        
+        String directory = System.getProperty("user.dir");
+        String file;
+        
         // To Force another location for the Jif.cfg file just run this:
         // java.exe -Duser.language=en -Duser.region=US -Djif.configuration=[NEWPATH] -cp . -jar Jif.jar
         // where [NEWPATH] is the Jif.cfg file path
-        if (System.getProperty("jif.configuration") != null){
-            System.out.println("Load new config file: "+System.getProperty("jif.configuration"));
-            fileini = System.getProperty("jif.configuration");
-        } else{
-            fileini = workingDir+Constants.SEP+Constants.configFileName;
-        }
-
-        // Jif will test if the Jif.cfg exists
-        // if not, jif will create a default one
-        File testconfig = new File(fileini);
-        if (!testconfig.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("JIF_CONFIG_NOT_EXITS"),
-                    "Warning", JOptionPane.WARNING_MESSAGE);
-            fileini = Utils.createNewConfigFile(workingDir+Constants.SEP+Constants.configFileName);
+        if (System.getProperty("jif.configuration") == null) {
+            file = directory + Constants.SEP + Constants.configFileName;
+        } else {
+            System.out.println("Load new config file: " + System.getProperty("jif.configuration"));
+            file = System.getProperty("jif.configuration");
         }
         
-        initComponents();
-        disableComponents();
-        disableProject();
-        setJListSymbols(new JList());
-
-        loadConfigNew(new File(fileini));
-        projectFiles = new Vector();
-        updateProjectTitle("Project: "+ currentProject);
-
-        JWindowSymbols = new JFrame();
-        JWindowSymbols.setResizable(false);
-        JWindowSymbols.setBackground(Color.LIGHT_GRAY);
-        JWindowSymbols.setUndecorated(true);
-
-        getJListSymbols().addKeyListener(new java.awt.event.KeyAdapter(){
-            MutableAttributeSet attr = new SimpleAttributeSet();;
-            public void keyPressed(java.awt.event.KeyEvent ke){
-                if ((ke.getKeyCode()==KeyEvent.VK_ENTER)){
-                    try{
-                        if (jCheckBoxMappingLive.isSelected()&&getMapping().containsKey((String)getJListSymbols().getSelectedValue())){
-                            getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)getMapping().get((String)getJListSymbols().getSelectedValue()), attr);
-                        } else getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)getJListSymbols().getSelectedValue() , attr);
-                        JWindowSymbols.setVisible(false);
-                    } catch(BadLocationException e){
-                        System.out.println(e.getMessage());
-                    }
-                }
-                if ((ke.getKeyCode()==KeyEvent.VK_ESCAPE)){
-                    JWindowSymbols.setVisible(false);
-                }
-            }
-        });
-        getJListSymbols().addMouseListener(new java.awt.event.MouseAdapter() {
-            MutableAttributeSet attr = new SimpleAttributeSet();
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                JWindowSymbols.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JWINDOW_TOOLTIP"));
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                JWindowSymbols.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("STR_SYMBOLS"));
-            }
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                if (evt.getClickCount()==2){
-                    try{
-                        if (jCheckBoxMappingLive.isSelected()&&getMapping().containsKey((String)getJListSymbols().getSelectedValue())){
-                            getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)getMapping().get((String)getJListSymbols().getSelectedValue()), attr);
-                        } else getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)getJListSymbols().getSelectedValue() , attr);
-                        JWindowSymbols.setVisible(false);
-                    } catch(BadLocationException e){
-                        System.out.println(e.getMessage());
-                    }
-                }
-            }
-        });
-
-        JScrollPane jsp1 = new JScrollPane();
-        jsp1.setPreferredSize(new java.awt.Dimension(30, 30));
-        jsp1.setMinimumSize(new java.awt.Dimension(0, 0));
-        jsp1.setViewportView(getJListSymbols());
-        JWindowSymbols.getContentPane().add(jsp1);
-        JWindowSymbols.toFront();
-
-        //attr = new SimpleAttributeSet();
-        hlighterOutputErrors    = new HighlightText(Constants.colorErrors);
-        hlighterOutputWarnings  = new HighlightText(Constants.colorWarnings);
-
-        // Opens the last file opened
-        if (jCheckBoxOpenLastFile.isSelected() && (null!=lastFile && !lastFile.equals("null"))){
-            // JIF opens the file only if exists
-            File test = new File(lastFile);
-            if (test.exists()){
-                openFile(lastFile);
+        // Jif will test if the Jif.cfg exists
+        // if not, jif will create a default one
+        File configFile = new File(file);
+        if (!configFile.exists()) {
+            JOptionPane.showMessageDialog(this,
+                    java.util.ResourceBundle.getBundle("JIF").getString("JIF_CONFIG_NOT_EXITS"),
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+            try {
+                JifConfigurationDAO.create(configFile);
+            } catch (JifConfigurationException ex) {
+                ex.printStackTrace();
             }
         }
-
+        
+        try {
+            config = JifConfigurationDAO.load(configFile);
+        } catch (JifConfigurationException ex) {
+            ex.printStackTrace();
+        }
+        
+        config.setWorkingDirectory(directory);
+        
+        initComponents();
+        
+        if (config.getFrameWidth()*config.getFrameHeight()*config.getFrameX()*config.getFrameY() != 0) {
+            setSize(config.getFrameWidth(), config.getFrameHeight());
+            setLocation(config.getFrameX(), config.getFrameY());
+        } else {
+            // first time JIF runs
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            setSize(screenSize.width-200, screenSize.height-140);
+            setLocation(screenSize.width/2 - (getWidth()/2), screenSize.height/2 - (getHeight()/2));
+        }
+        
+        symbolList.setListData(config.getSymbolsAlpha().toArray());
+        
+        if (config.getInformMode()) {
+            setInformMode();
+        } else {
+            setGlulxMode();
+        }
+        
+        disableFileComponents();
+        disableProjectComponents();
+        
+        config.registerObserver(this);
+        updateConfiguration();
+        
+        project.registerObserver(this);
+        updateProject();
+        
+        hlighterOutputErrors   = new HighlightText(Constants.colorErrors);
+        hlighterOutputWarnings = new HighlightText(Constants.colorWarnings);
+        
+        // Opens the last file opened
+        if (config.getOpenLastFile() && config.getLastFile() != null) {
+            // JIF opens the file only if it exists
+            File test = new File(config.getLastFile().getPath());
+            if (test.exists()) {
+                openFile(config.getLastFile().getPath());
+            }
+        }
+        
         //  Creates a new file when JIF is loaded
-        if (jCheckBoxCreateNewFile.isSelected()){
+        if (config.getCreateNewFile()) {
             newAdventure();
         }
     }
-
-
-
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -231,822 +208,779 @@ public class jFrame extends JFrame {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jPopupMenu1 = new javax.swing.JPopupMenu();
-        jMenuInsertNew = new javax.swing.JMenu();
-        jMenuItemInsertSymbol = new javax.swing.JMenuItem();
-        jMenuItemInsertFromFile = new javax.swing.JMenuItem();
+        filePopupMenu = new javax.swing.JPopupMenu();
+        insertNewMenu = new javax.swing.JMenu();
+        insertSymbolPopupMenuItem = new javax.swing.JMenuItem();
+        insertFilePopupMenuItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
-        jMenuItemCut1 = new javax.swing.JMenuItem();
-        jMenuItemCopy = new javax.swing.JMenuItem();
-        jMenuPaste = new javax.swing.JMenu();
-        jMenuItemClear = new javax.swing.JMenuItem();
+        cutPopupMenuItem = new javax.swing.JMenuItem();
+        copyPopupMenuItem = new javax.swing.JMenuItem();
+        pastePopupMenu = new javax.swing.JMenu();
+        clearPopupMenuItem = new javax.swing.JMenuItem();
         jSeparator13 = new javax.swing.JSeparator();
-        jMenuItemPrint1 = new javax.swing.JMenuItem();
-        jMenuItemPopupClose = new javax.swing.JMenuItem();
-        jMenuItemPopupCloseAllFiles = new javax.swing.JMenuItem();
-        jMenuItemJumpToSource = new javax.swing.JMenuItem();
-        jDialogAbout = new JDialog (this, "", true);
-        jPanel7 = new javax.swing.JPanel();
-        jButton9 = new javax.swing.JButton();
-        jTabbedPane3 = new javax.swing.JTabbedPane();
-        jLabel7 = new javax.swing.JLabel();
-        jScrollPaneAbout = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jDialogEditFileIni = new JDialog (this, "", false);
-        jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        jTextAreaConfig = new javax.swing.JTextArea();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        jDialogSwitches = new JDialog (this, "", false);
-        jPanel11 = new javax.swing.JPanel();
-        jPanelSwitch1 = new javax.swing.JPanel();
-        jPanelSwitch2 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        jButton15 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jDialogText = new JDialog (this, "", false);
-        jPanel8 = new javax.swing.JPanel();
-        jButton6 = new javax.swing.JButton();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        jTextArea4 = new javax.swing.JTextArea();
-        jLabel5 = new javax.swing.JLabel();
-        jDialogReplace = new javax.swing.JDialog();
-        jPanel12 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jTextFieldReplaceFind = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        jTextFieldReplace = new javax.swing.JTextField();
-        jPanel20 = new javax.swing.JPanel();
-        jButton11 = new javax.swing.JButton();
-        jButton12 = new javax.swing.JButton();
-        jButton13 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jPopupMenuProject = new javax.swing.JPopupMenu();
-        jMenuItemPopupNewProject = new javax.swing.JMenuItem();
-        jMenuItemPopupOpenProject = new javax.swing.JMenuItem();
-        jMenuItemPopupSaveProject = new javax.swing.JMenuItem();
-        jMenuItemPopupCloseProject = new javax.swing.JMenuItem();
+        printPopupMenuItem = new javax.swing.JMenuItem();
+        closePopupMenuItem = new javax.swing.JMenuItem();
+        closeAllPopupMenuItem = new javax.swing.JMenuItem();
+        jumpToSourceMenuItem = new javax.swing.JMenuItem();
+        projectPopupMenu = new javax.swing.JPopupMenu();
+        newProjectPopupMenuItem = new javax.swing.JMenuItem();
+        openProjectPopupMenuItem = new javax.swing.JMenuItem();
+        saveProjectPopupMenuItem = new javax.swing.JMenuItem();
+        closeProjectPopupMenuItem = new javax.swing.JMenuItem();
         jSeparator6 = new javax.swing.JSeparator();
-        jMenuItemPopupAddNewToProject = new javax.swing.JMenuItem();
-        jMenuItemPopupAddToProject = new javax.swing.JMenuItem();
-        jMenuItemPopupRemoveFromProject = new javax.swing.JMenuItem();
-        jMenuItemPopupOpenSelectedFiles = new javax.swing.JMenuItem();
+        addNewToProjectPopupMenuItem = new javax.swing.JMenuItem();
+        addFileToProjectPopupMenuItem = new javax.swing.JMenuItem();
+        removeFromProjectPopupMenuItem = new javax.swing.JMenuItem();
+        openSelectedFilesPopupMenuItem = new javax.swing.JMenuItem();
         jSeparator19 = new javax.swing.JSeparator();
-        jMenuItemSetMainClass = new javax.swing.JMenuItem();
-        jMenuItemRemoveMainClass = new javax.swing.JMenuItem();
-        jDialogOption = new JDialog (this, "", false);
-        jTabbedPaneOption = new javax.swing.JTabbedPane();
-        jPanelGeneral = new javax.swing.JPanel();
-        jCheckBoxOpenLastFile = new javax.swing.JCheckBox();
-        jCheckBoxCreateNewFile = new javax.swing.JCheckBox();
-        jCheckBoxMappingLive = new javax.swing.JCheckBox();
-        jCheckBoxHelpedCode = new javax.swing.JCheckBox();
-        jCheckBoxSyntax = new javax.swing.JCheckBox();
-        jCheckBoxNumberLines = new javax.swing.JCheckBox();
-        jCheckBoxScanProjectFiles = new javax.swing.JCheckBox();
-        jCheckBoxWrapLines = new javax.swing.JCheckBox();
-        jCheckBoxProjectOpenAllFiles = new javax.swing.JCheckBox();
-        jCheckBoxMakeResource = new javax.swing.JCheckBox();
-        jCheckBoxAdventInLib = new javax.swing.JCheckBox();
-        jPanelColor = new javax.swing.JPanel();
-        jEditorPaneColor = new javax.swing.JEditorPane();
-        jPanel14 = new javax.swing.JPanel();
-        jPanelDefaultDark = new javax.swing.JPanel();
-        jLabelDefaultDark = new javax.swing.JLabel();
-        jButtonDefaultDark = new javax.swing.JButton();
-        jPanel32 = new javax.swing.JPanel();
-        jLabelComment = new javax.swing.JLabel();
-        jButtonComment = new javax.swing.JButton();
-        jPanel31 = new javax.swing.JPanel();
-        jLabelNormal = new javax.swing.JLabel();
-        jButtonNormal = new javax.swing.JButton();
-        jPanel30 = new javax.swing.JPanel();
-        jLabelVerb = new javax.swing.JLabel();
-        jButtonVerb = new javax.swing.JButton();
-        jPanel37 = new javax.swing.JPanel();
-        jLabelBackground = new javax.swing.JLabel();
-        jButtonBackground = new javax.swing.JButton();
-        jPanel28 = new javax.swing.JPanel();
-        jLabelProperty = new javax.swing.JLabel();
-        jButtonProperty = new javax.swing.JButton();
-        jPanel27 = new javax.swing.JPanel();
-        jLabelAttribute = new javax.swing.JLabel();
-        jButtonAttribute = new javax.swing.JButton();
-        jPanel26 = new javax.swing.JPanel();
-        jLabelKeyword = new javax.swing.JLabel();
-        jButtonKeyword = new javax.swing.JButton();
-        jPanel29 = new javax.swing.JPanel();
-        jLabelString = new javax.swing.JLabel();
-        jButtonString = new javax.swing.JButton();
-        jPanel6 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jComboBoxFont = new javax.swing.JComboBox();
-        jComboBoxFont.addItem("Arial");
-        jComboBoxFont.addItem("Book Antiqua");
-        jComboBoxFont.addItem("Comic Sans MS");
-        jComboBoxFont.addItem("Courier New");
-        jComboBoxFont.addItem("Dialog");
-        jComboBoxFont.addItem("Georgia");
-        jComboBoxFont.addItem("Lucida Console");
-        jComboBoxFont.addItem("Lucida Bright");
-        jComboBoxFont.addItem("Lucida Sans");
-        jComboBoxFont.addItem("Monospaced");
-        jComboBoxFont.addItem("Thaoma");
-        jComboBoxFont.addItem("Times New Roman");
-        jComboBoxFont.addItem("Verdana");
-        jComboBoxFontSize = new javax.swing.JComboBox();
-        jComboBoxFontSize.addItem("9");
-        jComboBoxFontSize.addItem("10");
-        jComboBoxFontSize.addItem("11");
-        jComboBoxFontSize.addItem("12");
-        jComboBoxFontSize.addItem("13");
-        jComboBoxFontSize.addItem("14");
-        jComboBoxFontSize.addItem("15");
-        jComboBoxFontSize.addItem("16");
+        setMainPopupMenuItem = new javax.swing.JMenuItem();
+        removeMainPopupMenuItem = new javax.swing.JMenuItem();
+        aboutDialog = new JDialog (this, "", true);
+        aboutTabbedPane = new javax.swing.JTabbedPane();
+        aboutLabel = new javax.swing.JLabel();
+        creditsScrollPane = new javax.swing.JScrollPane();
+        creditsTextArea = new javax.swing.JTextArea();
+        aboutControlPanel = new javax.swing.JPanel();
+        aboutOKButton = new javax.swing.JButton();
+        configDialog = new JDialog (this, "", false);
+        configLabelPanel = new javax.swing.JPanel();
+        configLabel = new javax.swing.JLabel();
+        configScrollPane = new javax.swing.JScrollPane();
+        configTextArea = new javax.swing.JTextArea();
+        configControlPanel = new javax.swing.JPanel();
+        configSaveButton = new javax.swing.JButton();
+        configCloseButton = new javax.swing.JButton();
+        infoDialog = new JDialog (this, "", false);
+        infoScrollPane = new javax.swing.JScrollPane();
+        infoTextArea = new javax.swing.JTextArea();
+        infoControlPanel = new javax.swing.JPanel();
+        infoCloseButton = new javax.swing.JButton();
+        optionDialog = new JDialog (this, "", false);
+        optionTabbedPane = new javax.swing.JTabbedPane();
+        generalPanel = new javax.swing.JPanel();
+        openLastFileCheckBox = new javax.swing.JCheckBox();
+        createNewFileCheckBox = new javax.swing.JCheckBox();
+        mappingLiveCheckBox = new javax.swing.JCheckBox();
+        helpedCodeCheckBox = new javax.swing.JCheckBox();
+        syntaxCheckBox = new javax.swing.JCheckBox();
+        numberLinesCheckBox = new javax.swing.JCheckBox();
+        scanProjectFilesCheckBox = new javax.swing.JCheckBox();
+        wrapLinesCheckBox = new javax.swing.JCheckBox();
+        projectOpenAllFilesCheckBox = new javax.swing.JCheckBox();
+        makeResourceCheckBox = new javax.swing.JCheckBox();
+        adventInLibCheckBox = new javax.swing.JCheckBox();
+        colorFontPanel = new javax.swing.JPanel();
+        colorEditorPane = new javax.swing.JEditorPane();
+        colorPanel = new javax.swing.JPanel();
+        backgroundColorPanel = new javax.swing.JPanel();
+        backgroundColorLabel = new javax.swing.JLabel();
+        backgroundColorButton = new javax.swing.JButton();
+        attributeColorjPanel = new javax.swing.JPanel();
+        attributeColorLabel = new javax.swing.JLabel();
+        attributeColorButton = new javax.swing.JButton();
+        commentColorPanel = new javax.swing.JPanel();
+        commentColorLabel = new javax.swing.JLabel();
+        commentColorButton = new javax.swing.JButton();
+        keywordColorPanel = new javax.swing.JPanel();
+        keywordColorLabel = new javax.swing.JLabel();
+        keywordColorButton = new javax.swing.JButton();
+        normalColorPanel = new javax.swing.JPanel();
+        normalColorLabel = new javax.swing.JLabel();
+        normalColorButton = new javax.swing.JButton();
+        numberColorPanel = new javax.swing.JPanel();
+        numberColorLabel = new javax.swing.JLabel();
+        numberColorButton = new javax.swing.JButton();
+        propertyColorPanel = new javax.swing.JPanel();
+        propertyColorLabel = new javax.swing.JLabel();
+        propertyColorButton = new javax.swing.JButton();
+        stringColorPanel = new javax.swing.JPanel();
+        stringColorLabel = new javax.swing.JLabel();
+        stringColorButton = new javax.swing.JButton();
+        verbColorPanel = new javax.swing.JPanel();
+        verbColorLabel = new javax.swing.JLabel();
+        verbColorButton = new javax.swing.JButton();
+        wordColorPanel = new javax.swing.JPanel();
+        wordColorLabel = new javax.swing.JLabel();
+        wordColorButton = new javax.swing.JButton();
+        fontPanel = new javax.swing.JPanel();
+        fontLabel = new javax.swing.JLabel();
+        fontNameComboBox = new javax.swing.JComboBox();
+        fontNameComboBox.addItem("Arial");
+        fontNameComboBox.addItem("Book Antiqua");
+        fontNameComboBox.addItem("Comic Sans MS");
+        fontNameComboBox.addItem("Courier New");
+        fontNameComboBox.addItem("Dialog");
+        fontNameComboBox.addItem("Georgia");
+        fontNameComboBox.addItem("Lucida Console");
+        fontNameComboBox.addItem("Lucida Bright");
+        fontNameComboBox.addItem("Lucida Sans");
+        fontNameComboBox.addItem("Monospaced");
+        fontNameComboBox.addItem("Thaoma");
+        fontNameComboBox.addItem("Times New Roman");
+        fontNameComboBox.addItem("Verdana");
+        fontSizeComboBox = new javax.swing.JComboBox();
+        fontSizeComboBox.addItem("9");
+        fontSizeComboBox.addItem("10");
+        fontSizeComboBox.addItem("11");
+        fontSizeComboBox.addItem("12");
+        fontSizeComboBox.addItem("13");
+        fontSizeComboBox.addItem("14");
+        fontSizeComboBox.addItem("15");
+        fontSizeComboBox.addItem("16");
 
-        jPanel10 = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
-        jTextFieldTabSize = new javax.swing.JTextField();
-        jPanelPath = new javax.swing.JPanel();
-        jPanel17 = new javax.swing.JPanel();
-        jLabel14 = new javax.swing.JLabel();
-        jTextFieldPathGames = new javax.swing.JTextField();
-        jButtonCompiledPath = new javax.swing.JButton();
-        jPanel18 = new javax.swing.JPanel();
-        jLabel15 = new javax.swing.JLabel();
-        jTextFieldPathCompiler = new javax.swing.JTextField();
-        jButtonCompilerPath = new javax.swing.JButton();
-        jPanel19 = new javax.swing.JPanel();
-        jLabel16 = new javax.swing.JLabel();
-        jTextFieldPathInterpreter = new javax.swing.JTextField();
-        jButtonInterpreterPath = new javax.swing.JButton();
-        jPanelLibraryPath = new javax.swing.JPanel();
-        jPanel16 = new javax.swing.JPanel();
-        jLabel13 = new javax.swing.JLabel();
-        jTextFieldPathLib = new javax.swing.JTextField();
-        jButtonLibraryPath = new javax.swing.JButton();
-        jPanel43 = new javax.swing.JPanel();
-        jLabel18 = new javax.swing.JLabel();
-        jTextFieldPathLibSecondary1 = new javax.swing.JTextField();
-        jButtonLibraryPath1 = new javax.swing.JButton();
-        jPanel45 = new javax.swing.JPanel();
-        jLabel20 = new javax.swing.JLabel();
-        jTextFieldPathLibSecondary2 = new javax.swing.JTextField();
-        jButtonLibraryPath2 = new javax.swing.JButton();
-        jPanel49 = new javax.swing.JPanel();
-        jLabel21 = new javax.swing.JLabel();
-        jTextFieldPathLibSecondary3 = new javax.swing.JTextField();
-        jButtonLibraryPath3 = new javax.swing.JButton();
-        jPanelGlulxPath = new javax.swing.JPanel();
-        jPanel44 = new javax.swing.JPanel();
-        jLabel19 = new javax.swing.JLabel();
-        jTextFieldPathGlulx = new javax.swing.JTextField();
-        jButtonGlulxPath = new javax.swing.JButton();
-        jPanel46 = new javax.swing.JPanel();
-        jLabelBres = new javax.swing.JLabel();
-        jTextFieldBres = new javax.swing.JTextField();
-        jButtonBres = new javax.swing.JButton();
-        jPanel47 = new javax.swing.JPanel();
-        jLabelBlc = new javax.swing.JLabel();
-        jTextFieldBlc = new javax.swing.JTextField();
-        jButtonBlc = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
-        jButton10 = new javax.swing.JButton();
-        jButton23 = new javax.swing.JButton();
-        jDialogInfo = new JDialog (this, "", false);
-        jScrollPaneInfo = new javax.swing.JScrollPane();
-        jTextAreaInfo = new javax.swing.JTextArea();
-        jPanel24 = new javax.swing.JPanel();
-        jButton21 = new javax.swing.JButton();
-        jDialogTutorial = new JDialog (this, "", false);
-        jPanel35 = new javax.swing.JPanel();
-        jButton24 = new javax.swing.JButton();
-        jButtonPrintTutorial = new javax.swing.JButton();
-        jScrollPane7 = new javax.swing.JScrollPane();
-        jEditorPaneTutorial = new javax.swing.JEditorPane();
-        jLabelTutorial = new javax.swing.JLabel();
-        jDialogProjectSwitches = new javax.swing.JDialog();
-        jPanelProjectSwitches = new javax.swing.JPanel();
-        jPanel13 = new javax.swing.JPanel();
-        jButton7 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jDialogProjectProperties = new javax.swing.JDialog();
-        jPanel9 = new javax.swing.JPanel();
-        jButton14 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextAreaProjectProperties = new javax.swing.JTextArea();
-        buttonGroup1 = new javax.swing.ButtonGroup();
-        jPanel22 = new javax.swing.JPanel();
-        jButtonNew = new javax.swing.JButton();
-        OpenButton = new javax.swing.JButton();
-        SaveButton = new javax.swing.JButton();
-        SaveButtonAll = new javax.swing.JButton();
-        SaveAsButton = new javax.swing.JButton();
-        jButtonClose = new javax.swing.JButton();
-        jButtonCloseAll = new javax.swing.JButton();
-        jButtonUndo = new javax.swing.JButton();
-        jButtonRedo = new javax.swing.JButton();
-        jButtonCommentSelection = new javax.swing.JButton();
-        jButtonUncommentSelection = new javax.swing.JButton();
-        jButtonLeftTab = new javax.swing.JButton();
-        jButtonRightTab = new javax.swing.JButton();
-        jButtonBracketCheck = new javax.swing.JButton();
-        RebuildButton = new javax.swing.JButton();
-        RunButton = new javax.swing.JButton();
-        jButtonInsertSymbol = new javax.swing.JButton();
-        jButtonInterpreter = new javax.swing.JButton();
-        jButtonSwitchManager = new javax.swing.JButton();
-        jButtonOption = new javax.swing.JButton();
-        jTextFieldFind = new javax.swing.JTextField();
-        jButtonFind = new javax.swing.JButton();
-        jButtonReplace = new javax.swing.JButton();
-        jTextFieldRowCol = new javax.swing.JTextField();
-        jSplitPane3 = new javax.swing.JSplitPane();
-        jSplitPane1 = new javax.swing.JSplitPane();
-        jTabbedPaneLeft = new javax.swing.JTabbedPane();
-        jPanelTreeControl = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
+        tabSizePanel = new javax.swing.JPanel();
+        tabSizeLabel = new javax.swing.JLabel();
+        tabSizeTextField = new javax.swing.JTextField();
+        defaultColorPanel = new javax.swing.JPanel();
+        defaultDarkColorPanel = new javax.swing.JPanel();
+        defaultDarkColorLabel = new javax.swing.JLabel();
+        defaultDarkColorButton = new javax.swing.JButton();
+        defaultLightColorPanel = new javax.swing.JPanel();
+        defaultLightColorLabel = new javax.swing.JLabel();
+        defaultLightColorButton = new javax.swing.JButton();
+        colorHighlightPanel = new javax.swing.JPanel();
+        highlightEditorPane = new javax.swing.JEditorPane();
+        highlightSelectedPanel = new javax.swing.JPanel();
+        highlightSelectedLabel = new javax.swing.JLabel();
+        highlightSelectedComboBox = new javax.swing.JComboBox();
+        highlightSelectedComboBox.addItem("Bookmark");
+        highlightSelectedComboBox.addItem("Bracket");
+        highlightSelectedComboBox.addItem("Error");
+        highlightSelectedComboBox.addItem("JumpTo");
+        highlightSelectedComboBox.addItem("Warning");
+
+        highlightPanel = new javax.swing.JPanel();
+        bookmarkColorPanel = new javax.swing.JPanel();
+        bookmarkColorLabel = new javax.swing.JLabel();
+        bookmarkColorButton = new javax.swing.JButton();
+        bracketColorPanel = new javax.swing.JPanel();
+        bracketColorLabel = new javax.swing.JLabel();
+        bracketColorButton = new javax.swing.JButton();
+        errorColorPanel = new javax.swing.JPanel();
+        errorColorLabel = new javax.swing.JLabel();
+        errorColorButton = new javax.swing.JButton();
+        jumpToColorPanel = new javax.swing.JPanel();
+        jumpToColorLabel = new javax.swing.JLabel();
+        jumpToColorButton = new javax.swing.JButton();
+        warningColorPanel = new javax.swing.JPanel();
+        warningColorLabel = new javax.swing.JLabel();
+        warningColorButton = new javax.swing.JButton();
+        defaultHighlightPanel = new javax.swing.JPanel();
+        defaultDarkhighlightPanel = new javax.swing.JPanel();
+        defaultDarkHighlightLabel = new javax.swing.JLabel();
+        defaultDarkHighlightButton = new javax.swing.JButton();
+        defaultLightHighlightPanel = new javax.swing.JPanel();
+        defaultLightHighlightLabel = new javax.swing.JLabel();
+        defaultLightHighlightButton = new javax.swing.JButton();
+        complierPanel = new javax.swing.JPanel();
+        gamePathPanel = new javax.swing.JPanel();
+        gamePathLabel = new javax.swing.JLabel();
+        gamePathTextField = new javax.swing.JTextField();
+        gamePathButton = new javax.swing.JButton();
+        compilerPathPanel = new javax.swing.JPanel();
+        compilerPathLabel = new javax.swing.JLabel();
+        compilerPathTextField = new javax.swing.JTextField();
+        compilerPathButton = new javax.swing.JButton();
+        interpreterPathPanel = new javax.swing.JPanel();
+        interpreterPathLabel = new javax.swing.JLabel();
+        interpreterPathTextField = new javax.swing.JTextField();
+        interpreterPathButton = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        libraryPanel = new javax.swing.JPanel();
+        libraryPathPanel = new javax.swing.JPanel();
+        libraryPathLabel = new javax.swing.JLabel();
+        libraryPathTextField = new javax.swing.JTextField();
+        libraryPathButton = new javax.swing.JButton();
+        libraryPath1Panel = new javax.swing.JPanel();
+        libraryPath1Label = new javax.swing.JLabel();
+        libraryPath1TextField = new javax.swing.JTextField();
+        libraryPath1Button = new javax.swing.JButton();
+        libraryPath2Panel = new javax.swing.JPanel();
+        libraryPath2Label = new javax.swing.JLabel();
+        libraryPath2TextField = new javax.swing.JTextField();
+        libraryPath2Button = new javax.swing.JButton();
+        libraryPath3Panel = new javax.swing.JPanel();
+        libraryPath3Label = new javax.swing.JLabel();
+        libraryPath3TextField = new javax.swing.JTextField();
+        libraryPath3Button = new javax.swing.JButton();
+        glulxPanel = new javax.swing.JPanel();
+        glulxPathPanel = new javax.swing.JPanel();
+        glulxPathLabel = new javax.swing.JLabel();
+        glulxPathTextField = new javax.swing.JTextField();
+        glulxPathButton = new javax.swing.JButton();
+        bresPathPanel = new javax.swing.JPanel();
+        bresPathLabel = new javax.swing.JLabel();
+        bresPathTextField = new javax.swing.JTextField();
+        bresPathButton = new javax.swing.JButton();
+        blcPathPanel = new javax.swing.JPanel();
+        blcPathLabel = new javax.swing.JLabel();
+        blcPathTextField = new javax.swing.JTextField();
+        blcPathButton = new javax.swing.JButton();
+        optionControlPanel = new javax.swing.JPanel();
+        optionSaveButton = new javax.swing.JButton();
+        optionDefaultButton = new javax.swing.JButton();
+        optionCancelButton = new javax.swing.JButton();
+        projectSwitchesDialog = new javax.swing.JDialog();
+        projectSwitchesPanel = new javax.swing.JPanel();
+        projectSwitchesControlPanel = new javax.swing.JPanel();
+        projectSwitchesSaveButton = new javax.swing.JButton();
+        projectSwitchesCloseButton = new javax.swing.JButton();
+        projectPropertiesDialog = new javax.swing.JDialog();
+        projectPropertiesScrollPane = new javax.swing.JScrollPane();
+        projectPropertiesTextArea = new javax.swing.JTextArea();
+        projectPropertiesControlPanel = new javax.swing.JPanel();
+        projectPropertiesSaveButton = new javax.swing.JButton();
+        projectPropertiesCloseButton = new javax.swing.JButton();
+        replaceDialog = new javax.swing.JDialog();
+        replacePanel = new javax.swing.JPanel();
+        replaceFindLabel = new javax.swing.JLabel();
+        replaceFindTextField = new javax.swing.JTextField();
+        replaceReplaceLabel = new javax.swing.JLabel();
+        replaceReplaceTextField = new javax.swing.JTextField();
+        replaceControlPanel = new javax.swing.JPanel();
+        replaceFindButton = new javax.swing.JButton();
+        replaceReplaceButton = new javax.swing.JButton();
+        replaceAllButton = new javax.swing.JButton();
+        replaceCloseButton = new javax.swing.JButton();
+        switchesDialog = new JDialog (this, "", false);
+        switchesPanel = new javax.swing.JPanel();
+        switchesUpperPanel = new javax.swing.JPanel();
+        switchesLowerPanel = new javax.swing.JPanel();
+        switchesControlPanel = new javax.swing.JPanel();
+        switchesSaveButton = new javax.swing.JButton();
+        switchesCloseButton = new javax.swing.JButton();
+        symbolDialog = new javax.swing.JDialog();
+        symbolScrollPane = new javax.swing.JScrollPane();
+        symbolList = new javax.swing.JList();
+        textDialog = new JDialog (this, "", false);
+        textLabel = new javax.swing.JLabel();
+        textScrollPane = new javax.swing.JScrollPane();
+        textTextArea = new javax.swing.JTextArea();
+        textControlPanel = new javax.swing.JPanel();
+        textCloseButton = new javax.swing.JButton();
+        tutorialDialog = new JDialog (this, "", false);
+        tutorialLabel = new javax.swing.JLabel();
+        tutorialScrollPane = new javax.swing.JScrollPane();
+        tutorialEditorPane = new javax.swing.JEditorPane();
+        tutorialControlPanel = new javax.swing.JPanel();
+        tutorialOKButton = new javax.swing.JButton();
+        tutorialPrintButton = new javax.swing.JButton();
+        toolbarPanel = new javax.swing.JPanel();
+        newButton = new javax.swing.JButton();
+        openButton = new javax.swing.JButton();
+        saveButton = new javax.swing.JButton();
+        saveAllButton = new javax.swing.JButton();
+        saveAsButton = new javax.swing.JButton();
+        closeButton = new javax.swing.JButton();
+        closeAllButton = new javax.swing.JButton();
+        undoButton = new javax.swing.JButton();
+        redoButton = new javax.swing.JButton();
+        commentButton = new javax.swing.JButton();
+        uncommentButton = new javax.swing.JButton();
+        tabLeftButton = new javax.swing.JButton();
+        tabRightButton = new javax.swing.JButton();
+        bracketCheckButton = new javax.swing.JButton();
+        buildAllButton = new javax.swing.JButton();
+        runButton = new javax.swing.JButton();
+        insertSymbolButton = new javax.swing.JButton();
+        interpreterButton = new javax.swing.JButton();
+        switchManagerButton = new javax.swing.JButton();
+        settingsButton = new javax.swing.JButton();
+        findTextField = new javax.swing.JTextField();
+        findButton = new javax.swing.JButton();
+        replaceButton = new javax.swing.JButton();
+        rowColTextField = new javax.swing.JTextField();
+        mainSplitPane = new javax.swing.JSplitPane();
+        upperSplitPane = new javax.swing.JSplitPane();
+        leftTabbedPane = new javax.swing.JTabbedPane();
+        treePanel = new javax.swing.JPanel();
+        treeScrollPane = new javax.swing.JScrollPane();
 
         DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
         renderer.setLeafIcon(new ImageIcon(getClass().getResource("/images/TREE_objects.png")));
-        jTree1 = new javax.swing.JTree();
+        treeTree = new javax.swing.JTree();
         // Creo la root per Inspect
         top = new DefaultMutableTreeNode("Inspect");
-        category1 = new DefaultMutableTreeNode("Globals    ");
-        top.add(category1);
-        category2 = new DefaultMutableTreeNode("Constants    ");
-        top.add(category2);
-        category4 = new DefaultMutableTreeNode("Objects    ");
-        top.add(category4);
-        category5 = new DefaultMutableTreeNode("Functions    ");
-        top.add(category5);
-        category7 = new DefaultMutableTreeNode("Classes    ");
-        top.add(category7);
+        globalTree = new DefaultMutableTreeNode("Globals    ");
+        top.add(globalTree);
+        constantTree = new DefaultMutableTreeNode("Constants    ");
+        top.add(constantTree);
+        objectTree = new DefaultMutableTreeNode("Objects    ");
+        top.add(objectTree);
+        functionTree = new DefaultMutableTreeNode("Functions    ");
+        top.add(functionTree);
+        classTree = new DefaultMutableTreeNode("Classes    ");
+        top.add(classTree);
 
         //Create a tree that allows one selection at a time.
         treeModel = new DefaultTreeModel(top);
-        jTree1 = new JTree(treeModel);
+        treeTree = new JTree(treeModel);
 
-        jTree1.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        jTree1.setCellRenderer(renderer);
+        treeTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        treeTree.setCellRenderer(renderer);
 
-        jPanelMainFile = new javax.swing.JPanel();
-        jScrollPaneProject = new javax.swing.JScrollPane();
-        jListProject = new javax.swing.JList();
-        jListProject.addMouseListener(popupListenerProject);
-        jLabelMainFile = new javax.swing.JLabel();
-        jPanelSearch = new javax.swing.JPanel();
-        jPanelSearchProject = new javax.swing.JPanel();
-        jTextFieldFindAll = new javax.swing.JTextField();
-        jButtonSearchProject = new javax.swing.JButton();
-        jPanelDefinition = new javax.swing.JPanel();
-        jTextFieldDefinition = new javax.swing.JTextField();
-        jButtonDefinition = new javax.swing.JButton();
-        jPanel5 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextAreaOutput = new javax.swing.JTextArea();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenuFile = new javax.swing.JMenu();
-        New = new javax.swing.JMenuItem();
-        Open = new javax.swing.JMenuItem();
+        projectPanel = new javax.swing.JPanel();
+        projectScrollPane = new javax.swing.JScrollPane();
+        projectList = new javax.swing.JList();
+        projectList.setCellRenderer(new JifProjectListCellRenderer());
+        projectList.addMouseListener(popupListenerProject);
+        mainFileLabel = new javax.swing.JLabel();
+        searchPanel = new javax.swing.JPanel();
+        searchProjectPanel = new javax.swing.JPanel();
+        searchProjectTextField = new javax.swing.JTextField();
+        searchProjectButton = new javax.swing.JButton();
+        definitionPanel = new javax.swing.JPanel();
+        definitionTextField = new javax.swing.JTextField();
+        definitionButton = new javax.swing.JButton();
+        filePanel = new javax.swing.JPanel();
+        outputScrollPane = new javax.swing.JScrollPane();
+        outputTextArea = new javax.swing.JTextArea();
+        mainMenuBar = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        newMenuItem = new javax.swing.JMenuItem();
+        openMenuItem = new javax.swing.JMenuItem();
         jSeparator8 = new javax.swing.JSeparator();
-        Save = new javax.swing.JMenuItem();
-        SaveAs = new javax.swing.JMenuItem();
-        jMenuItemSaveAll = new javax.swing.JMenuItem();
+        saveMenuItem = new javax.swing.JMenuItem();
+        saveAsMenuItem = new javax.swing.JMenuItem();
+        saveAllMenuItem = new javax.swing.JMenuItem();
         jSeparator10 = new javax.swing.JSeparator();
-        jMenuItemClose = new javax.swing.JMenuItem();
-        jMenuItemCloseAll = new javax.swing.JMenuItem();
+        closeMenuItem = new javax.swing.JMenuItem();
+        closeAllMenuItem = new javax.swing.JMenuItem();
         jSeparator9 = new javax.swing.JSeparator();
-        jMenuRecentFiles = new javax.swing.JMenu();
-        jMenuItemClearRecentFiles = new javax.swing.JMenuItem();
+        recentFilesMenu = new javax.swing.JMenu();
+        clearRecentFilesMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
-        jMenuItemPrint = new javax.swing.JMenuItem();
+        printMenuItem = new javax.swing.JMenuItem();
         jSeparator4 = new javax.swing.JSeparator();
-        Exit = new javax.swing.JMenuItem();
-        jMenuEdit = new javax.swing.JMenu();
-        jMenuItemCut = new javax.swing.JMenuItem();
-        jMenuItemCopy1 = new javax.swing.JMenuItem();
-        jMenuItemPaste = new javax.swing.JMenuItem();
+        exitMenuItem = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
+        cutMenuItem = new javax.swing.JMenuItem();
+        copyMenuItem = new javax.swing.JMenuItem();
+        pasteMenuItem = new javax.swing.JMenuItem();
         jSeparator11 = new javax.swing.JSeparator();
-        jMenuItemSearch = new javax.swing.JMenuItem();
-        jMenuItemSearchAllFiles = new javax.swing.JMenuItem();
-        jMenuItemReplace = new javax.swing.JMenuItem();
-        jMenuItemSelectAll = new javax.swing.JMenuItem();
-        jMenuItemClearAll = new javax.swing.JMenuItem();
+        searchMenuItem = new javax.swing.JMenuItem();
+        searchAllMenuItem = new javax.swing.JMenuItem();
+        replaceMenuItem = new javax.swing.JMenuItem();
+        selectAllMenuItem = new javax.swing.JMenuItem();
+        clearAllMenuItem = new javax.swing.JMenuItem();
         jSeparator16 = new javax.swing.JSeparator();
-        jMenuItemCommentSelection = new javax.swing.JMenuItem();
-        jMenuItemUncommentSelection = new javax.swing.JMenuItem();
-        jMenuItemRightShift = new javax.swing.JMenuItem();
-        jMenuItemLeftShift = new javax.swing.JMenuItem();
+        commentSelectionMenuItem = new javax.swing.JMenuItem();
+        uncommentSelectionMenuItem = new javax.swing.JMenuItem();
+        tabRightMenuItem = new javax.swing.JMenuItem();
+        tabLeftMenuItem = new javax.swing.JMenuItem();
         jSeparator17 = new javax.swing.JSeparator();
-        jMenuItemInsertFile = new javax.swing.JMenuItem();
-        jMenuItemInsertSymbol1 = new javax.swing.JMenuItem();
-        jMenuItemSetBookmark = new javax.swing.JMenuItem();
-        jMenuItemNextBookmark = new javax.swing.JMenuItem();
-        jMenuItemExtractStrings = new javax.swing.JMenuItem();
-        jMenuItemTranslate = new javax.swing.JMenuItem();
-        jMenuView = new javax.swing.JMenu();
-        jCheckBoxOutput = new javax.swing.JCheckBoxMenuItem();
-        jCheckBoxJToolBar = new javax.swing.JCheckBoxMenuItem();
-        jCheckBoxJTree = new javax.swing.JCheckBoxMenuItem();
-        jCheckBoxToggleFullscreen = new javax.swing.JCheckBoxMenuItem();
-        jMenuProject = new javax.swing.JMenu();
-        jMenuItemNewProject = new javax.swing.JMenuItem();
-        jMenuItemOpenProject = new javax.swing.JMenuItem();
-        jMenuItemSaveProject = new javax.swing.JMenuItem();
-        jMenuItemCloseProject = new javax.swing.JMenuItem();
+        insertFileMenuItem = new javax.swing.JMenuItem();
+        insertSymbolMenuItem = new javax.swing.JMenuItem();
+        setBookmarkMenuItem = new javax.swing.JMenuItem();
+        nextBookmarkMenuItem = new javax.swing.JMenuItem();
+        extractStringsMenuItem = new javax.swing.JMenuItem();
+        translateMenuItem = new javax.swing.JMenuItem();
+        viewMenu = new javax.swing.JMenu();
+        outputCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        toolbarCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        treeCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        toggleFullscreenCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        projectMenu = new javax.swing.JMenu();
+        newProjectMenuItem = new javax.swing.JMenuItem();
+        openProjectMenuItem = new javax.swing.JMenuItem();
+        saveProjectMenuItem = new javax.swing.JMenuItem();
+        closeProjectMenuItem = new javax.swing.JMenuItem();
         jSeparator14 = new javax.swing.JSeparator();
-        jMenuItemAddNewToProject = new javax.swing.JMenuItem();
-        jMenuItemAddFileToProject = new javax.swing.JMenuItem();
-        jMenuItemRemoveFromProject = new javax.swing.JMenuItem();
-        jMenuProjectProperties = new javax.swing.JMenuItem();
-        jMenuProjectSwitches = new javax.swing.JMenuItem();
+        addNewToProjectMenuItem = new javax.swing.JMenuItem();
+        addFileToProjectMenuItem = new javax.swing.JMenuItem();
+        removeFromProjectMenuItem = new javax.swing.JMenuItem();
+        projectPropertiesMenuItem = new javax.swing.JMenuItem();
+        projectSwitchesMenuItem = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JSeparator();
-        jMenuItemLastProject = new javax.swing.JMenuItem();
-        jMenuMode = new javax.swing.JMenu();
-        jCheckBoxInformMode = new javax.swing.JCheckBoxMenuItem();
-        jCheckBoxGlulxMode = new javax.swing.JCheckBoxMenuItem();
-        jMenuBuild = new javax.swing.JMenu();
-        BuildAll = new javax.swing.JMenuItem();
-        jMenuItemSwitches = new javax.swing.JMenuItem();
+        lastProjectMenuItem = new javax.swing.JMenuItem();
+        modeMenu = new javax.swing.JMenu();
+        informModeCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        glulxModeCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        buildMenu = new javax.swing.JMenu();
+        buildAllMenuItem = new javax.swing.JMenuItem();
+        switchesMenuItem = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JSeparator();
-        Run = new javax.swing.JMenuItem();
-        jMenuGlulx = new javax.swing.JMenu();
-        jMenuItemBuildAllGlulx = new javax.swing.JMenuItem();
+        runMenuItem = new javax.swing.JMenuItem();
+        glulxMenu = new javax.swing.JMenu();
+        buildAllGlulxMenuItem = new javax.swing.JMenuItem();
         jSeparator18 = new javax.swing.JSeparator();
-        jMenuItemMakeResource = new javax.swing.JMenuItem();
-        jMenuItemCompile = new javax.swing.JMenuItem();
-        jMenuItemMakeBlb = new javax.swing.JMenuItem();
+        makeResourceMenuItem = new javax.swing.JMenuItem();
+        compileMenuItem = new javax.swing.JMenuItem();
+        makeBlbMenuItem = new javax.swing.JMenuItem();
         jSeparator15 = new javax.swing.JSeparator();
-        jMenuItemRunUlx = new javax.swing.JMenuItem();
-        jMenuItemRunBlb = new javax.swing.JMenuItem();
-        jMenuOptions = new javax.swing.JMenu();
-        jMenuItemConfigFile = new javax.swing.JMenuItem();
-        jMenuItemSettings = new javax.swing.JMenuItem();
+        runUlxMenuItem = new javax.swing.JMenuItem();
+        runBlbMenuItem = new javax.swing.JMenuItem();
+        optionsMenu = new javax.swing.JMenu();
+        configFileMenuItem = new javax.swing.JMenuItem();
+        settingsMenuItem = new javax.swing.JMenuItem();
         jSeparator12 = new javax.swing.JSeparator();
-        jMenuItemGC = new javax.swing.JMenuItem();
-        jMenuHelp = new javax.swing.JMenu();
-        jMenuItemReadMe = new javax.swing.JMenuItem();
-        About = new javax.swing.JMenuItem();
+        garbageCollectionMenuItem = new javax.swing.JMenuItem();
+        helpMenu = new javax.swing.JMenu();
+        readMeMenuItem = new javax.swing.JMenuItem();
+        aboutMenuItem = new javax.swing.JMenuItem();
 
-        jPopupMenu1.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuInsertNew.setText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENU_NEW"));
-        jMenuInsertNew.setFont(new java.awt.Font("Dialog", 0, 11));
-        jPopupMenu1.add(jMenuInsertNew);
+        filePopupMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        insertNewMenu.setText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENU_NEW"));
+        insertNewMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        filePopupMenu.add(insertNewMenu);
 
-        jMenuItemInsertSymbol.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemInsertSymbol.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_INSERT_SYMBOL"));
-        jMenuItemInsertSymbol.addActionListener(new java.awt.event.ActionListener() {
+        insertSymbolPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        insertSymbolPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_INSERT_SYMBOL"));
+        insertSymbolPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemInsertSymbolActionPerformed(evt);
+                insertSymbolActionPerformed(evt);
             }
         });
 
-        jPopupMenu1.add(jMenuItemInsertSymbol);
+        filePopupMenu.add(insertSymbolPopupMenuItem);
 
-        jMenuItemInsertFromFile.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemInsertFromFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_INSERT_FROM_FILE"));
-        jMenuItemInsertFromFile.addActionListener(new java.awt.event.ActionListener() {
+        insertFilePopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        insertFilePopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_INSERT_FROM_FILE"));
+        insertFilePopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemInsertFromFileActionPerformed(evt);
+                insertFileActionPerformed(evt);
             }
         });
 
-        jPopupMenu1.add(jMenuItemInsertFromFile);
+        filePopupMenu.add(insertFilePopupMenuItem);
 
-        jPopupMenu1.add(jSeparator3);
+        filePopupMenu.add(jSeparator3);
 
-        jMenuItemCut1.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCut1.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EDIT_CUT"));
-        jMenuItemCut1.setActionCommand("KEY JFRAME_EDIT_CUT : RB JIF");
-        jMenuItemCut1.addActionListener(new java.awt.event.ActionListener() {
+        cutPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        cutPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EDIT_CUT"));
+        cutPopupMenuItem.setActionCommand("KEY JFRAME_EDIT_CUT : RB JIF");
+        cutPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemCut1ActionPerformed(evt);
+                cutActionPerformed(evt);
             }
         });
 
-        jPopupMenu1.add(jMenuItemCut1);
+        filePopupMenu.add(cutPopupMenuItem);
 
-        jMenuItemCopy.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCopy.setText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENUITEM_COPY"));
-        jMenuItemCopy.addActionListener(new java.awt.event.ActionListener() {
+        copyPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        copyPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENUITEM_COPY"));
+        copyPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemCopyActionPerformed(evt);
+                copyActionPerformed(evt);
             }
         });
 
-        jPopupMenu1.add(jMenuItemCopy);
+        filePopupMenu.add(copyPopupMenuItem);
 
-        jMenuPaste.setText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENU_PASTE"));
-        jMenuPaste.setFont(new java.awt.Font("Dialog", 0, 11));
-        jPopupMenu1.add(jMenuPaste);
+        pastePopupMenu.setText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENU_PASTE"));
+        pastePopupMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        filePopupMenu.add(pastePopupMenu);
 
-        jMenuItemClear.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemClear.setText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENUITEM_CLEAR"));
-        jMenuItemClear.addActionListener(new java.awt.event.ActionListener() {
+        clearPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        clearPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENUITEM_CLEAR"));
+        clearPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemClearActionPerformed(evt);
+                clearPopupActionPerformed(evt);
             }
         });
 
-        jPopupMenu1.add(jMenuItemClear);
+        filePopupMenu.add(clearPopupMenuItem);
 
-        jPopupMenu1.add(jSeparator13);
+        filePopupMenu.add(jSeparator13);
 
-        jMenuItemPrint1.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPrint1.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_PRINT"));
-        jMenuItemPrint1.addActionListener(new java.awt.event.ActionListener() {
+        printPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        printPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_PRINT"));
+        printPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPrint1ActionPerformed(evt);
+                printPopupMenuItemActionPerformed(evt);
             }
         });
 
-        jPopupMenu1.add(jMenuItemPrint1);
+        filePopupMenu.add(printPopupMenuItem);
 
-        jMenuItemPopupClose.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPopupClose.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLOSE"));
-        jMenuItemPopupClose.addActionListener(new java.awt.event.ActionListener() {
+        closePopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        closePopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLOSE"));
+        closePopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPopupCloseActionPerformed(evt);
+                closeActionPerformed(evt);
             }
         });
 
-        jPopupMenu1.add(jMenuItemPopupClose);
+        filePopupMenu.add(closePopupMenuItem);
 
-        jMenuItemPopupCloseAllFiles.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPopupCloseAllFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLOSEALL"));
-        jMenuItemPopupCloseAllFiles.addActionListener(new java.awt.event.ActionListener() {
+        closeAllPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        closeAllPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLOSEALL"));
+        closeAllPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPopupCloseAllFilesActionPerformed(evt);
+                closeAllActionPerformed(evt);
             }
         });
 
-        jPopupMenu1.add(jMenuItemPopupCloseAllFiles);
+        filePopupMenu.add(closeAllPopupMenuItem);
 
-        jMenuItemJumpToSource.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemJumpToSource.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_JUMP_TO_SOURCE"));
-        jMenuItemJumpToSource.addActionListener(new java.awt.event.ActionListener() {
+        jumpToSourceMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        jumpToSourceMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_JUMP_TO_SOURCE"));
+        jumpToSourceMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemJumpToSourceActionPerformed(evt);
+                jumpToSourceActionPerformed(evt);
             }
         });
 
-        jPopupMenu1.add(jMenuItemJumpToSource);
+        filePopupMenu.add(jumpToSourceMenuItem);
 
-        jDialogAbout.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        jDialogAbout.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_ABOUT_JIF"));
-        jDialogAbout.setFocusCycleRoot(false);
-        jDialogAbout.setModal(true);
-        jDialogAbout.setResizable(false);
-        jDialogAbout.getAccessibleContext().setAccessibleParent(this);
-        jButton9.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_OK"));
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
+        projectPopupMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        newProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        newProjectPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_NEW_PROJECT"));
+        newProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
+                newProjectActionPerformed(evt);
             }
         });
 
-        jPanel7.add(jButton9);
+        projectPopupMenu.add(newProjectPopupMenuItem);
 
-        jDialogAbout.getContentPane().add(jPanel7, java.awt.BorderLayout.SOUTH);
-
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/about.png")));
-        jTabbedPane3.addTab("About", jLabel7);
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setEditable(false);
-        jTextArea1.setFont(new java.awt.Font("MonoSpaced", 0, 11));
-        jTextArea1.setRows(5);
-        jTextArea1.setText("JIF, a java editor for Inform\nby Alessandro Schillaci\nhttp://www.slade.altervista.org/JIF/\n\nDevelopment: \n- Alessandro Schillaci\n- Luis Fernandez\n- Peter F. Piggott\n\nContributors:\nPaolo Lucchesi\nVincenzo Scarpa\nBaltasar Garc\u00eda Perez-Schofield\nChristof Menear\nGiles Boutel\nJavier San Jos\u00e9\nDavid Moreno\nEric Forgeot\nMax Kalus\nAdrien Saurat\nAlex V Flinsch\nDaryl McCullough\nGiancarlo Niccolai\nIgnazio di Napoli\nJoerg Rosenbauer\nMatteo De Simone\nTommaso Caldarola");
-        jScrollPaneAbout.setViewportView(jTextArea1);
-
-        jTabbedPane3.addTab("Credits", jScrollPaneAbout);
-
-        jDialogAbout.getContentPane().add(jTabbedPane3, java.awt.BorderLayout.NORTH);
-
-        jDialogEditFileIni.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGFILES_TITLE"));
-        jDialogEditFileIni.setFont(new java.awt.Font("Arial", 0, 12));
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jButton1.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        openProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        openProjectPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_PROJECT"));
+        openProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                openProjectActionPerformed(evt);
             }
         });
 
-        jPanel1.add(jButton1);
+        projectPopupMenu.add(openProjectPopupMenuItem);
 
-        jButton2.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        saveProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        saveProjectPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_SAVE_PROJECT"));
+        saveProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                saveProjectActionPerformed(evt);
             }
         });
 
-        jPanel1.add(jButton2);
+        projectPopupMenu.add(saveProjectPopupMenuItem);
 
-        jDialogEditFileIni.getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
-
-        jTextAreaConfig.setTabSize(4);
-        jScrollPane4.setViewportView(jTextAreaConfig);
-
-        jDialogEditFileIni.getContentPane().add(jScrollPane4, java.awt.BorderLayout.CENTER);
-
-        jPanel2.setLayout(new java.awt.GridLayout(1, 0));
-
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jLabel2.setText("jLabel2");
-        jPanel2.add(jLabel2);
-
-        jDialogEditFileIni.getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);
-
-        jDialogSwitches.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_SWITCHES_TITLE"));
-        jDialogSwitches.setFont(new java.awt.Font("Arial", 0, 12));
-        jDialogSwitches.setModal(true);
-        jPanel11.setLayout(new java.awt.GridLayout(2, 0));
-
-        jPanelSwitch1.setLayout(new java.awt.GridLayout(0, 4));
-
-        jPanelSwitch1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanelSwitch1.setFont(new java.awt.Font("Dialog", 0, 8));
-        jPanel11.add(jPanelSwitch1);
-
-        jPanelSwitch2.setLayout(new java.awt.GridLayout(0, 3));
-
-        jPanelSwitch2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanelSwitch2.setFont(new java.awt.Font("Dialog", 0, 8));
-        jPanel11.add(jPanelSwitch2);
-
-        jDialogSwitches.getContentPane().add(jPanel11, java.awt.BorderLayout.CENTER);
-
-        jButton15.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
-        jButton15.addActionListener(new java.awt.event.ActionListener() {
+        closeProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        closeProjectPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_CLOSE_PROJECT"));
+        closeProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton15ActionPerformed(evt);
+                closeProjectActionPerformed(evt);
             }
         });
 
-        jPanel4.add(jButton15);
+        projectPopupMenu.add(closeProjectPopupMenuItem);
 
-        jButton4.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        projectPopupMenu.add(jSeparator6);
+
+        addNewToProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        addNewToProjectPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_ADD_NEWFILE_TO_PROJECT"));
+        addNewToProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                addNewToProjectActionPerformed(evt);
             }
         });
 
-        jPanel4.add(jButton4);
+        projectPopupMenu.add(addNewToProjectPopupMenuItem);
 
-        jDialogSwitches.getContentPane().add(jPanel4, java.awt.BorderLayout.SOUTH);
-
-        jButton6.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_OK"));
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        addFileToProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        addFileToProjectPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_ADD_FILE_TO_PROJECT"));
+        addFileToProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                addFileToProjectActionPerformed(evt);
             }
         });
 
-        jPanel8.add(jButton6);
+        projectPopupMenu.add(addFileToProjectPopupMenuItem);
 
-        jDialogText.getContentPane().add(jPanel8, java.awt.BorderLayout.SOUTH);
-
-        jTextArea4.setEditable(false);
-        jTextArea4.setFont(new java.awt.Font("Courier New", 0, 12));
-        jTextArea4.setTabSize(4);
-        jScrollPane6.setViewportView(jTextArea4);
-
-        jDialogText.getContentPane().add(jScrollPane6, java.awt.BorderLayout.CENTER);
-
-        jLabel5.setText("jLabel5");
-        jDialogText.getContentPane().add(jLabel5, java.awt.BorderLayout.NORTH);
-
-        jDialogReplace.getContentPane().setLayout(new javax.swing.BoxLayout(jDialogReplace.getContentPane(), javax.swing.BoxLayout.Y_AXIS));
-
-        jDialogReplace.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGREPLACE_TITLE"));
-        jDialogReplace.setModal(true);
-        jLabel1.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGREPLACE_FIND_LABEL"));
-        jLabel1.setPreferredSize(new java.awt.Dimension(41, 17));
-        jPanel12.add(jLabel1);
-
-        jTextFieldReplaceFind.setMaximumSize(new java.awt.Dimension(111, 20));
-        jTextFieldReplaceFind.setMinimumSize(new java.awt.Dimension(111, 20));
-        jTextFieldReplaceFind.setPreferredSize(new java.awt.Dimension(111, 20));
-        jPanel12.add(jTextFieldReplaceFind);
-
-        jLabel6.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGREPLACE_REPLACE_LABEL"));
-        jPanel12.add(jLabel6);
-
-        jTextFieldReplace.setMaximumSize(new java.awt.Dimension(111, 20));
-        jTextFieldReplace.setMinimumSize(new java.awt.Dimension(111, 20));
-        jTextFieldReplace.setPreferredSize(new java.awt.Dimension(111, 20));
-        jPanel12.add(jTextFieldReplace);
-
-        jDialogReplace.getContentPane().add(jPanel12);
-
-        jButton11.setFont(new java.awt.Font("MS Sans Serif", 0, 12));
-        jButton11.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGREPLACE_BUTTON_FIND"));
-        jButton11.addActionListener(new java.awt.event.ActionListener() {
+        removeFromProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        removeFromProjectPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_POPUP_REMOVE"));
+        removeFromProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton11ActionPerformed(evt);
+                removeFromProjectActionPerformed(evt);
             }
         });
 
-        jPanel20.add(jButton11);
+        projectPopupMenu.add(removeFromProjectPopupMenuItem);
 
-        jButton12.setFont(new java.awt.Font("MS Sans Serif", 0, 12));
-        jButton12.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGREPLACE_BUTTON_REPLACE"));
-        jButton12.addActionListener(new java.awt.event.ActionListener() {
+        openSelectedFilesPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        openSelectedFilesPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_SELECTED_FILES"));
+        openSelectedFilesPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton12ActionPerformed(evt);
+                openSelectedFilesActionPerformed(evt);
             }
         });
 
-        jPanel20.add(jButton12);
+        projectPopupMenu.add(openSelectedFilesPopupMenuItem);
 
-        jButton13.setFont(new java.awt.Font("MS Sans Serif", 0, 12));
-        jButton13.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGREPLACE_BUTTON_REPLACE_ALL"));
-        jButton13.addActionListener(new java.awt.event.ActionListener() {
+        projectPopupMenu.add(jSeparator19);
+
+        setMainPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        setMainPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_SET_AS_MAIN_FILE"));
+        setMainPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton13ActionPerformed(evt);
+                setMainActionPerformed(evt);
             }
         });
 
-        jPanel20.add(jButton13);
+        projectPopupMenu.add(setMainPopupMenuItem);
 
-        jButton3.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        removeMainPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        removeMainPopupMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_REMOVE_MAIN_FILE"));
+        removeMainPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                removeMainActionPerformed(evt);
             }
         });
 
-        jPanel20.add(jButton3);
+        projectPopupMenu.add(removeMainPopupMenuItem);
 
-        jDialogReplace.getContentPane().add(jPanel20);
+        aboutDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        aboutDialog.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_ABOUT_JIF"));
+        aboutDialog.setFocusCycleRoot(false);
+        aboutDialog.setModal(true);
+        aboutDialog.setResizable(false);
+        aboutDialog.getAccessibleContext().setAccessibleParent(this);
+        aboutLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/about.png")));
+        aboutTabbedPane.addTab("About", aboutLabel);
 
-        jPopupMenuProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPopupNewProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPopupNewProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_NEW_PROJECT"));
-        jMenuItemPopupNewProject.addActionListener(new java.awt.event.ActionListener() {
+        creditsScrollPane.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        creditsTextArea.setColumns(20);
+        creditsTextArea.setEditable(false);
+        creditsTextArea.setFont(new java.awt.Font("MonoSpaced", 0, 11));
+        creditsTextArea.setRows(5);
+        creditsTextArea.setText("JIF, a java editor for Inform\nby Alessandro Schillaci\nhttp://www.slade.altervista.org/JIF/\n\nDevelopment: \n- Alessandro Schillaci\n- Luis Fernandez\n- Peter F. Piggott\n\nContributors:\nPaolo Lucchesi\nVincenzo Scarpa\nBaltasar Garc\u00eda Perez-Schofield\nChristof Menear\nGiles Boutel\nJavier San Jos\u00e9\nDavid Moreno\nEric Forgeot\nMax Kalus\nAdrien Saurat\nAlex V Flinsch\nDaryl McCullough\nGiancarlo Niccolai\nIgnazio di Napoli\nJoerg Rosenbauer\nMatteo De Simone\nTommaso Caldarola");
+        creditsTextArea.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 3));
+        creditsScrollPane.setViewportView(creditsTextArea);
+
+        aboutTabbedPane.addTab("Credits", creditsScrollPane);
+
+        aboutDialog.getContentPane().add(aboutTabbedPane, java.awt.BorderLayout.NORTH);
+
+        aboutOKButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_OK"));
+        aboutOKButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPopupNewProjectActionPerformed(evt);
+                aboutOKActionPerformed(evt);
             }
         });
 
-        jPopupMenuProject.add(jMenuItemPopupNewProject);
+        aboutControlPanel.add(aboutOKButton);
 
-        jMenuItemPopupOpenProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPopupOpenProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_PROJECT"));
-        jMenuItemPopupOpenProject.addActionListener(new java.awt.event.ActionListener() {
+        aboutDialog.getContentPane().add(aboutControlPanel, java.awt.BorderLayout.SOUTH);
+
+        configDialog.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGFILES_TITLE"));
+        configDialog.setFont(new java.awt.Font("Arial", 0, 12));
+        configLabelPanel.setLayout(new java.awt.GridLayout(1, 0));
+
+        configLabelPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        configLabel.setText("configuration");
+        configLabelPanel.add(configLabel);
+
+        configDialog.getContentPane().add(configLabelPanel, java.awt.BorderLayout.NORTH);
+
+        configTextArea.setTabSize(4);
+        configTextArea.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 5, 2, 5));
+        configScrollPane.setViewportView(configTextArea);
+
+        configDialog.getContentPane().add(configScrollPane, java.awt.BorderLayout.CENTER);
+
+        configControlPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        configSaveButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
+        configSaveButton.setMaximumSize(new java.awt.Dimension(59, 23));
+        configSaveButton.setMinimumSize(new java.awt.Dimension(59, 23));
+        configSaveButton.setPreferredSize(new java.awt.Dimension(59, 23));
+        configSaveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPopupOpenProjectActionPerformed(evt);
+                configSaveActionPerformed(evt);
             }
         });
 
-        jPopupMenuProject.add(jMenuItemPopupOpenProject);
+        configControlPanel.add(configSaveButton);
 
-        jMenuItemPopupSaveProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPopupSaveProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_SAVE_PROJECT"));
-        jMenuItemPopupSaveProject.addActionListener(new java.awt.event.ActionListener() {
+        configCloseButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
+        configCloseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPopupSaveProjectActionPerformed(evt);
+                configCloseActionPerformed(evt);
             }
         });
 
-        jPopupMenuProject.add(jMenuItemPopupSaveProject);
+        configControlPanel.add(configCloseButton);
 
-        jMenuItemPopupCloseProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPopupCloseProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_CLOSE_PROJECT"));
-        jMenuItemPopupCloseProject.addActionListener(new java.awt.event.ActionListener() {
+        configDialog.getContentPane().add(configControlPanel, java.awt.BorderLayout.SOUTH);
+
+        infoDialog.setTitle("");
+        infoDialog.setModal(true);
+        infoScrollPane.setAutoscrolls(true);
+        infoTextArea.setBackground(new java.awt.Color(204, 204, 204));
+        infoTextArea.setEditable(false);
+        infoTextArea.setFont(new java.awt.Font("Monospaced", 0, 12));
+        infoTextArea.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 5, 2, 5));
+        infoTextArea.setMaximumSize(new java.awt.Dimension(0, 0));
+        infoTextArea.setMinimumSize(new java.awt.Dimension(0, 0));
+        infoTextArea.setPreferredSize(new java.awt.Dimension(0, 0));
+        infoScrollPane.setViewportView(infoTextArea);
+
+        infoDialog.getContentPane().add(infoScrollPane, java.awt.BorderLayout.CENTER);
+
+        infoCloseButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
+        infoCloseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPopupCloseProjectActionPerformed(evt);
+                infoCloseActionPerformed(evt);
             }
         });
 
-        jPopupMenuProject.add(jMenuItemPopupCloseProject);
+        infoControlPanel.add(infoCloseButton);
 
-        jPopupMenuProject.add(jSeparator6);
+        infoDialog.getContentPane().add(infoControlPanel, java.awt.BorderLayout.SOUTH);
 
-        jMenuItemPopupAddNewToProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPopupAddNewToProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_ADD_NEWFILE_TO_PROJECT"));
-        jMenuItemPopupAddNewToProject.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPopupAddNewToProjectActionPerformed(evt);
-            }
-        });
+        optionDialog.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SETTING"));
+        optionDialog.setModal(true);
+        optionTabbedPane.setMinimumSize(new java.awt.Dimension(100, 100));
+        optionTabbedPane.setPreferredSize(new java.awt.Dimension(500, 450));
+        generalPanel.setLayout(new java.awt.GridBagLayout());
 
-        jPopupMenuProject.add(jMenuItemPopupAddNewToProject);
-
-        jMenuItemPopupAddToProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPopupAddToProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_ADD_FILE_TO_PROJECT"));
-        jMenuItemPopupAddToProject.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPopupAddToProjectActionPerformed(evt);
-            }
-        });
-
-        jPopupMenuProject.add(jMenuItemPopupAddToProject);
-
-        jMenuItemPopupRemoveFromProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPopupRemoveFromProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_POPUP_REMOVE"));
-        jMenuItemPopupRemoveFromProject.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPopupRemoveFromProjectActionPerformed(evt);
-            }
-        });
-
-        jPopupMenuProject.add(jMenuItemPopupRemoveFromProject);
-
-        jMenuItemPopupOpenSelectedFiles.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPopupOpenSelectedFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_SELECTED_FILES"));
-        jMenuItemPopupOpenSelectedFiles.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPopupOpenSelectedFilesActionPerformed(evt);
-            }
-        });
-
-        jPopupMenuProject.add(jMenuItemPopupOpenSelectedFiles);
-
-        jPopupMenuProject.add(jSeparator19);
-
-        jMenuItemSetMainClass.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemSetMainClass.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_SET_AS_MAIN_FILE"));
-        jMenuItemSetMainClass.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemSetMainClassActionPerformed(evt);
-            }
-        });
-
-        jPopupMenuProject.add(jMenuItemSetMainClass);
-
-        jMenuItemRemoveMainClass.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemRemoveMainClass.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_REMOVE_MAIN_FILE"));
-        jMenuItemRemoveMainClass.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemRemoveMainClassActionPerformed(evt);
-            }
-        });
-
-        jPopupMenuProject.add(jMenuItemRemoveMainClass);
-
-        jDialogOption.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SETTING"));
-        jDialogOption.setModal(true);
-        jTabbedPaneOption.setMinimumSize(new java.awt.Dimension(100, 100));
-        jTabbedPaneOption.setPreferredSize(new java.awt.Dimension(500, 450));
-        jPanelGeneral.setLayout(new java.awt.GridBagLayout());
-
-        jPanelGeneral.setMinimumSize(new java.awt.Dimension(277, 800));
-        jPanelGeneral.setPreferredSize(new java.awt.Dimension(192, 138));
-        jCheckBoxOpenLastFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_LAST_OPEN_FILE"));
+        generalPanel.setMinimumSize(new java.awt.Dimension(277, 800));
+        generalPanel.setPreferredSize(new java.awt.Dimension(192, 138));
+        openLastFileCheckBox.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_LAST_OPEN_FILE"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanelGeneral.add(jCheckBoxOpenLastFile, gridBagConstraints);
+        generalPanel.add(openLastFileCheckBox, gridBagConstraints);
 
-        jCheckBoxCreateNewFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("OPTION_CREATE_A_NEW_FILE"));
+        createNewFileCheckBox.setText(java.util.ResourceBundle.getBundle("JIF").getString("OPTION_CREATE_A_NEW_FILE"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanelGeneral.add(jCheckBoxCreateNewFile, gridBagConstraints);
+        generalPanel.add(createNewFileCheckBox, gridBagConstraints);
 
-        jCheckBoxMappingLive.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_MAPPINGLIVE"));
+        mappingLiveCheckBox.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_MAPPINGLIVE"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanelGeneral.add(jCheckBoxMappingLive, gridBagConstraints);
+        generalPanel.add(mappingLiveCheckBox, gridBagConstraints);
 
-        jCheckBoxHelpedCode.setSelected(true);
-        jCheckBoxHelpedCode.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE"));
-        jCheckBoxHelpedCode.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE_TOOLTIP"));
+        helpedCodeCheckBox.setSelected(true);
+        helpedCodeCheckBox.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE"));
+        helpedCodeCheckBox.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_HELPEDCODE_TOOLTIP"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanelGeneral.add(jCheckBoxHelpedCode, gridBagConstraints);
+        generalPanel.add(helpedCodeCheckBox, gridBagConstraints);
 
-        jCheckBoxSyntax.setSelected(true);
-        jCheckBoxSyntax.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SYNTAX"));
+        syntaxCheckBox.setSelected(true);
+        syntaxCheckBox.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SYNTAX"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanelGeneral.add(jCheckBoxSyntax, gridBagConstraints);
+        generalPanel.add(syntaxCheckBox, gridBagConstraints);
 
-        jCheckBoxNumberLines.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_NUMBEROFLINES"));
-        jCheckBoxNumberLines.addActionListener(new java.awt.event.ActionListener() {
+        numberLinesCheckBox.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_NUMBEROFLINES"));
+        numberLinesCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxNumberLinesActionPerformed(evt);
+                numberLinesCheckBoxActionPerformed(evt);
             }
         });
 
@@ -1055,20 +989,20 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanelGeneral.add(jCheckBoxNumberLines, gridBagConstraints);
+        generalPanel.add(numberLinesCheckBox, gridBagConstraints);
 
-        jCheckBoxScanProjectFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SCAN_PROJECT"));
+        scanProjectFilesCheckBox.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_SCAN_PROJECT"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanelGeneral.add(jCheckBoxScanProjectFiles, gridBagConstraints);
+        generalPanel.add(scanProjectFilesCheckBox, gridBagConstraints);
 
-        jCheckBoxWrapLines.setText("Wrap Lines");
-        jCheckBoxWrapLines.addActionListener(new java.awt.event.ActionListener() {
+        wrapLinesCheckBox.setText("Wrap Lines");
+        wrapLinesCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxWrapLinesActionPerformed(evt);
+                wrapLinesCheckBoxActionPerformed(evt);
             }
         });
 
@@ -1076,112 +1010,188 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanelGeneral.add(jCheckBoxWrapLines, gridBagConstraints);
+        generalPanel.add(wrapLinesCheckBox, gridBagConstraints);
 
-        jCheckBoxProjectOpenAllFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_ALL_FILES"));
+        projectOpenAllFilesCheckBox.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_ALL_FILES"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanelGeneral.add(jCheckBoxProjectOpenAllFiles, gridBagConstraints);
+        generalPanel.add(projectOpenAllFilesCheckBox, gridBagConstraints);
 
-        jCheckBoxMakeResource.setText(java.util.ResourceBundle.getBundle("JIF").getString("GLULX_MAKE_RESOURCE_WHEN_BUILD_ALL"));
+        makeResourceCheckBox.setText(java.util.ResourceBundle.getBundle("JIF").getString("GLULX_MAKE_RESOURCE_WHEN_BUILD_ALL"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanelGeneral.add(jCheckBoxMakeResource, gridBagConstraints);
+        generalPanel.add(makeResourceCheckBox, gridBagConstraints);
 
-        jCheckBoxAdventInLib.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_ADVENT_IN_LIB"));
+        adventInLibCheckBox.setText(java.util.ResourceBundle.getBundle("JIF").getString("JOPTION_ADVENT_IN_LIB"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanelGeneral.add(jCheckBoxAdventInLib, gridBagConstraints);
+        generalPanel.add(adventInLibCheckBox, gridBagConstraints);
 
-        jTabbedPaneOption.addTab("General", jPanelGeneral);
+        optionTabbedPane.addTab("General", generalPanel);
 
-        jPanelColor.setLayout(new java.awt.GridBagLayout());
+        colorFontPanel.setLayout(new java.awt.GridBagLayout());
 
-        jPanelColor.setBorder(javax.swing.BorderFactory.createTitledBorder("Color and Font"));
-        jPanelColor.setMinimumSize(new java.awt.Dimension(277, 260));
-        jPanelColor.setPreferredSize(new java.awt.Dimension(277, 260));
-        jEditorPaneColor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jEditorPaneColor.setEditable(false);
-        jEditorPaneColor.setMaximumSize(new java.awt.Dimension(50, 50));
-        jEditorPaneColor.setMinimumSize(new java.awt.Dimension(50, 50));
-        jEditorPaneColor.setPreferredSize(new java.awt.Dimension(50, 150));
+        colorFontPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Color and Font"));
+        colorFontPanel.setMinimumSize(new java.awt.Dimension(277, 260));
+        colorFontPanel.setPreferredSize(new java.awt.Dimension(277, 260));
+        colorEditorPane.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), javax.swing.BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        colorEditorPane.setEditable(false);
+        colorEditorPane.setMaximumSize(new java.awt.Dimension(50, 50));
+        colorEditorPane.setMinimumSize(new java.awt.Dimension(50, 50));
+        colorEditorPane.setPreferredSize(new java.awt.Dimension(50, 180));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelColor.add(jEditorPaneColor, gridBagConstraints);
+        colorFontPanel.add(colorEditorPane, gridBagConstraints);
 
-        jPanel14.setLayout(new java.awt.GridBagLayout());
+        colorPanel.setLayout(new java.awt.GridBagLayout());
 
-        jPanelDefaultDark.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        backgroundColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabelDefaultDark.setText("Black setting");
-        jPanelDefaultDark.add(jLabelDefaultDark);
+        backgroundColorLabel.setText("Background");
+        backgroundColorPanel.add(backgroundColorLabel);
 
-        jButtonDefaultDark.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonDefaultDark.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonDefaultDark.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonDefaultDark.addActionListener(new java.awt.event.ActionListener() {
+        backgroundColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        backgroundColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        backgroundColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        backgroundColorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonDefaultDarkActionPerformed(evt);
+                backgroundColorActionPerformed(evt);
             }
         });
 
-        jPanelDefaultDark.add(jButtonDefaultDark);
+        backgroundColorPanel.add(backgroundColorButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanel14.add(jPanelDefaultDark, gridBagConstraints);
+        colorPanel.add(backgroundColorPanel, gridBagConstraints);
 
-        jPanel32.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        attributeColorjPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabelComment.setText("Comment");
-        jPanel32.add(jLabelComment);
+        attributeColorLabel.setText("Attribute");
+        attributeColorjPanel.add(attributeColorLabel);
 
-        jButtonComment.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonComment.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonComment.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonComment.addActionListener(new java.awt.event.ActionListener() {
+        attributeColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        attributeColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        attributeColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        attributeColorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCommentActionPerformed(evt);
+                attributeColorActionPerformed(evt);
             }
         });
 
-        jPanel32.add(jButtonComment);
+        attributeColorjPanel.add(attributeColorButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanel14.add(jPanel32, gridBagConstraints);
+        colorPanel.add(attributeColorjPanel, gridBagConstraints);
 
-        jPanel31.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        commentColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabelNormal.setText("Normal");
-        jPanel31.add(jLabelNormal);
+        commentColorLabel.setText("Comment");
+        commentColorPanel.add(commentColorLabel);
 
-        jButtonNormal.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonNormal.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonNormal.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonNormal.addActionListener(new java.awt.event.ActionListener() {
+        commentColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        commentColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        commentColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        commentColorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonNormalActionPerformed(evt);
+                commentColorActionPerformed(evt);
             }
         });
 
-        jPanel31.add(jButtonNormal);
+        commentColorPanel.add(commentColorButton);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        colorPanel.add(commentColorPanel, gridBagConstraints);
+
+        keywordColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        keywordColorLabel.setText("Keyword");
+        keywordColorPanel.add(keywordColorLabel);
+
+        keywordColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        keywordColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        keywordColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        keywordColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                keywordColorActionPerformed(evt);
+            }
+        });
+
+        keywordColorPanel.add(keywordColorButton);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        colorPanel.add(keywordColorPanel, gridBagConstraints);
+
+        normalColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        normalColorLabel.setText("Normal");
+        normalColorPanel.add(normalColorLabel);
+
+        normalColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        normalColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        normalColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        normalColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                normalColorActionPerformed(evt);
+            }
+        });
+
+        normalColorPanel.add(normalColorButton);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        colorPanel.add(normalColorPanel, gridBagConstraints);
+
+        numberColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        numberColorLabel.setText("Number");
+        numberColorPanel.add(numberColorLabel);
+
+        numberColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        numberColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        numberColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        numberColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                numberColorActionPerformed(evt);
+            }
+        });
+
+        numberColorPanel.add(numberColorButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1189,23 +1199,23 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanel14.add(jPanel31, gridBagConstraints);
+        colorPanel.add(numberColorPanel, gridBagConstraints);
 
-        jPanel30.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        propertyColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabelVerb.setText("Verb");
-        jPanel30.add(jLabelVerb);
+        propertyColorLabel.setText("Property");
+        propertyColorPanel.add(propertyColorLabel);
 
-        jButtonVerb.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonVerb.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonVerb.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonVerb.addActionListener(new java.awt.event.ActionListener() {
+        propertyColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        propertyColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        propertyColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        propertyColorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonVerbActionPerformed(evt);
+                propertyColorActionPerformed(evt);
             }
         });
 
-        jPanel30.add(jButtonVerb);
+        propertyColorPanel.add(propertyColorButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -1213,23 +1223,23 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanel14.add(jPanel30, gridBagConstraints);
+        colorPanel.add(propertyColorPanel, gridBagConstraints);
 
-        jPanel37.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        stringColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabelBackground.setText("Background");
-        jPanel37.add(jLabelBackground);
+        stringColorLabel.setText("String");
+        stringColorPanel.add(stringColorLabel);
 
-        jButtonBackground.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonBackground.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonBackground.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonBackground.addActionListener(new java.awt.event.ActionListener() {
+        stringColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        stringColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        stringColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        stringColorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBackgroundActionPerformed(evt);
+                stringColorActionPerformed(evt);
             }
         });
 
-        jPanel37.add(jButtonBackground);
+        stringColorPanel.add(stringColorButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -1237,171 +1247,376 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanel14.add(jPanel37, gridBagConstraints);
+        colorPanel.add(stringColorPanel, gridBagConstraints);
 
-        jPanel28.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        verbColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabelProperty.setText("Property");
-        jPanel28.add(jLabelProperty);
+        verbColorLabel.setText("Verb");
+        verbColorPanel.add(verbColorLabel);
 
-        jButtonProperty.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonProperty.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonProperty.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonProperty.addActionListener(new java.awt.event.ActionListener() {
+        verbColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        verbColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        verbColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        verbColorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonPropertyActionPerformed(evt);
+                verbColorActionPerformed(evt);
             }
         });
 
-        jPanel28.add(jButtonProperty);
+        verbColorPanel.add(verbColorButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanel14.add(jPanel28, gridBagConstraints);
+        colorPanel.add(verbColorPanel, gridBagConstraints);
 
-        jPanel27.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        wordColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabelAttribute.setText("Attribute");
-        jPanel27.add(jLabelAttribute);
+        wordColorLabel.setText("Word");
+        wordColorPanel.add(wordColorLabel);
 
-        jButtonAttribute.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonAttribute.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonAttribute.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonAttribute.addActionListener(new java.awt.event.ActionListener() {
+        wordColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        wordColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        wordColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        wordColorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAttributeActionPerformed(evt);
+                wordColorActionPerformed(evt);
             }
         });
 
-        jPanel27.add(jButtonAttribute);
+        wordColorPanel.add(wordColorButton);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        colorPanel.add(wordColorPanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanel14.add(jPanel27, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        colorFontPanel.add(colorPanel, gridBagConstraints);
 
-        jPanel26.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        fontLabel.setText("Font");
+        fontPanel.add(fontLabel);
 
-        jLabelKeyword.setText("Keyword");
-        jPanel26.add(jLabelKeyword);
-
-        jButtonKeyword.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonKeyword.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonKeyword.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonKeyword.addActionListener(new java.awt.event.ActionListener() {
+        fontNameComboBox.setMaximumRowCount(10);
+        fontNameComboBox.setMinimumSize(new java.awt.Dimension(100, 21));
+        fontNameComboBox.setPreferredSize(new java.awt.Dimension(120, 21));
+        fontNameComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonKeywordActionPerformed(evt);
+                fontNameComboBoxActionPerformed(evt);
             }
         });
 
-        jPanel26.add(jButtonKeyword);
+        fontPanel.add(fontNameComboBox);
+
+        fontSizeComboBox.setMinimumSize(new java.awt.Dimension(100, 21));
+        fontSizeComboBox.setPreferredSize(new java.awt.Dimension(120, 21));
+        fontSizeComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fontSizeComboBoxActionPerformed(evt);
+            }
+        });
+
+        fontPanel.add(fontSizeComboBox);
+
+        tabSizeLabel.setText("TAB size");
+        tabSizePanel.add(tabSizeLabel);
+
+        tabSizeTextField.setColumns(2);
+        tabSizeTextField.setText("4");
+        tabSizeTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tabSizeTextFieldActionPerformed(evt);
+            }
+        });
+
+        tabSizePanel.add(tabSizeTextField);
+
+        fontPanel.add(tabSizePanel);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        colorFontPanel.add(fontPanel, gridBagConstraints);
+
+        defaultDarkColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        defaultDarkColorLabel.setText("Black setting");
+        defaultDarkColorPanel.add(defaultDarkColorLabel);
+
+        defaultDarkColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        defaultDarkColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        defaultDarkColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        defaultDarkColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                defaultDarkActionPerformed(evt);
+            }
+        });
+
+        defaultDarkColorPanel.add(defaultDarkColorButton);
+
+        defaultColorPanel.add(defaultDarkColorPanel);
+
+        defaultLightColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        defaultLightColorLabel.setText("White setting");
+        defaultLightColorPanel.add(defaultLightColorLabel);
+
+        defaultLightColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        defaultLightColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        defaultLightColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        defaultLightColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                defaultLightActionPerformed(evt);
+            }
+        });
+
+        defaultLightColorPanel.add(defaultLightColorButton);
+
+        defaultColorPanel.add(defaultLightColorPanel);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        colorFontPanel.add(defaultColorPanel, gridBagConstraints);
+
+        optionTabbedPane.addTab("Colors", colorFontPanel);
+
+        colorHighlightPanel.setLayout(new java.awt.GridBagLayout());
+
+        highlightEditorPane.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), javax.swing.BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        highlightEditorPane.setEditable(false);
+        highlightEditorPane.setMaximumSize(new java.awt.Dimension(50, 50));
+        highlightEditorPane.setMinimumSize(new java.awt.Dimension(50, 50));
+        highlightEditorPane.setPreferredSize(new java.awt.Dimension(50, 180));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        colorHighlightPanel.add(highlightEditorPane, gridBagConstraints);
+
+        highlightSelectedLabel.setText("Selected highlighting");
+        highlightSelectedPanel.add(highlightSelectedLabel);
+
+        highlightSelectedComboBox.setMaximumRowCount(10);
+        highlightSelectedComboBox.setMinimumSize(new java.awt.Dimension(100, 21));
+        highlightSelectedComboBox.setPreferredSize(new java.awt.Dimension(120, 21));
+        highlightSelectedComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                highlightSelectedComboBoxActionPerformed(evt);
+            }
+        });
+
+        highlightSelectedPanel.add(highlightSelectedComboBox);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
+        colorHighlightPanel.add(highlightSelectedPanel, gridBagConstraints);
+
+        highlightPanel.setLayout(new java.awt.GridBagLayout());
+
+        bookmarkColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        bookmarkColorLabel.setText("Bookmarks");
+        bookmarkColorPanel.add(bookmarkColorLabel);
+
+        bookmarkColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        bookmarkColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        bookmarkColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        bookmarkColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bookmarkColorButtonattributeColorActionPerformed(evt);
+            }
+        });
+
+        bookmarkColorPanel.add(bookmarkColorButton);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        highlightPanel.add(bookmarkColorPanel, gridBagConstraints);
+
+        bracketColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        bracketColorLabel.setText("Brackets");
+        bracketColorPanel.add(bracketColorLabel);
+
+        bracketColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        bracketColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        bracketColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        bracketColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bracketColorButtonbackgroundColorActionPerformed(evt);
+            }
+        });
+
+        bracketColorPanel.add(bracketColorButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanel14.add(jPanel26, gridBagConstraints);
+        highlightPanel.add(bracketColorPanel, gridBagConstraints);
 
-        jPanel29.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        errorColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabelString.setText("String");
-        jPanel29.add(jLabelString);
+        errorColorLabel.setText("Errors");
+        errorColorPanel.add(errorColorLabel);
 
-        jButtonString.setMaximumSize(new java.awt.Dimension(35, 15));
-        jButtonString.setMinimumSize(new java.awt.Dimension(35, 15));
-        jButtonString.setPreferredSize(new java.awt.Dimension(35, 15));
-        jButtonString.addActionListener(new java.awt.event.ActionListener() {
+        errorColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        errorColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        errorColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        errorColorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonStringActionPerformed(evt);
+                errorColorButtoncommentColorActionPerformed(evt);
             }
         });
 
-        jPanel29.add(jButtonString);
+        errorColorPanel.add(errorColorButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        jPanel14.add(jPanel29, gridBagConstraints);
+        highlightPanel.add(errorColorPanel, gridBagConstraints);
+
+        jumpToColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jumpToColorLabel.setText("Jump To");
+        jumpToColorPanel.add(jumpToColorLabel);
+
+        jumpToColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        jumpToColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        jumpToColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        jumpToColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jumpToColorButtonkeywordColorActionPerformed(evt);
+            }
+        });
+
+        jumpToColorPanel.add(jumpToColorButton);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        highlightPanel.add(jumpToColorPanel, gridBagConstraints);
+
+        warningColorPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        warningColorLabel.setText("Warnings");
+        warningColorPanel.add(warningColorLabel);
+
+        warningColorButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        warningColorButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        warningColorButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        warningColorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                warningColorButtonnormalColorActionPerformed(evt);
+            }
+        });
+
+        warningColorPanel.add(warningColorButton);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        highlightPanel.add(warningColorPanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelColor.add(jPanel14, gridBagConstraints);
+        colorHighlightPanel.add(highlightPanel, gridBagConstraints);
 
-        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        defaultDarkhighlightPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabel3.setText("Font");
-        jPanel6.add(jLabel3);
+        defaultDarkHighlightLabel.setText("Black setting");
+        defaultDarkhighlightPanel.add(defaultDarkHighlightLabel);
 
-        jComboBoxFont.setMaximumRowCount(10);
-        jComboBoxFont.setMinimumSize(new java.awt.Dimension(100, 21));
-        jComboBoxFont.setPreferredSize(new java.awt.Dimension(120, 21));
-        jComboBoxFont.addActionListener(new java.awt.event.ActionListener() {
+        defaultDarkHighlightButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        defaultDarkHighlightButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        defaultDarkHighlightButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        defaultDarkHighlightButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxFontActionPerformed(evt);
+                defaultDarkHighlightButtondefaultDarkActionPerformed(evt);
             }
         });
 
-        jPanel6.add(jComboBoxFont);
+        defaultDarkhighlightPanel.add(defaultDarkHighlightButton);
 
-        jComboBoxFontSize.setMinimumSize(new java.awt.Dimension(100, 21));
-        jComboBoxFontSize.setPreferredSize(new java.awt.Dimension(120, 21));
-        jComboBoxFontSize.addActionListener(new java.awt.event.ActionListener() {
+        defaultHighlightPanel.add(defaultDarkhighlightPanel);
+
+        defaultLightHighlightPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        defaultLightHighlightLabel.setText("White setting");
+        defaultLightHighlightPanel.add(defaultLightHighlightLabel);
+
+        defaultLightHighlightButton.setMaximumSize(new java.awt.Dimension(35, 15));
+        defaultLightHighlightButton.setMinimumSize(new java.awt.Dimension(35, 15));
+        defaultLightHighlightButton.setPreferredSize(new java.awt.Dimension(35, 15));
+        defaultLightHighlightButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxFontSizeActionPerformed(evt);
+                defaultLightHighlightButtondefaultLightActionPerformed(evt);
             }
         });
 
-        jPanel6.add(jComboBoxFontSize);
+        defaultLightHighlightPanel.add(defaultLightHighlightButton);
 
-        jLabel8.setText("TAB size");
-        jPanel10.add(jLabel8);
-
-        jTextFieldTabSize.setColumns(2);
-        jTextFieldTabSize.setText("4");
-        jPanel10.add(jTextFieldTabSize);
-
-        jPanel6.add(jPanel10);
+        defaultHighlightPanel.add(defaultLightHighlightPanel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelColor.add(jPanel6, gridBagConstraints);
+        gridBagConstraints.gridy = 3;
+        colorHighlightPanel.add(defaultHighlightPanel, gridBagConstraints);
 
-        jTabbedPaneOption.addTab("Font", jPanelColor);
+        optionTabbedPane.addTab("Highlights", colorHighlightPanel);
 
-        jPanelPath.setLayout(new java.awt.GridBagLayout());
+        complierPanel.setLayout(new java.awt.GridBagLayout());
 
-        jPanelPath.setPreferredSize(new java.awt.Dimension(469, 99));
-        jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        complierPanel.setPreferredSize(new java.awt.Dimension(469, 99));
+        gamePathPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabel14.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_ATPATH"));
-        jPanel17.add(jLabel14);
+        gamePathLabel.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_ATPATH"));
+        gamePathPanel.add(gamePathLabel);
 
-        jTextFieldPathGames.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel17.add(jTextFieldPathGames);
+        gamePathTextField.setPreferredSize(new java.awt.Dimension(280, 21));
+        gamePathPanel.add(gamePathTextField);
 
-        jButtonCompiledPath.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonCompiledPath.addActionListener(new java.awt.event.ActionListener() {
+        gamePathButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        gamePathButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCompiledPathActionPerformed(evt);
+                gamePathActionPerformed(evt);
             }
         });
 
-        jPanel17.add(jButtonCompiledPath);
+        gamePathPanel.add(gamePathButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1409,24 +1624,24 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelPath.add(jPanel17, gridBagConstraints);
+        complierPanel.add(gamePathPanel, gridBagConstraints);
 
-        jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        compilerPathPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabel15.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_COMPILERPATH"));
-        jPanel18.add(jLabel15);
+        compilerPathLabel.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_COMPILERPATH"));
+        compilerPathPanel.add(compilerPathLabel);
 
-        jTextFieldPathCompiler.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel18.add(jTextFieldPathCompiler);
+        compilerPathTextField.setPreferredSize(new java.awt.Dimension(280, 21));
+        compilerPathPanel.add(compilerPathTextField);
 
-        jButtonCompilerPath.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonCompilerPath.addActionListener(new java.awt.event.ActionListener() {
+        compilerPathButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        compilerPathButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCompilerPathActionPerformed(evt);
+                compilerPathActionPerformed(evt);
             }
         });
 
-        jPanel18.add(jButtonCompilerPath);
+        compilerPathPanel.add(compilerPathButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1434,24 +1649,24 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelPath.add(jPanel18, gridBagConstraints);
+        complierPanel.add(compilerPathPanel, gridBagConstraints);
 
-        jPanel19.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        interpreterPathPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabel16.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_INTERPRETERPATH"));
-        jPanel19.add(jLabel16);
+        interpreterPathLabel.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_INTERPRETERPATH"));
+        interpreterPathPanel.add(interpreterPathLabel);
 
-        jTextFieldPathInterpreter.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel19.add(jTextFieldPathInterpreter);
+        interpreterPathTextField.setPreferredSize(new java.awt.Dimension(280, 21));
+        interpreterPathPanel.add(interpreterPathTextField);
 
-        jButtonInterpreterPath.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonInterpreterPath.addActionListener(new java.awt.event.ActionListener() {
+        interpreterPathButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        interpreterPathButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonInterpreterPathActionPerformed(evt);
+                interpreterPathActionPerformed(evt);
             }
         });
 
-        jPanel19.add(jButtonInterpreterPath);
+        interpreterPathPanel.add(interpreterPathButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1459,52 +1674,61 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelPath.add(jPanel19, gridBagConstraints);
+        complierPanel.add(interpreterPathPanel, gridBagConstraints);
 
-        jTabbedPaneOption.addTab("Compiler Path", jPanelPath);
+        jLabel1.setText("Note: Use absolute paths or relative paths from Jif.jar position.");
+        jPanel1.add(jLabel1);
 
-        jPanelLibraryPath.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        complierPanel.add(jPanel1, gridBagConstraints);
 
-        jPanelLibraryPath.setPreferredSize(new java.awt.Dimension(1889, 33));
-        jPanel16.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        optionTabbedPane.addTab("Compiler Path", complierPanel);
 
-        jLabel13.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY"));
-        jPanel16.add(jLabel13);
+        libraryPanel.setLayout(new java.awt.GridBagLayout());
 
-        jTextFieldPathLib.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel16.add(jTextFieldPathLib);
+        libraryPanel.setPreferredSize(new java.awt.Dimension(1889, 33));
+        libraryPathPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jButtonLibraryPath.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonLibraryPath.addActionListener(new java.awt.event.ActionListener() {
+        libraryPathLabel.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY"));
+        libraryPathPanel.add(libraryPathLabel);
+
+        libraryPathTextField.setPreferredSize(new java.awt.Dimension(280, 21));
+        libraryPathPanel.add(libraryPathTextField);
+
+        libraryPathButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        libraryPathButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonLibraryPathActionPerformed(evt);
+                libraryPathActionPerformed(evt);
             }
         });
 
-        jPanel16.add(jButtonLibraryPath);
+        libraryPathPanel.add(libraryPathButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelLibraryPath.add(jPanel16, gridBagConstraints);
+        libraryPanel.add(libraryPathPanel, gridBagConstraints);
 
-        jPanel43.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        libraryPath1Panel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabel18.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY1"));
-        jPanel43.add(jLabel18);
+        libraryPath1Label.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY1"));
+        libraryPath1Panel.add(libraryPath1Label);
 
-        jTextFieldPathLibSecondary1.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel43.add(jTextFieldPathLibSecondary1);
+        libraryPath1TextField.setPreferredSize(new java.awt.Dimension(280, 21));
+        libraryPath1Panel.add(libraryPath1TextField);
 
-        jButtonLibraryPath1.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonLibraryPath1.addActionListener(new java.awt.event.ActionListener() {
+        libraryPath1Button.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        libraryPath1Button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonLibraryPath1ActionPerformed(evt);
+                libraryPath1ActionPerformed(evt);
             }
         });
 
-        jPanel43.add(jButtonLibraryPath1);
+        libraryPath1Panel.add(libraryPath1Button);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1512,24 +1736,24 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelLibraryPath.add(jPanel43, gridBagConstraints);
+        libraryPanel.add(libraryPath1Panel, gridBagConstraints);
 
-        jPanel45.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        libraryPath2Panel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabel20.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY2"));
-        jPanel45.add(jLabel20);
+        libraryPath2Label.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY2"));
+        libraryPath2Panel.add(libraryPath2Label);
 
-        jTextFieldPathLibSecondary2.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel45.add(jTextFieldPathLibSecondary2);
+        libraryPath2TextField.setPreferredSize(new java.awt.Dimension(280, 21));
+        libraryPath2Panel.add(libraryPath2TextField);
 
-        jButtonLibraryPath2.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonLibraryPath2.addActionListener(new java.awt.event.ActionListener() {
+        libraryPath2Button.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        libraryPath2Button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonLibraryPath2ActionPerformed(evt);
+                libraryPath2ActionPerformed(evt);
             }
         });
 
-        jPanel45.add(jButtonLibraryPath2);
+        libraryPath2Panel.add(libraryPath2Button);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1537,24 +1761,24 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelLibraryPath.add(jPanel45, gridBagConstraints);
+        libraryPanel.add(libraryPath2Panel, gridBagConstraints);
 
-        jPanel49.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        libraryPath3Panel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabel21.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY3"));
-        jPanel49.add(jLabel21);
+        libraryPath3Label.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_LIBRARY_SECONDARY3"));
+        libraryPath3Panel.add(libraryPath3Label);
 
-        jTextFieldPathLibSecondary3.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel49.add(jTextFieldPathLibSecondary3);
+        libraryPath3TextField.setPreferredSize(new java.awt.Dimension(280, 21));
+        libraryPath3Panel.add(libraryPath3TextField);
 
-        jButtonLibraryPath3.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonLibraryPath3.addActionListener(new java.awt.event.ActionListener() {
+        libraryPath3Button.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        libraryPath3Button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonLibraryPath3ActionPerformed(evt);
+                libraryPath3ActionPerformed(evt);
             }
         });
 
-        jPanel49.add(jButtonLibraryPath3);
+        libraryPath3Panel.add(libraryPath3Button);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1562,55 +1786,55 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelLibraryPath.add(jPanel49, gridBagConstraints);
+        libraryPanel.add(libraryPath3Panel, gridBagConstraints);
 
-        jTabbedPaneOption.addTab("Library Path", jPanelLibraryPath);
+        optionTabbedPane.addTab("Library Path", libraryPanel);
 
-        jPanelGlulxPath.setLayout(new java.awt.GridBagLayout());
+        glulxPanel.setLayout(new java.awt.GridBagLayout());
 
-        jPanelGlulxPath.setPreferredSize(new java.awt.Dimension(1373, 33));
-        jPanel44.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        glulxPanel.setPreferredSize(new java.awt.Dimension(1373, 33));
+        glulxPathPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel19.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_GLULXINTERPRETERPATH"));
-        jPanel44.add(jLabel19);
+        glulxPathLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        glulxPathLabel.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_CONFIGPATH_GLULXINTERPRETERPATH"));
+        glulxPathPanel.add(glulxPathLabel);
 
-        jTextFieldPathGlulx.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel44.add(jTextFieldPathGlulx);
+        glulxPathTextField.setPreferredSize(new java.awt.Dimension(280, 21));
+        glulxPathPanel.add(glulxPathTextField);
 
-        jButtonGlulxPath.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonGlulxPath.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jButtonGlulxPath.addActionListener(new java.awt.event.ActionListener() {
+        glulxPathButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        glulxPathButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        glulxPathButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonGlulxPathActionPerformed(evt);
+                glulxPathActionPerformed(evt);
             }
         });
 
-        jPanel44.add(jButtonGlulxPath);
+        glulxPathPanel.add(glulxPathButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGlulxPath.add(jPanel44, gridBagConstraints);
+        glulxPanel.add(glulxPathPanel, gridBagConstraints);
 
-        jPanel46.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        bresPathPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabelBres.setText(java.util.ResourceBundle.getBundle("JIF").getString("GLULX_BRES_LOCATION"));
-        jPanel46.add(jLabelBres);
+        bresPathLabel.setText(java.util.ResourceBundle.getBundle("JIF").getString("GLULX_BRES_LOCATION"));
+        bresPathPanel.add(bresPathLabel);
 
-        jTextFieldBres.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel46.add(jTextFieldBres);
+        bresPathTextField.setPreferredSize(new java.awt.Dimension(280, 21));
+        bresPathPanel.add(bresPathTextField);
 
-        jButtonBres.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonBres.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jButtonBres.addActionListener(new java.awt.event.ActionListener() {
+        bresPathButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        bresPathButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        bresPathButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBresActionPerformed(evt);
+                bresPathActionPerformed(evt);
             }
         });
 
-        jPanel46.add(jButtonBres);
+        bresPathPanel.add(bresPathButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1618,25 +1842,25 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGlulxPath.add(jPanel46, gridBagConstraints);
+        glulxPanel.add(bresPathPanel, gridBagConstraints);
 
-        jPanel47.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        blcPathPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jLabelBlc.setText(java.util.ResourceBundle.getBundle("JIF").getString("GLULX_BLC_LOCATION"));
-        jPanel47.add(jLabelBlc);
+        blcPathLabel.setText(java.util.ResourceBundle.getBundle("JIF").getString("GLULX_BLC_LOCATION"));
+        blcPathPanel.add(blcPathLabel);
 
-        jTextFieldBlc.setPreferredSize(new java.awt.Dimension(280, 21));
-        jPanel47.add(jTextFieldBlc);
+        blcPathTextField.setPreferredSize(new java.awt.Dimension(280, 21));
+        blcPathPanel.add(blcPathTextField);
 
-        jButtonBlc.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
-        jButtonBlc.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jButtonBlc.addActionListener(new java.awt.event.ActionListener() {
+        blcPathButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_BROWSE"));
+        blcPathButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        blcPathButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBlcActionPerformed(evt);
+                blcPathActionPerformed(evt);
             }
         });
 
-        jPanel47.add(jButtonBlc);
+        blcPathPanel.add(blcPathButton);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1644,131 +1868,286 @@ public class jFrame extends JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 4, 0);
-        jPanelGlulxPath.add(jPanel47, gridBagConstraints);
+        glulxPanel.add(blcPathPanel, gridBagConstraints);
 
-        jTabbedPaneOption.addTab("Glulx Path", jPanelGlulxPath);
+        optionTabbedPane.addTab("Glulx Path", glulxPanel);
 
-        jDialogOption.getContentPane().add(jTabbedPaneOption, java.awt.BorderLayout.CENTER);
+        optionDialog.getContentPane().add(optionTabbedPane, java.awt.BorderLayout.CENTER);
 
-        jButton10.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
-        jButton10.addActionListener(new java.awt.event.ActionListener() {
+        optionSaveButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
+        optionSaveButton.setMaximumSize(new java.awt.Dimension(67, 23));
+        optionSaveButton.setMinimumSize(new java.awt.Dimension(67, 23));
+        optionSaveButton.setPreferredSize(new java.awt.Dimension(67, 23));
+        optionSaveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton10ActionPerformed(evt);
+                optionSaveActionPerformed(evt);
             }
         });
 
-        jPanel3.add(jButton10);
+        optionControlPanel.add(optionSaveButton);
 
-        jButton23.setText("Default");
-        jButton23.addActionListener(new java.awt.event.ActionListener() {
+        optionDefaultButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_DEFAULT"));
+        optionDefaultButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton23ActionPerformed(evt);
+                optionDefaultActionPerformed(evt);
             }
         });
 
-        jPanel3.add(jButton23);
+        optionControlPanel.add(optionDefaultButton);
 
-        jDialogOption.getContentPane().add(jPanel3, java.awt.BorderLayout.SOUTH);
-
-        jDialogInfo.setTitle("");
-        jDialogInfo.setModal(true);
-        jScrollPaneInfo.setAutoscrolls(true);
-        jTextAreaInfo.setBackground(new java.awt.Color(204, 204, 204));
-        jTextAreaInfo.setEditable(false);
-        jTextAreaInfo.setFont(new java.awt.Font("Monospaced", 0, 12));
-        jTextAreaInfo.setMaximumSize(new java.awt.Dimension(0, 0));
-        jTextAreaInfo.setMinimumSize(new java.awt.Dimension(0, 0));
-        jTextAreaInfo.setPreferredSize(new java.awt.Dimension(0, 0));
-        jScrollPaneInfo.setViewportView(jTextAreaInfo);
-
-        jDialogInfo.getContentPane().add(jScrollPaneInfo, java.awt.BorderLayout.CENTER);
-
-        jButton21.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
-        jButton21.addActionListener(new java.awt.event.ActionListener() {
+        optionCancelButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CANCEL"));
+        optionCancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton21ActionPerformed(evt);
+                optionCancelActionPerformed(evt);
             }
         });
 
-        jPanel24.add(jButton21);
+        optionControlPanel.add(optionCancelButton);
 
-        jDialogInfo.getContentPane().add(jPanel24, java.awt.BorderLayout.SOUTH);
+        optionDialog.getContentPane().add(optionControlPanel, java.awt.BorderLayout.SOUTH);
 
-        jButton24.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_OK"));
-        jButton24.addActionListener(new java.awt.event.ActionListener() {
+        projectSwitchesPanel.setLayout(new java.awt.GridLayout(0, 4));
+
+        projectSwitchesDialog.getContentPane().add(projectSwitchesPanel, java.awt.BorderLayout.CENTER);
+
+        projectSwitchesSaveButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
+        projectSwitchesSaveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton24ActionPerformed(evt);
+                projectSwitchesSaveActionPerformed(evt);
             }
         });
 
-        jPanel35.add(jButton24);
+        projectSwitchesControlPanel.add(projectSwitchesSaveButton);
 
-        jButtonPrintTutorial.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_PRINT"));
-        jButtonPrintTutorial.addActionListener(new java.awt.event.ActionListener() {
+        projectSwitchesCloseButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
+        projectSwitchesCloseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonPrintTutorialActionPerformed(evt);
+                projectSwitchesCloseActionPerformed(evt);
             }
         });
 
-        jPanel35.add(jButtonPrintTutorial);
+        projectSwitchesControlPanel.add(projectSwitchesCloseButton);
 
-        jDialogTutorial.getContentPane().add(jPanel35, java.awt.BorderLayout.SOUTH);
+        projectSwitchesDialog.getContentPane().add(projectSwitchesControlPanel, java.awt.BorderLayout.SOUTH);
 
-        jEditorPaneTutorial.setEditable(false);
-        jScrollPane7.setViewportView(jEditorPaneTutorial);
+        projectPropertiesDialog.setTitle("Project Properties");
+        projectPropertiesDialog.setModal(true);
+        projectPropertiesTextArea.setColumns(20);
+        projectPropertiesTextArea.setRows(5);
+        projectPropertiesTextArea.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 5, 2, 5));
+        projectPropertiesScrollPane.setViewportView(projectPropertiesTextArea);
 
-        jDialogTutorial.getContentPane().add(jScrollPane7, java.awt.BorderLayout.CENTER);
+        projectPropertiesDialog.getContentPane().add(projectPropertiesScrollPane, java.awt.BorderLayout.CENTER);
 
-        jLabelTutorial.setText("jLabel5");
-        jDialogTutorial.getContentPane().add(jLabelTutorial, java.awt.BorderLayout.NORTH);
-
-        jPanelProjectSwitches.setLayout(new java.awt.GridLayout(0, 4));
-
-        jDialogProjectSwitches.getContentPane().add(jPanelProjectSwitches, java.awt.BorderLayout.CENTER);
-
-        jButton7.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
-        jPanel13.add(jButton7);
-
-        jButton5.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        projectPropertiesSaveButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
+        projectPropertiesSaveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                projectPropertiesSaveActionPerformed(evt);
             }
         });
 
-        jPanel13.add(jButton5);
+        projectPropertiesControlPanel.add(projectPropertiesSaveButton);
 
-        jDialogProjectSwitches.getContentPane().add(jPanel13, java.awt.BorderLayout.SOUTH);
-
-        jDialogProjectProperties.setTitle("Project Properties");
-        jDialogProjectProperties.setModal(true);
-        jButton14.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
-        jButton14.addActionListener(new java.awt.event.ActionListener() {
+        projectPropertiesCloseButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
+        projectPropertiesCloseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton14ActionPerformed(evt);
+                projectPropertiesCloseActionPerformed(evt);
             }
         });
 
-        jPanel9.add(jButton14);
+        projectPropertiesControlPanel.add(projectPropertiesCloseButton);
 
-        jButton8.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
+        projectPropertiesDialog.getContentPane().add(projectPropertiesControlPanel, java.awt.BorderLayout.SOUTH);
+
+        replaceDialog.getContentPane().setLayout(new javax.swing.BoxLayout(replaceDialog.getContentPane(), javax.swing.BoxLayout.Y_AXIS));
+
+        replaceDialog.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGREPLACE_TITLE"));
+        replaceDialog.setModal(true);
+        replaceFindLabel.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGREPLACE_FIND_LABEL"));
+        replaceFindLabel.setPreferredSize(new java.awt.Dimension(41, 17));
+        replacePanel.add(replaceFindLabel);
+
+        replaceFindTextField.setMaximumSize(new java.awt.Dimension(111, 20));
+        replaceFindTextField.setMinimumSize(new java.awt.Dimension(111, 20));
+        replaceFindTextField.setPreferredSize(new java.awt.Dimension(111, 20));
+        replacePanel.add(replaceFindTextField);
+
+        replaceReplaceLabel.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGREPLACE_REPLACE_LABEL"));
+        replacePanel.add(replaceReplaceLabel);
+
+        replaceReplaceTextField.setMaximumSize(new java.awt.Dimension(111, 20));
+        replaceReplaceTextField.setMinimumSize(new java.awt.Dimension(111, 20));
+        replaceReplaceTextField.setPreferredSize(new java.awt.Dimension(111, 20));
+        replacePanel.add(replaceReplaceTextField);
+
+        replaceDialog.getContentPane().add(replacePanel);
+
+        replaceFindButton.setFont(new java.awt.Font("MS Sans Serif", 0, 12));
+        replaceFindButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGREPLACE_BUTTON_FIND"));
+        replaceFindButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
+                replaceFindActionPerformed(evt);
             }
         });
 
-        jPanel9.add(jButton8);
+        replaceControlPanel.add(replaceFindButton);
 
-        jDialogProjectProperties.getContentPane().add(jPanel9, java.awt.BorderLayout.SOUTH);
+        replaceReplaceButton.setFont(new java.awt.Font("MS Sans Serif", 0, 12));
+        replaceReplaceButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGREPLACE_BUTTON_REPLACE"));
+        replaceReplaceButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                replaceReplaceActionPerformed(evt);
+            }
+        });
 
-        jTextAreaProjectProperties.setColumns(20);
-        jTextAreaProjectProperties.setRows(5);
-        jScrollPane1.setViewportView(jTextAreaProjectProperties);
+        replaceControlPanel.add(replaceReplaceButton);
 
-        jDialogProjectProperties.getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
+        replaceAllButton.setFont(new java.awt.Font("MS Sans Serif", 0, 12));
+        replaceAllButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOGREPLACE_BUTTON_REPLACE_ALL"));
+        replaceAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                replaceAllActionPerformed(evt);
+            }
+        });
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        replaceControlPanel.add(replaceAllButton);
+
+        replaceCloseButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
+        replaceCloseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                replaceCloseActionPerformed(evt);
+            }
+        });
+
+        replaceControlPanel.add(replaceCloseButton);
+
+        replaceDialog.getContentPane().add(replaceControlPanel);
+
+        switchesDialog.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JDIALOG_SWITCHES_TITLE"));
+        switchesDialog.setFont(new java.awt.Font("Arial", 0, 12));
+        switchesDialog.setModal(true);
+        switchesPanel.setLayout(new java.awt.GridLayout(2, 0));
+
+        switchesUpperPanel.setLayout(new java.awt.GridLayout(0, 4));
+
+        switchesUpperPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        switchesUpperPanel.setFont(new java.awt.Font("Dialog", 0, 8));
+        switchesPanel.add(switchesUpperPanel);
+
+        switchesLowerPanel.setLayout(new java.awt.GridLayout(0, 3));
+
+        switchesLowerPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        switchesLowerPanel.setFont(new java.awt.Font("Dialog", 0, 8));
+        switchesPanel.add(switchesLowerPanel);
+
+        switchesDialog.getContentPane().add(switchesPanel, java.awt.BorderLayout.CENTER);
+
+        switchesSaveButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
+        switchesSaveButton.setMaximumSize(new java.awt.Dimension(59, 23));
+        switchesSaveButton.setMinimumSize(new java.awt.Dimension(59, 23));
+        switchesSaveButton.setPreferredSize(new java.awt.Dimension(59, 23));
+        switchesSaveButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                switchesSaveActionPerformed(evt);
+            }
+        });
+
+        switchesControlPanel.add(switchesSaveButton);
+
+        switchesCloseButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CLOSE"));
+        switchesCloseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                switchesCloseActionPerformed(evt);
+            }
+        });
+
+        switchesControlPanel.add(switchesCloseButton);
+
+        switchesDialog.getContentPane().add(switchesControlPanel, java.awt.BorderLayout.SOUTH);
+
+        symbolDialog.setBackground(java.awt.Color.lightGray);
+        symbolDialog.setUndecorated(true);
+        symbolScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        symbolScrollPane.setDoubleBuffered(true);
+        symbolScrollPane.setMinimumSize(new java.awt.Dimension(0, 0));
+        symbolScrollPane.setPreferredSize(new java.awt.Dimension(230, 80));
+        symbolList.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        symbolList.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                symbolListKeyPressed(evt);
+            }
+        });
+        symbolList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                symbolListMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                symbolListMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                symbolListMouseExited(evt);
+            }
+        });
+
+        symbolScrollPane.setViewportView(symbolList);
+
+        symbolDialog.getContentPane().add(symbolScrollPane, java.awt.BorderLayout.WEST);
+
+        textLabel.setText("jLabel5");
+        textDialog.getContentPane().add(textLabel, java.awt.BorderLayout.NORTH);
+
+        textTextArea.setEditable(false);
+        textTextArea.setFont(new java.awt.Font("Courier New", 0, 12));
+        textTextArea.setTabSize(4);
+        textScrollPane.setViewportView(textTextArea);
+
+        textDialog.getContentPane().add(textScrollPane, java.awt.BorderLayout.CENTER);
+
+        textCloseButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_OK"));
+        textCloseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textCloseActionPerformed(evt);
+            }
+        });
+
+        textControlPanel.add(textCloseButton);
+
+        textDialog.getContentPane().add(textControlPanel, java.awt.BorderLayout.SOUTH);
+
+        tutorialLabel.setText("jLabel5");
+        tutorialDialog.getContentPane().add(tutorialLabel, java.awt.BorderLayout.NORTH);
+
+        tutorialEditorPane.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 5, 2, 5));
+        tutorialEditorPane.setEditable(false);
+        tutorialScrollPane.setViewportView(tutorialEditorPane);
+
+        tutorialDialog.getContentPane().add(tutorialScrollPane, java.awt.BorderLayout.CENTER);
+
+        tutorialOKButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_OK"));
+        tutorialOKButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tutorialOKActionPerformed(evt);
+            }
+        });
+
+        tutorialControlPanel.add(tutorialOKButton);
+
+        tutorialPrintButton.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_PRINT"));
+        tutorialPrintButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tutorialPrintActionPerformed(evt);
+            }
+        });
+
+        tutorialControlPanel.add(tutorialPrintButton);
+
+        tutorialDialog.getContentPane().add(tutorialControlPanel, java.awt.BorderLayout.SOUTH);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(getJifVersion());
         setFont(new java.awt.Font("Dialog", 0, 12));
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -1777,25 +2156,25 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanel22.setLayout(new java.awt.BorderLayout());
+        toolbarPanel.setLayout(new java.awt.BorderLayout());
 
-        jPanel22.setMinimumSize(new java.awt.Dimension(0, 0));
+        toolbarPanel.setMinimumSize(new java.awt.Dimension(0, 0));
         jToolBarCommon.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jToolBarCommon.setFloatable(false);
         jToolBarCommon.setToolTipText("Jif Toolbar");
         jToolBarCommon.setPreferredSize(new java.awt.Dimension(400, 34));
-        jButtonNew.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filenew.png")));
-        jButtonNew.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_NEW_TOOLTIP"));
-        jButtonNew.setBorderPainted(false);
-        jButtonNew.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonNew.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonNew.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonNew.addActionListener(new java.awt.event.ActionListener() {
+        newButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filenew.png")));
+        newButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_NEW_TOOLTIP"));
+        newButton.setBorderPainted(false);
+        newButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        newButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        newButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        newButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonNewActionPerformed(evt);
+                newActionPerformed(evt);
             }
         });
-        jButtonNew.addMouseListener(new java.awt.event.MouseAdapter() {
+        newButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -1804,20 +2183,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonNew);
+        jToolBarCommon.add(newButton);
 
-        OpenButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/fileopen.png")));
-        OpenButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_OPEN"));
-        OpenButton.setBorderPainted(false);
-        OpenButton.setMaximumSize(new java.awt.Dimension(29, 29));
-        OpenButton.setMinimumSize(new java.awt.Dimension(29, 29));
-        OpenButton.setPreferredSize(new java.awt.Dimension(29, 29));
-        OpenButton.addActionListener(new java.awt.event.ActionListener() {
+        openButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/fileopen.png")));
+        openButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_OPEN"));
+        openButton.setBorderPainted(false);
+        openButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        openButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        openButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        openButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                OpenButtonActionPerformed(evt);
+                openActionPerformed(evt);
             }
         });
-        OpenButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        openButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -1826,20 +2205,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(OpenButton);
+        jToolBarCommon.add(openButton);
 
-        SaveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filesave.png")));
-        SaveButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVE"));
-        SaveButton.setBorderPainted(false);
-        SaveButton.setMaximumSize(new java.awt.Dimension(29, 29));
-        SaveButton.setMinimumSize(new java.awt.Dimension(29, 29));
-        SaveButton.setPreferredSize(new java.awt.Dimension(29, 29));
-        SaveButton.addActionListener(new java.awt.event.ActionListener() {
+        saveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filesave.png")));
+        saveButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVE"));
+        saveButton.setBorderPainted(false);
+        saveButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        saveButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        saveButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        saveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SaveButtonActionPerformed(evt);
+                saveActionPerformed(evt);
             }
         });
-        SaveButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        saveButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -1848,20 +2227,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(SaveButton);
+        jToolBarCommon.add(saveButton);
 
-        SaveButtonAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filesaveall.png")));
-        SaveButtonAll.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEALL"));
-        SaveButtonAll.setBorderPainted(false);
-        SaveButtonAll.setMaximumSize(new java.awt.Dimension(29, 29));
-        SaveButtonAll.setMinimumSize(new java.awt.Dimension(29, 29));
-        SaveButtonAll.setPreferredSize(new java.awt.Dimension(29, 29));
-        SaveButtonAll.addActionListener(new java.awt.event.ActionListener() {
+        saveAllButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filesaveall.png")));
+        saveAllButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEALL"));
+        saveAllButton.setBorderPainted(false);
+        saveAllButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        saveAllButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        saveAllButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        saveAllButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SaveButtonAllActionPerformed(evt);
+                saveAllActionPerformed(evt);
             }
         });
-        SaveButtonAll.addMouseListener(new java.awt.event.MouseAdapter() {
+        saveAllButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -1870,20 +2249,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(SaveButtonAll);
+        jToolBarCommon.add(saveAllButton);
 
-        SaveAsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filesaveas.png")));
-        SaveAsButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEAS"));
-        SaveAsButton.setBorderPainted(false);
-        SaveAsButton.setMaximumSize(new java.awt.Dimension(29, 29));
-        SaveAsButton.setMinimumSize(new java.awt.Dimension(29, 29));
-        SaveAsButton.setPreferredSize(new java.awt.Dimension(29, 29));
-        SaveAsButton.addActionListener(new java.awt.event.ActionListener() {
+        saveAsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filesaveas.png")));
+        saveAsButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEAS"));
+        saveAsButton.setBorderPainted(false);
+        saveAsButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        saveAsButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        saveAsButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        saveAsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SaveAsButtonActionPerformed(evt);
+                saveAsActionPerformed(evt);
             }
         });
-        SaveAsButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        saveAsButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -1892,20 +2271,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(SaveAsButton);
+        jToolBarCommon.add(saveAsButton);
 
-        jButtonClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/fileclose.png")));
-        jButtonClose.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLOSE"));
-        jButtonClose.setBorderPainted(false);
-        jButtonClose.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonClose.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonClose.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonClose.addActionListener(new java.awt.event.ActionListener() {
+        closeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/fileclose.png")));
+        closeButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLOSE"));
+        closeButton.setBorderPainted(false);
+        closeButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        closeButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        closeButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        closeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCloseActionPerformed(evt);
+                closeActionPerformed(evt);
             }
         });
-        jButtonClose.addMouseListener(new java.awt.event.MouseAdapter() {
+        closeButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -1914,20 +2293,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonClose);
+        jToolBarCommon.add(closeButton);
 
-        jButtonCloseAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filecloseAll.png")));
-        jButtonCloseAll.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLOSEALL"));
-        jButtonCloseAll.setBorderPainted(false);
-        jButtonCloseAll.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonCloseAll.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonCloseAll.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonCloseAll.addActionListener(new java.awt.event.ActionListener() {
+        closeAllButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filecloseAll.png")));
+        closeAllButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLOSEALL"));
+        closeAllButton.setBorderPainted(false);
+        closeAllButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        closeAllButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        closeAllButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        closeAllButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCloseAllActionPerformed(evt);
+                closeAllActionPerformed(evt);
             }
         });
-        jButtonCloseAll.addMouseListener(new java.awt.event.MouseAdapter() {
+        closeAllButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -1936,20 +2315,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonCloseAll);
+        jToolBarCommon.add(closeAllButton);
 
-        jButtonUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/undo.png")));
-        jButtonUndo.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_UNDO"));
-        jButtonUndo.setBorderPainted(false);
-        jButtonUndo.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonUndo.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonUndo.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonUndo.addActionListener(new java.awt.event.ActionListener() {
+        undoButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/undo.png")));
+        undoButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_UNDO"));
+        undoButton.setBorderPainted(false);
+        undoButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        undoButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        undoButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        undoButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonUndoActionPerformed(evt);
+                undoActionPerformed(evt);
             }
         });
-        jButtonUndo.addMouseListener(new java.awt.event.MouseAdapter() {
+        undoButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -1958,20 +2337,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonUndo);
+        jToolBarCommon.add(undoButton);
 
-        jButtonRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/redo.png")));
-        jButtonRedo.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_REDO"));
-        jButtonRedo.setBorderPainted(false);
-        jButtonRedo.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonRedo.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonRedo.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonRedo.addActionListener(new java.awt.event.ActionListener() {
+        redoButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/redo.png")));
+        redoButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_REDO"));
+        redoButton.setBorderPainted(false);
+        redoButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        redoButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        redoButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        redoButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonRedoActionPerformed(evt);
+                redoActionPerformed(evt);
             }
         });
-        jButtonRedo.addMouseListener(new java.awt.event.MouseAdapter() {
+        redoButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -1980,20 +2359,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonRedo);
+        jToolBarCommon.add(redoButton);
 
-        jButtonCommentSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/comment.png")));
-        jButtonCommentSelection.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_COMMENT_SELECTION"));
-        jButtonCommentSelection.setBorderPainted(false);
-        jButtonCommentSelection.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonCommentSelection.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonCommentSelection.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonCommentSelection.addActionListener(new java.awt.event.ActionListener() {
+        commentButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/comment.png")));
+        commentButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_COMMENT_SELECTION"));
+        commentButton.setBorderPainted(false);
+        commentButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        commentButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        commentButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        commentButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCommentSelectionActionPerformed(evt);
+                commentSelectionActionPerformed(evt);
             }
         });
-        jButtonCommentSelection.addMouseListener(new java.awt.event.MouseAdapter() {
+        commentButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2002,20 +2381,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonCommentSelection);
+        jToolBarCommon.add(commentButton);
 
-        jButtonUncommentSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/uncomment.png")));
-        jButtonUncommentSelection.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_UNCOMMENT_SELECTION"));
-        jButtonUncommentSelection.setBorderPainted(false);
-        jButtonUncommentSelection.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonUncommentSelection.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonUncommentSelection.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonUncommentSelection.addActionListener(new java.awt.event.ActionListener() {
+        uncommentButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/uncomment.png")));
+        uncommentButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_UNCOMMENT_SELECTION"));
+        uncommentButton.setBorderPainted(false);
+        uncommentButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        uncommentButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        uncommentButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        uncommentButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonUncommentSelectionActionPerformed(evt);
+                uncommentSelectionActionPerformed(evt);
             }
         });
-        jButtonUncommentSelection.addMouseListener(new java.awt.event.MouseAdapter() {
+        uncommentButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2024,20 +2403,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonUncommentSelection);
+        jToolBarCommon.add(uncommentButton);
 
-        jButtonLeftTab.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/leftIndent.png")));
-        jButtonLeftTab.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_LEFTTAB_SELECTION"));
-        jButtonLeftTab.setBorderPainted(false);
-        jButtonLeftTab.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonLeftTab.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonLeftTab.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonLeftTab.addActionListener(new java.awt.event.ActionListener() {
+        tabLeftButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/leftIndent.png")));
+        tabLeftButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_LEFTTAB_SELECTION"));
+        tabLeftButton.setBorderPainted(false);
+        tabLeftButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        tabLeftButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        tabLeftButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        tabLeftButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonLeftTabActionPerformed(evt);
+                tabLeftActionPerformed(evt);
             }
         });
-        jButtonLeftTab.addMouseListener(new java.awt.event.MouseAdapter() {
+        tabLeftButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2046,20 +2425,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonLeftTab);
+        jToolBarCommon.add(tabLeftButton);
 
-        jButtonRightTab.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/rightIndent.png")));
-        jButtonRightTab.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_RIGHTTAB_SELECTION"));
-        jButtonRightTab.setBorderPainted(false);
-        jButtonRightTab.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonRightTab.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonRightTab.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonRightTab.addActionListener(new java.awt.event.ActionListener() {
+        tabRightButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/rightIndent.png")));
+        tabRightButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_RIGHTTAB_SELECTION"));
+        tabRightButton.setBorderPainted(false);
+        tabRightButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        tabRightButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        tabRightButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        tabRightButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonRightTabActionPerformed(evt);
+                tabRightActionPerformed(evt);
             }
         });
-        jButtonRightTab.addMouseListener(new java.awt.event.MouseAdapter() {
+        tabRightButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2068,20 +2447,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonRightTab);
+        jToolBarCommon.add(tabRightButton);
 
-        jButtonBracketCheck.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/check.png")));
-        jButtonBracketCheck.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_CHECK_BRACKETS"));
-        jButtonBracketCheck.setBorderPainted(false);
-        jButtonBracketCheck.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonBracketCheck.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonBracketCheck.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonBracketCheck.addActionListener(new java.awt.event.ActionListener() {
+        bracketCheckButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/check.png")));
+        bracketCheckButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_CHECK_BRACKETS"));
+        bracketCheckButton.setBorderPainted(false);
+        bracketCheckButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        bracketCheckButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        bracketCheckButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        bracketCheckButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBracketCheckActionPerformed(evt);
+                bracketCheckActionPerformed(evt);
             }
         });
-        jButtonBracketCheck.addMouseListener(new java.awt.event.MouseAdapter() {
+        bracketCheckButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2090,20 +2469,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonBracketCheck);
+        jToolBarCommon.add(bracketCheckButton);
 
-        RebuildButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/compfile.png")));
-        RebuildButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILDALL"));
-        RebuildButton.setBorderPainted(false);
-        RebuildButton.setMaximumSize(new java.awt.Dimension(29, 29));
-        RebuildButton.setMinimumSize(new java.awt.Dimension(29, 29));
-        RebuildButton.setPreferredSize(new java.awt.Dimension(29, 29));
-        RebuildButton.addActionListener(new java.awt.event.ActionListener() {
+        buildAllButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/compfile.png")));
+        buildAllButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILDALL"));
+        buildAllButton.setBorderPainted(false);
+        buildAllButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        buildAllButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        buildAllButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        buildAllButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RebuildButtonActionPerformed(evt);
+                buildAllActionPerformed(evt);
             }
         });
-        RebuildButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        buildAllButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2112,20 +2491,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(RebuildButton);
+        jToolBarCommon.add(buildAllButton);
 
-        RunButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/launch.png")));
-        RunButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN"));
-        RunButton.setBorderPainted(false);
-        RunButton.setMaximumSize(new java.awt.Dimension(29, 29));
-        RunButton.setMinimumSize(new java.awt.Dimension(29, 29));
-        RunButton.setPreferredSize(new java.awt.Dimension(29, 29));
-        RunButton.addActionListener(new java.awt.event.ActionListener() {
+        runButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/launch.png")));
+        runButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN"));
+        runButton.setBorderPainted(false);
+        runButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        runButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        runButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        runButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RunButtonActionPerformed(evt);
+                runActionPerformed(evt);
             }
         });
-        RunButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        runButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2134,20 +2513,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(RunButton);
+        jToolBarCommon.add(runButton);
 
-        jButtonInsertSymbol.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/insertSymbol.png")));
-        jButtonInsertSymbol.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_INSERT_SYMBOL"));
-        jButtonInsertSymbol.setBorderPainted(false);
-        jButtonInsertSymbol.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonInsertSymbol.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonInsertSymbol.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonInsertSymbol.addActionListener(new java.awt.event.ActionListener() {
+        insertSymbolButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/insertSymbol.png")));
+        insertSymbolButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_INSERT_SYMBOL"));
+        insertSymbolButton.setBorderPainted(false);
+        insertSymbolButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        insertSymbolButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        insertSymbolButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        insertSymbolButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonInsertSymbolActionPerformed(evt);
+                insertSymbolActionPerformed(evt);
             }
         });
-        jButtonInsertSymbol.addMouseListener(new java.awt.event.MouseAdapter() {
+        insertSymbolButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2156,20 +2535,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonInsertSymbol);
+        jToolBarCommon.add(insertSymbolButton);
 
-        jButtonInterpreter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/runInterpreter.png")));
-        jButtonInterpreter.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_RUN_INTERPRETER"));
-        jButtonInterpreter.setBorderPainted(false);
-        jButtonInterpreter.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonInterpreter.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonInterpreter.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonInterpreter.addActionListener(new java.awt.event.ActionListener() {
+        interpreterButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/runInterpreter.png")));
+        interpreterButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_RUN_INTERPRETER"));
+        interpreterButton.setBorderPainted(false);
+        interpreterButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        interpreterButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        interpreterButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        interpreterButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonInterpreterActionPerformed(evt);
+                interpreterActionPerformed(evt);
             }
         });
-        jButtonInterpreter.addMouseListener(new java.awt.event.MouseAdapter() {
+        interpreterButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2178,20 +2557,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonInterpreter);
+        jToolBarCommon.add(interpreterButton);
 
-        jButtonSwitchManager.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/edit.png")));
-        jButtonSwitchManager.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SWITCHES_TOOLTIP"));
-        jButtonSwitchManager.setBorderPainted(false);
-        jButtonSwitchManager.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonSwitchManager.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonSwitchManager.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonSwitchManager.addActionListener(new java.awt.event.ActionListener() {
+        switchManagerButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/edit.png")));
+        switchManagerButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SWITCHES_TOOLTIP"));
+        switchManagerButton.setBorderPainted(false);
+        switchManagerButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        switchManagerButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        switchManagerButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        switchManagerButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSwitchManagerActionPerformed(evt);
+                switchManagerActionPerformed(evt);
             }
         });
-        jButtonSwitchManager.addMouseListener(new java.awt.event.MouseAdapter() {
+        switchManagerButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2200,20 +2579,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonSwitchManager);
+        jToolBarCommon.add(switchManagerButton);
 
-        jButtonOption.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/configure.png")));
-        jButtonOption.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SETTING"));
-        jButtonOption.setBorderPainted(false);
-        jButtonOption.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonOption.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonOption.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonOption.addActionListener(new java.awt.event.ActionListener() {
+        settingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/configure.png")));
+        settingsButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SETTING"));
+        settingsButton.setBorderPainted(false);
+        settingsButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        settingsButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        settingsButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        settingsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonOptionActionPerformed(evt);
+                settingsActionPerformed(evt);
             }
         });
-        jButtonOption.addMouseListener(new java.awt.event.MouseAdapter() {
+        settingsButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2222,28 +2601,28 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonOption);
+        jToolBarCommon.add(settingsButton);
 
-        jTextFieldFind.setColumns(15);
-        jTextFieldFind.setFont(new java.awt.Font("Courier New", 0, 12));
-        jTextFieldFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
-        jTextFieldFind.setMaximumSize(new java.awt.Dimension(111, 20));
-        jTextFieldFind.setMinimumSize(new java.awt.Dimension(10, 22));
-        jToolBarCommon.add(jTextFieldFind);
+        findTextField.setColumns(15);
+        findTextField.setFont(new java.awt.Font("Courier New", 0, 12));
+        findTextField.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
+        findTextField.setMaximumSize(new java.awt.Dimension(111, 20));
+        findTextField.setMinimumSize(new java.awt.Dimension(10, 22));
+        jToolBarCommon.add(findTextField);
 
-        jButtonFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png")));
-        jButtonFind.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH_BUTTON"));
-        jButtonFind.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jButtonFind.setBorderPainted(false);
-        jButtonFind.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonFind.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonFind.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonFind.addActionListener(new java.awt.event.ActionListener() {
+        findButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png")));
+        findButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH_BUTTON"));
+        findButton.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        findButton.setBorderPainted(false);
+        findButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        findButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        findButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        findButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonFindActionPerformed(evt);
+                findActionPerformed(evt);
             }
         });
-        jButtonFind.addMouseListener(new java.awt.event.MouseAdapter() {
+        findButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2252,20 +2631,20 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonFind);
+        jToolBarCommon.add(findButton);
 
-        jButtonReplace.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/find.png")));
-        jButtonReplace.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_REPLACE"));
-        jButtonReplace.setBorderPainted(false);
-        jButtonReplace.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonReplace.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonReplace.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonReplace.addActionListener(new java.awt.event.ActionListener() {
+        replaceButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/find.png")));
+        replaceButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_REPLACE"));
+        replaceButton.setBorderPainted(false);
+        replaceButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        replaceButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        replaceButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        replaceButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonReplaceActionPerformed(evt);
+                replaceActionPerformed(evt);
             }
         });
-        jButtonReplace.addMouseListener(new java.awt.event.MouseAdapter() {
+        replaceButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2274,121 +2653,121 @@ public class jFrame extends JFrame {
             }
         });
 
-        jToolBarCommon.add(jButtonReplace);
+        jToolBarCommon.add(replaceButton);
 
-        jTextFieldRowCol.setEditable(false);
-        jTextFieldRowCol.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextFieldRowCol.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jTextFieldRowCol.setDisabledTextColor(new java.awt.Color(212, 208, 200));
-        jTextFieldRowCol.setMaximumSize(new java.awt.Dimension(100, 34));
-        jTextFieldRowCol.setMinimumSize(new java.awt.Dimension(50, 34));
-        jTextFieldRowCol.setPreferredSize(new java.awt.Dimension(50, 20));
-        jToolBarCommon.add(jTextFieldRowCol);
+        rowColTextField.setEditable(false);
+        rowColTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        rowColTextField.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        rowColTextField.setDisabledTextColor(new java.awt.Color(212, 208, 200));
+        rowColTextField.setMaximumSize(new java.awt.Dimension(100, 38));
+        rowColTextField.setMinimumSize(new java.awt.Dimension(50, 38));
+        rowColTextField.setPreferredSize(new java.awt.Dimension(50, 19));
+        jToolBarCommon.add(rowColTextField);
 
-        jPanel22.add(jToolBarCommon, java.awt.BorderLayout.NORTH);
+        toolbarPanel.add(jToolBarCommon, java.awt.BorderLayout.NORTH);
 
-        getContentPane().add(jPanel22, java.awt.BorderLayout.NORTH);
+        getContentPane().add(toolbarPanel, java.awt.BorderLayout.NORTH);
 
-        jSplitPane3.setDividerSize(3);
-        jSplitPane3.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        jSplitPane3.setDoubleBuffered(true);
-        jSplitPane1.setDividerSize(3);
-        jSplitPane1.setDoubleBuffered(true);
-        jSplitPane1.setMinimumSize(new java.awt.Dimension(180, 248));
-        jSplitPane1.setPreferredSize(new java.awt.Dimension(180, 328));
-        jTabbedPaneLeft.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
-        jTabbedPaneLeft.setFont(new java.awt.Font("Dialog", 0, 11));
-        jPanelTreeControl.setLayout(new javax.swing.BoxLayout(jPanelTreeControl, javax.swing.BoxLayout.Y_AXIS));
+        mainSplitPane.setDividerSize(3);
+        mainSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        mainSplitPane.setDoubleBuffered(true);
+        upperSplitPane.setDividerSize(3);
+        upperSplitPane.setDoubleBuffered(true);
+        upperSplitPane.setMinimumSize(new java.awt.Dimension(180, 248));
+        upperSplitPane.setPreferredSize(new java.awt.Dimension(180, 328));
+        leftTabbedPane.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
+        leftTabbedPane.setFont(new java.awt.Font("Dialog", 0, 11));
+        treePanel.setLayout(new javax.swing.BoxLayout(treePanel, javax.swing.BoxLayout.Y_AXIS));
 
-        jScrollPane3.setBorder(null);
-        jScrollPane3.setDoubleBuffered(true);
-        jScrollPane3.setMinimumSize(new java.awt.Dimension(150, 200));
-        jScrollPane3.setPreferredSize(new java.awt.Dimension(150, 300));
-        jTree1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jTree1.setFont(new java.awt.Font("Courier New", 0, 12));
-        jTree1.setMaximumSize(new java.awt.Dimension(0, 0));
-        jTree1.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
+        treeScrollPane.setBorder(null);
+        treeScrollPane.setDoubleBuffered(true);
+        treeScrollPane.setMinimumSize(new java.awt.Dimension(150, 200));
+        treeScrollPane.setPreferredSize(new java.awt.Dimension(150, 300));
+        treeTree.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        treeTree.setFont(new java.awt.Font("Courier New", 0, 12));
+        treeTree.setMaximumSize(new java.awt.Dimension(0, 0));
+        treeTree.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
             public void treeCollapsed(javax.swing.event.TreeExpansionEvent evt) {
             }
             public void treeExpanded(javax.swing.event.TreeExpansionEvent evt) {
-                jTree1TreeExpanded(evt);
+                treeTreeTreeExpanded(evt);
             }
         });
-        jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+        treeTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
-                jTree1ValueChanged(evt);
+                treeTreeValueChanged(evt);
             }
         });
-        jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
+        treeTree.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jTree1MouseEntered(evt);
+                treeTreeMouseEntered(evt);
             }
         });
 
-        jScrollPane3.setViewportView(jTree1);
+        treeScrollPane.setViewportView(treeTree);
 
-        jPanelTreeControl.add(jScrollPane3);
+        treePanel.add(treeScrollPane);
 
-        jTabbedPaneLeft.addTab(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_TREE"), jPanelTreeControl);
+        leftTabbedPane.addTab(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_TREE"), treePanel);
 
-        jPanelMainFile.setLayout(new javax.swing.BoxLayout(jPanelMainFile, javax.swing.BoxLayout.Y_AXIS));
+        projectPanel.setLayout(new javax.swing.BoxLayout(projectPanel, javax.swing.BoxLayout.Y_AXIS));
 
-        jScrollPaneProject.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Project", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
-        jScrollPaneProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jScrollPaneProject.setPreferredSize(new java.awt.Dimension(90, 131));
-        jListProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jListProject.addMouseListener(new java.awt.event.MouseAdapter() {
+        projectScrollPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Project", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
+        projectScrollPane.setFont(new java.awt.Font("Dialog", 0, 11));
+        projectScrollPane.setPreferredSize(new java.awt.Dimension(90, 131));
+        projectList.setFont(new java.awt.Font("Dialog", 0, 11));
+        projectList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jListProjectMouseClicked(evt);
+                projectListMouseClicked(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jListProjectMouseEntered(evt);
+                projectListMouseEntered(evt);
             }
         });
 
-        jScrollPaneProject.setViewportView(jListProject);
+        projectScrollPane.setViewportView(projectList);
 
-        jPanelMainFile.add(jScrollPaneProject);
+        projectPanel.add(projectScrollPane);
 
-        jLabelMainFile.setFont(new java.awt.Font("Dialog", 0, 11));
-        jLabelMainFile.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabelMainFile.setText("Main:");
-        jLabelMainFile.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        jPanelMainFile.add(jLabelMainFile);
+        mainFileLabel.setFont(new java.awt.Font("Dialog", 0, 11));
+        mainFileLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        mainFileLabel.setText("Main:");
+        mainFileLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        projectPanel.add(mainFileLabel);
 
-        jTabbedPaneLeft.addTab(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_PROJECT"), jPanelMainFile);
+        leftTabbedPane.addTab(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_PROJECT"), projectPanel);
 
-        jPanelSearch.setLayout(new javax.swing.BoxLayout(jPanelSearch, javax.swing.BoxLayout.Y_AXIS));
+        searchPanel.setLayout(new javax.swing.BoxLayout(searchPanel, javax.swing.BoxLayout.Y_AXIS));
 
-        jPanelSearch.setMaximumSize(new java.awt.Dimension(1800, 220));
-        jPanelSearch.setMinimumSize(new java.awt.Dimension(180, 220));
-        jPanelSearch.setPreferredSize(new java.awt.Dimension(180, 220));
-        jPanelSearchProject.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 0, 0));
+        searchPanel.setMaximumSize(new java.awt.Dimension(1800, 220));
+        searchPanel.setMinimumSize(new java.awt.Dimension(180, 220));
+        searchPanel.setPreferredSize(new java.awt.Dimension(180, 220));
+        searchProjectPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 0, 0));
 
-        jPanelSearchProject.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search all project files", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
-        jPanelSearchProject.setMaximumSize(new java.awt.Dimension(180, 55));
-        jPanelSearchProject.setMinimumSize(new java.awt.Dimension(180, 55));
-        jPanelSearchProject.setPreferredSize(new java.awt.Dimension(180, 55));
-        jTextFieldFindAll.setFont(new java.awt.Font("Courier New", 0, 12));
-        jTextFieldFindAll.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
-        jTextFieldFindAll.setMaximumSize(new java.awt.Dimension(150, 20));
-        jTextFieldFindAll.setMinimumSize(new java.awt.Dimension(30, 22));
-        jTextFieldFindAll.setPreferredSize(new java.awt.Dimension(90, 20));
-        jPanelSearchProject.add(jTextFieldFindAll);
+        searchProjectPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search all project files", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
+        searchProjectPanel.setMaximumSize(new java.awt.Dimension(180, 55));
+        searchProjectPanel.setMinimumSize(new java.awt.Dimension(180, 55));
+        searchProjectPanel.setPreferredSize(new java.awt.Dimension(180, 55));
+        searchProjectTextField.setFont(new java.awt.Font("Courier New", 0, 12));
+        searchProjectTextField.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JTOOLBAR_SEARCH"));
+        searchProjectTextField.setMaximumSize(new java.awt.Dimension(150, 20));
+        searchProjectTextField.setMinimumSize(new java.awt.Dimension(30, 22));
+        searchProjectTextField.setPreferredSize(new java.awt.Dimension(90, 20));
+        searchProjectPanel.add(searchProjectTextField);
 
-        jButtonSearchProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/fileprojectfind.png")));
-        jButtonSearchProject.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCHALL_BUTTON"));
-        jButtonSearchProject.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jButtonSearchProject.setBorderPainted(false);
-        jButtonSearchProject.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonSearchProject.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonSearchProject.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonSearchProject.addActionListener(new java.awt.event.ActionListener() {
+        searchProjectButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/fileprojectfind.png")));
+        searchProjectButton.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCHALL_BUTTON"));
+        searchProjectButton.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        searchProjectButton.setBorderPainted(false);
+        searchProjectButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        searchProjectButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        searchProjectButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        searchProjectButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSearchProjectActionPerformed(evt);
+                searchProjectActionPerformed(evt);
             }
         });
-        jButtonSearchProject.addMouseListener(new java.awt.event.MouseAdapter() {
+        searchProjectButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2397,34 +2776,34 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanelSearchProject.add(jButtonSearchProject);
+        searchProjectPanel.add(searchProjectButton);
 
-        jPanelSearch.add(jPanelSearchProject);
+        searchPanel.add(searchProjectPanel);
 
-        jPanelDefinition.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 0, 0));
+        definitionPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 0, 0));
 
-        jPanelDefinition.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search for Definition", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
-        jPanelDefinition.setMaximumSize(new java.awt.Dimension(180, 55));
-        jPanelDefinition.setMinimumSize(new java.awt.Dimension(180, 55));
-        jPanelDefinition.setPreferredSize(new java.awt.Dimension(180, 55));
-        jTextFieldDefinition.setFont(new java.awt.Font("Courier New", 0, 12));
-        jTextFieldDefinition.setMaximumSize(new java.awt.Dimension(150, 20));
-        jTextFieldDefinition.setMinimumSize(new java.awt.Dimension(30, 20));
-        jTextFieldDefinition.setPreferredSize(new java.awt.Dimension(90, 20));
-        jPanelDefinition.add(jTextFieldDefinition);
+        definitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search for Definition", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11)));
+        definitionPanel.setMaximumSize(new java.awt.Dimension(180, 55));
+        definitionPanel.setMinimumSize(new java.awt.Dimension(180, 55));
+        definitionPanel.setPreferredSize(new java.awt.Dimension(180, 55));
+        definitionTextField.setFont(new java.awt.Font("Courier New", 0, 12));
+        definitionTextField.setMaximumSize(new java.awt.Dimension(150, 20));
+        definitionTextField.setMinimumSize(new java.awt.Dimension(30, 20));
+        definitionTextField.setPreferredSize(new java.awt.Dimension(90, 20));
+        definitionPanel.add(definitionTextField);
 
-        jButtonDefinition.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png")));
-        jButtonDefinition.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jButtonDefinition.setBorderPainted(false);
-        jButtonDefinition.setMaximumSize(new java.awt.Dimension(29, 29));
-        jButtonDefinition.setMinimumSize(new java.awt.Dimension(29, 29));
-        jButtonDefinition.setPreferredSize(new java.awt.Dimension(29, 29));
-        jButtonDefinition.addActionListener(new java.awt.event.ActionListener() {
+        definitionButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png")));
+        definitionButton.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        definitionButton.setBorderPainted(false);
+        definitionButton.setMaximumSize(new java.awt.Dimension(29, 29));
+        definitionButton.setMinimumSize(new java.awt.Dimension(29, 29));
+        definitionButton.setPreferredSize(new java.awt.Dimension(29, 29));
+        definitionButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonDefinitionActionPerformed(evt);
+                definitionActionPerformed(evt);
             }
         });
-        jButtonDefinition.addMouseListener(new java.awt.event.MouseAdapter() {
+        definitionButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonMouseEntered(evt);
             }
@@ -2433,2333 +2812,2250 @@ public class jFrame extends JFrame {
             }
         });
 
-        jPanelDefinition.add(jButtonDefinition);
+        definitionPanel.add(definitionButton);
 
-        jPanelSearch.add(jPanelDefinition);
+        searchPanel.add(definitionPanel);
 
-        jTabbedPaneLeft.addTab(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH"), jPanelSearch);
+        leftTabbedPane.addTab(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH"), searchPanel);
 
-        jSplitPane1.setLeftComponent(jTabbedPaneLeft);
+        upperSplitPane.setLeftComponent(leftTabbedPane);
 
-        jPanel5.setLayout(new java.awt.BorderLayout());
+        filePanel.setLayout(new java.awt.BorderLayout());
 
-        jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
-        jTabbedPane1.setFont(new java.awt.Font("Dialog", 1, 11));
-        jTabbedPane1.setMinimumSize(new java.awt.Dimension(350, 350));
-        jTabbedPane1.setPreferredSize(new java.awt.Dimension(700, 450));
-        jTabbedPane1.addComponentListener(new java.awt.event.ComponentAdapter() {
+        fileTabbedPane.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
+        fileTabbedPane.setFont(new java.awt.Font("Dialog", 1, 11));
+        fileTabbedPane.setMinimumSize(new java.awt.Dimension(350, 350));
+        fileTabbedPane.setPreferredSize(new java.awt.Dimension(700, 450));
+        fileTabbedPane.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
-                jTabbedPane1ComponentShown(evt);
+                fileTabbedPaneComponentShown(evt);
             }
         });
-        jTabbedPane1.addMouseListener(new java.awt.event.MouseAdapter() {
+        fileTabbedPane.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTabbedPane1MouseClicked(evt);
+                fileTabbedPaneMouseClicked(evt);
             }
         });
 
-        jPanel5.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+        filePanel.add(fileTabbedPane, java.awt.BorderLayout.CENTER);
 
-        jSplitPane1.setRightComponent(jPanel5);
+        upperSplitPane.setRightComponent(filePanel);
 
-        jSplitPane3.setTopComponent(jSplitPane1);
+        mainSplitPane.setTopComponent(upperSplitPane);
 
-        jTabbedPane2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jTabbedPane2.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
-        jTabbedPane2.setAutoscrolls(true);
-        jTabbedPane2.setFont(new java.awt.Font("Dialog", 0, 11));
-        jTabbedPane2.setMinimumSize(new java.awt.Dimension(31, 100));
-        jTabbedPane2.setPreferredSize(new java.awt.Dimension(30, 150));
-        jScrollPane2.setAutoscrolls(true);
-        jTextAreaOutput.setEditable(false);
-        jTextAreaOutput.setFont(new java.awt.Font("Tahoma", 0, 11));
-        jTextAreaOutput.setTabSize(4);
-        jTextAreaOutput.setAutoscrolls(false);
-        jTextAreaOutput.setMinimumSize(new java.awt.Dimension(0, 45));
-        jTextAreaOutput.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        outputTabbedPane.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
+        outputTabbedPane.setAutoscrolls(true);
+        outputTabbedPane.setFont(new java.awt.Font("Dialog", 0, 11));
+        outputTabbedPane.setMinimumSize(new java.awt.Dimension(31, 100));
+        outputTabbedPane.setPreferredSize(new java.awt.Dimension(30, 150));
+        outputScrollPane.setAutoscrolls(true);
+        outputTextArea.setEditable(false);
+        outputTextArea.setFont(new java.awt.Font("Tahoma", 0, 11));
+        outputTextArea.setTabSize(4);
+        outputTextArea.setAutoscrolls(false);
+        outputTextArea.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 5, 2, 5));
+        outputTextArea.setMinimumSize(new java.awt.Dimension(0, 45));
+        outputTextArea.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jTextAreaOutputMouseMoved(evt);
+                outputTextAreaMouseMoved(evt);
             }
         });
-        jTextAreaOutput.addMouseListener(new java.awt.event.MouseAdapter() {
+        outputTextArea.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTextAreaOutputMouseClicked(evt);
+                outputTextAreaMouseClicked(evt);
             }
         });
 
-        jScrollPane2.setViewportView(jTextAreaOutput);
+        outputScrollPane.setViewportView(outputTextArea);
 
-        jTabbedPane2.addTab(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_OUTPUT"), jScrollPane2);
-        jScrollPane2.getAccessibleContext().setAccessibleParent(jTabbedPane2);
+        outputTabbedPane.addTab(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_OUTPUT"), outputScrollPane);
+        outputScrollPane.getAccessibleContext().setAccessibleParent(outputTabbedPane);
 
-        jSplitPane3.setBottomComponent(jTabbedPane2);
+        mainSplitPane.setBottomComponent(outputTabbedPane);
 
-        getContentPane().add(jSplitPane3, java.awt.BorderLayout.CENTER);
+        getContentPane().add(mainSplitPane, java.awt.BorderLayout.CENTER);
 
-        jMenuBar1.setBorder(null);
-        jMenuBar1.setFont(new java.awt.Font("Dialog", 0, 12));
-        jMenuFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_FILE"));
-        jMenuFile.setDelay(0);
-        jMenuFile.setFont(new java.awt.Font("Dialog", 0, 11));
-        New.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        New.setFont(new java.awt.Font("Dialog", 0, 11));
-        New.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_NEW"));
-        New.addActionListener(new java.awt.event.ActionListener() {
+        mainMenuBar.setBorder(null);
+        mainMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
+        fileMenu.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_FILE"));
+        fileMenu.setDelay(0);
+        fileMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        newMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        newMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        newMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_NEW"));
+        newMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                NewActionPerformed(evt);
+                newActionPerformed(evt);
             }
         });
 
-        jMenuFile.add(New);
+        fileMenu.add(newMenuItem);
 
-        Open.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
-        Open.setFont(new java.awt.Font("Dialog", 0, 11));
-        Open.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_OPEN"));
-        Open.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_OPEN_TOOLTIP"));
-        Open.setName("Open");
-        Open.addActionListener(new java.awt.event.ActionListener() {
+        openMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        openMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        openMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_OPEN"));
+        openMenuItem.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_OPEN_TOOLTIP"));
+        openMenuItem.setName("Open");
+        openMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                OpenActionPerformed(evt);
+                openActionPerformed(evt);
             }
         });
 
-        jMenuFile.add(Open);
+        fileMenu.add(openMenuItem);
 
-        jMenuFile.add(jSeparator8);
+        fileMenu.add(jSeparator8);
 
-        Save.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        Save.setFont(new java.awt.Font("Dialog", 0, 11));
-        Save.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVE"));
-        Save.addActionListener(new java.awt.event.ActionListener() {
+        saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        saveMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        saveMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVE"));
+        saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SaveActionPerformed(evt);
+                saveActionPerformed(evt);
             }
         });
 
-        jMenuFile.add(Save);
+        fileMenu.add(saveMenuItem);
 
-        SaveAs.setFont(new java.awt.Font("Dialog", 0, 11));
-        SaveAs.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEAS"));
-        SaveAs.addActionListener(new java.awt.event.ActionListener() {
+        saveAsMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        saveAsMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEAS"));
+        saveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SaveAsActionPerformed(evt);
+                saveAsActionPerformed(evt);
             }
         });
 
-        jMenuFile.add(SaveAs);
+        fileMenu.add(saveAsMenuItem);
 
-        jMenuItemSaveAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemSaveAll.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemSaveAll.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEALL"));
-        jMenuItemSaveAll.addActionListener(new java.awt.event.ActionListener() {
+        saveAllMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        saveAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        saveAllMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEALL"));
+        saveAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemSaveAllActionPerformed(evt);
+                saveAllActionPerformed(evt);
             }
         });
 
-        jMenuFile.add(jMenuItemSaveAll);
+        fileMenu.add(saveAllMenuItem);
 
-        jMenuFile.add(jSeparator10);
+        fileMenu.add(jSeparator10);
 
-        jMenuItemClose.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemClose.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemClose.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLOSE"));
-        jMenuItemClose.addActionListener(new java.awt.event.ActionListener() {
+        closeMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
+        closeMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        closeMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLOSE"));
+        closeMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemCloseActionPerformed(evt);
+                closeActionPerformed(evt);
             }
         });
 
-        jMenuFile.add(jMenuItemClose);
+        fileMenu.add(closeMenuItem);
 
-        jMenuItemCloseAll.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCloseAll.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLOSEALL"));
-        jMenuItemCloseAll.addActionListener(new java.awt.event.ActionListener() {
+        closeAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        closeAllMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLOSEALL"));
+        closeAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemCloseAllActionPerformed(evt);
+                closeAllActionPerformed(evt);
             }
         });
 
-        jMenuFile.add(jMenuItemCloseAll);
+        fileMenu.add(closeAllMenuItem);
 
-        jMenuFile.add(jSeparator9);
+        fileMenu.add(jSeparator9);
 
-        jMenuRecentFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RECENTFILES"));
-        jMenuRecentFiles.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuFile.add(jMenuRecentFiles);
+        recentFilesMenu.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RECENTFILES"));
+        recentFilesMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        fileMenu.add(recentFilesMenu);
 
-        jMenuItemClearRecentFiles.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemClearRecentFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLEARRECENTFILES"));
-        jMenuItemClearRecentFiles.addActionListener(new java.awt.event.ActionListener() {
+        clearRecentFilesMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        clearRecentFilesMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_CLEARRECENTFILES"));
+        clearRecentFilesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemClearRecentFilesActionPerformed(evt);
+                clearRecentFilesActionPerformed(evt);
             }
         });
 
-        jMenuFile.add(jMenuItemClearRecentFiles);
+        fileMenu.add(clearRecentFilesMenuItem);
 
-        jMenuFile.add(jSeparator1);
+        fileMenu.add(jSeparator1);
 
-        jMenuItemPrint.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemPrint.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPrint.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_PRINT"));
-        jMenuItemPrint.addActionListener(new java.awt.event.ActionListener() {
+        printMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        printMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        printMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_PRINT"));
+        printMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPrintActionPerformed(evt);
+                printActionPerformed(evt);
             }
         });
 
-        jMenuFile.add(jMenuItemPrint);
+        fileMenu.add(printMenuItem);
 
-        jMenuFile.add(jSeparator4);
+        fileMenu.add(jSeparator4);
 
-        Exit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.ALT_MASK));
-        Exit.setFont(new java.awt.Font("Dialog", 0, 11));
-        Exit.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_EXIT"));
-        Exit.addActionListener(new java.awt.event.ActionListener() {
+        exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.ALT_MASK));
+        exitMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        exitMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_EXIT"));
+        exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ExitActionPerformed(evt);
+                exitActionPerformed(evt);
             }
         });
 
-        jMenuFile.add(Exit);
+        fileMenu.add(exitMenuItem);
 
-        jMenuBar1.add(jMenuFile);
+        mainMenuBar.add(fileMenu);
 
-        jMenuEdit.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_EDIT"));
-        jMenuEdit.setDelay(0);
-        jMenuEdit.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCut.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCut.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EDIT_CUT"));
-        jMenuEdit.add(jMenuItemCut);
+        editMenu.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_EDIT"));
+        editMenu.setDelay(0);
+        editMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        cutMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        cutMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EDIT_CUT"));
+        editMenu.add(cutMenuItem);
 
-        jMenuItemCopy1.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCopy1.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_COPY"));
-        jMenuItemCopy1.addActionListener(new java.awt.event.ActionListener() {
+        copyMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        copyMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_COPY"));
+        copyMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemCopy1ActionPerformed(evt);
+                copyActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemCopy1);
+        editMenu.add(copyMenuItem);
 
-        jMenuItemPaste.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemPaste.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EDIT_PASTE"));
-        jMenuEdit.add(jMenuItemPaste);
+        pasteMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        pasteMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EDIT_PASTE"));
+        editMenu.add(pasteMenuItem);
 
-        jMenuEdit.add(jSeparator11);
+        editMenu.add(jSeparator11);
 
-        jMenuItemSearch.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, 0));
-        jMenuItemSearch.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemSearch.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH"));
-        jMenuItemSearch.addActionListener(new java.awt.event.ActionListener() {
+        searchMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, 0));
+        searchMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        searchMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCH"));
+        searchMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemSearchActionPerformed(evt);
+                searchActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemSearch);
+        editMenu.add(searchMenuItem);
 
-        jMenuItemSearchAllFiles.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemSearchAllFiles.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemSearchAllFiles.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCHALL"));
-        jMenuItemSearchAllFiles.addActionListener(new java.awt.event.ActionListener() {
+        searchAllMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.CTRL_MASK));
+        searchAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        searchAllMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SEARCHALL"));
+        searchAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemSearchAllFilesActionPerformed(evt);
+                searchAllctionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemSearchAllFiles);
+        editMenu.add(searchAllMenuItem);
 
-        jMenuItemReplace.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemReplace.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemReplace.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_REPLACE"));
-        jMenuItemReplace.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_REPLACE_TOOLTIP"));
-        jMenuItemReplace.addActionListener(new java.awt.event.ActionListener() {
+        replaceMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
+        replaceMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        replaceMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_REPLACE"));
+        replaceMenuItem.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_REPLACE_TOOLTIP"));
+        replaceMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemReplaceActionPerformed(evt);
+                replaceActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemReplace);
+        editMenu.add(replaceMenuItem);
 
-        jMenuItemSelectAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemSelectAll.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemSelectAll.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SELECTALL"));
-        jMenuItemSelectAll.addActionListener(new java.awt.event.ActionListener() {
+        selectAllMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
+        selectAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        selectAllMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SELECTALL"));
+        selectAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemSelectAllActionPerformed(evt);
+                selectAllActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemSelectAll);
+        editMenu.add(selectAllMenuItem);
 
-        jMenuItemClearAll.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemClearAll.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_DELETEALL"));
-        jMenuItemClearAll.addActionListener(new java.awt.event.ActionListener() {
+        clearAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        clearAllMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_DELETEALL"));
+        clearAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemClearAllActionPerformed(evt);
+                clearAllActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemClearAll);
+        editMenu.add(clearAllMenuItem);
 
-        jMenuEdit.add(jSeparator16);
+        editMenu.add(jSeparator16);
 
-        jMenuItemCommentSelection.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PERIOD, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemCommentSelection.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCommentSelection.setText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENUITEM_COMMENT"));
-        jMenuItemCommentSelection.addActionListener(new java.awt.event.ActionListener() {
+        commentSelectionMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PERIOD, java.awt.event.InputEvent.CTRL_MASK));
+        commentSelectionMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        commentSelectionMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("POPUPMENU_MENUITEM_COMMENT"));
+        commentSelectionMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemCommentSelectionActionPerformed(evt);
+                commentSelectionActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemCommentSelection);
+        editMenu.add(commentSelectionMenuItem);
 
-        jMenuItemUncommentSelection.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_COMMA, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemUncommentSelection.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemUncommentSelection.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EDIT_UNCOMMENT_SELECTION"));
-        jMenuItemUncommentSelection.addActionListener(new java.awt.event.ActionListener() {
+        uncommentSelectionMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_COMMA, java.awt.event.InputEvent.CTRL_MASK));
+        uncommentSelectionMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        uncommentSelectionMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EDIT_UNCOMMENT_SELECTION"));
+        uncommentSelectionMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemUncommentSelectionActionPerformed(evt);
+                uncommentSelectionActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemUncommentSelection);
+        editMenu.add(uncommentSelectionMenuItem);
 
-        jMenuItemRightShift.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemRightShift.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RIGHTSHIFT"));
-        jMenuItemRightShift.addActionListener(new java.awt.event.ActionListener() {
+        tabRightMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        tabRightMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RIGHTSHIFT"));
+        tabRightMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemRightShiftActionPerformed(evt);
+                tabRightActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemRightShift);
+        editMenu.add(tabRightMenuItem);
 
-        jMenuItemLeftShift.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemLeftShift.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_LEFTSHIFT"));
-        jMenuItemLeftShift.addActionListener(new java.awt.event.ActionListener() {
+        tabLeftMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        tabLeftMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_LEFTSHIFT"));
+        tabLeftMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemLeftShiftActionPerformed(evt);
+                tabLeftActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemLeftShift);
+        editMenu.add(tabLeftMenuItem);
 
-        jMenuEdit.add(jSeparator17);
+        editMenu.add(jSeparator17);
 
-        jMenuItemInsertFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemInsertFile.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemInsertFile.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_INSERT_FROM_FILE"));
-        jMenuItemInsertFile.addActionListener(new java.awt.event.ActionListener() {
+        insertFileMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_MASK));
+        insertFileMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        insertFileMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_INSERT_FROM_FILE"));
+        insertFileMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemInsertFileActionPerformed(evt);
+                insertFileActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemInsertFile);
+        editMenu.add(insertFileMenuItem);
 
-        jMenuItemInsertSymbol1.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemInsertSymbol1.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_INSERT_SYMBOL"));
-        jMenuItemInsertSymbol1.addActionListener(new java.awt.event.ActionListener() {
+        insertSymbolMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        insertSymbolMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_INSERT_SYMBOL"));
+        insertSymbolMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemInsertSymbol1ActionPerformed(evt);
+                insertSymbolActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemInsertSymbol1);
+        editMenu.add(insertSymbolMenuItem);
 
-        jMenuItemSetBookmark.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemSetBookmark.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemSetBookmark.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SETBOOKMARK"));
-        jMenuItemSetBookmark.addActionListener(new java.awt.event.ActionListener() {
+        setBookmarkMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, java.awt.event.InputEvent.CTRL_MASK));
+        setBookmarkMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        setBookmarkMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SETBOOKMARK"));
+        setBookmarkMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemSetBookmarkActionPerformed(evt);
+                setBookmarkMenuItemActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemSetBookmark);
+        editMenu.add(setBookmarkMenuItem);
 
-        jMenuItemNextBookmark.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
-        jMenuItemNextBookmark.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemNextBookmark.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_NEXTBOOKMARK"));
-        jMenuItemNextBookmark.addActionListener(new java.awt.event.ActionListener() {
+        nextBookmarkMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
+        nextBookmarkMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        nextBookmarkMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_NEXTBOOKMARK"));
+        nextBookmarkMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemNextBookmarkActionPerformed(evt);
+                nextBookmarkMenuItemActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemNextBookmark);
+        editMenu.add(nextBookmarkMenuItem);
 
-        jMenuItemExtractStrings.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemExtractStrings.setText("Extract Strings");
-        jMenuItemExtractStrings.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EXTRACT_STRINGS"));
-        jMenuItemExtractStrings.addActionListener(new java.awt.event.ActionListener() {
+        extractStringsMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        extractStringsMenuItem.setText("Extract Strings");
+        extractStringsMenuItem.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_EXTRACT_STRINGS"));
+        extractStringsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemExtractStringsActionPerformed(evt);
+                extractStringsActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemExtractStrings);
+        editMenu.add(extractStringsMenuItem);
 
-        jMenuItemTranslate.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemTranslate.setText("Translate Strings");
-        jMenuItemTranslate.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_TRANSLATE"));
-        jMenuItemTranslate.addActionListener(new java.awt.event.ActionListener() {
+        translateMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        translateMenuItem.setText("Translate Strings");
+        translateMenuItem.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_TRANSLATE"));
+        translateMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemTranslateActionPerformed(evt);
+                translateActionPerformed(evt);
             }
         });
 
-        jMenuEdit.add(jMenuItemTranslate);
+        editMenu.add(translateMenuItem);
 
-        jMenuBar1.add(jMenuEdit);
+        mainMenuBar.add(editMenu);
 
-        jMenuView.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_VIEW"));
-        jMenuView.setDelay(0);
-        jMenuView.setFont(new java.awt.Font("Dialog", 0, 11));
-        jCheckBoxOutput.setFont(new java.awt.Font("Dialog", 0, 11));
-        jCheckBoxOutput.setSelected(true);
-        jCheckBoxOutput.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_OUTPUT"));
-        jCheckBoxOutput.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_OUTPUT_TOOLTIP"));
-        jCheckBoxOutput.addActionListener(new java.awt.event.ActionListener() {
+        viewMenu.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_VIEW"));
+        viewMenu.setDelay(0);
+        viewMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        outputCheckBoxMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        outputCheckBoxMenuItem.setSelected(true);
+        outputCheckBoxMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_OUTPUT"));
+        outputCheckBoxMenuItem.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_OUTPUT_TOOLTIP"));
+        outputCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxOutputActionPerformed(evt);
+                outputCheckBoxActionPerformed(evt);
             }
         });
 
-        jMenuView.add(jCheckBoxOutput);
+        viewMenu.add(outputCheckBoxMenuItem);
 
-        jCheckBoxJToolBar.setFont(new java.awt.Font("Dialog", 0, 11));
-        jCheckBoxJToolBar.setSelected(true);
-        jCheckBoxJToolBar.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_JTOOLBAR"));
-        jCheckBoxJToolBar.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_JTOOLBAR_TOOLTIP"));
-        jCheckBoxJToolBar.addActionListener(new java.awt.event.ActionListener() {
+        toolbarCheckBoxMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        toolbarCheckBoxMenuItem.setSelected(true);
+        toolbarCheckBoxMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_JTOOLBAR"));
+        toolbarCheckBoxMenuItem.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_JTOOLBAR_TOOLTIP"));
+        toolbarCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxJToolBarActionPerformed(evt);
+                toolbarCheckBoxActionPerformed(evt);
             }
         });
 
-        jMenuView.add(jCheckBoxJToolBar);
+        viewMenu.add(toolbarCheckBoxMenuItem);
 
-        jCheckBoxJTree.setFont(new java.awt.Font("Dialog", 0, 11));
-        jCheckBoxJTree.setSelected(true);
-        jCheckBoxJTree.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_JTREE"));
-        jCheckBoxJTree.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_JTREE_TOOLTIP"));
-        jCheckBoxJTree.addActionListener(new java.awt.event.ActionListener() {
+        treeCheckBoxMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        treeCheckBoxMenuItem.setSelected(true);
+        treeCheckBoxMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_JTREE"));
+        treeCheckBoxMenuItem.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("CHECKBOX_JTREE_TOOLTIP"));
+        treeCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxJTreeActionPerformed(evt);
+                treeCheckBoxActionPerformed(evt);
             }
         });
 
-        jMenuView.add(jCheckBoxJTree);
+        viewMenu.add(treeCheckBoxMenuItem);
 
-        jCheckBoxToggleFullscreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
-        jCheckBoxToggleFullscreen.setFont(new java.awt.Font("Dialog", 0, 11));
-        jCheckBoxToggleFullscreen.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_TOGGLEFULLSCREEN"));
-        jCheckBoxToggleFullscreen.addActionListener(new java.awt.event.ActionListener() {
+        toggleFullscreenCheckBoxMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
+        toggleFullscreenCheckBoxMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        toggleFullscreenCheckBoxMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_TOGGLEFULLSCREEN"));
+        toggleFullscreenCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxToggleFullscreenActionPerformed(evt);
+                toggleFullscreenCheckBoxActionPerformed(evt);
             }
         });
 
-        jMenuView.add(jCheckBoxToggleFullscreen);
+        viewMenu.add(toggleFullscreenCheckBoxMenuItem);
 
-        jMenuBar1.add(jMenuView);
+        mainMenuBar.add(viewMenu);
 
-        jMenuProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_PROJECT"));
-        jMenuProject.setDelay(0);
-        jMenuProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemNewProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemNewProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemNewProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_NEW_PROJECT"));
-        jMenuItemNewProject.addActionListener(new java.awt.event.ActionListener() {
+        projectMenu.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_PROJECT"));
+        projectMenu.setDelay(0);
+        projectMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        newProjectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.CTRL_MASK));
+        newProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        newProjectMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_NEW_PROJECT"));
+        newProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemNewProjectActionPerformed(evt);
+                newProjectActionPerformed(evt);
             }
         });
 
-        jMenuProject.add(jMenuItemNewProject);
+        projectMenu.add(newProjectMenuItem);
 
-        jMenuItemOpenProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, 0));
-        jMenuItemOpenProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemOpenProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_PROJECT"));
-        jMenuItemOpenProject.addActionListener(new java.awt.event.ActionListener() {
+        openProjectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, 0));
+        openProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        openProjectMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_OPEN_PROJECT"));
+        openProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemOpenProjectActionPerformed(evt);
+                openProjectActionPerformed(evt);
             }
         });
 
-        jMenuProject.add(jMenuItemOpenProject);
+        projectMenu.add(openProjectMenuItem);
 
-        jMenuItemSaveProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemSaveProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_SAVE_PROJECT"));
-        jMenuItemSaveProject.addActionListener(new java.awt.event.ActionListener() {
+        saveProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        saveProjectMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_SAVE_PROJECT"));
+        saveProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemSaveProjectActionPerformed(evt);
+                saveProjectActionPerformed(evt);
             }
         });
 
-        jMenuProject.add(jMenuItemSaveProject);
+        projectMenu.add(saveProjectMenuItem);
 
-        jMenuItemCloseProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCloseProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_CLOSE_PROJECT"));
-        jMenuItemCloseProject.addActionListener(new java.awt.event.ActionListener() {
+        closeProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        closeProjectMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_CLOSE_PROJECT"));
+        closeProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemCloseProjectActionPerformed(evt);
+                closeProjectActionPerformed(evt);
             }
         });
 
-        jMenuProject.add(jMenuItemCloseProject);
+        projectMenu.add(closeProjectMenuItem);
 
-        jMenuProject.add(jSeparator14);
+        projectMenu.add(jSeparator14);
 
-        jMenuItemAddNewToProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemAddNewToProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_ADD_NEWFILE_TO_PROJECT"));
-        jMenuItemAddNewToProject.addActionListener(new java.awt.event.ActionListener() {
+        addNewToProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        addNewToProjectMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_ADD_NEWFILE_TO_PROJECT"));
+        addNewToProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemAddNewToProjectActionPerformed(evt);
+                addNewToProjectActionPerformed(evt);
             }
         });
 
-        jMenuProject.add(jMenuItemAddNewToProject);
+        projectMenu.add(addNewToProjectMenuItem);
 
-        jMenuItemAddFileToProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemAddFileToProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_ADD_FILE_TO_PROJECT"));
-        jMenuItemAddFileToProject.addActionListener(new java.awt.event.ActionListener() {
+        addFileToProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        addFileToProjectMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_ADD_FILE_TO_PROJECT"));
+        addFileToProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemAddFileToProjectActionPerformed(evt);
+                addFileToProjectActionPerformed(evt);
             }
         });
 
-        jMenuProject.add(jMenuItemAddFileToProject);
+        projectMenu.add(addFileToProjectMenuItem);
 
-        jMenuItemRemoveFromProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemRemoveFromProject.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_POPUP_REMOVE"));
-        jMenuItemRemoveFromProject.addActionListener(new java.awt.event.ActionListener() {
+        removeFromProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        removeFromProjectMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_POPUP_REMOVE"));
+        removeFromProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemRemoveFromProjectActionPerformed(evt);
+                removeFromProjectActionPerformed(evt);
             }
         });
 
-        jMenuProject.add(jMenuItemRemoveFromProject);
+        projectMenu.add(removeFromProjectMenuItem);
 
-        jMenuProjectProperties.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuProjectProperties.setText("Project Properties");
-        jMenuProjectProperties.addActionListener(new java.awt.event.ActionListener() {
+        projectPropertiesMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        projectPropertiesMenuItem.setText("Project Properties");
+        projectPropertiesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuProjectPropertiesActionPerformed(evt);
+                projectPropertiesActionPerformed(evt);
             }
         });
 
-        jMenuProject.add(jMenuProjectProperties);
+        projectMenu.add(projectPropertiesMenuItem);
 
-        jMenuProjectSwitches.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuProjectSwitches.setText("Project Switches");
-        jMenuProjectSwitches.addActionListener(new java.awt.event.ActionListener() {
+        projectSwitchesMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        projectSwitchesMenuItem.setText("Project Switches");
+        projectSwitchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuProjectSwitchesActionPerformed(evt);
+                projectSwitchesActionPerformed(evt);
             }
         });
 
-        jMenuProject.add(jMenuProjectSwitches);
+        projectMenu.add(projectSwitchesMenuItem);
 
-        jMenuProject.add(jSeparator5);
+        projectMenu.add(jSeparator5);
 
-        jMenuItemLastProject.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemLastProject.addActionListener(new java.awt.event.ActionListener() {
+        lastProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        lastProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemLastProjectActionPerformed(evt);
+                lastProjectActionPerformed(evt);
             }
         });
 
-        jMenuProject.add(jMenuItemLastProject);
+        projectMenu.add(lastProjectMenuItem);
 
-        jMenuBar1.add(jMenuProject);
+        mainMenuBar.add(projectMenu);
 
-        jMenuMode.setText("Mode");
-        jMenuMode.setEnabled(false);
-        jMenuMode.setFont(new java.awt.Font("Dialog", 0, 11));
-        jCheckBoxInformMode.setFont(new java.awt.Font("Dialog", 0, 11));
-        jCheckBoxInformMode.setText("Inform Mode");
-        jCheckBoxInformMode.addActionListener(new java.awt.event.ActionListener() {
+        modeMenu.setText("Mode");
+        modeMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        informModeCheckBoxMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        informModeCheckBoxMenuItem.setText("Inform Mode");
+        informModeCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxInformModeActionPerformed(evt);
+                informModeActionPerformed(evt);
             }
         });
 
-        jMenuMode.add(jCheckBoxInformMode);
+        modeMenu.add(informModeCheckBoxMenuItem);
 
-        jCheckBoxGlulxMode.setFont(new java.awt.Font("Dialog", 0, 11));
-        jCheckBoxGlulxMode.setText("Glulx Mode");
-        jCheckBoxGlulxMode.addActionListener(new java.awt.event.ActionListener() {
+        glulxModeCheckBoxMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        glulxModeCheckBoxMenuItem.setText("Glulx Mode");
+        glulxModeCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxGlulxModeActionPerformed(evt);
+                glulxModeActionPerformed(evt);
             }
         });
 
-        jMenuMode.add(jCheckBoxGlulxMode);
+        modeMenu.add(glulxModeCheckBoxMenuItem);
 
-        jMenuBar1.add(jMenuMode);
+        mainMenuBar.add(modeMenu);
 
-        jMenuBuild.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_BUILD"));
-        jMenuBuild.setDelay(0);
-        jMenuBuild.setFont(new java.awt.Font("Dialog", 0, 11));
-        BuildAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F9, 0));
-        BuildAll.setFont(new java.awt.Font("Dialog", 0, 11));
-        BuildAll.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILDALL"));
-        BuildAll.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILDALL_TOOLTIP"));
-        BuildAll.addActionListener(new java.awt.event.ActionListener() {
+        buildMenu.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_BUILD"));
+        buildMenu.setDelay(0);
+        buildMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        buildAllMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F9, 0));
+        buildAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        buildAllMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILDALL"));
+        buildAllMenuItem.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILDALL_TOOLTIP"));
+        buildAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BuildAllActionPerformed(evt);
+                buildAllActionPerformed(evt);
             }
         });
 
-        jMenuBuild.add(BuildAll);
+        buildMenu.add(buildAllMenuItem);
 
-        jMenuItemSwitches.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemSwitches.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SWITCHES"));
-        jMenuItemSwitches.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SWITCHES_TOOLTIP"));
-        jMenuItemSwitches.addActionListener(new java.awt.event.ActionListener() {
+        switchesMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        switchesMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SWITCHES"));
+        switchesMenuItem.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SWITCHES_TOOLTIP"));
+        switchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemSwitchesActionPerformed(evt);
+                switchesActionPerformed(evt);
             }
         });
 
-        jMenuBuild.add(jMenuItemSwitches);
+        buildMenu.add(switchesMenuItem);
 
-        jMenuBuild.add(jSeparator2);
+        buildMenu.add(jSeparator2);
 
-        Run.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F9, java.awt.event.InputEvent.CTRL_MASK));
-        Run.setFont(new java.awt.Font("Dialog", 0, 11));
-        Run.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN"));
-        Run.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_TOOLTIP"));
-        Run.addActionListener(new java.awt.event.ActionListener() {
+        runMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F9, java.awt.event.InputEvent.CTRL_MASK));
+        runMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        runMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN"));
+        runMenuItem.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_TOOLTIP"));
+        runMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RunActionPerformed(evt);
+                runActionPerformed(evt);
             }
         });
 
-        jMenuBuild.add(Run);
+        buildMenu.add(runMenuItem);
 
-        jMenuBar1.add(jMenuBuild);
+        mainMenuBar.add(buildMenu);
 
-        jMenuGlulx.setText("Glulx");
-        jMenuGlulx.setEnabled(false);
-        jMenuGlulx.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemBuildAllGlulx.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F12, 0));
-        jMenuItemBuildAllGlulx.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemBuildAllGlulx.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILD_ALL"));
-        jMenuItemBuildAllGlulx.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILD_ALL_TOOLTIP"));
-        jMenuItemBuildAllGlulx.addActionListener(new java.awt.event.ActionListener() {
+        glulxMenu.setText("Glulx");
+        glulxMenu.setEnabled(false);
+        glulxMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        buildAllGlulxMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F12, 0));
+        buildAllGlulxMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        buildAllGlulxMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILD_ALL"));
+        buildAllGlulxMenuItem.setToolTipText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_BUILD_ALL_TOOLTIP"));
+        buildAllGlulxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemBuildAllGlulxActionPerformed(evt);
+                buildAllGlulxActionPerformed(evt);
             }
         });
 
-        jMenuGlulx.add(jMenuItemBuildAllGlulx);
+        glulxMenu.add(buildAllGlulxMenuItem);
 
-        jMenuGlulx.add(jSeparator18);
+        glulxMenu.add(jSeparator18);
 
-        jMenuItemMakeResource.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemMakeResource.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_MAKE_RES"));
-        jMenuItemMakeResource.addActionListener(new java.awt.event.ActionListener() {
+        makeResourceMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        makeResourceMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_MAKE_RES"));
+        makeResourceMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemMakeResourceActionPerformed(evt);
+                makeResourceActionPerformed(evt);
             }
         });
 
-        jMenuGlulx.add(jMenuItemMakeResource);
+        glulxMenu.add(makeResourceMenuItem);
 
-        jMenuItemCompile.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemCompile.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_COMPILE_INF"));
-        jMenuItemCompile.addActionListener(new java.awt.event.ActionListener() {
+        compileMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        compileMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_COMPILE_INF"));
+        compileMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemCompileActionPerformed(evt);
+                compileActionPerformed(evt);
             }
         });
 
-        jMenuGlulx.add(jMenuItemCompile);
+        glulxMenu.add(compileMenuItem);
 
-        jMenuItemMakeBlb.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F12, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemMakeBlb.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemMakeBlb.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_MAKE_BLB"));
-        jMenuItemMakeBlb.addActionListener(new java.awt.event.ActionListener() {
+        makeBlbMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F12, java.awt.event.InputEvent.CTRL_MASK));
+        makeBlbMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        makeBlbMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_MAKE_BLB"));
+        makeBlbMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemMakeBlbActionPerformed(evt);
+                makeBlbActionPerformed(evt);
             }
         });
 
-        jMenuGlulx.add(jMenuItemMakeBlb);
+        glulxMenu.add(makeBlbMenuItem);
 
-        jMenuGlulx.add(jSeparator15);
+        glulxMenu.add(jSeparator15);
 
-        jMenuItemRunUlx.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
-        jMenuItemRunUlx.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemRunUlx.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_ULX"));
-        jMenuItemRunUlx.addActionListener(new java.awt.event.ActionListener() {
+        runUlxMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
+        runUlxMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        runUlxMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_ULX"));
+        runUlxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemRunUlxActionPerformed(evt);
+                runUlxActionPerformed(evt);
             }
         });
 
-        jMenuGlulx.add(jMenuItemRunUlx);
+        glulxMenu.add(runUlxMenuItem);
 
-        jMenuItemRunBlb.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItemRunBlb.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemRunBlb.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_BLB"));
-        jMenuItemRunBlb.addActionListener(new java.awt.event.ActionListener() {
+        runBlbMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, java.awt.event.InputEvent.CTRL_MASK));
+        runBlbMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        runBlbMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_RUN_BLB"));
+        runBlbMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemRunBlbActionPerformed(evt);
+                runBlbActionPerformed(evt);
             }
         });
 
-        jMenuGlulx.add(jMenuItemRunBlb);
+        glulxMenu.add(runBlbMenuItem);
 
-        jMenuBar1.add(jMenuGlulx);
+        mainMenuBar.add(glulxMenu);
 
-        jMenuOptions.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_OPTIONS"));
-        jMenuOptions.setDelay(0);
-        jMenuOptions.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemConfigFile.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemConfigFile.setText("Jif.cfg file");
-        jMenuItemConfigFile.setToolTipText("Edit configuration file for JIF");
-        jMenuItemConfigFile.addActionListener(new java.awt.event.ActionListener() {
+        optionsMenu.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_OPTIONS"));
+        optionsMenu.setDelay(0);
+        optionsMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        configFileMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        configFileMenuItem.setText("Jif.cfg file");
+        configFileMenuItem.setToolTipText("Edit configuration file for JIF");
+        configFileMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemConfigFileActionPerformed(evt);
+                configFileActionPerformed(evt);
             }
         });
 
-        jMenuOptions.add(jMenuItemConfigFile);
+        optionsMenu.add(configFileMenuItem);
 
-        jMenuItemSettings.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemSettings.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SETTING"));
-        jMenuItemSettings.addActionListener(new java.awt.event.ActionListener() {
+        settingsMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        settingsMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_SETTING"));
+        settingsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemSettingsActionPerformed(evt);
+                settingsActionPerformed(evt);
             }
         });
 
-        jMenuOptions.add(jMenuItemSettings);
+        optionsMenu.add(settingsMenuItem);
 
-        jMenuOptions.add(jSeparator12);
+        optionsMenu.add(jSeparator12);
 
-        jMenuItemGC.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemGC.setText("Garbage Collector");
-        jMenuItemGC.setToolTipText("Free unused object from the memory");
-        jMenuItemGC.addActionListener(new java.awt.event.ActionListener() {
+        garbageCollectionMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        garbageCollectionMenuItem.setText("Garbage Collector");
+        garbageCollectionMenuItem.setToolTipText("Free unused object from the memory");
+        garbageCollectionMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemGCActionPerformed(evt);
+                garbageCollectionActionPerformed(evt);
             }
         });
 
-        jMenuOptions.add(jMenuItemGC);
+        optionsMenu.add(garbageCollectionMenuItem);
 
-        jMenuBar1.add(jMenuOptions);
+        mainMenuBar.add(optionsMenu);
 
-        jMenuHelp.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_HELP"));
-        jMenuHelp.setDelay(0);
-        jMenuHelp.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemReadMe.setFont(new java.awt.Font("Dialog", 0, 11));
-        jMenuItemReadMe.setText(java.util.ResourceBundle.getBundle("JIF").getString("README"));
-        jMenuItemReadMe.addActionListener(new java.awt.event.ActionListener() {
+        helpMenu.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENU_HELP"));
+        helpMenu.setDelay(0);
+        helpMenu.setFont(new java.awt.Font("Dialog", 0, 11));
+        readMeMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        readMeMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("README"));
+        readMeMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemReadMeActionPerformed(evt);
+                readMeActionPerformed(evt);
             }
         });
 
-        jMenuHelp.add(jMenuItemReadMe);
+        helpMenu.add(readMeMenuItem);
 
-        About.setFont(new java.awt.Font("Dialog", 0, 11));
-        About.setText(java.util.ResourceBundle.getBundle("JIF").getString("ABOUTJIF"));
-        About.addActionListener(new java.awt.event.ActionListener() {
+        aboutMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        aboutMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("ABOUTJIF"));
+        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AboutActionPerformed(evt);
+                aboutActionPerformed(evt);
             }
         });
 
-        jMenuHelp.add(About);
+        helpMenu.add(aboutMenuItem);
 
-        jMenuBar1.add(jMenuHelp);
+        mainMenuBar.add(helpMenu);
 
-        setJMenuBar(jMenuBar1);
+        setJMenuBar(mainMenuBar);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButtonStringActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStringActionPerformed
-        Color temp = JColorChooser.showDialog(this, "Color Dialog", colorString);
-        if (temp != null) {
-            colorString = temp;
+    private void highlightSelectedComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highlightSelectedComboBoxActionPerformed
+        updateHighlights();
+    }//GEN-LAST:event_highlightSelectedComboBoxActionPerformed
+
+    private void warningColorButtonnormalColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_warningColorButtonnormalColorActionPerformed
+        Color temp = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.Warnings));
+        if (temp == null) {
+            return;
         }
-        updateColor();
-        updateColorEditor();
-    }//GEN-LAST:event_jButtonStringActionPerformed
+        optionContext.setForeground(InformSyntax.Warnings, temp);
+        updateWarningsColor();
+    }//GEN-LAST:event_warningColorButtonnormalColorActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        jDialogProjectSwitches.setVisible(false);
-    }//GEN-LAST:event_jButton5ActionPerformed
+    private void defaultLightHighlightButtondefaultLightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultLightHighlightButtondefaultLightActionPerformed
+        defaultLightHighlights();
+    }//GEN-LAST:event_defaultLightHighlightButtondefaultLightActionPerformed
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        jDialogProjectProperties.setVisible(false);
-    }//GEN-LAST:event_jButton8ActionPerformed
+    private void defaultDarkHighlightButtondefaultDarkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultDarkHighlightButtondefaultDarkActionPerformed
+        defaultDarkHighlights();
+    }//GEN-LAST:event_defaultDarkHighlightButtondefaultDarkActionPerformed
 
-    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
-        // save the current project and reload the switches
-        File file = new File(currentProject);
-        try{
-            FileOutputStream fos = new FileOutputStream(file);
-            Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
-            out.write(jTextAreaProjectProperties.getText());
-            out.flush();
-            out.close();
-            reloadProject(currentProject);
-            JOptionPane.showMessageDialog(jDialogProjectProperties,java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE1"), java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE2") , JOptionPane.INFORMATION_MESSAGE);
-        } catch(IOException e ){
-            System.out.println(e.getMessage());
+    private void jumpToColorButtonkeywordColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jumpToColorButtonkeywordColorActionPerformed
+        Color temp = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.JumpTo));
+        if (temp == null) {
+            return;
         }
-    }//GEN-LAST:event_jButton14ActionPerformed
+        optionContext.setForeground(InformSyntax.JumpTo, temp);
+        updateJumpToColor();
+    }//GEN-LAST:event_jumpToColorButtonkeywordColorActionPerformed
 
-    private void jMenuProjectSwitchesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuProjectSwitchesActionPerformed
-        jDialogProjectSwitches.pack();
-        jDialogProjectSwitches.setLocationRelativeTo(this);
-        jDialogProjectSwitches.setVisible(true);
-        jDialogProjectSwitches.setTitle("Project Switches");
-    }//GEN-LAST:event_jMenuProjectSwitchesActionPerformed
+    private void errorColorButtoncommentColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_errorColorButtoncommentColorActionPerformed
+        Color temp = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.Errors));
+        if (temp == null) {
+            return;
+        }
+        optionContext.setForeground(InformSyntax.Errors, temp);
+        updateErrorsColor();
+    }//GEN-LAST:event_errorColorButtoncommentColorActionPerformed
 
-    private void jMenuProjectPropertiesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuProjectPropertiesActionPerformed
-        // if project != null, open the jpf file for manual editing
-        if (null != currentProject && !currentProject.equals(Constants.PROJECTEMPTY)) {
-            try{
-                editProjectProperties(currentProject);
-            } catch (Exception e){
-                System.out.println(e.getMessage());
+    private void bookmarkColorButtonattributeColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bookmarkColorButtonattributeColorActionPerformed
+        Color temp = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.Bookmarks));
+        if (temp == null) {
+            return;
+        }
+        optionContext.setForeground(InformSyntax.Bookmarks, temp);
+        updateBookmarksColor();
+    }//GEN-LAST:event_bookmarkColorButtonattributeColorActionPerformed
+
+    private void bracketColorButtonbackgroundColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bracketColorButtonbackgroundColorActionPerformed
+        Color temp = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.Brackets));
+        if (temp == null) {
+            return;
+        }
+        optionContext.setForeground(InformSyntax.Brackets, temp);
+        updateBracketsColor();
+    }//GEN-LAST:event_bracketColorButtonbackgroundColorActionPerformed
+    
+    private void projectSwitchesSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectSwitchesSaveActionPerformed
+        projectSwitchesSave();
+    }//GEN-LAST:event_projectSwitchesSaveActionPerformed
+    
+    private void optionCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionCancelActionPerformed
+        optionDialog.setVisible(false);
+    }//GEN-LAST:event_optionCancelActionPerformed
+    
+    private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
+        exitJif();
+    }//GEN-LAST:event_exitForm
+    
+    private void symbolListKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_symbolListKeyPressed
+        if ((evt.getKeyCode() == KeyEvent.VK_ENTER)) {
+            try {
+                symbolInsert();
+            } catch (BadLocationException e) {
+                System.out.println("ERROR Symbol list key press: " + e.getMessage());
             }
         }
-    }//GEN-LAST:event_jMenuProjectPropertiesActionPerformed
-
-    private void jMenuItemGCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemGCActionPerformed
+        if ((evt.getKeyCode() == KeyEvent.VK_ESCAPE)) {
+            symbolDialog.setVisible(false);
+        }
+    }//GEN-LAST:event_symbolListKeyPressed
+    
+    private void symbolListMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_symbolListMouseExited
+        symbolDialog.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("STR_SYMBOLS"));
+    }//GEN-LAST:event_symbolListMouseExited
+    
+    private void symbolListMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_symbolListMouseEntered
+        symbolDialog.setTitle(java.util.ResourceBundle.getBundle("JIF").getString("JWINDOW_TOOLTIP"));
+    }//GEN-LAST:event_symbolListMouseEntered
+    
+    private void symbolListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_symbolListMouseClicked
+        if (evt.getClickCount() == 2) {
+            try {
+                symbolInsert();
+            } catch (BadLocationException e) {
+                System.out.println("ERROR Symbol list mouse double click: " + e.getMessage());
+            }
+        }
+    }//GEN-LAST:event_symbolListMouseClicked
+    
+    private void tabSizeTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tabSizeTextFieldActionPerformed
+        try {
+            optionTabSize = Integer.parseInt(tabSizeTextField.getText());
+        } catch (Exception e) {
+            optionTabSize = 4;
+        }
+    }//GEN-LAST:event_tabSizeTextFieldActionPerformed
+    
+    private void defaultLightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultLightActionPerformed
+        defaultLightColors();
+        defaultFont();
+    }//GEN-LAST:event_defaultLightActionPerformed
+    
+    private void wordColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wordColorActionPerformed
+        Color temp = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.Word));
+        if (temp == null) {
+            return;
+        }
+        optionContext.setForeground(InformSyntax.Word, temp);
+        updateWordColor();
+    }//GEN-LAST:event_wordColorActionPerformed
+    
+    private void numberColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberColorActionPerformed
+        Color temp = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.Number));
+        if (temp == null) {
+            return;
+        }
+        optionContext.setForeground(InformSyntax.Number, temp);
+        updateNumberColor();
+    }//GEN-LAST:event_numberColorActionPerformed
+    
+    private void stringColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stringColorActionPerformed
+        Color color = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.String));
+        if (color == null) {
+            return;
+        }
+        optionContext.setForeground(InformSyntax.String, color);
+        updateStringColor();
+    }//GEN-LAST:event_stringColorActionPerformed
+    
+    private void projectSwitchesCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectSwitchesCloseActionPerformed
+        projectSwitchesDialog.setVisible(false);
+    }//GEN-LAST:event_projectSwitchesCloseActionPerformed
+    
+    private void projectPropertiesCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectPropertiesCloseActionPerformed
+        projectPropertiesDialog.setVisible(false);
+    }//GEN-LAST:event_projectPropertiesCloseActionPerformed
+    
+    private void projectPropertiesSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectPropertiesSaveActionPerformed
+        projectPropertiesSave();
+    }//GEN-LAST:event_projectPropertiesSaveActionPerformed
+    
+    private void projectSwitchesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectSwitchesActionPerformed
+        projectSwitches();
+    }//GEN-LAST:event_projectSwitchesActionPerformed
+    
+    private void projectPropertiesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectPropertiesActionPerformed
+        projectProperties();
+    }//GEN-LAST:event_projectPropertiesActionPerformed
+    
+    private void garbageCollectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_garbageCollectionActionPerformed
         System.gc();
-    }//GEN-LAST:event_jMenuItemGCActionPerformed
-
-    private void jMenuItemLastProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLastProjectActionPerformed
-        if (null != ((javax.swing.JMenuItem)evt.getSource()).getText() &&
-                ((javax.swing.JMenuItem)evt.getSource()).getText().length()>0){
-            openProject(lastProject);
+    }//GEN-LAST:event_garbageCollectionActionPerformed
+    
+    private void lastProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lastProjectActionPerformed
+        if (((JMenuItem)evt.getSource()).getText() == null
+                || ((JMenuItem)evt.getSource()).getText().length() <= 0) {
+            return;
         }
-    }//GEN-LAST:event_jMenuItemLastProjectActionPerformed
-
-    private void jTextAreaOutputMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextAreaOutputMouseMoved
-        try{
+        openProject(config.getLastProject().getPath());
+    }//GEN-LAST:event_lastProjectActionPerformed
+    
+    private void outputTextAreaMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_outputTextAreaMouseMoved
+        try {
             // Rescues the correct line
-            el = jTextAreaOutput.getDocument().getDefaultRootElement();
-            int ind = el.getElementIndex(jTextAreaOutput.viewToModel(evt.getPoint()));
-            el = jTextAreaOutput.getDocument().getDefaultRootElement().getElement(ind);
-            ultima = jTextAreaOutput.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
-
-            if (ultima.startsWith(Constants.TOKENCOMMENT) || ultima.startsWith(Constants.TOKENSEARCH) ){
-
-                // In case of errors
-                if (Utils.IgnoreCaseIndexOf(ultima,"error")!=-1){
-                    hlighterOutputWarnings.removeHighlights(jTextAreaOutput);
-                    hlighterOutputErrors.removeHighlights(jTextAreaOutput);
-                    hlighterOutputErrors.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );
-                }
-                // In case of warnings
-                else{
-                    hlighterOutputErrors.removeHighlights(jTextAreaOutput);
-                    hlighterOutputWarnings.removeHighlights(jTextAreaOutput);
-                    hlighterOutputWarnings.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );
+            Element el = outputTextArea.getDocument().getDefaultRootElement();
+            int ind = el.getElementIndex(outputTextArea.viewToModel(evt.getPoint()));
+            el = outputTextArea.getDocument().getDefaultRootElement().getElement(ind);
+            String ultima = outputTextArea.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
+            
+            if (ultima.startsWith(Constants.TOKENCOMMENT) || ultima.startsWith(Constants.TOKENSEARCH) ) {
+                
+                hlighterOutputErrors.removeHighlights(outputTextArea);
+                hlighterOutputWarnings.removeHighlights(outputTextArea);
+                
+                if (Utils.IgnoreCaseIndexOf(ultima, "error") != -1) {
+                    // In case of errors
+                    hlighterOutputErrors.highlightFromTo(outputTextArea,el.getStartOffset(),el.getEndOffset() );
+                } else {
+                    // In case of warnings
+                    hlighterOutputWarnings.highlightFromTo(outputTextArea,el.getStartOffset(),el.getEndOffset() );
                 }
             }
-        } catch (BadLocationException e){
+        } catch (BadLocationException e) {
             e.printStackTrace();
         }
-    }//GEN-LAST:event_jTextAreaOutputMouseMoved
-
-    private void jTree1TreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_jTree1TreeExpanded
-        CharBuffer cb = getCurrentJIFTextPane().getCharBuffer();
-        Pattern patt;
-        Matcher m;
-        if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(category1)))){
-            patt = Pattern.compile("\n+\\s*Global\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-            m = patt.matcher(cb);
-            refreshGlobals(patt,m);
-        } else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(category2)))){
-            patt = Pattern.compile("\n+\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-            m = patt.matcher(cb);
-            refreshConstants(patt,m);
-        } else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(category4)))){
-            patt = Pattern.compile("\n+\\s*Object\\s+(->\\s+)*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-            m = patt.matcher(cb);
-            refreshObjects(patt,m);
-        } else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(category5)))){
-            patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-            m = patt.matcher(cb);
-            refreshFunctions(patt,m);
-        } else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(category7)))){
-            Vector classi_locali= new Vector();
-            patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-            m = patt.matcher(cb);
-            refreshClasses(patt,m,classi_locali);
+    }//GEN-LAST:event_outputTextAreaMouseMoved
+    
+    private void treeTreeTreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeTreeTreeExpanded
+        CharBuffer cb = getCurrentJifTextPane().getCharBuffer();
+        if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(globalTree)))) {
+            refreshGlobals(cb);
+        } else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(constantTree)))) {
+            refreshConstants(cb);
+        } else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(objectTree)))) {
+            refreshObjects(cb);
+        } else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(functionTree)))) {
+            refreshFunctions(cb);
+        } else if (evt.getPath().equals(new TreePath(treeModel.getPathToRoot(classTree)))) {
+// DEBUG
+            System.out.println("Tree expanded");
+            refreshClasses(cb);
         }
         evt = null;
         return;
-    }//GEN-LAST:event_jTree1TreeExpanded
-
-    private void jCheckBoxOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxOutputActionPerformed
-        if (!jCheckBoxOutput.getState()) {
-            jTabbedPane2.setVisible(false);
+    }//GEN-LAST:event_treeTreeTreeExpanded
+    
+    private void outputCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputCheckBoxActionPerformed
+        if (outputCheckBoxMenuItem.getState()) {
+            mainSplitPane.setBottomComponent(outputTabbedPane);
+            outputTabbedPane.setVisible(true);
+        } else {
+            outputTabbedPane.setVisible(false);
         }
-        if (jCheckBoxOutput.getState()) {
-            jSplitPane3.setBottomComponent(jTabbedPane2);
-            jTabbedPane2.setVisible(true);
+    }//GEN-LAST:event_outputCheckBoxActionPerformed
+    
+    private void translateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_translateActionPerformed
+        getCurrentJifTextPane().insertTranslate(new File(getCurrentFilename() + "_translate.txt"),
+                new File(getCurrentFilename() + "_translated.inf"));
+    }//GEN-LAST:event_translateActionPerformed
+    
+    private void extractStringsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_extractStringsActionPerformed
+        getCurrentJifTextPane().extractTranslate(new File(getCurrentFilename() + "_translate.txt"));
+    }//GEN-LAST:event_extractStringsActionPerformed
+    
+    private void findActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findActionPerformed
+        getCurrentJifTextPane().findString(this);
+    }//GEN-LAST:event_findActionPerformed
+    
+    private void searchProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchProjectActionPerformed
+        String target = searchProjectTextField.getText();
+        if (target == null || target.trim().equals("")) {
+            return;
         }
-    }//GEN-LAST:event_jCheckBoxOutputActionPerformed
-
-    private void jMenuItemTranslateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemTranslateActionPerformed
-        getCurrentJIFTextPane().InsertTranslate(new File(getCurrentFilename()+"_translate.txt"), new File(getCurrentFilename()+"_translated.inf"));
-    }//GEN-LAST:event_jMenuItemTranslateActionPerformed
-
-    private void jMenuItemExtractStringsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemExtractStringsActionPerformed
-        getCurrentJIFTextPane().ExtractTranslate(new File(getCurrentFilename()+"_translate.txt"));
-    }//GEN-LAST:event_jMenuItemExtractStringsActionPerformed
-
-    private void jButtonFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFindActionPerformed
-        getCurrentJIFTextPane().findString(this);
-    }//GEN-LAST:event_jButtonFindActionPerformed
-
-    private void jButtonSearchProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSearchProjectActionPerformed
-        String target = this.jTextFieldFindAll.getText();
-        if(null!=target && !target.trim().equals("")){
-            // if output window is hide, I'll show it
-            if (!jCheckBoxOutput.getState()){
-                jSplitPane3.setBottomComponent(jTabbedPane2);
-                jTabbedPane2.setVisible(true);
-            }
-            this.searchAllFiles(target);
+        // if output window is hide, I'll show it
+        if (!outputCheckBoxMenuItem.getState()) {
+            mainSplitPane.setBottomComponent(outputTabbedPane);
+            outputTabbedPane.setVisible(true);
         }
-    }//GEN-LAST:event_jButtonSearchProjectActionPerformed
-
-    private void jButtonDefinitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDefinitionActionPerformed
-        if (!jTextFieldDefinition.getText().equals("")){
-            checkTree(jTextFieldDefinition.getText());
+        searchAllFiles(target);
+    }//GEN-LAST:event_searchProjectActionPerformed
+    
+    private void definitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_definitionActionPerformed
+        String target = definitionTextField.getText();
+        if (target == null || target.trim().equals("")) {
+            return;
         }
-    }//GEN-LAST:event_jButtonDefinitionActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        jDialogReplace.setVisible(false);
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButtonReplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReplaceActionPerformed
-        if (getCurrentJIFTextPane().getSelectedText()!= null){
-            jTextFieldReplaceFind.setText(getCurrentJIFTextPane().getSelectedText());
+        checkTree(target);
+    }//GEN-LAST:event_definitionActionPerformed
+    
+    private void replaceCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_replaceCloseActionPerformed
+        replaceDialog.setVisible(false);
+    }//GEN-LAST:event_replaceCloseActionPerformed
+    
+    private void replaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_replaceActionPerformed
+        if (getCurrentJifTextPane().getSelectedText()!= null) {
+            replaceFindTextField.setText(getCurrentJifTextPane().getSelectedText());
         }
-        getCurrentJIFTextPane().requestFocus();
-        getCurrentJIFTextPane().setCaretPosition(0);
-        jDialogReplace.pack();
-        jDialogReplace.setLocationRelativeTo(this);
-        jDialogReplace.setVisible(true);
-    }//GEN-LAST:event_jButtonReplaceActionPerformed
-
-    private void jMenuItemSearchAllFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSearchAllFilesActionPerformed
+        getCurrentJifTextPane().requestFocus();
+        getCurrentJifTextPane().setCaretPosition(0);
+        replaceDialog.pack();
+        replaceDialog.setLocationRelativeTo(this);
+        replaceDialog.setVisible(true);
+    }//GEN-LAST:event_replaceActionPerformed
+    
+    private void searchAllctionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchAllctionPerformed
         // se è presente una stringa uso quella altrimenti la prendo da quella selezionata
         // No: vince quella selezionata
         String target = null;
-        if (null != jTextFieldFindAll.getText() &&
-            null != getCurrentJIFTextPane().getSelectedText()){
-            target = getCurrentJIFTextPane().getSelectedText();
+        if (searchProjectTextField.getText() != null &&
+                getCurrentJifTextPane().getSelectedText() != null) {
+            target = getCurrentJifTextPane().getSelectedText();
         }
-
-        if (null == target ){
-            target = jTextFieldFindAll.getText();
+        
+        if (target == null) {
+            target = searchProjectTextField.getText();
         }
-
-        if (null==target || target.trim().equals("")){
-            target = getCurrentJIFTextPane().getSelectedText();
+        
+        if (target == null || target.trim().equals("")) {
+            target = getCurrentJifTextPane().getSelectedText();
         }
-        if (null!=target && !target.trim().equals("")){
+        
+        if (target != null && !target.trim().equals("")) {
             // if output window is hide, I'll show it
-            if (!jCheckBoxOutput.getState()){
-                jSplitPane3.setBottomComponent(jTabbedPane2);
-                jTabbedPane2.setVisible(true);
+            if (!outputCheckBoxMenuItem.getState()) {
+                mainSplitPane.setBottomComponent(outputTabbedPane);
+                outputTabbedPane.setVisible(true);
             }
             searchAllFiles(target);
         }
-    }//GEN-LAST:event_jMenuItemSearchAllFilesActionPerformed
-
-    private void jMenuItemSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSearchActionPerformed
-        String selezione = getCurrentJIFTextPane().getSelectedText();
-        String box = jTextFieldFind.getText();
+    }//GEN-LAST:event_searchAllctionPerformed
+    
+    private void searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchActionPerformed
+        String selezione = getCurrentJifTextPane().getSelectedText();
+        String box = findTextField.getText();
         String target = null;
         // vince la box
-        if (box != null && !box.equals("")){
+        if (box != null && !box.equals("")) {
             target = box;
-        }
-        else{
+        } else {
             target = selezione;
         }
         
-        if (getCurrentJIFTextPane().isFocusOwner() && selezione != null) {
+        if (getCurrentJifTextPane().isFocusOwner() && selezione != null) {
             target = selezione;
-        } 
+        }
         
-        jTextFieldFind.setText(target);
-        getCurrentJIFTextPane().findString(this);
-    }//GEN-LAST:event_jMenuItemSearchActionPerformed
-
-    private void jCheckBoxNumberLinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxNumberLinesActionPerformed
-        if (jCheckBoxNumberLines.isSelected()){
-            jCheckBoxWrapLines.setSelected(false);
+        findTextField.setText(target);
+        getCurrentJifTextPane().findString(this);
+    }//GEN-LAST:event_searchActionPerformed
+    
+    private void numberLinesCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberLinesCheckBoxActionPerformed
+        if (numberLinesCheckBox.isSelected()) {
+            wrapLinesCheckBox.setSelected(false);
         }
-    }//GEN-LAST:event_jCheckBoxNumberLinesActionPerformed
-
-    private void jMenuItemCut1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCut1ActionPerformed
-        getCurrentJIFTextPane().cut();
-    }//GEN-LAST:event_jMenuItemCut1ActionPerformed
-
-    private void jCheckBoxWrapLinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxWrapLinesActionPerformed
-        if (jCheckBoxWrapLines.isSelected()){
-            jCheckBoxNumberLines.setSelected(false);
+    }//GEN-LAST:event_numberLinesCheckBoxActionPerformed
+    
+    private void cutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cutActionPerformed
+        getCurrentJifTextPane().cut();
+    }//GEN-LAST:event_cutActionPerformed
+    
+    private void wrapLinesCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wrapLinesCheckBoxActionPerformed
+        if (wrapLinesCheckBox.isSelected()) {
+            numberLinesCheckBox.setSelected(false);
         }
-    }//GEN-LAST:event_jCheckBoxWrapLinesActionPerformed
-
-    private void jMenuItemLeftShiftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLeftShiftActionPerformed
-        if (null != getCurrentJIFTextPane()){
-            getCurrentJIFTextPane().removeTabSelection();
-        }
-    }//GEN-LAST:event_jMenuItemLeftShiftActionPerformed
-
-    private void jMenuItemRightShiftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRightShiftActionPerformed
-        if (null != getCurrentJIFTextPane()){
-            getCurrentJIFTextPane().tabSelection();
-        }
-    }//GEN-LAST:event_jMenuItemRightShiftActionPerformed
-
-    private void jCheckBoxToggleFullscreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxToggleFullscreenActionPerformed
-        if (!jCheckBoxToggleFullscreen.getState()) {
-            jCheckBoxOutput.setSelected(true);
-            jCheckBoxJToolBar.setSelected(true);
-            jCheckBoxJTree.setSelected(true);
-        } else{
-            jCheckBoxOutput.setSelected(false);
-            jCheckBoxJToolBar.setSelected(false);
-            jCheckBoxJTree.setSelected(false);
-        }
-        jCheckBoxOutputActionPerformed(evt);
-        jCheckBoxJToolBarActionPerformed(evt);
-        jCheckBoxJTreeActionPerformed(evt);
-    }//GEN-LAST:event_jCheckBoxToggleFullscreenActionPerformed
-
-    private void jMenuItemNextBookmarkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNextBookmarkActionPerformed
-        if (null != getCurrentJIFTextPane()){
-            getCurrentJIFTextPane().nextBookmark();
-        }
-    }//GEN-LAST:event_jMenuItemNextBookmarkActionPerformed
-
-    private void jMenuItemSetBookmarkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSetBookmarkActionPerformed
-        if (null != getCurrentJIFTextPane()){
-            getCurrentJIFTextPane().setBookmark();
-        }
-    }//GEN-LAST:event_jMenuItemSetBookmarkActionPerformed
-
-    private void jButtonLibraryPath3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLibraryPath3ActionPerformed
-        JFileChooser chooser = new JFileChooser(workingDir);
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int_var = chooser.showOpenDialog(this);
-        if(int_var == JFileChooser.CANCEL_OPTION) {
-            return;
+    }//GEN-LAST:event_wrapLinesCheckBoxActionPerformed
+    
+    private void toggleFullscreenCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleFullscreenCheckBoxActionPerformed
+        if (toggleFullscreenCheckBoxMenuItem.getState()) {
+            toolbarCheckBoxMenuItem.setSelected(false);
+            treeCheckBoxMenuItem.setSelected(false);
+            outputCheckBoxMenuItem.setSelected(false);
         } else {
-            jTextFieldPathLibSecondary3.setText(chooser.getSelectedFile().getAbsolutePath());
-            setLibrarypathsecondary3(chooser.getSelectedFile().getAbsolutePath());
+            toolbarCheckBoxMenuItem.setSelected(true);
+            treeCheckBoxMenuItem.setSelected(true);
+            outputCheckBoxMenuItem.setSelected(true);
         }
-    }//GEN-LAST:event_jButtonLibraryPath3ActionPerformed
-
-    private void jButtonLibraryPath2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLibraryPath2ActionPerformed
-        JFileChooser chooser = new JFileChooser(workingDir);
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int_var = chooser.showOpenDialog(this);
-        if(int_var == JFileChooser.CANCEL_OPTION) {
+        outputCheckBoxActionPerformed(evt);
+        toolbarCheckBoxActionPerformed(evt);
+        treeCheckBoxActionPerformed(evt);
+    }//GEN-LAST:event_toggleFullscreenCheckBoxActionPerformed
+    
+    private void nextBookmarkMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextBookmarkMenuItemActionPerformed
+        if (getCurrentJifTextPane() == null) {
             return;
-        } else {
-            jTextFieldPathLibSecondary2.setText(chooser.getSelectedFile().getAbsolutePath());
-            setLibrarypathsecondary2(chooser.getSelectedFile().getAbsolutePath());
         }
-    }//GEN-LAST:event_jButtonLibraryPath2ActionPerformed
-
-    private void jMenuItemJumpToSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemJumpToSourceActionPerformed
-        try{
-            checkTree(getCurrentJIFTextPane().getCurrentWord());
-        } catch (BadLocationException ble){
-            System.out.println(ble);
+        getCurrentJifTextPane().nextBookmark();
+    }//GEN-LAST:event_nextBookmarkMenuItemActionPerformed
+    
+    private void setBookmarkMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setBookmarkMenuItemActionPerformed
+        if (getCurrentJifTextPane() == null) {
+            return;
         }
-    }//GEN-LAST:event_jMenuItemJumpToSourceActionPerformed
-
-    private void jTree1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseEntered
+        getCurrentJifTextPane().setBookmark();
+    }//GEN-LAST:event_setBookmarkMenuItemActionPerformed
+    
+    private void libraryPath3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_libraryPath3ActionPerformed
+        JFileChooser chooser = new JFileChooser(config.getWorkingDirectory());
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
+            return;
+        }
+        libraryPath3TextField.setText(chooser.getSelectedFile().getAbsolutePath());
+        config.setLibraryPath3(chooser.getSelectedFile().getAbsolutePath());
+    }//GEN-LAST:event_libraryPath3ActionPerformed
+    
+    private void libraryPath2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_libraryPath2ActionPerformed
+        JFileChooser chooser = new JFileChooser(config.getWorkingDirectory());
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
+            return;
+        }
+        libraryPath2TextField.setText(chooser.getSelectedFile().getAbsolutePath());
+        config.setLibraryPath2(chooser.getSelectedFile().getAbsolutePath());
+    }//GEN-LAST:event_libraryPath2ActionPerformed
+    
+    private void jumpToSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jumpToSourceActionPerformed
+        try {
+            String target = getCurrentJifTextPane().getCurrentWord();
+            if (target == null || target.trim().equals("")) {
+                return;
+            }
+            checkTree(target);
+        } catch (BadLocationException ble) {
+            System.out.println("ERROR Jump to source: " + ble.getMessage());
+        }
+    }//GEN-LAST:event_jumpToSourceActionPerformed
+    
+    private void treeTreeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_treeTreeMouseEntered
         refreshTreeIncremental();
-    }//GEN-LAST:event_jTree1MouseEntered
-
-    private void jButtonDefaultDarkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDefaultDarkActionPerformed
-        // Dark settings
-        colorKeyword = new Color(51,102,255);
-        colorAttribute = new Color(204,0,51);
-        colorProperty = new Color(204,204,204);
-        colorVerb = new Color(102,204,0);
-        colorNormal = new Color(102,102,0);
-        colorComment = new Color(153,153,153);
-        colorBackground = new Color(0,0,0);
-        colorString = new Color(153,102,0);                
-        updateColor();
-        updateColorEditor();
-    }//GEN-LAST:event_jButtonDefaultDarkActionPerformed
-
+    }//GEN-LAST:event_treeTreeMouseEntered
+    
+    private void defaultDarkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultDarkActionPerformed
+        defaultDarkColors();
+        defaultFont();
+    }//GEN-LAST:event_defaultDarkActionPerformed
+    
     private void jButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonMouseExited
         ((JButton)evt.getSource()).setBorderPainted(false);
     }//GEN-LAST:event_jButtonMouseExited
-
+    
     private void jButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonMouseEntered
         ((JButton)evt.getSource()).setBorderPainted(true);
     }//GEN-LAST:event_jButtonMouseEntered
-
-    private void SaveButtonAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveButtonAllActionPerformed
+    
+    private void saveAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAllActionPerformed
+        clearOutput();
         saveAll();
-        saveProject(false);
-    }//GEN-LAST:event_SaveButtonAllActionPerformed
-
-    private void jMenuItemRemoveMainClassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRemoveMainClassActionPerformed
-        // Removes the Main file
-        mainFile = null;
-        JOptionPane.showMessageDialog(this,"Removing Main file","Main file", JOptionPane.INFORMATION_MESSAGE);
-        jLabelMainFile.setText("Main: ");
-    }//GEN-LAST:event_jMenuItemRemoveMainClassActionPerformed
-
-    private void jMenuItemSetMainClassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSetMainClassActionPerformed
-        FileProject fp = (FileProject)jListProject.getSelectedValue();
-        if (null==fp) return;
-        if ( (fp.path.indexOf(".inf")!=-1) || (fp.path.indexOf(".INF")!=-1)){
-            mainFile = fp.path;
-            jLabelMainFile.setText("Main: "+fp.name);
-        }
-    }//GEN-LAST:event_jMenuItemSetMainClassActionPerformed
-
-    private void jMenuItemBuildAllGlulxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBuildAllGlulxActionPerformed
+        saveProject();
+    }//GEN-LAST:event_saveAllActionPerformed
+    
+    private void removeMainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeMainActionPerformed
+        clearMainForProject();
+    }//GEN-LAST:event_removeMainActionPerformed
+    
+    private void setMainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setMainActionPerformed
+        setMainForProject();
+    }//GEN-LAST:event_setMainActionPerformed
+    
+    private void buildAllGlulxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buildAllGlulxActionPerformed
+        clearOutput();
         saveAll();
-        if (jCheckBoxMakeResource.isSelected()){
+        if (makeResourceCheckBox.isSelected()) {
             makeResources();    // make resources
         }
         rebuildAll();           // Compile ULX file
         makeBlb();              // Make BLB file
-    }//GEN-LAST:event_jMenuItemBuildAllGlulxActionPerformed
-
-    private void jMenuItemRunBlbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRunBlbActionPerformed
+    }//GEN-LAST:event_buildAllGlulxActionPerformed
+    
+    private void runBlbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runBlbActionPerformed
+        clearOutput();
         saveFile();
         runBlb();
-    }//GEN-LAST:event_jMenuItemRunBlbActionPerformed
-
-    private void jMenuItemRunUlxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRunUlxActionPerformed
+    }//GEN-LAST:event_runBlbActionPerformed
+    
+    private void runUlxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runUlxActionPerformed
+        clearOutput();
         saveFile();
         runAdventure();
-    }//GEN-LAST:event_jMenuItemRunUlxActionPerformed
-
-    private void jMenuItemCompileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCompileActionPerformed
+    }//GEN-LAST:event_runUlxActionPerformed
+    
+    private void compileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compileActionPerformed
+        clearOutput();
         saveAll();
         rebuildAll();
-    }//GEN-LAST:event_jMenuItemCompileActionPerformed
-
-    private void jMenuItemMakeBlbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMakeBlbActionPerformed
+    }//GEN-LAST:event_compileActionPerformed
+    
+    private void makeBlbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_makeBlbActionPerformed
         makeBlb();
-    }//GEN-LAST:event_jMenuItemMakeBlbActionPerformed
-
-    private void jMenuItemMakeResourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMakeResourceActionPerformed
-        // make the resource file and visualize the log in the output window
+    }//GEN-LAST:event_makeBlbActionPerformed
+    
+    private void makeResourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_makeResourceActionPerformed
+        // Make the resource file and visualize the log in the output window
         makeResources();
-    }//GEN-LAST:event_jMenuItemMakeResourceActionPerformed
-
-    private void jButtonBlcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBlcActionPerformed
-        JFileChooser chooser = new JFileChooser(workingDir);
-        int_var = chooser.showOpenDialog(this);
-        if(int_var == JFileChooser.CANCEL_OPTION) {
+    }//GEN-LAST:event_makeResourceActionPerformed
+    
+    private void blcPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_blcPathActionPerformed
+        JFileChooser chooser = new JFileChooser(config.getWorkingDirectory());
+        if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
             return;
-        } else {
-            jTextFieldBlc.setText(chooser.getSelectedFile().getAbsolutePath());
-            setBlcpath(chooser.getSelectedFile().getAbsolutePath());
         }
-    }//GEN-LAST:event_jButtonBlcActionPerformed
-
-    private void jButtonBresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBresActionPerformed
-        JFileChooser chooser = new JFileChooser(workingDir);
-        int_var = chooser.showOpenDialog(this);
-        if(int_var == JFileChooser.CANCEL_OPTION) {
+        blcPathTextField.setText(chooser.getSelectedFile().getAbsolutePath());
+    }//GEN-LAST:event_blcPathActionPerformed
+    
+    private void bresPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bresPathActionPerformed
+        JFileChooser chooser = new JFileChooser(config.getWorkingDirectory());
+        if(chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
             return;
-        } else {
-            jTextFieldBres.setText(chooser.getSelectedFile().getAbsolutePath());
-            setBrespath(chooser.getSelectedFile().getAbsolutePath());
         }
-    }//GEN-LAST:event_jButtonBresActionPerformed
-
-    private void jButtonGlulxPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGlulxPathActionPerformed
-        JFileChooser chooser = new JFileChooser(workingDir);
-        int_var = chooser.showOpenDialog(this);
-        if(int_var == JFileChooser.CANCEL_OPTION) {
+        bresPathTextField.setText(chooser.getSelectedFile().getAbsolutePath());
+    }//GEN-LAST:event_bresPathActionPerformed
+    
+    private void glulxPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_glulxPathActionPerformed
+        JFileChooser chooser = new JFileChooser(config.getWorkingDirectory());
+        if(chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
             return;
-        } else {
-            jTextFieldPathGlulx.setText(chooser.getSelectedFile().getAbsolutePath());
-            setInterpreterglulxpath(chooser.getSelectedFile().getAbsolutePath());
         }
-    }//GEN-LAST:event_jButtonGlulxPathActionPerformed
-
-    private void jCheckBoxInformModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxInformModeActionPerformed
-        if (jCheckBoxInformMode.getState()){
+        glulxPathTextField.setText(chooser.getSelectedFile().getAbsolutePath());
+    }//GEN-LAST:event_glulxPathActionPerformed
+    
+    private void informModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_informModeActionPerformed
+        if (informModeCheckBoxMenuItem.getState()) {
             setInformMode();
-            jCheckBoxGlulxMode.setState(false);
-            jCheckBoxInformMode.setState(true);
-            setJifVersion("Jif "+ Constants.JIFVERSION + "     Inform Mode");
-            refreshTree();
-        }
-    }//GEN-LAST:event_jCheckBoxInformModeActionPerformed
-
-    private void jCheckBoxGlulxModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxGlulxModeActionPerformed
-        if (jCheckBoxGlulxMode.getState()){
+        } else {
             setGlulxMode();
-            jCheckBoxInformMode.setState(false);
-            jCheckBoxGlulxMode.setState(true);
-            setJifVersion("Jif "+ Constants.JIFVERSION + "     Glux Mode");
-            refreshTree();
         }
-    }//GEN-LAST:event_jCheckBoxGlulxModeActionPerformed
-
-    private void jButtonLibraryPath1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLibraryPath1ActionPerformed
-        JFileChooser chooser = new JFileChooser(workingDir);
+        if (project.getFile() == null) {
+            config.setInformMode(informModeCheckBoxMenuItem.getState());
+        } else {
+            project.setInformMode(informModeCheckBoxMenuItem.getState());
+        }
+        refreshTitle();
+    }//GEN-LAST:event_informModeActionPerformed
+    
+    private void glulxModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_glulxModeActionPerformed
+        if (glulxModeCheckBoxMenuItem.getState()) {
+            setGlulxMode();
+        } else {
+            setInformMode();
+        }
+        if (project.getFile() == null) {
+            config.setInformMode(informModeCheckBoxMenuItem.getState());
+        } else {
+            project.setInformMode(informModeCheckBoxMenuItem.getState());
+        }
+        refreshTitle();
+    }//GEN-LAST:event_glulxModeActionPerformed
+    
+    private void libraryPath1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_libraryPath1ActionPerformed
+        JFileChooser chooser = new JFileChooser(config.getWorkingDirectory());
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int_var = chooser.showOpenDialog(this);
-        if(int_var == JFileChooser.CANCEL_OPTION) {
+        if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
             return;
+        }
+        libraryPath1TextField.setText(chooser.getSelectedFile().getAbsolutePath());
+    }//GEN-LAST:event_libraryPath1ActionPerformed
+    
+    private void bracketCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bracketCheckActionPerformed
+        if (getCurrentJifTextPane() == null) {
+            return;
+        }
+        getCurrentJifTextPane().checkBrackets(this);
+    }//GEN-LAST:event_bracketCheckActionPerformed
+    
+    private void treeCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_treeCheckBoxActionPerformed
+        if (treeCheckBoxMenuItem.getState()) {
+            upperSplitPane.setDividerLocation(180);
         } else {
-            jTextFieldPathLibSecondary1.setText(chooser.getSelectedFile().getAbsolutePath());
-            setLibrarypathsecondary1(chooser.getSelectedFile().getAbsolutePath());
+            upperSplitPane.setDividerLocation(0);
         }
-    }//GEN-LAST:event_jButtonLibraryPath1ActionPerformed
-
-    private void jMenuItemPopupCloseAllFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupCloseAllFilesActionPerformed
-        closeAllFiles();
-    }//GEN-LAST:event_jMenuItemPopupCloseAllFilesActionPerformed
-
-    private void jButtonBracketCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBracketCheckActionPerformed
-        getCurrentJIFTextPane().checkBrackets(this);
-    }//GEN-LAST:event_jButtonBracketCheckActionPerformed
-
-    private void jCheckBoxJTreeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxJTreeActionPerformed
-        if (!jCheckBoxJTree.getState()) jSplitPane1.setDividerLocation(0);
-        if (jCheckBoxJTree.getState()) jSplitPane1.setDividerLocation(180);
-    }//GEN-LAST:event_jCheckBoxJTreeActionPerformed
-
-    private void jButtonBackgroundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackgroundActionPerformed
-        Color temp = JColorChooser.showDialog(this, "Color Dialog", colorBackground);
-        if (temp != null) colorBackground= temp;
-        updateColor();
-        updateColorEditor();
-    }//GEN-LAST:event_jButtonBackgroundActionPerformed
-
-    private void jMenuItemAddNewToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAddNewToProjectActionPerformed
-        // Creates a new file and append this to the project
-        if (null == currentProject || currentProject.equals(Constants.PROJECTEMPTY)) {
+    }//GEN-LAST:event_treeCheckBoxActionPerformed
+    
+    private void backgroundColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backgroundColorActionPerformed
+        Color temp = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getBackground());
+        if (temp == null) {
             return;
-        }                
-        newAdventure();
-        String dir = currentProject.substring(0,currentProject.lastIndexOf(Constants.SEP));
-        saveAs(dir);
-        projectFiles.add(new FileProject(jFrame.getCurrentFilename()));
-        jListProject.removeAll();
-        // Sorting the vector
-        Collections.sort(projectFiles,new Comparator(){
-            public int compare(Object a, Object b) {
-                String id1 = ((FileProject)a).toString();
-                String id2 = ((FileProject)b).toString();
-                return (id1).compareToIgnoreCase(id2) ;
-            }
-        });
-        jListProject.setListData(projectFiles);
-        // Update and save the project
-        saveProject(false);
-    }//GEN-LAST:event_jMenuItemAddNewToProjectActionPerformed
-
-    private void jMenuItemPopupAddNewToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupAddNewToProjectActionPerformed
-        // Creates a new file and append this to the project
-        if (null == currentProject || currentProject.equals(Constants.PROJECTEMPTY)) {
+        }
+        optionContext.setBackground(temp);
+        updateBackgroundColor();
+        
+    }//GEN-LAST:event_backgroundColorActionPerformed
+    
+    private void addNewToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addNewToProjectActionPerformed
+        if (project.getFile() == null) {
             return;
-        }                
+        }
+        // Creates a new file and append this to the project
         newAdventure();
-        String dir = currentProject.substring(0,currentProject.lastIndexOf(Constants.SEP));
+        String dir = project.getFile().getDirectory();
         saveAs(dir);
-        projectFiles.add(new FileProject(jFrame.getCurrentFilename()));
-        jListProject.removeAll();
-        // Sorting the vector
-        Collections.sort(projectFiles,new Comparator(){
-            public int compare(Object a, Object b) {
-                String id1 = ((FileProject)a).toString();
-                String id2 = ((FileProject)b).toString();
-                return (id1).compareToIgnoreCase(id2) ;
-            }
-        });
-        jListProject.setListData(projectFiles);
-    }//GEN-LAST:event_jMenuItemPopupAddNewToProjectActionPerformed
-
-    private void jButtonLeftTabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLeftTabActionPerformed
-        if (null != getCurrentJIFTextPane()){
-            getCurrentJIFTextPane().removeTabSelection();
+        project.addFile(getCurrentFilename());
+        saveProject();
+    }//GEN-LAST:event_addNewToProjectActionPerformed
+    
+    private void tabLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tabLeftActionPerformed
+        if (getCurrentJifTextPane() == null) {
+            return;
         }
-    }//GEN-LAST:event_jButtonLeftTabActionPerformed
-
-    private void jButtonRightTabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRightTabActionPerformed
-        if (null != getCurrentJIFTextPane()){
-            getCurrentJIFTextPane().tabSelection();
+        ((Action)(getCurrentJifTextPane().getActionMap().get(JifEditorKit.tabLeftAction))).actionPerformed(evt);
+    }//GEN-LAST:event_tabLeftActionPerformed
+    
+    private void tabRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tabRightActionPerformed
+        if (getCurrentJifTextPane() == null) {
+            return;
         }
-    }//GEN-LAST:event_jButtonRightTabActionPerformed
-
-    private void jButtonPrintTutorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPrintTutorialActionPerformed
-        new Utils().printInform(this,"Jif - "+jDialogTutorial.getTitle(), jEditorPaneTutorial);
-    }//GEN-LAST:event_jButtonPrintTutorialActionPerformed
-
-    private void jButtonRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRedoActionPerformed
-        if (getCurrentJIFTextPane()!=null)
-            ((Action)(getCurrentJIFTextPane().getActionMap().get("Redo"))).actionPerformed(evt);
-    }//GEN-LAST:event_jButtonRedoActionPerformed
-
-    private void jButtonUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUndoActionPerformed
-        if (getCurrentJIFTextPane()!=null)
-            ((Action)(getCurrentJIFTextPane().getActionMap().get("Undo"))).actionPerformed(evt);
-    }//GEN-LAST:event_jButtonUndoActionPerformed
-
-    private void jButtonOptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionActionPerformed
-        jTextFieldPathLib.setText(getLibrarypath());
-        jTextFieldPathLibSecondary1.setText(getLibrarypathsecondary1());
-        jTextFieldPathLibSecondary2.setText(getLibrarypathsecondary2());
-        jTextFieldPathLibSecondary3.setText(getLibrarypathsecondary3());
-        jTextFieldPathGames.setText(getCompiledpath());
-        jTextFieldPathCompiler.setText(getCompilerpath());
-        jTextFieldPathInterpreter.setText(getInterpreterzcodepath());
-        jTextFieldPathGlulx.setText(getInterpreterglulxpath());
-        jTextFieldBres.setText(getBrespath());
-        jTextFieldBlc.setText(getBlcpath());
-
-        // set the colors
-        updateColor();
-        updateColorEditor();
-        Font tmpFont = defaultFont;
-        jComboBoxFont.setSelectedItem(tmpFont.getName());
-        jComboBoxFontSize.setSelectedItem(String.valueOf(tmpFont.getSize()));
-
-        jDialogOption.pack();
-        //jDialogOption.setSize(600,560);
-        //jDialogOption.setSize(580,540);
-        jDialogOption.setLocationRelativeTo(this);
-        jDialogOption.setVisible(true);
-    }//GEN-LAST:event_jButtonOptionActionPerformed
-
-    private void jButton24ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton24ActionPerformed
-        jDialogTutorial.setVisible(false);
-    }//GEN-LAST:event_jButton24ActionPerformed
-
-    private void jComboBoxFontSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxFontSizeActionPerformed
-        defaultFont = new Font((String)jComboBoxFont.getSelectedItem(),Font.PLAIN,Integer.parseInt((String)jComboBoxFontSize.getSelectedItem()));
-        updateColor();
-        updateColorEditor();
-    }//GEN-LAST:event_jComboBoxFontSizeActionPerformed
-
-    private void jComboBoxFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxFontActionPerformed
-        defaultFont = new Font((String)jComboBoxFont.getSelectedItem(),Font.PLAIN,Integer.parseInt((String)jComboBoxFontSize.getSelectedItem()));
-        updateColor();
-        updateColorEditor();
-    }//GEN-LAST:event_jComboBoxFontActionPerformed
-
-    private void jButton23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton23ActionPerformed
-        unquote();
-        // Updates colors
-        colorKeyword = new Color(29,59,150);
-        colorAttribute = new Color(153,0,153);
-        colorProperty = new Color(37,158,33);
-        colorVerb = new Color(0,153,153);
-        colorNormal = new Color(0,0,0);
-        colorComment = new Color(153,153,153);
-        colorBackground = new Color(255,255,255);
-        colorString = new Color(153,102,0);
-        updateColor();
-        updateColorEditor();
-        jComboBoxFont.setSelectedItem("Courier New");
-        jComboBoxFontSize.setSelectedItem("12");
-        jTextFieldTabSize.setText("4");
+        ((Action)(getCurrentJifTextPane().getActionMap().get(JifEditorKit.tabRightAction))).actionPerformed(evt);
+    }//GEN-LAST:event_tabRightActionPerformed
+    
+    private void tutorialPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tutorialPrintActionPerformed
+        new Utils().printInform(this,
+                "Jif - " + tutorialDialog.getTitle(),
+                tutorialEditorPane);
+    }//GEN-LAST:event_tutorialPrintActionPerformed
+    
+    private void redoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_redoActionPerformed
+        if (getCurrentJifTextPane() == null) {
+            return;
+        }
+        ((Action)(getCurrentJifTextPane().getActionMap().get("Redo"))).actionPerformed(evt);
+    }//GEN-LAST:event_redoActionPerformed
+    
+    private void undoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoActionPerformed
+        if (getCurrentJifTextPane() == null) {
+            return;
+        }
+        ((Action)(getCurrentJifTextPane().getActionMap().get("Undo"))).actionPerformed(evt);
+    }//GEN-LAST:event_undoActionPerformed
+    
+    private void settingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsActionPerformed
+        options();
+    }//GEN-LAST:event_settingsActionPerformed
+    
+    private void tutorialOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tutorialOKActionPerformed
+        tutorialDialog.setVisible(false);
+    }//GEN-LAST:event_tutorialOKActionPerformed
+    
+    private void fontSizeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fontSizeComboBoxActionPerformed
+        optionContext.setFontSize(Integer.parseInt((String)fontSizeComboBox.getSelectedItem()));
+    }//GEN-LAST:event_fontSizeComboBoxActionPerformed
+    
+    private void fontNameComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fontNameComboBoxActionPerformed
+        optionContext.setFontName((String)fontNameComboBox.getSelectedItem());
+    }//GEN-LAST:event_fontNameComboBoxActionPerformed
+    
+    private void optionDefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionDefaultActionPerformed
         defaultOptions();
-        this.jDialogOption.setVisible(false);
-    }//GEN-LAST:event_jButton23ActionPerformed
-
-    private void jButtonCommentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCommentActionPerformed
-        Color temp = JColorChooser.showDialog(this, "Color Dialog", colorComment);
-        if (temp != null) {
-            colorComment= temp;
-        }
-        updateColor();
-        updateColorEditor();
-    }//GEN-LAST:event_jButtonCommentActionPerformed
-
-    private void jButtonNormalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNormalActionPerformed
-        Color temp = JColorChooser.showDialog(this, "Color Dialog", colorNormal );
-        if (temp != null) {
-            colorNormal = temp;
-        }
-        updateColor();
-        updateColorEditor();
-    }//GEN-LAST:event_jButtonNormalActionPerformed
-
-    private void jButtonVerbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVerbActionPerformed
-        Color temp = JColorChooser.showDialog(this, "Color Dialog", colorVerb  );
-        if (temp != null) {
-            colorVerb  = temp;
-        }
-        updateColor();
-        updateColorEditor();
-    }//GEN-LAST:event_jButtonVerbActionPerformed
-
-    private void jButtonPropertyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPropertyActionPerformed
-        Color temp = JColorChooser.showDialog(this, "Color Dialog", colorProperty    );
-        if (temp != null) {
-            colorProperty    = temp;
-        }
-        updateColor();
-        updateColorEditor();
-    }//GEN-LAST:event_jButtonPropertyActionPerformed
-
-    private void jButtonAttributeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAttributeActionPerformed
-        Color temp = JColorChooser.showDialog(this, "Color Dialog", colorAttribute    );
-        if (temp != null) {
-            colorAttribute    = temp;
-        }
-        updateColor();
-        updateColorEditor();
-    }//GEN-LAST:event_jButtonAttributeActionPerformed
-
-    private void jButtonKeywordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonKeywordActionPerformed
-        Color temp = JColorChooser.showDialog(this, "Color Dialog", colorKeyword);
-        if (temp != null) {
-            colorKeyword = temp;
-        }
-        updateColor();
-        updateColorEditor();
-    }//GEN-LAST:event_jButtonKeywordActionPerformed
-
-    private void jButtonSwitchManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSwitchManagerActionPerformed
-        // if a project exists, Jif will launch the project properties dialog
-        if (currentProject == null || currentProject.equals(Constants.PROJECTEMPTY)){
-            jDialogSwitches.pack();
-            jDialogSwitches.setLocationRelativeTo(this);
-            jDialogSwitches.setVisible(true);
-        } else{
-            jDialogProjectSwitches.pack();
-            jDialogProjectSwitches.setLocationRelativeTo(this);
-            jDialogProjectSwitches.setVisible(true);
-            jDialogProjectSwitches.setTitle("Project Switches");
-        }
-    }//GEN-LAST:event_jButtonSwitchManagerActionPerformed
-
-    private void jMenuItemPopupOpenSelectedFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupOpenSelectedFilesActionPerformed
-        Object[] oggetti = jListProject.getSelectedValues();
-        if (oggetti.length == 0) return;
-        for (int_var=0; int_var < oggetti.length ;int_var++){
-            if (null != oggetti[int_var]){
-                openFile( ((FileProject)oggetti[int_var]).path);
-            }
-        }
-    }//GEN-LAST:event_jMenuItemPopupOpenSelectedFilesActionPerformed
-
-    private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
-        saveConfigNew();
-    }//GEN-LAST:event_jButton15ActionPerformed
-
-    private void jListProjectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListProjectMouseEntered
-        // Just One click: shows the tooltip
-        FileProject fp = (FileProject)jListProject.getSelectedValue();
-        if (null!=fp){
-            jListProject.setToolTipText(fp.path);
-        } else {
-            jListProject.setToolTipText(null);
-        }
-    }//GEN-LAST:event_jListProjectMouseEntered
-
-    private void jButtonInterpreterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInterpreterActionPerformed
-        runInterpreter();
-    }//GEN-LAST:event_jButtonInterpreterActionPerformed
-
-    private void jButton21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton21ActionPerformed
-        jDialogInfo.setVisible(false);
-    }//GEN-LAST:event_jButton21ActionPerformed
-
-    private void jMenuItemPopupCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupCloseActionPerformed
-        closeFile();
-        refreshTree();
-        System.gc();
-    }//GEN-LAST:event_jMenuItemPopupCloseActionPerformed
-
-    private void jTabbedPane1ComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jTabbedPane1ComponentShown
-        refreshTree();
-    }//GEN-LAST:event_jTabbedPane1ComponentShown
-
-    private void jTabbedPane1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTabbedPane1MouseClicked
-        refreshTree();
-    }//GEN-LAST:event_jTabbedPane1MouseClicked
-
-    private void jMenuItemRemoveFromProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRemoveFromProjectActionPerformed
-        removeFileFromProject();
-    }//GEN-LAST:event_jMenuItemRemoveFromProjectActionPerformed
-
-    private void jMenuItemPopupSaveProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupSaveProjectActionPerformed
-        saveProject(true);
-    }//GEN-LAST:event_jMenuItemPopupSaveProjectActionPerformed
-
-    private void jMenuItemPopupCloseProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupCloseProjectActionPerformed
-        closeProject();
-    }//GEN-LAST:event_jMenuItemPopupCloseProjectActionPerformed
-
-    private void jMenuItemPopupOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupOpenProjectActionPerformed
-        openProject(null);
-    }//GEN-LAST:event_jMenuItemPopupOpenProjectActionPerformed
-
-    private void jMenuItemPopupNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupNewProjectActionPerformed
-        newProject();
-    }//GEN-LAST:event_jMenuItemPopupNewProjectActionPerformed
-
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        jDialogOption.setVisible(false);
-        try{
-            tabSize = Integer.parseInt(jTextFieldTabSize.getText());
-        } catch(Exception e){
-            tabSize = 4;
-        }
-        
-        setLibrarypath(jTextFieldPathLib.getText());
-        setLibrarypathsecondary1(jTextFieldPathLibSecondary1.getText());
-        setLibrarypathsecondary2(jTextFieldPathLibSecondary2.getText());
-        setLibrarypathsecondary3(jTextFieldPathLibSecondary3.getText());
-        setCompilerpath(jTextFieldPathCompiler.getText());
-        setInterpreterzcodepath(jTextFieldPathInterpreter.getText());
-        setInterpreterglulxpath(jTextFieldPathGlulx.getText());
-        setCompiledpath(jTextFieldPathGames.getText());
-        setBrespath(jTextFieldBres.getText());
-        setBlcpath(jTextFieldBlc.getText());
-        
-        unquote();
-        saveConfigNew();
-    }//GEN-LAST:event_jButton10ActionPerformed
-
-    private void jMenuItemSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSettingsActionPerformed
-        jTextFieldPathLib.setText(getLibrarypath());
-        jTextFieldPathLibSecondary1.setText(getLibrarypathsecondary1());
-        jTextFieldPathLibSecondary2.setText(getLibrarypathsecondary2());
-        jTextFieldPathLibSecondary3.setText(getLibrarypathsecondary3());
-        jTextFieldPathGames.setText(getCompiledpath());
-        jTextFieldPathCompiler.setText(getCompilerpath());
-        jTextFieldPathInterpreter.setText(getInterpreterzcodepath());
-        jTextFieldPathGlulx.setText(getInterpreterglulxpath());
-        jTextFieldBres.setText(getBrespath());
-        jTextFieldBlc.setText(getBlcpath());
-        updateColor();
-        updateColorEditor();
-        Font tmpFont = defaultFont;
-        jComboBoxFont.setSelectedItem(tmpFont.getName());
-        jComboBoxFontSize.setSelectedItem(String.valueOf(tmpFont.getSize()));
-        jDialogOption.pack();
-        //jDialogOption.setSize(600,560);
-        //jDialogOption.setSize(580,540);
-        jDialogOption.setLocationRelativeTo(this);
-        jDialogOption.setVisible(true);
-    }//GEN-LAST:event_jMenuItemSettingsActionPerformed
-
-    private void jButtonCloseAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCloseAllActionPerformed
-        closeAllFiles();
-    }//GEN-LAST:event_jButtonCloseAllActionPerformed
-
-    private void jButtonCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCloseActionPerformed
-        closeFile();
-        refreshTree();
-        System.gc();
-    }//GEN-LAST:event_jButtonCloseActionPerformed
-
-    private void jListProjectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListProjectMouseClicked
-        // Double clicking JIF opens the selected file
-        if (evt.getClickCount()==2){
-            // opens the file
-            FileProject fp = (FileProject)jListProject.getSelectedValue();
-            if (null!=fp){
-                openFile(fp.path);
-            }
-        } else{
-            // Sets the tooltip in case of One click
-            FileProject fp = (FileProject)jListProject.getSelectedValue();
-            if (null!=fp){
-                jListProject.setToolTipText(fp.path);
-            }
-        }
-    }//GEN-LAST:event_jListProjectMouseClicked
-
-    private void jMenuItemCloseProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCloseProjectActionPerformed
-        closeProject();
-    }//GEN-LAST:event_jMenuItemCloseProjectActionPerformed
-
-    private void jMenuItemPrint1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPrint1ActionPerformed
-        new Utils().printInform(this,"Jif print - "+getCurrentFilename(), getCurrentJIFTextPane());
-    }//GEN-LAST:event_jMenuItemPrint1ActionPerformed
-
-    private void SaveAsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveAsButtonActionPerformed
-        saveAs(null);
-    }//GEN-LAST:event_SaveAsButtonActionPerformed
-
-    private void jMenuItemNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNewProjectActionPerformed
-        newProject();
-    }//GEN-LAST:event_jMenuItemNewProjectActionPerformed
-
-    private void jMenuItemSaveProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveProjectActionPerformed
-        saveProject(true);
-    }//GEN-LAST:event_jMenuItemSaveProjectActionPerformed
-
-    private void jMenuItemPopupRemoveFromProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupRemoveFromProjectActionPerformed
-        removeFileFromProject();
-    }//GEN-LAST:event_jMenuItemPopupRemoveFromProjectActionPerformed
-
-    private void jMenuItemPopupAddToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPopupAddToProjectActionPerformed
-        addFilesToProject();
-    }//GEN-LAST:event_jMenuItemPopupAddToProjectActionPerformed
-
-    private void jMenuItemAddFileToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAddFileToProjectActionPerformed
-        addFilesToProject();
-    }//GEN-LAST:event_jMenuItemAddFileToProjectActionPerformed
-
-    private void jMenuItemOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemOpenProjectActionPerformed
-        openProject(null);
-    }//GEN-LAST:event_jMenuItemOpenProjectActionPerformed
-
-    private void jMenuItemInsertSymbol1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemInsertSymbol1ActionPerformed
-        showJWindowSymbol();
-    }//GEN-LAST:event_jMenuItemInsertSymbol1ActionPerformed
-
-    private void jButtonInsertSymbolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInsertSymbolActionPerformed
-        showJWindowSymbol();
-    }//GEN-LAST:event_jButtonInsertSymbolActionPerformed
-
-    private void jMenuItemInsertSymbolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemInsertSymbolActionPerformed
-        showJWindowSymbol();
-    }//GEN-LAST:event_jMenuItemInsertSymbolActionPerformed
-
-    private void jButtonNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNewActionPerformed
-        newAdventure();
-    }//GEN-LAST:event_jButtonNewActionPerformed
-
-    private void jMenuItemUncommentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemUncommentSelectionActionPerformed
-        getCurrentJIFTextPane().unCommentSelection();
-    }//GEN-LAST:event_jMenuItemUncommentSelectionActionPerformed
-
-    private void jButtonUncommentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUncommentSelectionActionPerformed
-        getCurrentJIFTextPane().unCommentSelection();
-    }//GEN-LAST:event_jButtonUncommentSelectionActionPerformed
-
-    private void jButtonCommentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCommentSelectionActionPerformed
-        getCurrentJIFTextPane().commentSelection();
-    }//GEN-LAST:event_jButtonCommentSelectionActionPerformed
-
-    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        // Replacing....only if there is a selected TEXT
-        if (getCurrentJIFTextPane().getSelectedText()!= null){
-            getCurrentJIFTextPane().replaceSelection(jTextFieldReplace.getText());
-        }
-    }//GEN-LAST:event_jButton12ActionPerformed
-
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        if (jTextFieldReplaceFind.getText().equals("")){
-            JOptionPane.showMessageDialog(this,java.util.ResourceBundle.getBundle("JIF").getString("ERR_EMPTY_STRING"));
-        }
-        findString(jTextFieldReplaceFind.getText());
-    }//GEN-LAST:event_jButton11ActionPerformed
-
-    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
-        replaceAll();
-        refreshTree();
-    }//GEN-LAST:event_jButton13ActionPerformed
-
-    private void jMenuItemCommentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCommentSelectionActionPerformed
-        getCurrentJIFTextPane().commentSelection();
-    }//GEN-LAST:event_jMenuItemCommentSelectionActionPerformed
-
-    private void jMenuItemInsertFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemInsertFromFileActionPerformed
-        insertFromFile();
-    }//GEN-LAST:event_jMenuItemInsertFromFileActionPerformed
-
-    private void jMenuItemInsertFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemInsertFileActionPerformed
-        insertFromFile();
-    }//GEN-LAST:event_jMenuItemInsertFileActionPerformed
-
-    private void jMenuItemPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPrintActionPerformed
-        new Utils().printInform(this,"Jif print - "+getCurrentFilename(), getCurrentJIFTextPane());
-    }//GEN-LAST:event_jMenuItemPrintActionPerformed
-
-    private void jTree1ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree1ValueChanged
-        if (getCurrentJIFTextPane() == null){
-            clearTree();
+        defaultLightColors();
+        defaultFont();
+        defaultLightHighlights();
+        updateOptionPaths();
+    }//GEN-LAST:event_optionDefaultActionPerformed
+    
+    private void commentColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commentColorActionPerformed
+        Color color = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.Comment));
+        if (color == null) {
             return;
         }
-
-        getCurrentJIFTextPane().removeHighlighter();
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode)jTree1.getLastSelectedPathComponent();
-        if (node == null || !(node.getUserObject() instanceof Inspect)){
+        optionContext.setForeground(InformSyntax.Comment, color);
+        updateCommentColor();
+    }//GEN-LAST:event_commentColorActionPerformed
+    
+    private void normalColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_normalColorActionPerformed
+        Color color = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.Normal));
+        if (color == null) {
+            return;
+        }
+        optionContext.setForeground(InformSyntax.Normal, color);
+        updateNormalColor();
+    }//GEN-LAST:event_normalColorActionPerformed
+    
+    private void verbColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verbColorActionPerformed
+        Color color = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.Verb));
+        if (color == null) {
+            return;
+        }
+        optionContext.setForeground(InformSyntax.Verb, color);
+        updateVerbColor();
+    }//GEN-LAST:event_verbColorActionPerformed
+    
+    private void propertyColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_propertyColorActionPerformed
+        Color color = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.Property));
+        if (color == null) {
+            return;
+        }
+        optionContext.setForeground(InformSyntax.Property, color);
+        updatePropertyColor();
+    }//GEN-LAST:event_propertyColorActionPerformed
+    
+    private void attributeColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attributeColorActionPerformed
+        Color color = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.Attribute));
+        if (color == null) {
+            return;
+        }
+        optionContext.setForeground(InformSyntax.Attribute, color);
+        updateAttributeColor();
+        
+    }//GEN-LAST:event_attributeColorActionPerformed
+    
+    private void keywordColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keywordColorActionPerformed
+        Color color = JColorChooser.showDialog(this,
+                "Color Dialog",
+                optionContext.getForeground(InformSyntax.Keyword));
+        if (color == null) {
+            return;
+        }
+        optionContext.setForeground(InformSyntax.Keyword, color);
+        updateKeywordColor();
+    }//GEN-LAST:event_keywordColorActionPerformed
+    
+    private void switchManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchManagerActionPerformed
+        // if a project exists, Jif will launch the project switches dialog
+        if (project.getFile() == null) {
+            configSwitches();
+        } else {
+            projectSwitches();
+        }
+    }//GEN-LAST:event_switchManagerActionPerformed
+    
+    private void openSelectedFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openSelectedFilesActionPerformed
+        Object[] oggetti = projectList.getSelectedValues();
+        if (oggetti.length == 0) {
+            return;
+        }
+        for (int i=0; i < oggetti.length; i++) {
+            if (oggetti[i] != null) {
+                openFile(((JifFileName) oggetti[i]).getPath());
+            }
+        }
+    }//GEN-LAST:event_openSelectedFilesActionPerformed
+    
+    private void switchesSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchesSaveActionPerformed
+        configSwitchesSave();
+    }//GEN-LAST:event_switchesSaveActionPerformed
+    
+    private void projectListMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_projectListMouseEntered
+        // Just One click: shows the tooltip
+        JifFileName fp = (JifFileName) projectList.getSelectedValue();
+        if (fp != null) {
+            projectList.setToolTipText(fp.getPath());
+        } else {
+            projectList.setToolTipText(null);
+        }
+    }//GEN-LAST:event_projectListMouseEntered
+    
+    private void interpreterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interpreterActionPerformed
+        runInterpreter();
+    }//GEN-LAST:event_interpreterActionPerformed
+    
+    private void infoCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoCloseActionPerformed
+        infoDialog.setVisible(false);
+    }//GEN-LAST:event_infoCloseActionPerformed
+    
+    private void fileTabbedPaneComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_fileTabbedPaneComponentShown
+// DEBUG
+        System.out.println("file tab shown - refresh tree");
+        refreshTree();
+        refreshTitle();
+    }//GEN-LAST:event_fileTabbedPaneComponentShown
+    
+    private void fileTabbedPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileTabbedPaneMouseClicked
+// DEBUG
+        System.out.println("file tab clicked - refresh tree");
+        refreshTree();
+        refreshTitle();
+    }//GEN-LAST:event_fileTabbedPaneMouseClicked
+    
+    private void saveProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectActionPerformed
+        saveProject();
+        saveProjectMessage();
+    }//GEN-LAST:event_saveProjectActionPerformed
+    
+    private void closeProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeProjectActionPerformed
+        closeProject();
+    }//GEN-LAST:event_closeProjectActionPerformed
+    
+    private void openProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProjectActionPerformed
+        openProject();
+    }//GEN-LAST:event_openProjectActionPerformed
+    
+    private void newProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectActionPerformed
+        newProject();
+    }//GEN-LAST:event_newProjectActionPerformed
+    
+    private void optionSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionSaveActionPerformed
+        optionSave();
+    }//GEN-LAST:event_optionSaveActionPerformed
+    
+    private void projectListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_projectListMouseClicked
+        // Double clicking an entry, JIF opens the selected file
+        if (evt.getClickCount()==2) {
+            // opens the file
+            JifFileName fp = (JifFileName)projectList.getSelectedValue();
+            if (fp != null) {
+                openFile(fp.getPath());
+            }
+        } else {
+            // Sets the tooltip in case of One click
+            JifFileName fp = (JifFileName)projectList.getSelectedValue();
+            if (fp != null) {
+                projectList.setToolTipText(fp.getPath());
+            }
+        }
+    }//GEN-LAST:event_projectListMouseClicked
+    
+    private void printPopupMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printPopupMenuItemActionPerformed
+        new Utils().printInform(this,
+                "Jif print - " + getCurrentFilename(),
+                getCurrentJifTextPane());
+    }//GEN-LAST:event_printPopupMenuItemActionPerformed
+    
+    private void removeFromProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeFromProjectActionPerformed
+        removeFileFromProject();
+    }//GEN-LAST:event_removeFromProjectActionPerformed
+    
+    private void addFileToProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addFileToProjectActionPerformed
+        addFilesToProject();
+    }//GEN-LAST:event_addFileToProjectActionPerformed
+    
+    private void insertSymbolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertSymbolActionPerformed
+        showSymbolsDialog();
+    }//GEN-LAST:event_insertSymbolActionPerformed
+    
+    private void uncommentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uncommentSelectionActionPerformed
+        if (getCurrentJifTextPane() == null) {
+            return;
+        }
+        ((Action)(getCurrentJifTextPane().getActionMap().get(JifEditorKit.uncommentAction))).actionPerformed(evt);
+    }//GEN-LAST:event_uncommentSelectionActionPerformed
+    
+    private void replaceReplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_replaceReplaceActionPerformed
+        // Replacing....only if there is a selected TEXT
+        if (getCurrentJifTextPane().getSelectedText() == null) {
+            return;
+        }
+        getCurrentJifTextPane().replaceSelection(replaceReplaceTextField.getText());
+    }//GEN-LAST:event_replaceReplaceActionPerformed
+    
+    private void replaceFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_replaceFindActionPerformed
+        if (replaceFindTextField.getText().equals("")) {
+            JOptionPane.showMessageDialog(this,
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_EMPTY_STRING"));
+        }
+        findString(replaceFindTextField.getText());
+    }//GEN-LAST:event_replaceFindActionPerformed
+    
+    private void replaceAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_replaceAllActionPerformed
+        replaceAll();
+// DEBUG
+        System.out.println("replace all - refresh tree");
+        refreshTree();
+    }//GEN-LAST:event_replaceAllActionPerformed
+    
+    private void commentSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commentSelectionActionPerformed
+        if (getCurrentJifTextPane() == null) {
+            return;
+        }
+        ((Action)(getCurrentJifTextPane().getActionMap().get(JifEditorKit.commentAction))).actionPerformed(evt);
+    }//GEN-LAST:event_commentSelectionActionPerformed
+    
+    private void insertFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertFileActionPerformed
+        insertFromFile();
+    }//GEN-LAST:event_insertFileActionPerformed
+    
+    private void printActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printActionPerformed
+        new Utils().printInform(this,
+                "Jif print - " + getCurrentFilename(),
+                getCurrentJifTextPane());
+    }//GEN-LAST:event_printActionPerformed
+    
+    private void treeTreeValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_treeTreeValueChanged
+        if (getCurrentJifTextPane() == null) {
+            clearTree("Inspect");
+            return;
+        }
+        
+        getCurrentJifTextPane().removeHighlighter();
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeTree.getLastSelectedPathComponent();
+        if (node == null || !(node.getUserObject() instanceof Inspect)) {
             return;
         }
         Object nodo = node.getUserObject();
-        try{
+        try {
             Inspect insp = (Inspect) nodo;
-            if (insp != null && insp.Iposition!=-1){
-                JIFTextPane jif = getCurrentJIFTextPane();
-                el = jif.getDocument().getDefaultRootElement();
-                int_var = el.getElementIndex(insp.Iposition);
-                el = jif.getDocument().getDefaultRootElement().getElement(int_var);
+            if (insp != null && insp.Iposition!=-1) {
+                JifTextPane jif = getCurrentJifTextPane();
+                Element el = jif.getDocument().getDefaultRootElement();
+                int index = el.getElementIndex(insp.Iposition);
+                el = jif.getDocument().getDefaultRootElement().getElement(index);
                 jif.getHlighter().highlightFromTo(jif, el.getStartOffset() , el.getEndOffset());
-
+                
                 jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                 jif.scrollRectToVisible(jif.modelToView(insp.Iposition));
                 jif.requestFocus();
                 jif.setCaretPosition(insp.Iposition);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-    }//GEN-LAST:event_jTree1ValueChanged
-
-    private void jTextAreaOutputMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextAreaOutputMouseClicked
+    }//GEN-LAST:event_treeTreeValueChanged
+    
+    private void outputTextAreaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_outputTextAreaMouseClicked
         // When user clicks on errors/warnings, JIF jumps to the correct line in the source
-        try{
-            String nome="";
+        try {
+            String nome = "";
             int riga = 0;
-            boolean found=false;
-
+            boolean found = false;
+            
             // Rescues the correct line
-            el = jTextAreaOutput.getDocument().getDefaultRootElement();
-            int ind = el.getElementIndex(jTextAreaOutput.viewToModel(evt.getPoint()));
-            el = jTextAreaOutput.getDocument().getDefaultRootElement().getElement(ind);
-            ultima = jTextAreaOutput.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
-
+            Element el = outputTextArea.getDocument().getDefaultRootElement();
+            int ind = el.getElementIndex(outputTextArea.viewToModel(evt.getPoint()));
+            el = outputTextArea.getDocument().getDefaultRootElement().getElement(ind);
+            String ultima = outputTextArea.getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
+            
             // Only if the line starts with the "#" char
-            if (ultima.indexOf(Constants.TOKENCOMMENT)!=-1 && ((ultima.indexOf(".inf")!=-1) || (ultima.indexOf(".h")!=-1))){
-
+            if (ultima.indexOf(Constants.TOKENCOMMENT)!=-1 &&
+                    ((ultima.indexOf(".inf") != -1) || (ultima.indexOf(".h") != -1))) {
+                
                 // Errors in E1 format
-                if(Utils.IgnoreCaseIndexOf(ultima,"line ")==-1){
+                if (Utils.IgnoreCaseIndexOf(ultima, "line ") == -1) {
                     // Removing all the selected text in the output window
-                    hlighterOutputErrors.removeHighlights(jTextAreaOutput);
-
-                    StringTokenizer stok = new StringTokenizer(ultima,"#()");
+                    hlighterOutputErrors.removeHighlights(outputTextArea);
+                    
+                    StringTokenizer stok = new StringTokenizer(ultima, "#()");
                     nome=stok.nextToken();
                     riga=Integer.parseInt(stok.nextToken());
-
+                    
                     // checks if the file exists
-                    int selected = jTabbedPane1.getTabCount();
-                    for (int_var=0; int_var < selected; int_var++){
-                        if (nome.equals(getFilenameAt(int_var))){
+                    int selected = fileTabbedPane.getTabCount();
+                    for (int i=0; i < selected; i++) {
+                        if (nome.equals(getFilenameAt(i))) {
                             found = true;
-                            jTabbedPane1.setSelectedIndex(int_var);
+                            fileTabbedPane.setSelectedIndex(i);
                         }
                     }
-
+                    
                     if (!found) {
                         synchronized (this) {
                             openFile(nome);
                         }
                     }
-
-                    JIFTextPane jif = getCurrentJIFTextPane();
-
+                    
+                    JifTextPane jif = getCurrentJifTextPane();
+                    
                     // Find the line with the error
                     el = jif.getDocument().getDefaultRootElement();
                     el = el.getElement(riga-1);
                     jif.setCaretPosition(el.getStartOffset());
-
-                    if (Utils.IgnoreCaseIndexOf(ultima,"warning")==-1){
+                    
+                    if (Utils.IgnoreCaseIndexOf(ultima, "warning")==-1) {
                         jif.removeHighlighterErrors();
-                        jif.getHlighterErrors().highlightFromTo(getCurrentJIFTextPane(),el.getStartOffset(),el.getEndOffset() );
-                    } else{
+                        jif.getHlighterErrors().highlightFromTo(getCurrentJifTextPane(),
+                                el.getStartOffset(),
+                                el.getEndOffset()
+                                );
+                    } else {
                         jif.removeHighlighterWarnings();
-                        jif.getHlighterWarnings().highlightFromTo(getCurrentJIFTextPane(),el.getStartOffset(),el.getEndOffset() );
+                        jif.getHlighterWarnings().highlightFromTo(getCurrentJifTextPane(),
+                                el.getStartOffset(),
+                                el.getEndOffset()
+                                );
                     }
-
-                    if (jif.modelToView(jif.getDocument().getLength()) != null){
+                    
+                    if (jif.modelToView(jif.getDocument().getLength()) != null) {
                         jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                         jif.scrollRectToVisible(jif.modelToView(el.getStartOffset()));
-                    } else{
+                    } else {
                         jif.setCaretPosition(el.getStartOffset());
                     }
                 }
                 // Errors in E0-E2 format
-                else{
-                    JOptionPane.showMessageDialog(this, "Please, use the -E1 error switch.", "Jump to Error", JOptionPane.INFORMATION_MESSAGE);
+                else {
+                    JOptionPane.showMessageDialog(this,
+                            "Please, use the -E1 error switch.",
+                            "Jump to Error",
+                            JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
-            } else if (ultima.indexOf(Constants.TOKENCOMMENT)!=-1 && Utils.IgnoreCaseIndexOf(ultima,"file")==-1){
-                JOptionPane.showMessageDialog(this, "Please, use the -E1 error switch.", "Jump to Error", JOptionPane.INFORMATION_MESSAGE);
+            } else if (ultima.indexOf(Constants.TOKENCOMMENT)!=-1 && Utils.IgnoreCaseIndexOf(ultima,"file")==-1) {
+                JOptionPane.showMessageDialog(this,
+                        "Please, use the -E1 error switch.",
+                        "Jump to Error",
+                        JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
             // find string in all files function
-            else if (ultima.startsWith(Constants.TOKENSEARCH)){
+            else if (ultima.startsWith(Constants.TOKENSEARCH)) {
                 // Removing all the selected text in the output window
-                hlighterOutputErrors.removeHighlights(jTextAreaOutput);
-
+                hlighterOutputErrors.removeHighlights(outputTextArea);
+                
                 // Highlight the correct line
-                hlighterOutputErrors.highlightFromTo(jTextAreaOutput,el.getStartOffset(),el.getEndOffset() );
-
+                hlighterOutputErrors.highlightFromTo(outputTextArea,
+                        el.getStartOffset(),
+                        el.getEndOffset()
+                        );
+                
                 StringTokenizer stok = new StringTokenizer(ultima,Constants.TOKENSEARCH);
                 nome=stok.nextToken();
                 riga=Integer.parseInt(stok.nextToken());
-
+                
                 // checks if the file exists
-                int selected = jTabbedPane1.getTabCount();
-                for (int_var=0; int_var < selected; int_var++){
-                    if (nome.equals(getFilenameAt(int_var))){
+                int selected = fileTabbedPane.getTabCount();
+                for (int i = 0; i < selected; i++) {
+                    if (nome.equals(getFilenameAt(i))) {
                         found = true;
-                        jTabbedPane1.setSelectedIndex(int_var);
+                        fileTabbedPane.setSelectedIndex(i);
                     }
                 }
-
+                
                 if (!found) {
                     synchronized (this) {
                         openFile(nome);
                     }
                 }
-
+                
                 // Find the line with the error
-                JIFTextPane jif = getCurrentJIFTextPane();
+                JifTextPane jif = getCurrentJifTextPane();
                 el = jif.getDocument().getDefaultRootElement();
                 el = el.getElement(riga-1);
                 jif.setCaretPosition(el.getStartOffset());
-
+                
                 // Removing all the selected text
                 jif.removeHighlighter();
-
+                
                 // Highlight the line which has product the error during compiling
                 jif.getHlighter().highlightFromTo(jif,el.getStartOffset(),el.getEndOffset() );
                 jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                 jif.scrollRectToVisible(jif.modelToView(el.getStartOffset()));
-            } else return;
-        } catch (BadLocationException e){
+            } else {
+                return;
+            }
+        } catch (BadLocationException e) {
             e.printStackTrace();
         }
-    }//GEN-LAST:event_jTextAreaOutputMouseClicked
-
-    private void jMenuItemClearAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemClearAllActionPerformed
-        if (JOptionPane.showConfirmDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("MSG_DELETE1") , java.util.ResourceBundle.getBundle("JIF").getString("MSG_DELETE2") , JOptionPane.OK_CANCEL_OPTION) ==0 ){
-            getCurrentJIFTextPane().setText("");
-        }
-    }//GEN-LAST:event_jMenuItemClearAllActionPerformed
-
-    private void jMenuItemSelectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSelectAllActionPerformed
-        getCurrentJIFTextPane().selectAll();
-    }//GEN-LAST:event_jMenuItemSelectAllActionPerformed
-
-    private void jMenuItemClearRecentFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemClearRecentFilesActionPerformed
-        getJMenuRecentFiles().removeAll();
-        getRecentFiles().clear();
-        saveConfigNew();
-    }//GEN-LAST:event_jMenuItemClearRecentFilesActionPerformed
-
-    private void jMenuItemReplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemReplaceActionPerformed
-        getCurrentJIFTextPane().requestFocus();
-        getCurrentJIFTextPane().setCaretPosition(0);
-        jDialogReplace.pack();
-        jDialogReplace.setLocationRelativeTo(this);
-        jDialogReplace.setVisible(true);
-    }//GEN-LAST:event_jMenuItemReplaceActionPerformed
-
-    private void jMenuItemSaveAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveAllActionPerformed
-        saveAll();
-    }//GEN-LAST:event_jMenuItemSaveAllActionPerformed
-
-    private void jMenuItemCloseAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCloseAllActionPerformed
-        closeAllFiles();
-    }//GEN-LAST:event_jMenuItemCloseAllActionPerformed
-
-    private void jButtonInterpreterPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInterpreterPathActionPerformed
-        JFileChooser chooser = new JFileChooser(workingDir);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
+    }//GEN-LAST:event_outputTextAreaMouseClicked
+    
+    private void clearAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearAllActionPerformed
+        if (JOptionPane.showConfirmDialog(this,
+                java.util.ResourceBundle.getBundle("JIF").getString("MSG_DELETE1"),
+                java.util.ResourceBundle.getBundle("JIF").getString("MSG_DELETE2"),
+                JOptionPane.OK_CANCEL_OPTION)
+                == JOptionPane.CANCEL_OPTION) {
             return;
-        } else {
-            jTextFieldPathInterpreter.setText(chooser.getSelectedFile().getAbsolutePath());
-            setInterpreterzcodepath(chooser.getSelectedFile().getAbsolutePath());
         }
-    }//GEN-LAST:event_jButtonInterpreterPathActionPerformed
-
-    private void jButtonCompilerPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompilerPathActionPerformed
-        JFileChooser chooser = new JFileChooser(workingDir);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
-            return;
-        } else {
-            jTextFieldPathCompiler.setText(chooser.getSelectedFile().getAbsolutePath());
-            setCompilerpath(chooser.getSelectedFile().getAbsolutePath());
-        }
-    }//GEN-LAST:event_jButtonCompilerPathActionPerformed
-
-    private void jButtonCompiledPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCompiledPathActionPerformed
-        JFileChooser chooser = new JFileChooser(workingDir);
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
-            return;
-        } else {
-            jTextFieldPathGames.setText(chooser.getSelectedFile().getAbsolutePath());
-            setCompiledpath(chooser.getSelectedFile().getAbsolutePath());
-        }
-    }//GEN-LAST:event_jButtonCompiledPathActionPerformed
-
-    private void jButtonLibraryPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLibraryPathActionPerformed
-        JFileChooser chooser = new JFileChooser(workingDir);
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
-            return;
-        } else {
-            jTextFieldPathLib.setText(chooser.getSelectedFile().getAbsolutePath());
-            setLibrarypath(chooser.getSelectedFile().getAbsolutePath());
-        }
-    }//GEN-LAST:event_jButtonLibraryPathActionPerformed
-
-    private void jMenuItemCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCloseActionPerformed
-        closeFile();
-        refreshTree();
-        System.gc();
-    }//GEN-LAST:event_jMenuItemCloseActionPerformed
-
-    private void jMenuItemCopy1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCopy1ActionPerformed
-        copyToClipBoard();
-    }//GEN-LAST:event_jMenuItemCopy1ActionPerformed
-
-    private void jMenuItemReadMeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemReadMeActionPerformed
-        InputStream is = null;
+        getCurrentJifTextPane().setText("");
+    }//GEN-LAST:event_clearAllActionPerformed
+    
+    private void selectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllActionPerformed
+        getCurrentJifTextPane().selectAll();
+    }//GEN-LAST:event_selectAllActionPerformed
+    
+    private void clearRecentFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearRecentFilesActionPerformed
+        config.clearRecentFiles();
         try {
-            // Load the readme.txt file from the jar file
-            is = ClassLoader.getSystemClassLoader().getResource("readme.txt").openStream();
-        } catch (IOException ex) {
+            JifConfigurationDAO.store(config);
+        } catch (JifConfigurationException ex) {
             ex.printStackTrace();
         }
-        showFile(is);
-    }//GEN-LAST:event_jMenuItemReadMeActionPerformed
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        jDialogText.setVisible(false);
-        jTextArea4.setText("");
-        jLabel5.setText("");
-    }//GEN-LAST:event_jButton6ActionPerformed
-
-    private void SaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveAsActionPerformed
-        saveAs(null);
-    }//GEN-LAST:event_SaveAsActionPerformed
-
-    private void jMenuItemConfigFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemConfigFileActionPerformed
-        try{
-            editFileIni(getFileini());
-        } catch (Exception e){
-            System.out.println(e.getMessage());
+    }//GEN-LAST:event_clearRecentFilesActionPerformed
+    
+    private void closeAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeAllActionPerformed
+        closeAllFiles();
+    }//GEN-LAST:event_closeAllActionPerformed
+    
+    private void interpreterPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interpreterPathActionPerformed
+        JFileChooser chooser = new JFileChooser(config.getWorkingDirectory());
+        if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
+            return;
         }
-    }//GEN-LAST:event_jMenuItemConfigFileActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        jDialogSwitches.setVisible(false);
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jMenuItemSwitchesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSwitchesActionPerformed
-        jDialogSwitches.pack();
-        jDialogSwitches.setLocationRelativeTo(this);
-        jDialogSwitches.setVisible(true);
-    }//GEN-LAST:event_jMenuItemSwitchesActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // Saving file
-        File file = new File(jLabel2.getText());
-        try{
-            FileOutputStream fos = new FileOutputStream(file);
-            Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
-            out.write(jTextAreaConfig.getText());
-            out.flush();
-            out.close();
-            //loadConfig();
-            loadConfigNew(new File(fileini));
-            JOptionPane.showMessageDialog(jDialogEditFileIni,java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE1"), java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE2") , JOptionPane.INFORMATION_MESSAGE);
-        } catch(IOException e ){
-            System.out.println(e.getMessage());
+        interpreterPathTextField.setText(chooser.getSelectedFile().getAbsolutePath());
+    }//GEN-LAST:event_interpreterPathActionPerformed
+    
+    private void compilerPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compilerPathActionPerformed
+        JFileChooser chooser = new JFileChooser(config.getWorkingDirectory());
+        if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
+            return;
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        jDialogEditFileIni.setVisible(false);
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void NewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NewActionPerformed
-        newAdventure();
-    }//GEN-LAST:event_NewActionPerformed
-
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        jDialogAbout.pack();
-        jDialogAbout.setLocationRelativeTo(this);
-        jDialogAbout.setVisible(false);
-    }//GEN-LAST:event_jButton9ActionPerformed
-
-    private void jMenuItemClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemClearActionPerformed
-        jMenuPaste.removeAll();
-    }//GEN-LAST:event_jMenuItemClearActionPerformed
-
-    private void jMenuItemCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCopyActionPerformed
+        compilerPathTextField.setText(chooser.getSelectedFile().getAbsolutePath());
+    }//GEN-LAST:event_compilerPathActionPerformed
+    
+    private void gamePathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gamePathActionPerformed
+        JFileChooser chooser = new JFileChooser(config.getWorkingDirectory());
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
+            return;
+        }
+        gamePathTextField.setText(chooser.getSelectedFile().getAbsolutePath());
+    }//GEN-LAST:event_gamePathActionPerformed
+    
+    private void libraryPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_libraryPathActionPerformed
+        JFileChooser chooser = new JFileChooser(config.getWorkingDirectory());
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
+            return;
+        }
+        libraryPathTextField.setText(chooser.getSelectedFile().getAbsolutePath());
+    }//GEN-LAST:event_libraryPathActionPerformed
+    
+    private void closeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeActionPerformed
+        closeFile();
+        if (fileTabbedPane.getTabCount() == 0) {
+            disableFileComponents();
+        }
+// DEBUG
+        System.out.println("close - refresh tree");
+        refreshTree();
+        refreshTitle();
+        System.gc();
+    }//GEN-LAST:event_closeActionPerformed
+    
+    private void copyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyActionPerformed
         copyToClipBoard();
-    }//GEN-LAST:event_jMenuItemCopyActionPerformed
-
-    private void jCheckBoxJToolBarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxJToolBarActionPerformed
-        if (!jCheckBoxJToolBar.getState()) jToolBarCommon.setVisible(false);
-        if (jCheckBoxJToolBar.getState()) jToolBarCommon.setVisible(true);
-    }//GEN-LAST:event_jCheckBoxJToolBarActionPerformed
-
-    private void AboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AboutActionPerformed
-        jDialogAbout.pack();
-        jDialogAbout.setLocationRelativeTo(this);
-        jDialogAbout.setVisible(true);
-    }//GEN-LAST:event_AboutActionPerformed
-
-    private void RunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunButtonActionPerformed
-        saveAll();
-        rebuildAll();
-        runAdventure();
-    }//GEN-LAST:event_RunButtonActionPerformed
-
-    private void OpenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenButtonActionPerformed
-        openFile();
-    }//GEN-LAST:event_OpenButtonActionPerformed
-
-    private void SaveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveButtonActionPerformed
-        saveFile();
-    }//GEN-LAST:event_SaveButtonActionPerformed
-
-    private void RebuildButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RebuildButtonActionPerformed
-        saveAll();
-        rebuildAll();
-    }//GEN-LAST:event_RebuildButtonActionPerformed
-
-    private void RunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunActionPerformed
+    }//GEN-LAST:event_copyActionPerformed
+    
+    private void readMeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readMeActionPerformed
+        InputStream is = null;
+        // Load the readme.txt file from the jar file
+        try {
+            is = ClassLoader.getSystemClassLoader().getResource("readme.txt").openStream();
+        } catch (IOException e) {
+            System.out.println("ERROR Show readme: " + e.getMessage());
+        }
+        showFile(is);
+    }//GEN-LAST:event_readMeActionPerformed
+    
+    private void textCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textCloseActionPerformed
+        textDialog.setVisible(false);
+        textTextArea.setText("");
+        textLabel.setText("");
+    }//GEN-LAST:event_textCloseActionPerformed
+    
+    private void saveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsActionPerformed
+        saveAs(null);
+    }//GEN-LAST:event_saveAsActionPerformed
+    
+    private void configFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configFileActionPerformed
+        configProperties();
+    }//GEN-LAST:event_configFileActionPerformed
+    
+    private void switchesCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchesCloseActionPerformed
+        switchesDialog.setVisible(false);
+    }//GEN-LAST:event_switchesCloseActionPerformed
+    
+    private void switchesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchesActionPerformed
+        configSwitches();
+    }//GEN-LAST:event_switchesActionPerformed
+    
+    private void configSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configSaveActionPerformed
+        configPropertiesSave();
+    }//GEN-LAST:event_configSaveActionPerformed
+    
+    private void configCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configCloseActionPerformed
+        configDialog.setVisible(false);
+    }//GEN-LAST:event_configCloseActionPerformed
+    
+    private void newActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newActionPerformed
+        newAdventure();
+    }//GEN-LAST:event_newActionPerformed
+    
+    private void aboutOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutOKActionPerformed
+        aboutDialog.pack();
+        aboutDialog.setLocationRelativeTo(this);
+        aboutDialog.setVisible(false);
+    }//GEN-LAST:event_aboutOKActionPerformed
+    
+    private void clearPopupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearPopupActionPerformed
+        pastePopupMenu.removeAll();
+    }//GEN-LAST:event_clearPopupActionPerformed
+    
+    private void toolbarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolbarCheckBoxActionPerformed
+        jToolBarCommon.setVisible(toolbarCheckBoxMenuItem.getState());
+    }//GEN-LAST:event_toolbarCheckBoxActionPerformed
+    
+    private void aboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutActionPerformed
+        aboutDialog.pack();
+        aboutDialog.setLocationRelativeTo(this);
+        aboutDialog.setVisible(true);
+    }//GEN-LAST:event_aboutActionPerformed
+    
+    private void runActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runActionPerformed
         clearOutput();
         saveAll();
         rebuildAll();
         runAdventure();
-    }//GEN-LAST:event_RunActionPerformed
-
-    private void ExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExitActionPerformed
+    }//GEN-LAST:event_runActionPerformed
+    
+    private void exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitActionPerformed
         exitJif();
-    }//GEN-LAST:event_ExitActionPerformed
-
-    private void SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveActionPerformed
+    }//GEN-LAST:event_exitActionPerformed
+    
+    private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
         clearOutput();
         saveFile();
-    }//GEN-LAST:event_SaveActionPerformed
-
-    private void BuildAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuildAllActionPerformed
+    }//GEN-LAST:event_saveActionPerformed
+    
+    private void buildAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buildAllActionPerformed
+        clearOutput();
         saveAll();
         rebuildAll();
-    }//GEN-LAST:event_BuildAllActionPerformed
-
-    private void OpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenActionPerformed
+    }//GEN-LAST:event_buildAllActionPerformed
+    
+    private void openActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openActionPerformed
         openFile();
-    }//GEN-LAST:event_OpenActionPerformed
-
-    /** Exit the Application */
-    private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
-        exitJif();
-    }//GEN-LAST:event_exitForm
-
+    }//GEN-LAST:event_openActionPerformed
+    
     /**
+     * Jif editor main
+     *
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        try{
-            try {
-                javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-                //javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-                //javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-            } catch (Exception e) {
-                System.out.println("Can't set look & feel:" + e);
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI();
             }
-            //System.out.println("Setting Look and Feel: "+UIManager.getLookAndFeel().getName());
-        } catch(Exception e){
-            System.out.println("ERROR: "+e.getMessage());
+        });
+    }
+    
+    // This ensures that the GUI won’t have a thread-safety problem that could
+    // break the UI before it even appears onscreen. (See Swing tutorial).
+    private static void createAndShowGUI() {
+        try {
+            javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            //javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+            //javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+            
+        } catch (Exception e) {
+            System.out.println("ERROR Can't set look & feel: " + e.getMessage());
         }
         new jFrame().setVisible(true);
     }
-
+    
     /**
-     * Search for a string in all files of project
+     * Search for a string in all the files of a project
+     *
+     * @param target
+     *              Search string to find in project files 
      */
-    public void searchAllFiles(String target){
-        if (null != currentProject && !currentProject.equals(Constants.PROJECTEMPTY)) {
-            StringBuffer output = new StringBuffer();
-            File file = new File(currentProject);
-            StringBuffer sb = new StringBuffer();
-            String riga;
-            sb.setLength(0);
-            try {
-                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
-                while ((riga = br.readLine())!=null){
-                    sb.append(riga).append("\n");
-                }
-                br.close();
-                Charset charset = Charset.forName(Constants.fileFormat);
-                CharsetEncoder encoder = charset.newEncoder();
-                CharsetDecoder decoder = charset.newDecoder();
-                ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(sb.toString()));
-                CharBuffer cb = decoder.decode(bbuf);
-
-                // project files
-                Pattern patt = Pattern.compile("\n\\[FILE\\]([^\n]+)");
-                Matcher m = patt.matcher(cb);
-                String result;
-                while (m.find()){
-                    result = Utils.searchString(target, new File(m.group(1)));
-                    if (null!=result){
-                        output.append(result+"\n");
-                    }
-                }
-            } catch (Exception e) {}
-            jTextAreaOutput.setText(output.toString());
-            jTextAreaOutput.setCaretPosition(0);
+    private void searchAllFiles(String target) {
+        if (project.getFile() == null) {
+            return;
         }
+        
+        StringBuffer output = new StringBuffer();
+        String result;
+        for (Iterator i = project.getFiles().iterator(); i.hasNext(); ) {
+            JifFileName file = (JifFileName) i.next();
+            result = Utils.searchString(target, new File(file.getPath()));
+            if (result != null) {
+                output.append(result + "\n");
+            }
+        }
+        outputTextArea.setText(output.toString());
+        outputTextArea.setCaretPosition(0);
     }
-
-    public void saveFile() {
-        if (jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).endsWith("*")){
-            String newtitle = jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).substring(0,jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()).length()-1);
-            jTabbedPane1.setTitleAt(jTabbedPane1.getSelectedIndex(), newtitle);
-//            JIFScrollPane aScrollPane=(JIFScrollPane)jTabbedPane1.getComponentAt(jTabbedPane1.getSelectedIndex());        
-//            aScrollPane.setFile(newtitle);            
+    
+    private void saveFile() {
+        if (fileTabbedPane.getTitleAt(fileTabbedPane.getSelectedIndex()).endsWith("*")) {
+            String newtitle = fileTabbedPane.getTitleAt(fileTabbedPane.getSelectedIndex()).substring(0, fileTabbedPane.getTitleAt(fileTabbedPane.getSelectedIndex()).length()-1);
+            fileTabbedPane.setTitleAt(fileTabbedPane.getSelectedIndex(), newtitle);
         }
-        clearOutput();
-
+        
         File file = new File(getCurrentFilename());
-        try{
+        try {
             // Replaces the "\n" chars with System.getProperty("line.separator")
-            String tmp = Utils.replace(getCurrentJIFTextPane().getText(),"\n",System.getProperty("line.separator"));
-            FileOutputStream fos = new FileOutputStream(file);
-            Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
-            out.write(tmp);
-            out.flush();
-            out.close();
-
+            String tmp = Utils.replace(getCurrentJifTextPane().getText(), "\n", System.getProperty("line.separator"));
+            
+            JifDAO.save(file, tmp);
+            
             StringBuffer strb=new StringBuffer(java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE3"));
             strb.append(getCurrentFilename());
             strb.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE4"));
-            jTextAreaOutput.append(strb.toString());
-
+            outputTextArea.append(strb.toString());
+            
             // rendo visibile la finestra di output
-            jTabbedPane2.setSelectedComponent(jScrollPane2);
-
-            setTitle(getJifVersion() +" - " + getCurrentFilename());
-
-        } catch(IOException e){
-            System.out.println("ERRORE: "+e.getMessage());
+            outputTabbedPane.setSelectedComponent(outputScrollPane);
+            
+            setTitle(getJifVersion() + " - " + getCurrentFilename());
+            
+        } catch (IOException e) {
+            System.out.println("ERROR Save file: " + e.getMessage());
         }
-
+        
     }
-
-
-    public void saveAll(){
+    
+    
+    private void saveAll() {
         // Remember the file selected
-        Component comp = jTabbedPane1.getSelectedComponent();
-
-        int componenti = jTabbedPane1.getTabCount();
-        for (int_var=0; int_var < componenti; int_var++){
-            jTabbedPane1.setSelectedIndex(int_var);
-            if (getCurrentTitle().indexOf("*")!=-1)
+        Component comp = fileTabbedPane.getSelectedComponent();
+        
+        int componenti = fileTabbedPane.getTabCount();
+        for (int i = 0; i < componenti; i++) {
+            fileTabbedPane.setSelectedIndex(i);
+            if (getCurrentTitle().indexOf("*") != -1)
                 saveFile(); //Only save modified files
         }
-
+        
         // reassign the selected component
-        jTabbedPane1.setSelectedComponent(comp);
+        fileTabbedPane.setSelectedComponent(comp);
     }
-
-
-    public void rebuildAll() {
-        // Clearing the OutputWindow
-        this.jTextAreaOutput.setText("");
+    
+    
+    private void rebuildAll() {
+        // Clear OutputTextArea
+        outputTextArea.setText("");
         System.gc();
         String process_string[];
-        Vector auxV=new Vector(6);
+        Vector auxV = new Vector(6);
         String switchString[];
+        String fileInf;
         // Check out if the compiler exists
-        File test = new File(getCompilerpath());
-        if (!test.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1")+" "+getCompilerpath()+java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
+        File test = new File(resolveAbsolutePath(config.getWorkingDirectory(),config.getCompilerPath()));
+        if (!test.exists()) {
+            JOptionPane.showMessageDialog(this,
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1") + " " + resolveAbsolutePath(config.getWorkingDirectory(),config.getCompilerPath()) + java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3"),
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        if (null == getCompiledpath() || getCompiledpath().equals("")){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_GAMESPATH"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_GENERIC"), JOptionPane.ERROR_MESSAGE);
+        
+        if (resolveAbsolutePath(config.getWorkingDirectory(),config.getGamePath()) == null || resolveAbsolutePath(config.getWorkingDirectory(),config.getGamePath()).equals("")) {
+            JOptionPane.showMessageDialog(this,
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_GAMESPATH"),
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_GENERIC"),
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        // Show TextAreaOutput
-        if (!jCheckBoxOutput.getState()){
-            jSplitPane3.setBottomComponent(jTabbedPane2);
-            jTabbedPane2.setVisible(true);
+        
+        // Show OutputTextArea
+        if (!outputCheckBoxMenuItem.getState()) {
+            mainSplitPane.setBottomComponent(outputTabbedPane);
+            outputTabbedPane.setVisible(true);
         }
-        jTabbedPane2.setSelectedComponent(jScrollPane2);
+        outputTabbedPane.setSelectedComponent(outputScrollPane);
+        
         fileInf = getCurrentFilename();
-
-        // Project compilation or normal?
-        if (currentProject==null || currentProject.equals(Constants.PROJECTEMPTY)){
-            makeSwitches();
-            switchString = makeSwitches().split(" ");
-        } else{
-            makeSwitchesForProject();
-            switchString = makeSwitchesForProject().split(" ");
-        }
-
+        
+        switchString = makeCompilerSwitches().split(" ");
+        
         String estensione = "";
-        if (tipoz.equals("-v3")) estensione=".z3";
-        if (tipoz.equals("-v4")) estensione=".z4";
-        if (tipoz.equals("-v5")) estensione=".z5";
-        if (tipoz.equals("-v6")) estensione=".z6";
-        if (tipoz.equals("-v8")) estensione=".z8";
-
-        // Check Mode: If this is Glulx Mode... extension is ULX
-        if (jCheckBoxGlulxMode.isSelected()){
-            estensione=".ulx";
-        }
-
-        // If compiling a project but there isn't a main file, it warning
-        if (!currentProject.equals(Constants.PROJECTEMPTY)){
-            if (mainFile != null && !mainFile.equals("")){
-                jTextAreaOutput.append("Using main file "+mainFile+" to compiling...");
-                fileInf = mainFile;
-            } else{
-                JOptionPane.showMessageDialog(this, "Set a Main file first.", "Warning" , JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-        String fileOut = fileInf.substring(0,fileInf.lastIndexOf(".")) + estensione;
-        jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
-        String lib;
-
-        String dir = "";
-        if(jCheckBoxAdventInLib.isSelected()){
-            dir=fileInf.substring(0,fileInf.lastIndexOf(Constants.SEP))+",";
-        }
-
-        lib = dir+getLibrarypath();
-
-        // Secondary 1-2-3 Library Path
-        if (!getLibrarypathsecondary1().trim().equals("")){
-            lib = lib+","+getLibrarypathsecondary1();
-        }
-        if (!getLibrarypathsecondary2().trim().equals("")){
-            lib = lib+","+getLibrarypathsecondary2();
-        }
-        if (!getLibrarypathsecondary3().trim().equals("")){
-            lib = lib+","+getLibrarypathsecondary3();
-        }
-
-        auxV.add(getCompilerpath());
-        for(int i=1;i<switchString.length;i++) //i=1 to avoid the first " "
-            auxV.add(switchString[i]);
-
-        auxV.add("+include_path="+lib);
-        auxV.add(fileInf);
-        auxV.add(fileOut);
-
-        process_string=new String[auxV.size()];
-        for(int i=0;i<auxV.size();i++){
-            process_string[i]=new String((String)auxV.get(i));
-            jTextAreaOutput.append(process_string[i]+" ");
-        }
-        jTextAreaOutput.append("\n");
-
-        try{
-            Runtime rt = Runtime.getRuntime();
-            Process proc = rt.exec(process_string, null, new File(getCompiledpath()));
-            String line="";
-            BufferedReader br= new BufferedReader( new InputStreamReader( proc.getInputStream(), Constants.fileFormat));
-
-            while ( (line = br.readLine() )!=null ){
-                // in caso di errore o warning metto il cancelletto #
-                if ( (line.indexOf("Error")!=-1) || (line.indexOf("error")!=-1)) {
-                    jTextAreaOutput.append(Constants.TOKENCOMMENT+line+"\n");
-                } else if ( (line.indexOf("Warning")!=-1) || (line.indexOf("warning")!=-1)) {
-                    jTextAreaOutput.append(Constants.TOKENCOMMENT+line+"\n");
-                } else jTextAreaOutput.append(line+"\n");
-            }
-
-            jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
-            jTextAreaOutput.append("\n");
-            setTitle(getJifVersion() +" - " + getCurrentFilename());
-
-        } catch(IOException e){
-            System.out.println(e.getMessage());
-        }
-    }
-
-    // Agggiunto il controllo sul MODE (Inform/Glulx)
-    public void runAdventure() {
-
-        String inter="";    // interpreterzcodepath
-        if (jCheckBoxInformMode.isSelected()){
-            inter = getInterpreterzcodepath();
-        } else {
-            inter = getInterpreterglulxpath();
-        }
-
-        // controllo che esista l'interprete con il path  inserito nella Jif.cfg
-        // se non esiste visualizzo un messaggio di warning
-        File test = new File(inter);
-        if (!test.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1")+" "+inter+java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        //recupero l'attuale file name
-        fileInf = getCurrentFilename();
-
-        // se è impostato il file main lo uso
-        if (mainFile != null && !mainFile.equals("")){
-            jTextAreaOutput.append("Using main file "+mainFile+" to running...");
-            fileInf = mainFile;
-        }
-
-        clearOutput();
-        jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_RUN1"));
-
-        try{
-            Runtime rt = Runtime.getRuntime();
-            String command[]=new String[2];
-
-            // in base al tipo di file di uscita, scelgo l'estensione del file da passare all'interprete
-            String estensione ="";
+        if (isInformMode()) {
+            // Inform mode
             if (tipoz.equals("-v3")) estensione=".z3";
             if (tipoz.equals("-v4")) estensione=".z4";
             if (tipoz.equals("-v5")) estensione=".z5";
             if (tipoz.equals("-v6")) estensione=".z6";
             if (tipoz.equals("-v8")) estensione=".z8";
-
-            if (jCheckBoxGlulxMode.isSelected()){
-                estensione = ".ulx";
+        } else {
+            // Glulx mode
+            estensione=".ulx";
+        }
+        
+        // If compiling a project but there isn't a main file, issue warning
+        if (project.getFile() != null && project.getMain() == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Set a Main file first.",
+                    "Warning",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (project.getFile() != null && project.getMain() != null) {
+            fileInf = project.getMain().getPath();
+            outputTextArea.append("Using main file " + fileInf + " to compile... ");            
+        }
+        
+        String fileOut = fileInf.substring(0, fileInf.lastIndexOf(".")) + estensione;
+        outputTextArea.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
+        
+        String lib;
+        String dir = "";
+        if (adventInLibCheckBox.isSelected()) {
+            dir = fileInf.substring(0, fileInf.lastIndexOf(Constants.SEP)) + ",";
+        }
+        
+        lib = dir + resolveAbsolutePath(config.getWorkingDirectory(),config.getLibraryPath());
+        
+        // Secondary 1-2-3 Library Path
+        if (!config.getLibraryPath1().trim().equals("")) {
+            lib = lib + "," + resolveAbsolutePath(config.getWorkingDirectory(),config.getLibraryPath1());
+        }
+        if (!config.getLibraryPath2().trim().equals("")) {
+            lib = lib + "," + resolveAbsolutePath(config.getWorkingDirectory(),config.getLibraryPath2());
+        }
+        if (!config.getLibraryPath3().trim().equals("")) {
+            lib = lib + "," + resolveAbsolutePath(config.getWorkingDirectory(),config.getLibraryPath3());
+        }
+        
+        auxV.add(resolveAbsolutePath(config.getWorkingDirectory(),config.getCompilerPath()));
+        // i=1 to avoid the first " "
+        for (int i=1; i<switchString.length; i++)
+            auxV.add(switchString[i]);
+        
+        auxV.add("+include_path=" + lib);
+        auxV.add(fileInf);
+        auxV.add(fileOut);
+        
+        process_string = new String[auxV.size()];
+        for (int i=0; i<auxV.size(); i++) {
+            process_string[i] = new String((String)auxV.get(i));
+            outputTextArea.append(process_string[i] + " ");
+        }
+        outputTextArea.append("\n");
+        
+        try {
+            Runtime rt = Runtime.getRuntime();
+            Process proc = rt.exec(process_string, null, new File(resolveAbsolutePath(config.getWorkingDirectory(),config.getGamePath())));
+            BufferedReader br = new BufferedReader( new InputStreamReader( proc.getInputStream(), Constants.fileFormat));
+            String line = "";
+            
+            while ( (line = br.readLine() ) != null ) {
+                // in caso di errore o warning metto il cancelletto #
+                if ( (line.indexOf("Error") != -1) || (line.indexOf("error") != -1)) {
+                    outputTextArea.append(Constants.TOKENCOMMENT+line+"\n");
+                } else if ( (line.indexOf("Warning")!=-1) || (line.indexOf("warning")!=-1)) {
+                    outputTextArea.append(Constants.TOKENCOMMENT+line+"\n");
+                } else {
+                    outputTextArea.append(line+"\n");
+                }
             }
-
-            command[0]= new String(inter);
-            command[1]= new String(fileInf.substring(0,fileInf.indexOf(".inf"))+estensione);
-
-            jTextAreaOutput.append(command[0]+" "+command[1]+"\n");
-            rt.exec(command);
-            jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
-        } catch(IOException e){
-            System.out.println(e.getMessage());
+            
+            outputTextArea.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
+            outputTextArea.append("\n");
+            setTitle(getJifVersion() + " - " + getCurrentFilename());
+            
+        } catch (IOException e) {
+            System.out.println("ERROR Rebuild all: " + e.getMessage());
         }
     }
-
-
+    
+    // Agggiunto il controllo sul MODE (Inform/Glulx)
+    private void runAdventure() {
+        
+        String fileInf = "";
+        
+        // controllo che esista l'interprete con il path inserito nella Jif.cfg
+        // se non esiste visualizzo un messaggio di warning
+        updateInformGlulxMode();
+        String inter = config.getInterpreterPath();
+        
+        File test = new File(inter);
+        
+        if (!test.exists()) {
+            JOptionPane.showMessageDialog(this,
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1") + " " + inter + java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"),
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3"),
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // recupero l'attuale file name
+        if (project.getMain() == null) {
+            fileInf = getCurrentFilename();
+        } else {
+            fileInf = project.getMain().getPath();
+            outputTextArea.append("Using main file " + fileInf + " to run... ");
+        }
+        
+        clearOutput();
+        outputTextArea.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_RUN1"));
+        
+        // in base al tipo di file di uscita, scelgo l'estensione del file da passare all'interprete
+        String estensione = "";
+        if (isInformMode()) {
+            // Inform mode
+            if (tipoz.equals("-v3")) estensione=".z3";
+            if (tipoz.equals("-v4")) estensione=".z4";
+            if (tipoz.equals("-v5")) estensione=".z5";
+            if (tipoz.equals("-v6")) estensione=".z6";
+            if (tipoz.equals("-v8")) estensione=".z8";
+        } else {
+            // Glulx mode
+            estensione=".ulx";
+        }
+        
+        String command[] = new String[2];
+        command[0]= new String(inter);
+        command[1]= new String(fileInf.substring(0, fileInf.indexOf(".inf")) + estensione);
+        outputTextArea.append(command[0] + " " + command[1] + "\n");
+        
+        try {
+            
+            Runtime rt = Runtime.getRuntime();
+            rt.exec(command);
+            
+            outputTextArea.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
+            
+        } catch (IOException e) {
+            System.out.println("ERROR Run adventure: " + e.getMessage());
+        }
+    }
+    
+    
     class PopupListenerProject extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
             maybeShowPopup(e);
@@ -4769,1156 +5065,509 @@ public class jFrame extends JFrame {
         }
         private void maybeShowPopup(MouseEvent e) {
             if (e.isPopupTrigger()) {
-                jPopupMenuProject.show(e.getComponent(),
+                projectPopupMenu.show(e.getComponent(),
                         e.getX(), e.getY());
             }
         }
     }
-
+    
     class MenuListener extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
             MutableAttributeSet attr = new SimpleAttributeSet();
             String id = ((javax.swing.JMenuItem)e.getSource()).getText();
-            try{
+            try {
                 //se non trovo nessun carattere "§" non vado a capo
-                if ( ((String)getOperations().get((String)id)).indexOf("§")==-1 ){
+                if ( ((String)getOperations().get((String)id)).indexOf("§")==-1 ) {
                     // inserisco la stringa senza andare a capo
-                    getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), (String)getOperations().get((String)id) , attr);
-                } else{
-                    st = new StringTokenizer((String)getOperations().get((String)id),"§");
-                    while (st.hasMoreTokens()){
-                        getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), st.nextToken()+"\n" , attr);
+                    getCurrentDoc().insertString(getCurrentJifTextPane().getCaretPosition(), (String)getOperations().get((String)id), attr);
+                } else {
+                    StringTokenizer st = new StringTokenizer((String)getOperations().get((String)id),"§");
+                    while (st.hasMoreTokens()) {
+                        getCurrentDoc().insertString(getCurrentJifTextPane().getCaretPosition(), st.nextToken()+"\n", attr);
                     }
                 }
-            } catch (Exception ex){
-                System.out.println(ex.getMessage());
+            } catch (Exception ex) {
+                System.out.println("ERROR Menu mouse press: " + ex.getMessage());
             }
         }
     }
-
-
+    
+    
     // funzione per l'apertura di file
-    private void openFile(){
+    private void openFile() {
+        
+        // File chooser dialog to obtain file names
         JFileChooser chooser;
-        if (lastDir!=null && !lastDir.equals("")){
-            chooser  = new JFileChooser(lastDir);
+        if (config.getLastFile() != null) {
+            chooser = new JFileChooser(config.getLastFile().getDirectory());
         } else {
-            chooser = new JFileChooser(getCompiledpath());
+            chooser = new JFileChooser(resolveAbsolutePath(config.getWorkingDirectory(),config.getGamePath()));
         }
-
+        
         JifFileFilter infFilter = new JifFileFilter("inf", java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF7"));
         infFilter.addExtension("h");
         infFilter.addExtension("res");
         infFilter.addExtension("txt");
         chooser.setFileFilter(infFilter);
         chooser.setMultiSelectionEnabled(true);
-
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
-            fileInf = null;
+        
+        if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
             return;
         }
-
+        
         File[] files = chooser.getSelectedFiles();
-
-        // imposto lastDir se != null
-        String tmp = files[0].getAbsolutePath();
-        lastDir = tmp.substring(0,tmp.lastIndexOf(Constants.SEP));
-
+        
         File file;
-        for (int_var=0 ; int_var < files.length; int_var++){
-            file = files[int_var];
-            //Controllo che non sia stato già aperto un file
-            if (checkOpenFile(file.getAbsoluteFile().toString())) return;
-            JIFTextPane jtp;
-            if (jCheckBoxWrapLines.isSelected()){
-                jtp = new JIFTextPane(this, file);
-            } else{
-                jtp = new JIFTextPane(this, file){
-                    private static final long serialVersionUID = 7492924940162258936L;
-                    public boolean getScrollableTracksViewportWidth(){
-                        if (getSize().width < getParent().getSize().width) return true;
-                        return false;
-                    }
-                    public void setSize(Dimension d){
-                        if (d.width < getParent().getSize().width) d.width = getParent().getSize().width;
-                        super.setSize(d);
-                    }
-                };
+        for (int i = 0; i < files.length; i++) {
+            file = files[i];
+            
+            // Check whether the file is already being edited
+            if (!checkOpenFile(file.getAbsoluteFile().toString())) {
+                
+                JifFileName fileName = new JifFileName(file.getAbsolutePath());
+                editFile(fileName, file);
+                
+                config.setLastFile(file.getAbsolutePath());
+                config.addRecentFile(file.getAbsolutePath());
             }
-
-            JIFScrollPane scroll= new JIFScrollPane(jtp,jtp.pathfile);
-            scroll.setViewportView(jtp);
-
-            //aggiungo la textarea per rowheader solo se il checkbox relativo è true
-            if (jCheckBoxNumberLines.isSelected()){
-                LineNumber lineNumber = new LineNumber( jtp );
-                scroll.setRowHeaderView( lineNumber );
-            }
-            jTabbedPane1.add(scroll, jtp.subPath);
-            jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
-
-            appendLastFile(file.getAbsolutePath());
-
-            fileInf = chooser.getSelectedFile().getAbsolutePath();
-            // cursore sulla prima riga
-            jtp.setCaretPosition(0);
-            lastFile = file.getAbsolutePath();
-
+            
         } // end for
-        enableComponents();
+        
+        enableFileComponents();
+// DEBUG
+        System.out.println("open file()");
         refreshTree();
+        refreshTitle();
     }
-
-    public void openFile(String nomefile){
-
+    
+    private void openFile(String nomefile) {
+        
+        // Check file exists
         File file = new File(nomefile);
-        if (!file.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE2")+" "+nomefile+java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE3") , java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1") , JOptionPane.ERROR_MESSAGE);
+        if (!file.exists()) {
+            JOptionPane.showMessageDialog(this,
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE2") + " " + nomefile + java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE3"),
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1"),
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (checkOpenFile(file.getAbsoluteFile().toString())) return;
-
-        JIFTextPane jtp;
-        if (jCheckBoxWrapLines.isSelected()){
-            jtp = new JIFTextPane(this, file);
-        } else{
-            jtp = new JIFTextPane(this, file){
-                private static final long serialVersionUID = 1381807237210816003L;
-                public boolean getScrollableTracksViewportWidth(){
-                    if (getSize().width < getParent().getSize().width) return true;
-                    return false;
-                }
-                public void setSize(Dimension d){
-                    if (d.width < getParent().getSize().width) d.width = getParent().getSize().width;
-                    super.setSize(d);
-                }
-            };
+        // Check whether the file is already being edited
+        if (checkOpenFile(file.getAbsoluteFile().toString())) {
+            return;
         }
-
-        JIFScrollPane scroll= new JIFScrollPane(jtp,jtp.pathfile);
-        scroll.setViewportView(jtp);
-
-        //aggiungo la textarea per rowheader solo se il checkbox relativo è true
-        if (jCheckBoxNumberLines.isSelected()){
-            LineNumber lineNumber = new LineNumber( jtp );
-            scroll.setRowHeaderView( lineNumber );
-        }
-        jTabbedPane1.add(scroll, jtp.subPath);
-        jTabbedPane1.setSelectedComponent(scroll);
-
-        appendLastFile(file.getAbsolutePath());
-
-        jtp.setCaretPosition(0);
-        enableComponents();
+        
+        editFile(new JifFileName(file.getAbsolutePath()), file);
+        
+        config.setLastFile(file.getAbsolutePath());
+        config.addRecentFile(file.getAbsolutePath());
+        
+        enableFileComponents();
+// DEBUG
+        System.out.println(
+                "open file(" +
+                file.getAbsolutePath() +
+                ")"
+                );
         refreshTree();
-        lastFile = file.getAbsolutePath();
+        refreshTitle();
     }
+    
+    private void newAdventure() {
+        // Generate file name
+        JifFileName fileName = new JifFileName(
+        		resolveAbsolutePath(config.getWorkingDirectory(),config.getGamePath()) +
+                Constants.SEP +
+                java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE3") +
+                (countNewFile++) +
+                ".inf"
+                );
+        
+        editFile(fileName, null);
 
-    private void newAdventure(){
-        fileInf = getCompiledpath()+Constants.SEP+java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE3")+(countNewFile++)+".inf";
-        JIFTextPane jtp;
-        if (jCheckBoxWrapLines.isSelected()){
-            jtp = new JIFTextPane(this, null);
-        } else{
-            jtp = new JIFTextPane(this, null){
-                private static final long serialVersionUID = -7868710263636743719L;
-                public boolean getScrollableTracksViewportWidth(){
-                    if (getSize().width < getParent().getSize().width) return true;
-                    return false;
-                }
-                public void setSize(Dimension d){
-                    if (d.width < getParent().getSize().width) d.width = getParent().getSize().width;
-                    super.setSize(d);
-                }
-            };
-        }
-
-        jtp.setPaths(fileInf);
-        JIFScrollPane scroll= new JIFScrollPane(jtp,jtp.pathfile);
-        scroll.setViewportView(jtp);
-
-        //aggiungo la textarea per rowheader solo se il checkbox relativo è true
-        if (jCheckBoxNumberLines.isSelected()){
-            LineNumber lineNumber = new LineNumber( jtp );
-            scroll.setRowHeaderView( lineNumber );
-        }
-        jTabbedPane1.add(scroll, jtp.subPath);
-        jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
-        enableComponents();
+        enableFileComponents();
+// DEBUG
+        System.out.println("new file - refresh tree");
         refreshTree();
+        refreshTitle();
     }
+    
+    private void editFile(JifFileName fileName, File file) {
 
-    private void clearOutput(){
-        jTextAreaOutput.setText("");
-    }
-
-    public void saveConfigNew() {
-        try{
-            File file = new File(fileini);
-            if (!(file.exists())){
-                //System.out.println(java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE6"));
-                System.out.println("Error opening "+file.getAbsolutePath());
-                jTextAreaOutput.setText("Error opening "+file.getAbsolutePath());
-                return;
-            }
-
-            StringBuffer output = new StringBuffer();
-            output
-                    .append("############################################################################\n")
-                    .append("# Main Jif configuration file                                               \n")
-                    .append("############################################################################\n")
-
-                    // ALTKEYS SECTION
-                    .append("\n# [ALTKEYS] Section\n\n");
-            for (Iterator it = getAltkeys().keySet().iterator(); it.hasNext();) {
-                String key = (String) it.next();
-                String value = (String)getAltkeys().get(key);
-                output.append("[ALTKEYS]"+key+","+value+"\n");
-            }
-            for (Iterator it = getExecutecommands().keySet().iterator(); it.hasNext();) {
-                String key = (String) it.next();
-                String value = (String)getExecutecommands().get(key);
-                output.append("[EXECUTE]"+key+","+value+"\n");
-            }
-
-            // HELPEDCODE SECTION
-            output
-                    .append("\n# [HELPEDCODE] Section\n\n")
-                    .append("# [ret] = Return\n")
-                    .append("# [tab] = Tab char\n")
-                    .append("# @     = Cursor Position\n\n");
-            for (Iterator it = getHelpcode().keySet().iterator(); it.hasNext();) {
-                String key = (String) it.next();
-                String value = (String)getHelpcode().get(key);
-                output.append("[HELPEDCODE]"+key+","+value+"\n");
-            }
-
-            // MAPPING Section
-            output
-                    .append("\n# [MAPPING] Section\n\n");
-            for (Iterator it = getMapping().keySet().iterator(); it.hasNext();) {
-                String key = (String) it.next();
-                String value = (String)getMapping().get(key);
-                output.append("[MAPPING]"+key+","+value+"\n");
-            }
-
-            // MENU SECTION
-            output
-                    .append("\n# [MENU] Section\n\n");
-            for(int i=0; i<getJMenuInsertNew().getMenuComponentCount();i++){
-                JMenu jmenu = (JMenu) getJMenuInsertNew().getItem(i);
-                output.append("\n[MENU]["+jmenu.getName()+"]*\n");
-                for(int j=0; j<jmenu.getMenuComponentCount();j++){
-                    JMenuItem jmenuitem = (JMenuItem) jmenu.getItem(j);
-                    output.append("[MENU]["+jmenu.getName()+"]"+jmenuitem.getName()+","+getOperations().get(jmenuitem.getName())+"\n");
-                }
-            }
-
-            // # [SWITCH] Section
-            output.append("\n# [SWITCH] Section\n\n");
-            for(int count=0; count < jPanelSwitch1.getComponentCount(); count++){
-                Checkbox ch = (Checkbox) jPanelSwitch1.getComponent(count);
-                if (ch.getState()){
-                    output.append("[SWITCH]"+ch.getLabel()+",on\n");
-                } else{
-                    output.append("[SWITCH]"+ch.getLabel()+",off\n");
-                }
-            }
-            for(int count=0; count < jPanelSwitch2.getComponentCount(); count++){
-                Checkbox ch = (Checkbox) jPanelSwitch2.getComponent(count);
-                if (ch.getState()){
-                    output.append("[SWITCH]"+ch.getLabel()+",on\n");
-                } else{
-                    output.append("[SWITCH]"+ch.getLabel()+",off\n");
-                }
-            }
-
-            // # [SYNTAX] Section
-            output
-                    .append("\n# [SYNTAX] Section\n\n");
-            for (Iterator it = getAttributes().iterator(); it.hasNext();) {
-                String key = (String) it.next();
-                output.append("[SYNTAX][attribute]"+key+"\n");
-            }
-            for (Iterator it = getKeywords().iterator(); it.hasNext();) {
-                String key = (String) it.next();
-                output.append("[SYNTAX][keyword]"+key+"\n");
-            }
-            for (Iterator it = getProperties().iterator(); it.hasNext();) {
-                String key = (String) it.next();
-                output.append("[SYNTAX][property]"+key+"\n");
-            }
-            for (Iterator it = getVerbs().iterator(); it.hasNext();) {
-                String key = (String) it.next();
-                output.append("[SYNTAX][verb]"+key+"\n");
-            }
-
-            //# [SYMBOLS] Section
-            output
-                    .append("\n# [SYMBOLS] Section\n\n");
-            for (Iterator it = symbols.iterator(); it.hasNext();) {
-                String key = (String) it.next();
-                output.append("[SYMBOLS]"+key+"\n");
-            }
-
-            // PATHS section
-            output
-                    .append("\n# [PATH] Section\n\n")
-                    .append("[LIBRAYPATH]"+librarypath+"\n")
-                    .append("[LIBRAYPATHSECONDARY1]"+librarypathsecondary1+"\n")
-                    .append("[LIBRAYPATHSECONDARY2]"+librarypathsecondary2+"\n")
-                    .append("[LIBRAYPATHSECONDARY3]"+librarypathsecondary3+"\n")
-                    .append("[COMPILEDPATH]"+compiledpath+"\n")
-                    .append("[INTERPRETERZCODEPATH]"+interpreterzcodepath+"\n")
-                    .append("[INTERPRETERGLULXPATH]"+interpreterglulxpath+"\n")
-                    .append("[COMPILERPATH]"+getCompilerpath()+"\n")
-                    .append("[BRESPATH]"+brespath+"\n")
-                    .append("[BLCPATH]"+blcpath+"\n");
-
-            // SETTINGS section
-            output
-                    .append("\n# [SETTINGS] Section\n\n")
-                    .append("[WRAPLINES]"+jCheckBoxWrapLines.isSelected()+"\n")
-                    .append("[SYNTAXCHECK]"+jCheckBoxSyntax.isSelected()+"\n")
-                    .append("[HELPEDCODECHECK]"+jCheckBoxHelpedCode.isSelected()+"\n")
-                    .append("[MAPPINGCODE]"+jCheckBoxMappingLive.isSelected()+"\n")
-                    .append("[NUMBERLINES]"+jCheckBoxNumberLines.isSelected()+"\n")
-                    .append("[PROJECTSCANFORCLASSES]"+jCheckBoxScanProjectFiles.isSelected()+"\n")
-                    .append("[PROJECTOPENALLFILES]"+jCheckBoxProjectOpenAllFiles.isSelected()+"\n")
-                    .append("[USECOMPILEDPATH]"+jCheckBoxAdventInLib.isSelected()+"\n")
-                    .append("[OPENLASTFILE]"+jCheckBoxOpenLastFile.isSelected()+"\n")
-                    .append("[CREATENEWFILE]"+jCheckBoxCreateNewFile.isSelected()+"\n")
-                    .append("[MAKEALWAYSRESOURCE]"+jCheckBoxMakeResource.isSelected()+"\n")
-                    .append("[TABSIZE]"+tabSize+"\n")
-                    .append("[COLORKEYWORD]"+colorKeyword.getRed()+","+colorKeyword.getGreen()+","+colorKeyword.getBlue()+"\n")
-                    .append("[COLORATTRIBUTE]"+colorAttribute.getRed()+","+colorAttribute.getGreen()+","+colorAttribute.getBlue()+"\n")
-                    .append("[COLORPROPERTY]"+colorProperty.getRed()+","+colorProperty.getGreen()+","+colorProperty.getBlue()+"\n")
-                    .append("[COLORVERB]"+colorVerb.getRed()+","+colorVerb.getGreen()+","+colorVerb.getBlue()+"\n")
-                    .append("[COLORNORMAL]"+colorNormal.getRed()+","+colorNormal.getGreen()+","+colorNormal.getBlue()+"\n")
-                    .append("[COLORCOMMENT]"+colorComment.getRed()+","+colorComment.getGreen()+","+colorComment.getBlue()+"\n")
-                    .append("[COLORSTRING]"+colorString.getRed()+","+colorString.getGreen()+","+colorString.getBlue()+"\n")
-                    .append("[COLORWORD]"+colorWord.getRed()+","+colorWord.getGreen()+","+colorWord.getBlue()+"\n")
-                    .append("[COLORBACKGROUND]"+colorBackground.getRed()+","+colorBackground.getGreen()+","+colorBackground.getBlue()+"\n")
-                    .append("[DEFAULTFONT]"+ defaultFont.getName()+","+defaultFont.getStyle()+","+defaultFont.getSize()+"\n")
-                    .append("[LOCATIONX]"+ getX()+"\n")
-                    .append("[LOCATIONY]"+ getY()+"\n")
-                    .append("[WIDTH]"+ getWidth()+"\n")
-                    .append("[HEIGHT]"+ getHeight()+"\n")
-                    .append("[MODE]"+ (jCheckBoxInformMode.isSelected() ? "INFORM":"GLULX") +"\n")
-                    .append("[OUTPUT]"+ jCheckBoxOutput.isSelected()+"\n")
-                    .append("[JTOOLBAR]"+ jCheckBoxJToolBar.isSelected()+"\n")
-                    .append("[JTREE]"+ jCheckBoxJTree.isSelected()+"\n")
-                    .append("[DIVIDER1]"+ jSplitPane1.getDividerLocation()+"\n")
-                    .append("[DIVIDER3]"+ jSplitPane3.getDividerLocation()+"\n")
-                    .append("[LASTFILE]"+(lastFile!=null?lastFile:"")+"\n")
-                    .append("[LASTPROJECT]"+(lastProject!=null?lastProject:"")+"\n");
-
-            // Recent files section
-            output.append("\n# [RECENTFILES] Section\n\n");
-            for(int i=0; i<getJMenuRecentFiles().getMenuComponentCount();i++){
-                JMenuItem jmenuitem = (JMenuItem) getJMenuRecentFiles().getItem(i);
-                output.append("\n[RECENTFILES]"+jmenuitem.getName()+"\n");
-            }
-
-            //System.out.println(output.toString());
-            FileOutputStream fos = new FileOutputStream(fileini);
-            Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
-            out.write(output.toString());
-            out.flush();
-            out.close();
-            jTextAreaOutput.setText(file.getAbsolutePath()+" saved.");
-
-        } catch(Exception e){
-            System.out.println("ERR: " + e.getMessage());
-            e.printStackTrace();
+        InformContext context = config.getContext();
+        JifTextPane jtp;
+        
+        if (config.getWrapLines()) {
+            jtp = new JifTextPane(this, fileName, file, context);
+        } else {
+            jtp = new JifNoWrapTextPane(this, fileName, file, context);
         }
-    }
-
-    // New method
-    public void loadConfigNew(File file) {
-        try{
-            if (!(file.exists())){
-                System.out.println("Error opening "+file.getAbsolutePath());
-                jTextAreaOutput.setText("Error opening "+file.getAbsolutePath());
-                return;
-            }
-
-            // Initialize objects
-            Hashtable altkeys         = new Hashtable();
-            Hashtable executecommands = new Hashtable();
-            Hashtable helpcode        = new Hashtable();
-            Hashtable mapping         = new Hashtable();
-            Hashtable operations      = new Hashtable();
-            Hashtable switches        = new Hashtable();
-            HashSet keywords          = new HashSet();
-            HashSet attributes        = new HashSet();
-            HashSet properties        = new HashSet();
-            HashSet verbs             = new HashSet();
-            HashSet keywords_cs       = new HashSet();
-            HashSet attributes_cs     = new HashSet();
-            HashSet properties_cs     = new HashSet();
-            HashSet verbs_cs          = new HashSet();
-            HashSet symbols           = new HashSet();
-            HashSet recentFiles       = new HashSet();
-
-            StringBuffer sb = new StringBuffer();
-            String riga;
-            sb.setLength(0);
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
-            while ((riga = br.readLine())!=null){
-                sb.append(riga).append("\n");
-            }
-            br.close();
-            String configuration = sb.toString();
-            Charset charset = Charset.forName(Constants.fileFormat);
-            CharsetEncoder encoder = charset.newEncoder();
-            CharsetDecoder decoder = charset.newDecoder();
-            ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(configuration));
-            CharBuffer cb = decoder.decode(bbuf);
-
-            // Altkeys configuration
-            Pattern patt = Pattern.compile("\n"+Constants.ALTKEYSTOKEN+"([^,]+),([^\n]+)");
-            Matcher m = patt.matcher(cb);
-            while (m.find()){
-                altkeys.put(m.group(1),m.group(2));
-            }
-
-            // execute
-            patt = Pattern.compile("\n"+Constants.EXECUTETOKEN+"([^,]+),([^\n]+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                executecommands.put(m.group(1),m.group(2));
-            }
-
-            // helpedcode
-            patt = Pattern.compile("\n"+Constants.HELPEDCODETOKEN+"([^,]+),([^\n]+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                helpcode.put(m.group(1),m.group(2));
-            }
-
-            // mapping
-            patt = Pattern.compile("\n"+Constants.MAPPINGTOKEN+"([^,]+),([^\n]+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                mapping.put(m.group(1),m.group(2));
-            }
-
-            // Menu Insert New
-            getJMenuInsertNew().removeAll();
-            patt = Pattern.compile("\n"+Constants.MENUTOKEN+"\\[(.+)\\]\\*");
-            m = patt.matcher(cb);
-            Vector menues = new Vector();
-            while (m.find()){
-                menues.add(m.group(1));
-            }
-            // Add the sub-menues
-            for (Iterator it = menues.iterator(); it.hasNext();) {
-                String elem = (String) it.next();
-                JMenu menu = new JMenu(elem);
-                menu.setName(elem);
-                menu.setFont(new java.awt.Font("Dialog", 0, 11));
-                patt = Pattern.compile("\n"+Constants.MENUTOKEN+"\\["+elem+"\\]([^,*]+),([^\n]+)");
-                m = patt.matcher(cb);
-                while (m.find()){
-                    JMenuItem mi = new JMenuItem(m.group(1));
-                    mi.setFont(new java.awt.Font("Dialog", 0, 11));
-                    mi.setName(m.group(1));
-                    menu.add(mi).addMouseListener(menuListener);
-                    operations.put(m.group(1),m.group(2));
-                }
-                getJMenuInsertNew().add(menu);
-            }
-
-
-            // switches
-            patt = Pattern.compile("\n"+Constants.SWITCHTOKEN+"([^,]+),([^\n]+)");
-            m = patt.matcher(cb);
-            getJPanelSwitch1().removeAll();
-            getJPanelSwitch2().removeAll();
-            Checkbox check;
-            while (m.find()){
-                switches.put(m.group(1),m.group(2));
-                check = new Checkbox(m.group(1));
-                check.setFont(new Font("Monospaced", Font.PLAIN, 11));
-                check.setState(m.group(2).trim().equals("on") ? true : false);
-                if (m.group(1).length()<4){
-                    getJPanelSwitch1().add(check);
-                } else{
-                    getJPanelSwitch2().add(check);
-                }
-            }
-
-
-            // Syntax - attribute
-            patt = Pattern.compile("\n"+Constants.SYNTAXTOKEN+"\\[attribute\\](.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                attributes.add(m.group(1).toLowerCase());
-                attributes_cs.add(m.group(1));
-            }
-
-            // Syntax - keyword
-            patt = Pattern.compile("\n"+Constants.SYNTAXTOKEN+"\\[keyword\\](.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                keywords.add(m.group(1).toLowerCase());
-                keywords_cs.add(m.group(1));
-            }
-
-            // Syntax - property
-            patt = Pattern.compile("\n"+Constants.SYNTAXTOKEN+"\\[property\\](.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                properties.add(m.group(1).toLowerCase());
-                properties_cs.add(m.group(1));
-            }
-
-            // Syntax - verb
-            patt = Pattern.compile("\n"+Constants.SYNTAXTOKEN+"\\[verb\\](.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                verbs.add(m.group(1).toLowerCase());
-                verbs_cs.add(m.group(1));
-            }
-
-            // Symbols
-            patt = Pattern.compile("\n"+Constants.SYMBOLSTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            Vector vettoresimboli = new Vector();
-            while (m.find()){
-                vettoresimboli.add(m.group(1));
-                symbols.add(m.group(1));
-            }
-
-
-            // PATHS - LIBRAYPATH
-            patt = Pattern.compile("\n"+Constants.LIBRAYPATHTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            setLibrarypath("");
-            while (m.find()){
-                setLibrarypath(m.group(1).trim());
-            }
-            // PATHS - LIBRAYPATHSECONDARY1
-            patt = Pattern.compile("\n"+Constants.LIBRAYPATHSECONDARY1TOKEN+"(.+)");
-            m = patt.matcher(cb);
-            setLibrarypathsecondary1("");
-            while (m.find()){
-                setLibrarypathsecondary1(m.group(1).trim());
-            }
-            // PATHS - LIBRAYPATHSECONDARY2
-            patt = Pattern.compile("\n"+Constants.LIBRAYPATHSECONDARY2TOKEN+"(.+)");
-            m = patt.matcher(cb);
-            setLibrarypathsecondary2("");
-            while (m.find()){
-                setLibrarypathsecondary2(m.group(1).trim());
-            }
-            // PATHS - LIBRAYPATHSECONDARY3
-            patt = Pattern.compile("\n"+Constants.LIBRAYPATHSECONDARY3TOKEN+"(.+)");
-            m = patt.matcher(cb);
-            setLibrarypathsecondary3("");
-            while (m.find()){
-                setLibrarypathsecondary3(m.group(1).trim());
-            }
-            // PATHS - COMPILEDPATH
-            patt = Pattern.compile("\n"+Constants.COMPILEDPATHTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            setCompiledpath("");
-            while (m.find()){
-                setCompiledpath(m.group(1).trim());
-            }
-            // PATHS - INTERPRETERZCODEPATH
-            patt = Pattern.compile("\n"+Constants.INTERPRETERZCODEPATHTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            setInterpreterzcodepath("");
-            while (m.find()){
-                setInterpreterzcodepath(m.group(1).trim());
-            }
-            // PATHS - INTERPRETERGLULXPATH
-            patt = Pattern.compile("\n"+Constants.INTERPRETERGLULXPATHTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            setInterpreterglulxpath("");
-            while (m.find()){
-                setInterpreterglulxpath(m.group(1).trim());
-            }
-            // PATHS - COMPILERPATH
-            patt = Pattern.compile("\n"+Constants.COMPILERPATHTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            setCompilerpath("");
-            while (m.find()){
-                setCompilerpath(m.group(1).trim());
-            }
-            // PATHS - BRESPATH
-            patt = Pattern.compile("\n"+Constants.BRESPATHTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            setBrespath("");
-            while (m.find()){
-                setBrespath(m.group(1).trim());
-            }
-            // PATHS - BLCPATH
-            patt = Pattern.compile("\n"+Constants.BLCPATHTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            setBlcpath("");
-            while (m.find()){
-                setBlcpath(m.group(1).trim());
-            }
-
-
-            // Recentfiles
-            getJMenuRecentFiles().removeAll();
-            recentFiles.clear();
-            patt = Pattern.compile("\n"+Constants.RECENTFILESTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                JMenuItem mi = new JMenuItem(m.group(1));
-                mi.setName(m.group(1));
-                mi.addActionListener(new java.awt.event.ActionListener() {
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        openFile(((javax.swing.JMenuItem)evt.getSource()).getText());
-                    }
-                });
-                getJMenuRecentFiles().add(mi);
-                recentFiles.add(m.group(1));
-            }
-
-
-            // Settings - WRAPLINES
-            patt = Pattern.compile("\n"+Constants.WRAPLINESTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxWrapLines.setSelected(m.group(1).equals("true")?true:false);
-            }
-            // Settings - SYNTAXCHECK
-            patt = Pattern.compile("\n"+Constants.SYNTAXCHECKTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxSyntax.setSelected(m.group(1).equals("true")?true:false);
-            }
-            // Settings - HELPEDCODECHECK
-            patt = Pattern.compile("\n"+Constants.HELPEDCODECHECKTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxHelpedCode.setSelected(m.group(1).equals("true")?true:false);
-            }
-            // Settings - MAPPINGCODE
-            patt = Pattern.compile("\n"+Constants.MAPPINGCODETOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxMappingLive.setSelected(m.group(1).equals("true")?true:false);
-            }
-            // Settings - NUMBERLINES
-            patt = Pattern.compile("\n"+Constants.NUMBERLINESTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxNumberLines.setSelected(m.group(1).equals("true")?true:false);
-            }
-            // Settings - PROJECTSCANFORCLASSES
-            patt = Pattern.compile("\n"+Constants.PROJECTSCANFORCLASSESTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxScanProjectFiles.setSelected(m.group(1).equals("true")?true:false);
-            }
-            // Settings - PROJECTOPENALLFILES
-            patt = Pattern.compile("\n"+Constants.PROJECTOPENALLFILESTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxProjectOpenAllFiles.setSelected(m.group(1).equals("true")?true:false);
-            }
-            // Settings - USECOMPILEDPATH
-            patt = Pattern.compile("\n"+Constants.USECOMPILEDPATHTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxAdventInLib.setSelected(m.group(1).equals("true")?true:false);
-            }
-            // Settings - OPENLASTFILE
-            patt = Pattern.compile("\n"+Constants.OPENLASTFILETOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxOpenLastFile.setSelected(m.group(1).equals("true")?true:false);
-            }
-            // Settings - CREATENEWFILE
-            patt = Pattern.compile("\n"+Constants.CREATENEWFILETOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxCreateNewFile.setSelected(m.group(1).equals("true")?true:false);
-            }
-            // Settings - MAKEALWAYSRESOURCE
-            patt = Pattern.compile("\n"+Constants.MAKEALWAYSRESOURCETOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxMakeResource.setSelected(m.group(1).equals("true")?true:false);
-            }
-            // Settings - TABSIZE
-            patt = Pattern.compile("\n"+Constants.TABSIZETOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                try{
-                    tabSize = Integer.parseInt(m.group(1));
-                } catch (Exception e){
-                    tabSize = 4;
-                }
-                jTextFieldTabSize.setText(""+tabSize);
-            }
-            // Settings - Colors&Font
-            patt = Pattern.compile("\n"+Constants.COLORKEYWORDTOKEN+"(.+),(.+),(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                colorKeyword = new Color(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
-            }
-            patt = Pattern.compile("\n"+Constants.COLORATTRIBUTETOKEN+"(.+),(.+),(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                colorAttribute = new Color(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
-            }
-            patt = Pattern.compile("\n"+Constants.COLORPROPERTYTOKEN+"(.+),(.+),(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                colorProperty = new Color(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
-            }
-            patt = Pattern.compile("\n"+Constants.COLORVERBTOKEN+"(.+),(.+),(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                colorVerb = new Color(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
-            }
-            patt = Pattern.compile("\n"+Constants.COLORNORMALTOKEN+"(.+),(.+),(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                colorNormal = new Color(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
-            }
-            patt = Pattern.compile("\n"+Constants.COLORCOMMENTTOKEN+"(.+),(.+),(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                colorComment = new Color(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
-            }
-            patt = Pattern.compile("\n"+Constants.COLORSTRINGTOKEN+"(.+),(.+),(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                colorString = new Color(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
-            }
-            patt = Pattern.compile("\n"+Constants.COLORWORDTOKEN+"(.+),(.+),(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                colorWord = new Color(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
-            }
-            patt = Pattern.compile("\n"+Constants.COLORBACKGROUNDTOKEN+"(.+),(.+),(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                colorBackground = new Color(Integer.parseInt(m.group(1)),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
-            }
-            patt = Pattern.compile("\n"+Constants.DEFAULTFONTTOKEN+"(.+),(.+),(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                defaultFont = new Font(m.group(1),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)));
-            }
-            // Settings - LOCATIONX-Y-WIDTH-HEIGHT
-            patt = Pattern.compile("\n"+Constants.LOCATIONXTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            int x=0,y=0,width=0,height=0;
-            while (m.find()){
-                x = Integer.parseInt(m.group(1));
-            }
-            patt = Pattern.compile("\n"+Constants.LOCATIONYTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                y = Integer.parseInt(m.group(1));
-            }
-            patt = Pattern.compile("\n"+Constants.WIDTHTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                width = Integer.parseInt(m.group(1));
-            }
-            patt = Pattern.compile("\n"+Constants.HEIGHTTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                height = Integer.parseInt(m.group(1));
-            }
-            if (width*height*x*y != 0){
-                setSize(width, height);
-                setLocation(x,y);
-            } else{
-                // first time JIF runs
-                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                setSize(screenSize.width-200, screenSize.height-140);
-                setLocation(screenSize.width/2 - (getWidth()/2), screenSize.height/2 - (getHeight()/2));
-            }
-            patt = Pattern.compile("\n"+Constants.MODETOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                if(m.group(1).equalsIgnoreCase("inform")){
-                    jCheckBoxInformMode.setState(true);
-                } else{
-                    jCheckBoxGlulxMode.setState(true);
-                }
-            }
-            patt = Pattern.compile("\n"+Constants.OUTPUTTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxOutput.setSelected(m.group(1).equals("true")?true:false);
-            }
-            patt = Pattern.compile("\n"+Constants.JTOOLBARTOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxJToolBar.setSelected(m.group(1).equals("true")?true:false);
-            }
-            patt = Pattern.compile("\n"+Constants.JTREETOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jCheckBoxJTree.setSelected(m.group(1).equals("true")?true:false);
-            }
-            patt = Pattern.compile("\n"+Constants.DIVIDER1TOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jSplitPane1.setDividerLocation(Integer.parseInt(m.group(1)));
-            }
-            patt = Pattern.compile("\n"+Constants.DIVIDER3TOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                jSplitPane3.setDividerLocation(Integer.parseInt(m.group(1)));
-            }
-            patt = Pattern.compile("\n"+Constants.LASTFILETOKEN+"([^\n]+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                lastFile = m.group(1).trim();
-            }
-            patt = Pattern.compile("\n"+Constants.LASTPROJECTTOKEN+"([^\n]+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                lastProject = m.group(1).trim();
-                jMenuItemLastProject.setText( java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_OPEN") +" ("+
-                        lastProject.substring(
-                        lastProject.lastIndexOf(Constants.SEP)+1 ,
-                        lastProject.length())+")");
-            }
-
-            // Set JIF configuration
-            setAltkeys(altkeys);
-            setExecutecommands(executecommands);
-            setHelpcode(helpcode);
-            setMapping(mapping);
-            setOperations(operations);
-            setSwitches(switches);
-            setKeywords(keywords);
-            setKeywords_cs(keywords_cs);
-            setAttributes(attributes);
-            setAttributes_cs(attributes_cs);
-            setProperties(properties);
-            setProperties_cs(properties_cs);
-            setVerbs(verbs);
-            setVerbs_cs(verbs_cs);
-            getJListSymbols().setListData(vettoresimboli);
-            setSymbols(symbols);
-            setRecentFiles(recentFiles);
-            jTextAreaOutput.setText("Configuration file ["+file.getAbsolutePath()+"] loaded.");
-
-        } catch(Exception e){
-            System.out.println("ERR: " + e.getMessage());
-            e.printStackTrace();
+        
+        JifScrollPane scroll = new JifScrollPane(jtp, fileName.getPath());
+        scroll.setViewportView(jtp);
+        
+        // aggiungo la textarea per rowheader solo se il checkbox relativo è true
+        if (config.getNumberLines()) {
+            LineNumber lineNumber = new LineNumber(jtp);
+            scroll.setRowHeaderView(lineNumber);
         }
+        fileTabbedPane.add(scroll, jtp.getSubPath());
+        fileTabbedPane.setSelectedIndex(fileTabbedPane.getTabCount() - 1);
+        
     }
-
-    public void checkTree(String key){
+    
+    private void clearOutput() {
+        outputTextArea.setText("");
+    }
+    
+    public void checkTree(String key) {
         key = key.toLowerCase();
         String file;
         file = checkDefinition(key);
-        if (null == file){
+        if (file == null) {
             return;
         }
-
-        JIFTextPane jif ;
+        
+        JifTextPane jif;
         synchronized (this) {
             openFile(file);
-            jif  = getCurrentJIFTextPane();
+            jif  = getCurrentJifTextPane();
         }
-
-        // clycle on the tree's nodes
-        for (int c=0; c < top.getChildCount(); c++){
+        
+        Element el;
+        // cycle on the tree's nodes
+        for (int c=0; c < top.getChildCount(); c++) {
             DefaultMutableTreeNode mainnode = (DefaultMutableTreeNode)top.getChildAt(c);
-
-            for (int k=0; k < mainnode.getChildCount(); k++){
+            
+            for (int k=0; k < mainnode.getChildCount(); k++) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)mainnode.getChildAt(k);
-                if (node == null){
+                if (node == null) {
                     continue;
                 }
-
+                
                 // for the classes node
-                if(node.children().hasMoreElements()){
-                    for (int j=0; j < node.getChildCount(); j++){
+                if (node.children().hasMoreElements()) {
+                    for (int j=0; j < node.getChildCount(); j++) {
                         DefaultMutableTreeNode nodeclass = (DefaultMutableTreeNode)node.getChildAt(j);
-                        Object nodo = nodeclass.getUserObject();
-                        Inspect ins = (Inspect) nodo;
-                        if ( ins.Ilabel.equals(key)  ){
-                            try{
-                                if (ins != null){
+                        Inspect ins = (Inspect) nodeclass.getUserObject();
+                        if ( ins.Ilabel.equals(key) ) {
+                            try {
+                                if (ins != null) {
+                                    el = jif.getDocument().getDefaultRootElement();
                                     int pos = el.getElementIndex(ins.Iposition);
-                                    Element el = jif.getDocument().getDefaultRootElement(); 
                                     el = jif.getDocument().getDefaultRootElement().getElement(pos);
                                     jif.getHlighter().highlightFromTo(jif, el.getStartOffset() , el.getEndOffset());
-
+                                    
                                     jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                                     jif.scrollRectToVisible(jif.modelToView(ins.Iposition));
                                 }
-
-                            }catch(Exception e){
-                                System.out.println(e.getMessage());
+                                
+                            } catch (Exception e) {
+                                System.out.println("ERROR Check tree: " + e.getMessage());
                             }
                         }
                     }
-
-                } else{
-                    Object nodo = node.getUserObject();
-                    Inspect ins = (Inspect) nodo;
-                    if ( ins.Ilabel.equals(key)  ){
-                        try{
-                            if (ins != null){
+                    
+                } else {
+                    Inspect ins = (Inspect) node.getUserObject();
+                    if ( ins.Ilabel.equals(key) ) {
+                        try {
+                            if (ins != null) {
                                 el = jif.getDocument().getDefaultRootElement();
                                 int pos = el.getElementIndex(ins.Iposition);
                                 el = jif.getDocument().getDefaultRootElement().getElement(pos);
-                                jif.getHlighter().highlightFromTo(jif, el.getStartOffset() , el.getEndOffset());
-
+                                jif.getHlighter().highlightFromTo(jif,
+                                        el.getStartOffset(),
+                                        el.getEndOffset());
+                                
                                 jif.scrollRectToVisible(jif.modelToView(jif.getDocument().getLength()));
                                 jif.scrollRectToVisible(jif.modelToView(ins.Iposition));
                                 jif.requestFocus();
-                                jif.setCaretPosition(ins.Iposition);                                
+                                jif.setCaretPosition(ins.Iposition);
                             }
-
-                        }catch(Exception e){
-                            System.out.println(e.getMessage());
+                            
+                        } catch (Exception e) {
+                            System.out.println("ERROR Check tree: " + e.getMessage());
                         }
                     }
                 }
             }
         }
     }
-
-
-    public void refreshTreeIncremental(){
+    
+    private void refreshTreeIncremental() {
         String currentName = getCurrentFilename();
-        if (jTabbedPane1.getTabCount()==0 ||
+        if (fileTabbedPane.getTabCount() == 0 ||
                 currentName.endsWith(".txt")  ||
-                currentName.endsWith(".res")){
+                currentName.endsWith(".res")) {
             return;
         }
-
-        DefaultTreeModel treeModel = (DefaultTreeModel) jTree1.getModel();
-        treePath1 = new TreePath(treeModel.getPathToRoot(category1));
-        treePath2 = new TreePath(treeModel.getPathToRoot(category2));
-        treePath4 = new TreePath(treeModel.getPathToRoot(category4));
-        treePath5 = new TreePath(treeModel.getPathToRoot(category5));
-        treePath7 = new TreePath(treeModel.getPathToRoot(category7));
-
+        
+        DefaultTreeModel treeModel = (DefaultTreeModel) treeTree.getModel();
+        TreePath treePath1 = new TreePath(treeModel.getPathToRoot(globalTree));
+        TreePath treePath2 = new TreePath(treeModel.getPathToRoot(constantTree));
+        TreePath treePath4 = new TreePath(treeModel.getPathToRoot(objectTree));
+        TreePath treePath5 = new TreePath(treeModel.getPathToRoot(functionTree));
+        TreePath treePath7 = new TreePath(treeModel.getPathToRoot(classTree));
+        
         // Using the regexp
-        CharBuffer cb = getCurrentJIFTextPane().getCharBuffer();
+        CharBuffer cb = getCurrentJifTextPane().getCharBuffer();
         objTree = new Vector();
-        Pattern patt;
-        Matcher m;
-
         // GLOBALS
-        if(jTree1.isExpanded(treePath1) || category1.isLeaf()){
-            patt = Pattern.compile("\n+\\s*Global\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-            m = patt.matcher(cb);
-            refreshGlobals(patt,m);
+        if (treeTree.isExpanded(treePath1) || globalTree.isLeaf()) {
+            refreshGlobals(cb);
         }
-
         // CONSTANTS
-        if(jTree1.isExpanded(treePath2) || category2.isLeaf()){
-            patt = Pattern.compile("\n+\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-            m = patt.matcher(cb);
-            refreshConstants(patt,m);
+        if (treeTree.isExpanded(treePath2) || constantTree.isLeaf()) {
+            refreshConstants(cb);
         }
-
         // OBJECTS
-        if(jTree1.isExpanded(treePath4) || category4.isLeaf()){
-            patt = Pattern.compile("\n+\\s*Object\\s+(->\\s+)*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-            m = patt.matcher(cb);
-            refreshObjects(patt,m);
+        if (treeTree.isExpanded(treePath4) || objectTree.isLeaf()) {
+            refreshObjects(cb);
         }
-
         // FUNCTIONS
-        if(jTree1.isExpanded(treePath5) || category5.isLeaf()){
-            patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-            m = patt.matcher(cb);
-            refreshFunctions(patt,m);
+        if (treeTree.isExpanded(treePath5) || functionTree.isLeaf()) {
+            refreshFunctions(cb);
         }
-
         // CLASSES
-        if(jTree1.isExpanded(treePath7) || category7.isLeaf()){
-            Vector classi_locali= new Vector();
-            patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-            m = patt.matcher(cb);
-            refreshClasses(patt,m,classi_locali);
+        if (treeTree.isExpanded(treePath7) || classTree.isLeaf()) {
+// DEBUG            
+            System.out.println("Incremental");
+            refreshClasses(cb);
+            
+        expandAll(treeTree);
+        }
+    }
+    
+    private void refreshGlobals(CharBuffer cb) {
+        Matcher m = globalPattern.matcher(cb);
+        objTree.clear();
+        while (m.find()) {
+            objTree.add(new Inspect(m.group(1).toLowerCase(), m.start(1)));
+        }
+        globalTree.removeAllChildren();
+        sortNodes(objTree, globalTree);
+        treeModel.reload(globalTree);
+    }
+    
+    private void refreshConstants(CharBuffer cb) {
+        Matcher m = constantPattern.matcher(cb);
+        objTree.clear();
+        while (m.find()) {
+            objTree.add(new Inspect(m.group(1).toLowerCase(), m.start(1)));
+        }
+        constantTree.removeAllChildren();
+        sortNodes(objTree, constantTree);
+        treeModel.reload(constantTree);
+    }
+    
+    private void refreshObjects(CharBuffer cb) {
+        Matcher m = objectPattern.matcher(cb);
+        objTree.clear();
+        while (m.find()) {
+            objTree.add(new Inspect(m.group(2).toLowerCase(), m.start(2)));
+        }
+        objectTree.removeAllChildren();
+        sortNodes(objTree, objectTree);
+        treeModel.reload(objectTree);
+    }
+    
+    private void refreshFunctions(CharBuffer cb) {
+        Matcher m = functionPattern.matcher(cb);
+        objTree.clear();
+        while (m.find()) {
+            objTree.add(new Inspect(m.group(1).toLowerCase(), m.start(1)));
+        }
+        functionTree.removeAllChildren();
+        sortNodes(objTree, functionTree);
+        treeModel.reload(functionTree);
+    }
+    
+    private void refreshClasses(CharBuffer cb) {
 
-            // se ho impostato il flag jCheckBoxScanProjectFiles a true
-            if (jCheckBoxScanProjectFiles.isSelected() && null != projectClass){
-                //Aggiungo tutte le classi degli altri file del progetto che non sono contenute in classi_locali
-                for (int i=0 ; i < projectClass.size(); i++){
-                    // se la classe alla posizione i non c'è in classi_locali la aggiungo all'albero
-                    String classe = (String) projectClass.get(i);
-                    if (!classi_locali.contains((String) classe)){
-                        tmp_nodo = new DefaultMutableTreeNode(new Inspect(classe.toLowerCase(),-1));
-                        category7.add(tmp_nodo);
-                        getClasses(tmp_nodo,classe);
-                    }
+        Map classes = new TreeMap();
+        Map nodes = new TreeMap();
+        Map rels = new TreeMap();
+        
+        // Does nothing if project scan off as all will be empty
+        classes.putAll(projectClasses);
+        nodes.putAll(projectNodes);
+        rels.putAll(projectRels);
+        
+        // Find file class definitions
+        Matcher m = classPattern.matcher(cb);
+        while (m.find()) {
+            String className = m.group(2).toLowerCase();
+            int classLoc = m.start(2);
+// DEBUG
+            System.out.println(
+                    " = found: " + className +
+                    " at " + classLoc
+                    );
+            Inspect ref = new Inspect(className, classLoc);
+            classes.put(className, ref);
+            nodes.put(className, new DefaultMutableTreeNode(ref));
+            
+            // Add any new classes found to project classes if necessary
+            if (config.getScanProjectFiles()) {
+
+                Inspect nullRef = new Inspect(className, -1);
+                
+                if (!projectClasses.containsKey(className)) {
+// DEBUG
+                    System.out.println(
+                            "   >>> adding class"
+                            );
+                    projectClasses.put(className, nullRef);
+                }
+
+                if (!projectNodes.containsKey(className)) {
+// DEBUG
+                    System.out.println(
+                            "   >>> adding node"
+                            );
+                    projectNodes.put(className, new DefaultMutableTreeNode(nullRef));
                 }
             }
         }
-    }
 
-
-    public void refreshGlobals(Pattern patt, Matcher m){
-        objTree.clear();
-        while (m.find()){
-            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
+        // Find file class to class relationships
+        m = classToClassPattern.matcher(cb);
+        while (m.find()) {
+            String child = m.group(1).toLowerCase();
+            String parent = m.group(2).toLowerCase();
+// DEBUG
+            System.out.println(
+                    " * Class: " + child +
+                    " of " + parent
+                    );
+            rels.put(child, parent);
+            
+            // Add any new relationships found to project relationships if necessary
+            if (config.getScanProjectFiles() && !projectRels.containsKey(child)) {
+// DEBUG                
+                System.out.println(
+                        "   >>> adding relationship"
+                        );
+                projectRels.put(child, parent);
+            }
         }
-        category1.removeAllChildren();
-        sortNodes(objTree,category1);
-        treeModel.reload(category1);
-    }
+        
+        
+        classTree.removeAllChildren();
 
-    public void refreshConstants(Pattern patt, Matcher m){
-        objTree.clear();
-        while (m.find()){
-            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
+// DEBUG
+        System.out.println("Build tree");
+        for (Iterator i = nodes.keySet().iterator(); i.hasNext(); ) {
+            String nodeName = (String) i.next();
+// DEBUG
+            System.out.println(
+                    " - node: " +
+                    nodeName);
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodes.get(nodeName);
+// DEBUG
+            System.out.println(
+                    "    - node parent: " +
+                    (node.getParent()==null? "null":node.getParent().toString())
+                    );
+            if (rels.containsKey(nodeName)) {
+                String parentName = (String) rels.get(nodeName);
+// DEBUG
+                System.out.println(
+                        "    - parent: " +
+                        parentName);
+                DefaultMutableTreeNode parent = (DefaultMutableTreeNode) nodes.get(parentName);
+// DEBUG
+                System.out.println(
+                        "    - node: " +
+                        parent.toString());
+                parent.add(node);
+// DEBUG
+            System.out.println(
+                    "    - node parent: " +
+                    (node.getParent()==null? "null":node.getParent().toString())
+                    );
+            } else {
+                classTree.add(node);
+// DEBUG
+                System.out.println(
+                        "    - node: " +
+                        classTree.toString());
+// DEBUG
+            System.out.println(
+                    "    - node parent: " +
+                    (node.getParent()==null? "null":node.getParent().toString())
+                    );
+            }
+            getClasses(cb, node, nodeName);
         }
-        category2.removeAllChildren();
-        sortNodes(objTree,category2);
-        treeModel.reload(category2);
+        treeModel.reload(classTree);
     }
-
-    public void refreshObjects(Pattern patt, Matcher m){
-        objTree.clear();
-        while (m.find()){
-            objTree.add(new Inspect(m.group(2).toLowerCase(),m.start()+m.group(2).length()));
-        }
-        category4.removeAllChildren();
-        sortNodes(objTree,category4);
-        treeModel.reload(category4);
-    }
-
-    public void refreshFunctions(Pattern patt, Matcher m){
-        objTree.clear();
-        while (m.find()){
-            objTree.add(new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
-        }
-        category5.removeAllChildren();
-        sortNodes(objTree,category5);
-        treeModel.reload(category5);
-    }
-
-    public void refreshClasses(Pattern patt, Matcher m, Vector classi_locali){
-        category7.removeAllChildren();
-        while (m.find()){
-            classi_locali.add(m.group(1));
-            tmp_nodo = new DefaultMutableTreeNode( new Inspect(m.group(1).toLowerCase(),m.start()+m.group(1).length()));
-            category7.add(tmp_nodo);
-            getClasses(tmp_nodo,m.group(1));
-        }
-    }
-
-    public void clearTree(){
-        category1.removeAllChildren();
-        category2.removeAllChildren();
-        category4.removeAllChildren();
-        category5.removeAllChildren();
-        category7.removeAllChildren();
-        top.setUserObject("Inspect");
+    
+    private void clearTree(String topName) {
+        globalTree.removeAllChildren();
+        constantTree.removeAllChildren();
+        objectTree.removeAllChildren();
+        functionTree.removeAllChildren();
+        classTree.removeAllChildren();
+        top.setUserObject(topName);
         treeModel.reload();
-        jTextAreaOutput.setText("");
-        disableComponents();
-        this.setTitle(getJifVersion());
-        jTree1.setEnabled(false);
     }
-
-
+    
+    private void refreshTitle() {
+        if (fileTabbedPane.getTabCount() == 0) {
+            setTitle(getJifVersion());
+        } else {
+            String currentName = getCurrentFilename();
+            setTitle(getJifVersion() + " - " + currentName);
+        }
+    }
+    
     // Modified to Use the Regular Expressions
-    public void refreshTree(){
-        // long tempo1=System.currentTimeMillis();
-
+    private void refreshTree() {
+        long tempo1=System.currentTimeMillis();
+        
         // Reset the tree
-        if (jTabbedPane1.getTabCount() == 0){
-            clearTree();
+        if (fileTabbedPane.getTabCount() == 0) {
+            clearTree("Inspect");
+            treeTree.setEnabled(false);
+            clearOutput();
             return;
         }
-
-        String currentName = getCurrentFilename();
-        setTitle(getJifVersion() +" - " + currentName);
-
+        
+        String currentFile = getCurrentFilename();
+        
         // is this an Inform file?
-        if (currentName.endsWith(".txt")||currentName.endsWith(".res")){
-            category1.removeAllChildren();
-            category2.removeAllChildren();
-            category4.removeAllChildren();
-            category5.removeAllChildren();
-            category7.removeAllChildren();
-            top.setUserObject("Inspect");
-            treeModel.reload();
-            jTree1.setEnabled(false);
+        if (currentFile.endsWith(".txt") || currentFile.endsWith(".res")) {
+            clearTree("Inspect");
+            treeTree.setEnabled(false);
             return;
         }
-
-        jTree1.setEnabled(true);
-
-        category1.removeAllChildren();
-        category2.removeAllChildren();
-        category4.removeAllChildren();
-        category5.removeAllChildren();
-        category7.removeAllChildren();
-
-        String nomefile = getCurrentFilename();
-        top.setUserObject(nomefile.substring(nomefile.lastIndexOf(Constants.SEP)+1));
-        treeModel.reload();
-        CharBuffer cb = getCurrentJIFTextPane().getCharBuffer();
+        
+        clearTree(currentFile.substring(currentFile.lastIndexOf(Constants.SEP)+1));
+        treeTree.setEnabled(true);
+        
+        CharBuffer cb = getCurrentJifTextPane().getCharBuffer();
         objTree = new Vector();
-        Pattern patt;
-        Matcher m;
-
+        
         // GLOBALS
-        patt = Pattern.compile("\n+\\s*Global\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-        m = patt.matcher(cb);
-        refreshGlobals(patt,m);
-
+        refreshGlobals(cb);
         // CONSTANTS
-        patt = Pattern.compile("\n+\\s*Constant\\s+(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-        m = patt.matcher(cb);
-        refreshConstants(patt,m);
-
+        refreshConstants(cb);
         // OBJECTS
-        patt = Pattern.compile("\n+\\s*Object\\s+(->\\s+)*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-        m = patt.matcher(cb);
-        refreshObjects(patt,m);
-
+        refreshObjects(cb);
         // FUNCTIONS
-        patt = Pattern.compile("\n+\\s*\\[\\s*(\\w+)(\\s|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-        m = patt.matcher(cb);
-        refreshFunctions(patt,m);
-
+        refreshFunctions(cb);
         // CLASSES
-        Vector classi_locali= new Vector();
-        patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-        m = patt.matcher(cb);
-        refreshClasses(patt,m,classi_locali);
-
-        // se ho impostato il flag jCheckBoxScanProjectFiles a true
-        if (jCheckBoxScanProjectFiles.isSelected() && null != projectClass){
-            //Aggiungo tutte le classi degli altri file del progetto che non sono contenute in classi_locali
-            for (int i=0 ; i < projectClass.size(); i++){
-                // se la classe alla posizione i non c'è in classi_locali la aggiungo all'albero
-                String classe = (String) projectClass.get(i);
-                if (!classi_locali.contains((String) classe)){
-                    tmp_nodo = new DefaultMutableTreeNode(new Inspect(classe.toLowerCase(),-1));
-                    category7.add(tmp_nodo);
-                    getClasses(tmp_nodo,classe);
-                }
-            }
-        }
-
-        expandAll(jTree1, true);
-        //System.out.println("Tempo impiegato= "+(System.currentTimeMillis()-tempo1));
+// DEBUG
+        //System.out.println("Refresh tree");
+        refreshClasses(cb);
+        
+        expandAll(treeTree);
+        //System.out.println("Tempo tree= "+(System.currentTimeMillis()-tempo1));
     }
-
-
-    public void sortNodes(Vector vettore, DefaultMutableTreeNode nodo ){
-        Collections.sort(vettore,new Comparator(){
+    
+    private void sortNodes(Vector vettore, DefaultMutableTreeNode nodo ) {
+        Collections.sort(vettore, new Comparator() {
             public int compare(Object a, Object b) {
                 String id1 = ((Inspect)a).toString();
                 String id2 = ((Inspect)b).toString();
@@ -5926,655 +5575,602 @@ public class jFrame extends JFrame {
             }
         });
         int size = vettore.size();
-        for(int count =0; count<size ; count++) {
+        for (int count =0; count<size ; count++) {
             nodo.add(new DefaultMutableTreeNode((Inspect)vettore.get(count)));
         }
     }
-
-    public void expandAll(JTree tree, boolean expand) {
-        TreeNode root = (TreeNode)tree.getModel().getRoot();
-        expandAll(tree, new TreePath(root), expand);
+    
+    private void expandAll(JTree tree) {
+        TreeNode root = (TreeNode) tree.getModel().getRoot();
+        expandAll(tree, new TreePath(root));
     }
-    private void expandAll(JTree tree, TreePath parent, boolean expand) {
-        TreeNode node = (TreeNode)parent.getLastPathComponent();
+    
+    private void expandAll(JTree tree, TreePath parent) {
+        TreeNode node = (TreeNode) parent.getLastPathComponent();
         if (node.getChildCount() >= 0) {
             for (Enumeration e=node.children(); e.hasMoreElements(); ) {
-                TreeNode n = (TreeNode)e.nextElement();
+                TreeNode n = (TreeNode) e.nextElement();
                 TreePath path = parent.pathByAddingChild(n);
-                expandAll(tree, path, expand);
+                expandAll(tree, path);
             }
         }
-        if (expand) {
-            tree.expandPath(parent);
-        } else {
-            tree.collapsePath(parent);
-        }
+        tree.expandPath(parent);
     }
-
-    public void editProjectProperties(String filename){
-        try{
-            File file = new File(filename);
-            if (!(file.exists())){
-                System.out.println(java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1")+filename);
+    
+    private void projectProperties() {
+        
+        try {
+            String fileName = project.getFile().getPath();
+            File file = new File(fileName);
+            
+            if (!file.exists()) {
+                System.out.println(java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1") + fileName);
                 return;
             }
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
-            sb.setLength(0);
-            while ((riga = br.readLine())!=null){
-                sb.append(riga).append("\n");
-            }
-            jTextAreaProjectProperties.setText(sb.toString());
-            br.close();
-            jTextAreaProjectProperties.setCaretPosition(0);
-
-            jDialogProjectProperties.setSize(500,500);
-            jDialogProjectProperties.setLocationRelativeTo(this);
-            jDialogProjectProperties.setVisible(true);
-
-        } catch (Exception e){
-            System.out.println(e.getMessage());
+            
+            projectPropertiesTextArea.setText(JifDAO.read(file));
+            projectPropertiesTextArea.setCaretPosition(0);
+            
+            projectPropertiesDialog.setSize(500, 500);
+            projectPropertiesDialog.setLocationRelativeTo(this);
+            projectPropertiesDialog.setVisible(true);
+            
+        } catch (Exception ex) {
+            System.out.println("ERROR Project properties: " + ex.getMessage());
         }
-
     }
-
-
-    public void editFileIni(String filename){
-        try{
-            File file = new File(filename);
-            if (!(file.exists())){
-                System.out.println(java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1")+filename);
+    
+    private void configProperties() {
+        
+        try {
+            String fileName = config.getFile().getPath();
+            File file = new File(fileName);
+            
+            if (!file.exists()) {
+                System.out.println(java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE1") + fileName);
                 return;
             }
-
-            jDialogEditFileIni.setSize(600,550);
-            jDialogEditFileIni.setLocationRelativeTo(this);
-            jDialogEditFileIni.setVisible(true);
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
-            sb.setLength(0);
-
-            while ((riga = br.readLine())!=null){
-                sb.append(riga).append("\n");
-            }
-            jTextAreaConfig.setText(sb.toString());
-            jLabel2.setText(filename);
-            br.close();
-            jTextAreaConfig.setCaretPosition(0);
-
-        } catch (Exception e){
-            System.out.println(e.getMessage());
+            
+            configTextArea.setText(JifDAO.read(file));
+            configTextArea.setCaretPosition(0);
+            
+            configLabel.setText(fileName);
+            
+            configDialog.setSize(600, 550);
+            configDialog.setLocationRelativeTo(this);
+            configDialog.setVisible(true);
+            
+        } catch (Exception ex) {
+            System.out.println("ERROR Configuration properties: " + ex.getMessage());
         }
     }
-
-    public StringBuffer getSwitchesForSavingProject(){
+    
+    private String makeCompilerSwitches() {
         StringBuffer make = new StringBuffer();
-        Checkbox ch;
-        for(int count=0; count < getJPanelProjectSwitch().getComponentCount(); count++){
-            ch = (Checkbox) getJPanelProjectSwitch().getComponent(count);
-            if (ch.getState()){
-                make.append("[SWITCH]"+ch.getLabel()+",on\n");
-            } else{
-                make.append("[SWITCH]"+ch.getLabel()+",off\n");
-            }
-        }
-        return make;
-    }
-
-    public String makeSwitchesForProject(){
-        StringBuffer make = new StringBuffer();
-        Checkbox ch;
-        for(int count=0; count < jPanelProjectSwitches.getComponentCount(); count++){
-            ch = (Checkbox) jPanelProjectSwitches.getComponent(count);
-            if (ch.getState()){
-                // INFORM MODE
-                if (jCheckBoxInformMode.isSelected()){
-                    make.append(" "+ch.getLabel());
-                }
-                // GLULX MODE
-                else if (ch.getLabel().indexOf("-v")==-1){
-                    make.append(" "+ch.getLabel());
-                }
-                if (ch.getLabel().indexOf("-v")!=-1){
-                    tipoz = ch.getLabel();
+        Map switches = getSwitches();
+        tipoz = "-v5";
+        
+        for (Iterator i=switches.keySet().iterator(); i.hasNext(); ) {
+            String switchName = (String) i.next();
+            String setting = (String) switches.get(switchName);
+            
+            if (setting.equals("on")) {
+                if (switchName.indexOf("-v") == -1) {
+                    make.append(" " + switchName);
+                } else {
+                    if (isInformMode()) {
+                        make.append(" " + switchName);
+                    }
+                    tipoz = switchName;
                 }
             }
         }
-
-        // dopo il ciclo se nessuno swith di tipo -v2, -v3  -v8
-        // è stato selezionato assumo per default lo swith -v5
-        if (tipoz.equals("")) tipoz="-v5";
-
+        
         // If in GLULX MODE, a "-G" switch is to be added
-        if (jCheckBoxGlulxMode.isSelected()){
+        if (isGlulxMode()) {
             make.append(" -G");
         }
+        
         return make.toString();
     }
-
-    // Make the string with switches to pass to the compiler
-    public String makeSwitches(){
-        // In questo metodo recupero il formato del file .z3,.z4,.z5,.z6,.z8
-        StringBuffer make = new StringBuffer();
-        Checkbox ch;
-        for(int count=0; count < jPanelSwitch1.getComponentCount(); count++){
-            ch = (Checkbox) jPanelSwitch1.getComponent(count);
-            if (ch.getState()){
-                // INFORM MODE
-                if (jCheckBoxInformMode.isSelected()){
-                    make.append(" "+ch.getLabel());
-                }
-                // GLULX MODE
-                else if (ch.getLabel().indexOf("-v")==-1){
-                    make.append(" "+ch.getLabel());
-                }
-                if (ch.getLabel().indexOf("-v")!=-1){
-                    tipoz = ch.getLabel();
-                }
+    
+    private boolean isSaved() {
+        for (int i=0; i < fileTabbedPane.getTabCount(); i++) {
+            if (fileTabbedPane.getTitleAt(i).endsWith("*")) {
+                return false;
             }
         }
-
-        for(int count=0; count < jPanelSwitch2.getComponentCount(); count++){
-            ch = (Checkbox) jPanelSwitch2.getComponent(count);
-            if (ch.getState()){
-                //System.out.println(ch.getLabel());
-                make.append(" "+ch.getLabel());
-                if (ch.getLabel().indexOf("-v")!=-1)    tipoz = ch.getLabel();
-            }
-        }
-
-        // dopo il ciclo se nessuno swith di tipo -v2, -v3  -v8
-        // è stato selezionato assumo per default lo swith -v5
-        if (tipoz.equals("")) tipoz="-v5";
-
-        // If in GLULX MODE, a "-G" switch is to be added
-        if (jCheckBoxGlulxMode.isSelected()){
-            make.append(" -G");
-        }
-        return make.toString();
+        return true;
     }
-
-    public void exitJif(){
-        if ((fileInf==null) ||  (jTabbedPane1.getTabCount())==0) {
-            saveConfigNew();
-            System.exit(0);
-        }
-
-        // controllo che non ci sia almeno un file da salvare con "*" nel nome
-        boolean ok = true;
-        int numberOfComponents = jTabbedPane1.getTabCount();
-        for (int count=0; count < numberOfComponents; count++){
-            if (jTabbedPane1.getTitleAt(count).endsWith("*")){
-                ok = false;
-            }
-        }
-        if (ok){
-            saveConfigNew();
-            System.exit(0);
-        }
-
+    
+    public void exitJif() {
+        // Save frame settings
+        config.setFrameX(getX());
+        config.setFrameY(getY());
+        config.setFrameHeight(getHeight());
+        config.setFrameWidth(getWidth());
+        
+        // Save, Exit and Cancel messages for exit options
         String[] scelte = new String[3];
         scelte[0] = java.util.ResourceBundle.getBundle("JIF").getString("MSG_SAVE_AND_EXIT");
         scelte[1] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF10");
         scelte[2] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF11");
-        int result = JOptionPane.showOptionDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF12") , java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF13") , 0 , JOptionPane.INFORMATION_MESSAGE , null , scelte , scelte[2]);
-
-        if (result==0){
-            // Save and Exit
-            saveAll();
-            saveConfigNew();
-            saveProject(false);
-            System.exit(0);
-        }
-        if (result==1){
-            // Exit without save
-            saveConfigNew();
-            System.exit(0);
+        
+        // If all files saved exit otherwise prompt with exit options
+        int result = (isSaved()) ? 1 : JOptionPane.showOptionDialog(this,
+                java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF12"),
+                java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF13"),
+                0,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                scelte,
+                scelte[2]);
+        
+        switch (result) {
+            // Save
+            case 0:
+                saveAll();
+                saveProject();
+            // Exit
+            case 1:
+                try {
+                    JifConfigurationDAO.store(config);
+                } catch (JifConfigurationException ex) {
+                    ex.printStackTrace();
+                } finally {
+                    System.exit(0);
+                }
+            // Cancel
+            default:
+                break;
         }
     }
-
+    
     // Per ogni classe nuova aggiungo al nodo passato, il nome degli oggetti di quella classe
-    public void getClasses(DefaultMutableTreeNode nodo, String nome){
-
-        // Using the regexp
-        Charset charset = Charset.forName(Constants.fileFormat);
-        CharsetEncoder encoder = charset.newEncoder();
-        CharsetDecoder decoder = charset.newDecoder();
-        String testo = getCurrentJIFTextPane().getText();
-        ByteBuffer bbuf = null;
-        CharBuffer cb = null;
-        try {
-            bbuf = encoder.encode(CharBuffer.wrap(testo));
-            cb = decoder.decode(bbuf);
-        } catch (Exception e){
-            System.out.println("ERR:"+e.getMessage());
+    public void getClasses(CharBuffer cb, DefaultMutableTreeNode nodo, String nome) {
+        // Class references using regular expression
+        Pattern p = Pattern.compile("\n+\\s*" + nome + "\\s+(->\\s+)*(\\w+)",
+                Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(cb);
+        objTree.clear();
+        while (m.find()) {
+// DEBUG            
+            System.out.println(
+                    "Get classes found(1): " + m.group(2).toLowerCase() +
+                    " at " + m.start(2)
+                    );
+            objTree.add(new Inspect(m.group(2).toLowerCase(), m.start(2)));
         }
-
-        // Classes
-        Pattern patt = Pattern.compile("\n+\\s*"+nome+"\\s+(->\\s+)*(\\w+)(\\s+|;)", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-        Matcher m = patt.matcher(cb);
-        while (m.find()){
-            nodo.add(new DefaultMutableTreeNode(new Inspect(m.group(2).toLowerCase(),m.start()+m.group(2).length())));
+        // Object class references using regular expression (first only)
+        p = Pattern.compile("\n+\\s*Object\\s+(->\\s+)*(\\w+)\\s+(\"[^\"]+\")*\\s*(?:\\w+)*\\s*class\\s+" + nome,
+                Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+        m = p.matcher(cb);
+        while(m.find()) {
+// DEBUG
+            System.out.println(
+                    "Get classes found(2): " + m.group(2).toLowerCase() +
+                    " at " + m.start(2)
+                    );
+            objTree.add(new Inspect(m.group(2).toLowerCase(), m.start(2)));
         }
+        nodo.removeAllChildren();
+        sortNodes(objTree, nodo);
         treeModel.reload(nodo);
     }
-
-
-
-    public static final JIFTextPane getCurrentJIFTextPane(){
-        if (jTabbedPane1.getTabCount()==0){
+    
+    public static final JifTextPane getCurrentJifTextPane() {
+        if (fileTabbedPane.getTabCount()==0) {
             return null;
-        } else{
-            return (JIFTextPane)((JScrollPane)jTabbedPane1.getSelectedComponent()).getViewport().getComponent(0);
+        } else {
+            return (JifTextPane)((JScrollPane)fileTabbedPane.getSelectedComponent()).getViewport().getComponent(0);
         }
     }
-
-    public static final DefaultStyledDocument getCurrentDoc(){
-        if (jTabbedPane1.getTabCount()==0){
+    
+    public static final DefaultStyledDocument getCurrentDoc() {
+        if (fileTabbedPane.getTabCount()==0) {
             return null;
-        } else{
-            return (DefaultStyledDocument)(((JIFTextPane)((JScrollPane)jTabbedPane1.getSelectedComponent()).getViewport().getComponent(0)).getDocument() );
+        } else {
+            return (DefaultStyledDocument)((JifTextPane)((JScrollPane)fileTabbedPane.getSelectedComponent()).getViewport().getComponent(0)).getDocument();
         }
     }
-
-    public static final String getCurrentTitle(){
-        return(jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()));
+    
+    public static final String getCurrentTitle() {
+        return(fileTabbedPane.getTitleAt(fileTabbedPane.getSelectedIndex()));
     }
-
-    public static final String getTitleAt(int aTabNumber){
-        return(jTabbedPane1.getTitleAt(aTabNumber));
+    
+    public static final String getTitleAt(int aTabNumber) {
+        return(fileTabbedPane.getTitleAt(aTabNumber));
     }
-
-    public static final String getCurrentFilename(){
-        JIFScrollPane aScrollPane;
-        if (jTabbedPane1.getTabCount() == 0){
+    
+    public static final String getCurrentFilename() {
+        JifScrollPane aScrollPane;
+        if (fileTabbedPane.getTabCount() == 0) {
             return null;
-        } else{
-            aScrollPane=(JIFScrollPane)jTabbedPane1.getComponentAt(jTabbedPane1.getSelectedIndex());
-            return(aScrollPane.getFile());
         }
+        aScrollPane=(JifScrollPane)fileTabbedPane.getComponentAt(fileTabbedPane.getSelectedIndex());
+        return(aScrollPane.getFile());
     }
-
-    public static final String getFilenameAt(int aTabNumber){
-        JIFScrollPane aScrollPane;
-        if (jTabbedPane1.getTabCount() == 0){
+    
+    public static final String getFilenameAt(int aTabNumber) {
+        JifScrollPane aScrollPane;
+        if (fileTabbedPane.getTabCount() == 0) {
             return null;
-        } else{
-            aScrollPane=(JIFScrollPane)jTabbedPane1.getComponentAt(aTabNumber);
-            return(aScrollPane.getFile());
-            //return jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex());
         }
+        aScrollPane=(JifScrollPane)fileTabbedPane.getComponentAt(aTabNumber);
+        return(aScrollPane.getFile());
+        //return fileTabbedPane.getTitleAt(fileTabbedPane.getSelectedIndex());
     }
-
-    // append last opened file
-    // Ignore a file is present
-    public void appendLastFile(String recentfileToAppend){
-        if (getRecentFiles().contains(recentfileToAppend)){
-            return;
-        }
-        if (getJMenuRecentFiles().getMenuComponentCount() < Constants.MAXRECENTFILES){
-            JMenuItem mi = new JMenuItem(recentfileToAppend);
-            mi.setName(recentfileToAppend);
-            mi.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    openFile(((javax.swing.JMenuItem)evt.getSource()).getText());
-                }
-            });
-            getJMenuRecentFiles().add(mi);
-            getRecentFiles().add(recentfileToAppend);
-        }
-    }
-
-
-    public boolean checkOpenFile(String file){
+    
+    private boolean checkOpenFile(String file) {
         //Controllo che non sia stato già aperto un file
-        int found = -1;
-        String file_asterisco=file+"*";
-        for (int count=0; count < jTabbedPane1.getTabCount(); count++){
+        String file_asterisco = file + "*";
+        for (int i=0; i < fileTabbedPane.getTabCount(); i++) {
             // I file aperti senza asterisco
-            //if (file.equals( jTabbedPane1.getTitleAt(count))){
-            if (file.equals(getFilenameAt(count) )){
-                found = count;
-            }
             // controllo anche i file che hanno l'asterisco
-            if (file_asterisco.equals(getFilenameAt(count))){
-                found = count;
+            if (file.equals(getFilenameAt(i)) ||
+                    file_asterisco.equals(getFilenameAt(i))) {
+                fileTabbedPane.setSelectedIndex(i);
+// DEBUG
+                //System.out.println("check open file - refresh tree");
+                refreshTree();
+                refreshTitle();
+                return true;
             }
-        }
-        if (found != -1){
-            //JOptionPane.showMessageDialog(this,java.util.ResourceBundle.getBundle("JIF").getString("ERR_OPENFILE9"),java.util.ResourceBundle.getBundle("JIF").getString("ERR_GENERIC"), JOptionPane.ERROR_MESSAGE);
-            jTabbedPane1.setSelectedIndex(found);
-            refreshTree();
-            return true;
         }
         return false;
     }
-
-
-    public void disableComponents(){
-        // disabilito i componenti che devono essere disbilitati, quando non ci sono file aperti
-        SaveButton.setEnabled(false);
-        SaveButtonAll.setEnabled(false);
-        RebuildButton.setEnabled(false);
-        RunButton.setEnabled(false);
-        Save.setEnabled(false);
-        SaveAs.setEnabled(false);
-        jMenuItemSaveAll.setEnabled(false);
-        jMenuItemClose.setEnabled(false);
-        jMenuItemCloseAll.setEnabled(false);
-        jMenuItemPrint.setEnabled(false);
-        jButtonCommentSelection.setEnabled(false);
-        jButtonUncommentSelection.setEnabled(false);
-        jButtonLeftTab.setEnabled(false);
-        jButtonRightTab.setEnabled(false);
-        jButtonBracketCheck.setEnabled(false);
-
-        //menu
-        jMenuEdit.setEnabled(false);
-        jMenuBuild.setEnabled(false);
-        jButtonInsertSymbol.setEnabled(false);
-        SaveAsButton.setEnabled(false);
-        jButtonClose.setEnabled(false);
-        jButtonCloseAll.setEnabled(false);
-        jButtonUndo.setEnabled(false);
-        jButtonRedo.setEnabled(false);
-        jMenuMode.setEnabled(false);
-        jTree1.setEnabled(false);
-        if(jCheckBoxGlulxMode.getState())
-            jMenuGlulx.setEnabled(false);
-        // search and definition
-        jTextFieldFind.setEnabled(false);
-        jTextFieldDefinition.setEnabled(false);
-        jButtonReplace.setEnabled(false);
+    
+    /**
+     * Disable components that are invalid when no files are open.
+     */
+    private void disableFileComponents() {
+        
+        // toolbar buttons
+        saveButton.setEnabled(false);
+        saveAllButton.setEnabled(false);
+        saveAsButton.setEnabled(false);
+        closeButton.setEnabled(false);
+        closeAllButton.setEnabled(false);
+        undoButton.setEnabled(false);
+        redoButton.setEnabled(false);
+        commentButton.setEnabled(false);
+        uncommentButton.setEnabled(false);
+        tabLeftButton.setEnabled(false);
+        tabRightButton.setEnabled(false);
+        bracketCheckButton.setEnabled(false);
+        buildAllButton.setEnabled(false);
+        runButton.setEnabled(false);
+        insertSymbolButton.setEnabled(false);
+        findTextField.setEnabled(false);
+        findButton.setEnabled(false);
+        replaceButton.setEnabled(false);
+        
+        // menu items
+        saveMenuItem.setEnabled(false);
+        saveAllMenuItem.setEnabled(false);
+        saveAsMenuItem.setEnabled(false);
+        closeMenuItem.setEnabled(false);
+        closeAllMenuItem.setEnabled(false);
+        printMenuItem.setEnabled(false);
+        
+        // menus
+        editMenu.setEnabled(false);
+        buildMenu.setEnabled(false);
+        glulxMenu.setEnabled(false);
+        
+        // tree
+        treeTree.setEnabled(false);
+        
+        // search
+        definitionTextField.setEnabled(false);
+        definitionButton.setEnabled(false);
     }
-
-
-    public void enableComponents(){
-        // disabilito i componenti che devono essere disbilitati, quando non ci sono file aperti
-        SaveButton.setEnabled(true);
-        SaveButtonAll.setEnabled(true);
-        RebuildButton.setEnabled(true);
-        RunButton.setEnabled(true);
-        Save.setEnabled(true);
-        SaveAs.setEnabled(true);
-        jMenuItemSaveAll.setEnabled(true);
-        jMenuItemClose.setEnabled(true);
-        jMenuItemCloseAll.setEnabled(true);
-        jMenuItemPrint.setEnabled(true);
-        jButtonCommentSelection.setEnabled(true);
-        jButtonUncommentSelection.setEnabled(true);
-        jButtonLeftTab.setEnabled(true);
-        jButtonRightTab.setEnabled(true);
-        jButtonBracketCheck.setEnabled(true);
-        jMenuEdit.setEnabled(true);
-        jMenuBuild.setEnabled(true);
-        jButtonInsertSymbol.setEnabled(true);
-        SaveAsButton.setEnabled(true);
-        jButtonClose.setEnabled(true);
-        jButtonCloseAll.setEnabled(true);
-        jButtonUndo.setEnabled(true);
-        jButtonRedo.setEnabled(true);
-        jMenuMode.setEnabled(true);
-        jTree1.setEnabled(true);
-        if(jCheckBoxGlulxMode.getState())
-            jMenuGlulx.setEnabled(true);
-        jTextFieldFind.setEnabled(true);
-        jTextFieldDefinition.setEnabled(true);
-        jButtonReplace.setEnabled(true);
+    
+    /**
+     * Enable components that are valid when a file is open
+     */
+    private void enableFileComponents() {
+        
+        // toolbar buttons
+        saveButton.setEnabled(true);
+        saveAllButton.setEnabled(true);
+        saveAsButton.setEnabled(true);
+        closeButton.setEnabled(true);
+        closeAllButton.setEnabled(true);
+        undoButton.setEnabled(true);
+        redoButton.setEnabled(true);
+        commentButton.setEnabled(true);
+        uncommentButton.setEnabled(true);
+        tabLeftButton.setEnabled(true);
+        tabRightButton.setEnabled(true);
+        bracketCheckButton.setEnabled(true);
+        buildAllButton.setEnabled(true);
+        runButton.setEnabled(true);
+        insertSymbolButton.setEnabled(true);
+        findTextField.setEnabled(true);
+        findButton.setEnabled(true);
+        replaceButton.setEnabled(true);
+        
+        // menu items
+        saveMenuItem.setEnabled(true);
+        saveAllMenuItem.setEnabled(true);
+        saveAsMenuItem.setEnabled(true);
+        closeMenuItem.setEnabled(true);
+        closeAllMenuItem.setEnabled(true);
+        printMenuItem.setEnabled(true);
+        
+        // menus
+        editMenu.setEnabled(true);
+        buildMenu.setEnabled(true);
+        
+        if (isGlulxMode() && fileTabbedPane.getTabCount() > 0) {
+            glulxMenu.setEnabled(true);
+        }
+        
+        // tree
+        treeTree.setEnabled(true);
+        
+        // search
+        definitionTextField.setEnabled(true);
+        definitionButton.setEnabled(true);
     }
-
-
-
-
-
-
+    
     // dal dialog Replace
-    public void findString(String pattern){
+    private void findString(String pattern) {
         // rimuovo tutti gli highligh
         // recupero la posizione del cursore
         // eeguo la ricerca e l'highlight del testo trovato
-        int pos = getCurrentJIFTextPane().getCaretPosition();   // current position
-        try{
+        int pos = getCurrentJifTextPane().getCaretPosition();   // current position
+        try {
             String text = getCurrentDoc().getText(0, getCurrentDoc().getLength());
             boolean trovato = false;
-
-            while ( ( (pos = text.indexOf(pattern, pos)) >= 0) && (!trovato)){
-                //while ( ( (pos = Utils.IgnoreCaseIndexOf(text,pattern, pos)) >= 0) && (!trovato)){
-                getCurrentJIFTextPane().requestFocus();
-                getCurrentJIFTextPane().setCaretPosition(pos);
-                getCurrentJIFTextPane().setSelectionStart(pos);
-                getCurrentJIFTextPane().setSelectionEnd(pos+pattern.length());
-                getCurrentJIFTextPane().repaint();
+            
+            while (((pos = text.indexOf(pattern, pos)) >= 0) && (!trovato)) {
+                //while ( ( (pos = Utils.IgnoreCaseIndexOf(text,pattern, pos)) >= 0) && (!trovato)) {
+                getCurrentJifTextPane().requestFocus();
+                getCurrentJifTextPane().setCaretPosition(pos);
+                getCurrentJifTextPane().setSelectionStart(pos);
+                getCurrentJifTextPane().setSelectionEnd(pos+pattern.length());
+                getCurrentJifTextPane().repaint();
                 pos += pattern.length();
                 trovato=true;
-                jDialogReplace.requestFocus();
+                replaceDialog.requestFocus();
             }
-
+            
             //se non lo trovo comunico che sono alla fine del file
             if (!trovato) {
                 String[] scelte = new String[2];
                 scelte[0] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF18");
                 scelte[1] = java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CANCEL");
-                int result = JOptionPane.showOptionDialog(jDialogReplace,  java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF19")+" ["+pattern+"]"+java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF20") , java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF21") , 0 , JOptionPane.INFORMATION_MESSAGE , null , scelte , scelte[1]);
+                int result = JOptionPane.showOptionDialog(replaceDialog,
+                        java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF19") + " [" + pattern + "]" + java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF20"),
+                        java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF21"),
+                        0,
+                        JOptionPane.INFORMATION_MESSAGE,
+                        null,
+                        scelte,
+                        scelte[1]);
                 if (result==0) {
-                    getCurrentJIFTextPane().setCaretPosition(0);
+                    getCurrentJifTextPane().setCaretPosition(0);
                     findString(pattern);
                 }
                 return;
             }
-        } catch (BadLocationException e)  {
-            System.out.println(e.getMessage());
+        } catch (BadLocationException e) {
+            System.out.println("ERROR Find string: " + e.getMessage());
         }
     }
-
-
-
-    public void insertFromFile(){
-        try{
-            JFileChooser chooser = new JFileChooser(insertnewdir);
+    
+    private void insertFromFile() {
+        String directory;
+        try {
+            if (config.getLastInsert() == null) {
+                if (config.getLastFile() == null) {
+                    directory = config.getWorkingDirectory();
+                } else {
+                    directory = config.getLastFile().getDirectory();
+                }
+            } else {
+                directory = config.getLastInsert().getDirectory();
+            }
+            
+            JFileChooser chooser = new JFileChooser(directory);
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            int returnVal = chooser.showOpenDialog(this);
-            if(returnVal == JFileChooser.CANCEL_OPTION) {
+            if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
                 return;
             }
-
+            
             MutableAttributeSet attr = new SimpleAttributeSet();
-            sb.setLength(0);
             String result = chooser.getSelectedFile().getAbsolutePath();
+            
+            // imposto la lastInsert = a quella selezionata l'ultima volta
+            config.setLastInsert(result);
 
-            //imposto la insertnewdir= a quella selezionata l'ultima volta
-            insertnewdir = result.substring(0, result.lastIndexOf(Constants.SEP));
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(result)), Constants.fileFormat));
-            while ((riga = br.readLine())!= null){
-                sb.append(riga+"\n");
-            }
-            getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), sb.toString(), attr);
-
-            // aggiorno albero
+            File file = new File(result);
+            getCurrentDoc().insertString(getCurrentJifTextPane().getCaretPosition(), JifDAO.read(file), attr);
+// DEBUG
+            //System.out.println("insert file - refresh tree");
             refreshTree();
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-
+            
+        } catch (Exception e) {
+            System.out.println("ERROR Insert from file: " + e.getMessage());
         }
     }
-
-
-    public void closeFile(){
+    
+    private void closeFile() {
         // se i il file non contiene * allora posso chiudere senza salvare
-        if (getCurrentTitle().indexOf("*")!=-1){
-            String[] scelte = new String[3];
-            scelte[0] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF14");
-            scelte[1] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF15");
-            scelte[2] = java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CANCEL");
-            //int result = JOptionPane.showOptionDialog(null, java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF16") , java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF17")+ jTabbedPane1.getTitleAt(jTabbedPane1.getSelectedIndex()), 0 , JOptionPane.INFORMATION_MESSAGE , null , scelte , scelte[2]);
-            int result = JOptionPane.showOptionDialog(null, java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF16") , java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF17")+ getCurrentFilename(), 0 , JOptionPane.INFORMATION_MESSAGE , null , scelte , scelte[2]);
-            //salva e chiudi
-            if (result == 0){
-                saveFile();
-                Component comp = jTabbedPane1.getSelectedComponent();
-                jTabbedPane1.remove(comp);
-                return;
-            }
-            if (result == 1){
-                //chiudi
-                Component comp = jTabbedPane1.getSelectedComponent();
-                jTabbedPane1.remove(comp);
-                return;
-            }
-            return;
-        } else{
+        if (getCurrentTitle().indexOf("*") == -1) {
             // chiudo senza chiedere
-            Component comp = jTabbedPane1.getSelectedComponent();
-            jTabbedPane1.remove(comp);
+            fileTabbedPane.remove(fileTabbedPane.getSelectedComponent());
             return;
         }
+        
+        String[] scelte = new String[3];
+        scelte[0] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF14");
+        scelte[1] = java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF15");
+        scelte[2] = java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_CANCEL");
+        int result = JOptionPane.showOptionDialog(null, java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF16"),
+                java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF17") + getCurrentFilename(),
+                0,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                scelte,
+                scelte[2]);
+        
+        switch (result) {
+            // Save
+            case 0:
+                saveFile();
+            // Close
+            case 1:
+                fileTabbedPane.remove(fileTabbedPane.getSelectedComponent());
+            // Cancel
+            default:
+                break;
+        }
     }
-
-
-
-    // 1.cerco la prima occorrenza se non esiste esci
+    
+    // 1. cerco la prima occorrenza se non esiste esci
     // 2. replace string e vai al punto 1.
-    public void replaceAll(){
+    private void replaceAll() {
         // Set Caret Position to ZERO
-        getCurrentJIFTextPane().setCaretPosition(0);
+        getCurrentJifTextPane().setCaretPosition(0);
         boolean eseguito=false;
-        while (!eseguito){
-            eseguito = findAllString(jTextFieldReplaceFind.getText());
-            if (!eseguito){
-                getCurrentJIFTextPane().replaceSelection(jTextFieldReplace.getText());
+        while (!eseguito) {
+            eseguito = findAllString(replaceFindTextField.getText());
+            if (!eseguito) {
+                getCurrentJifTextPane().replaceSelection(replaceReplaceTextField.getText());
             }
         }
     }
-
+    
     // dal dialog ReplaceAll
-    public boolean findAllString(String pattern){
-        // rimuovo tutti gli highligh
+    private boolean findAllString(String pattern) {
+        // rimuovo tutti gli highlight
         // recupero la posizione del cursore
         // eeguo la ricerca e l'highlight del testo trovato
-
-        int pos = getCurrentJIFTextPane().getCaretPosition();   // current position
-        try{
+        
+        int pos = getCurrentJifTextPane().getCaretPosition();   // current position
+        try {
             String text = getCurrentDoc().getText(0, getCurrentDoc().getLength());
             boolean trovato = false;
-            while ( ( (pos = text.indexOf(pattern, pos)) >= 0) && (!trovato))       {
-                getCurrentJIFTextPane().requestFocus();
-                getCurrentJIFTextPane().setCaretPosition(pos);
-                getCurrentJIFTextPane().setSelectionStart(pos);
-                getCurrentJIFTextPane().setSelectionEnd(pos+pattern.length());
-                getCurrentJIFTextPane().repaint();
+            while (((pos = text.indexOf(pattern, pos)) >= 0) && (!trovato)) {
+                getCurrentJifTextPane().requestFocus();
+                getCurrentJifTextPane().setCaretPosition(pos);
+                getCurrentJifTextPane().setSelectionStart(pos);
+                getCurrentJifTextPane().setSelectionEnd(pos+pattern.length());
+                getCurrentJifTextPane().repaint();
                 pos += pattern.length();
-                trovato=true;
-                jDialogReplace.requestFocus();
+                trovato = true;
+                replaceDialog.requestFocus();
             }
-
+            
             //se non lo trovo comunico che sono alla fine del file
             if (!trovato) {
                 return true;
-            } else return false;
-        } catch (BadLocationException e)  {
-            System.out.println(e.getMessage());
+            } else {
+                return false;
+            }
+        } catch (BadLocationException e) {
+            System.out.println("ERROR Find all: " + e.getMessage());
         }
         return false;
     }
-
-
-    public void copyToClipBoard(){
+    
+    public void copyToClipBoard() {
         // Prendo il testo selezionato e prendo la substring fino al primo carattere \n
         // e lo inserisco come testo del menu
-
+        
         // controllo che che non venga superato il limite max di entry nel menu PASTE
-        if (jMenuPaste.getMenuComponentCount() > Constants.MAX_DIMENSION_PASTE_MENU) {
+        if (pastePopupMenu.getMenuComponentCount() > Constants.MAX_DIMENSION_PASTE_MENU) {
             //System.out.println("superato dimensione max per menu");
             return;
         }
-
+        
         // come titolo del menu, limito al max a 8 caratteri
         // il testo incollato, sarà contenuto nel tooltip, opportunamente
         // modificato PLAIN -> HTML  e HTML -> PLAIN
-        String test = getCurrentJIFTextPane().getSelectedText();
-
+        String test = getCurrentJifTextPane().getSelectedText();
+        
         StringSelection ss = new StringSelection(test);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
-
+        
         if (test.trim().length()> 25) test = test.trim().substring(0,25)+"...";
         JMenuItem mi = new JMenuItem(test.trim());
-
+        
         //Come tool tip del menu metto tutto il codice selezionato
-        String tmp = getCurrentJIFTextPane().getSelectedText();
+        String tmp = getCurrentJifTextPane().getSelectedText();
         // per vederlo tutto su più righe....lo trasformo il testo in formato HTML
         tmp = Utils.replace(tmp,"\n","<br>");
         mi.setToolTipText("<html>"+tmp+"</html>");
         mi.setFont(new Font("Dialog",Font.PLAIN,11));
-        jMenuPaste.add(mi).addActionListener(new java.awt.event.ActionListener() {
+        pastePopupMenu.add(mi).addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                try{
+                try {
                     //String id = ((javax.swing.JMenuItem)evt.getSource()).getText();
                     String id = ((javax.swing.JMenuItem)evt.getSource()).getToolTipText();
-
+                    
                     //ricostruisco la stringa... da html a plain text
                     id = Utils.replace(id,"<br>","\n");
                     id = Utils.replace(id,"<html>","");
                     id = Utils.replace(id,"</html>","");
                     MutableAttributeSet attr = new SimpleAttributeSet();
-                    getCurrentDoc().insertString(getCurrentJIFTextPane().getCaretPosition(), id , attr);
-                } catch(BadLocationException e){
-                    System.out.println(e.getMessage());
+                    getCurrentDoc().insertString(getCurrentJifTextPane().getCaretPosition(), id , attr);
+                } catch (BadLocationException e) {
+                    System.out.println("ERROR Copy to clipboard: " + e.getMessage());
                 }
             }
         });
     }
-
-
-
-    public void showJWindowSymbol(){
-        try{
-            int pointx = (int)getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getCaretPosition()).getX();
-            int pointy = (int)getCurrentJIFTextPane().modelToView(getCurrentJIFTextPane().getCaretPosition()).getY();
-            JWindowSymbols.setLocation((int)getCurrentJIFTextPane().getLocationOnScreen().getX()+pointx, (int)getCurrentJIFTextPane().getLocationOnScreen().getY() +pointy+15);
-            JWindowSymbols.setSize(230,200);
-            JWindowSymbols.requestFocus();
-            JWindowSymbols.setVisible(true);
-        } catch(BadLocationException e){
-            System.out.println(e.getMessage());
+    
+    private void showSymbolsDialog() {
+        try {
+            int pointx = (int) getCurrentJifTextPane().modelToView(getCurrentJifTextPane().getCaretPosition()).getX();
+            int pointy = (int) getCurrentJifTextPane().modelToView(getCurrentJifTextPane().getCaretPosition()).getY();
+            symbolDialog.setLocation((int) getCurrentJifTextPane().getLocationOnScreen().getX() + pointx,
+                    (int) getCurrentJifTextPane().getLocationOnScreen().getY() + pointy + 15);
+            symbolDialog.setSize(230,200);
+            symbolDialog.requestFocus();
+            symbolDialog.toFront();
+            symbolDialog.setVisible(true);
+        } catch (BadLocationException e) {
+            System.out.println("ERROR Show symbols: " + e.getMessage());
         }
     }
-
-
-    public void saveAs(String directory){
+    
+    private void saveAs(String directory) {
         // recupero il nuovo nome del file e lo salvo....
-        // String result = JOptionPane.showInputDialog(this , java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE1")+compiledpath, java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE2"), JOptionPane.OK_CANCEL_OPTION);
+        // String result = JOptionPane.showInputDialog(this , java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE1")+config.gamePath, java.util.ResourceBundle.getBundle("JIF").getString("MSG_NEWFILE2"), JOptionPane.OK_CANCEL_OPTION);
         JFileChooser chooser;
-        if (null != directory){
+        if (directory != null) {
             chooser  = new JFileChooser(directory);
-        }        
-        else if (lastDir!=null && !lastDir.equals("")){
-            chooser  = new JFileChooser(lastDir);
+        } else if (config.getLastFile() != null) {
+            chooser = new JFileChooser(config.getLastFile().getDirectory());
         } else {
-            chooser = new JFileChooser(this.getCompiledpath());
+            chooser = new JFileChooser(resolveAbsolutePath(config.getWorkingDirectory(),config.getGamePath()));
         }
         chooser.setDialogTitle(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_SAVEAS"));
-        chooser.setApproveButtonText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));            
-
+        chooser.setApproveButtonText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
+        
         // Selezione Multipla
         chooser.setMultiSelectionEnabled(false);
-
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
+        
+        if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
             return;
         }
-
+        
         File file = chooser.getSelectedFile();
         String result = file.getAbsolutePath();
-        lastDir = result.substring(0,result.lastIndexOf(Constants.SEP));
-
+        
         // se il file non ha estensione: gliela inserisco io INF
-        if (result.lastIndexOf(".")==-1){
-            result = result+".inf";
+        if (result.lastIndexOf(".") == -1) {
+            result = result + ".inf";
         }
-
+        
         // se l'utente ha inserito una cosa del tipo...
         // nome.cognome -> il nome viene convertito in nome.cognome.inf
         // controllo che l'utente non abbia scritto nome.txt, nome.res ecc
-        if (((result.lastIndexOf(".")!=-1)&&(result.lastIndexOf(".inf"))==-1)
+        if (((result.lastIndexOf(".") != -1) && (result.lastIndexOf(".inf")) == -1)
         &&
                 (
                 !(result.endsWith(".res"))
@@ -6584,36 +6180,41 @@ public class jFrame extends JFrame {
                 !(result.endsWith(".h"))
                 &&
                 !(result.endsWith(".doc"))
-                )){
-            result = result+".inf";
+                )) {
+            result = result + ".inf";
         }
-
+        
         // controllo che non esista già un file con quel nome
-        if (file.exists()){
-            int overwrite = JOptionPane.showConfirmDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE4"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE2") , JOptionPane.ERROR_MESSAGE);
-            if (overwrite == 1) return;
+        if (file.exists()) {
+            int overwrite = JOptionPane.showConfirmDialog(this,
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE4"),
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_NAMEFILE2"),
+                    JOptionPane.ERROR_MESSAGE);
+            if (overwrite == JOptionPane.NO_OPTION) {
+                return;
+            }
         }
-
-        jTabbedPane1.setTitleAt( jTabbedPane1.getSelectedIndex(), result);
-        JIFScrollPane aScrollPane=(JIFScrollPane)jTabbedPane1.getComponentAt(jTabbedPane1.getSelectedIndex());        
+        
+        fileTabbedPane.setTitleAt(fileTabbedPane.getSelectedIndex(), result);
+        JifScrollPane aScrollPane=(JifScrollPane)fileTabbedPane.getComponentAt(fileTabbedPane.getSelectedIndex());
         aScrollPane.setFile(result);
-        getCurrentJIFTextPane().setPaths(result); // BUG in the TAB title
+        getCurrentJifTextPane().setPaths(result); // BUG in the TAB title
         saveFile();
-
-        // Refresh Tree
+// DEBUG
+        //System.out.println("save as - refresh tree");
         refreshTree();
+        refreshTitle();
     }
-
-
+    
     // funzione che gestisce l'inserimento di files in un progetto
     // supporta la seleziona multipla
-    public void addFilesToProject(){
+    private void addFilesToProject() {
         // If a project is null, return
-        if (null == currentProject || currentProject.equals(Constants.PROJECTEMPTY)) {
+        if (project.getFile() == null) {
             return;
-        }        
-        // Open the project file dir to add the files
-        String dir = currentProject.substring(0,currentProject.lastIndexOf(Constants.SEP));
+        }
+        // Open the project file directory to add the files
+        String dir = project.getFile().getDirectory();
         JFileChooser chooser = new JFileChooser(dir);
         JifFileFilter infFilter = new JifFileFilter("inf", java.util.ResourceBundle.getBundle("JIF").getString("STR_JIF7"));
         infFilter.addExtension("h");
@@ -6622,669 +6223,749 @@ public class jFrame extends JFrame {
         chooser.setFileFilter(infFilter);
         // Selezione Multipla
         chooser.setMultiSelectionEnabled(true);
-
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.CANCEL_OPTION) {
-            //imposto a null il nome del file e return
-            fileInf = null;
+        
+        if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
             return;
         }
+        
         File[] files = chooser.getSelectedFiles();
         File file;
-
-        for (int i=0 ; i<files.length; i++){
+        
+        for (int i=0 ; i<files.length; i++) {
             file = files[i];
             // apro il file e lo aggiungo alla lista se il checkbox è attivo
-            if (jCheckBoxProjectOpenAllFiles.isSelected()){
+            if (config.getOpenProjectFiles()) {
                 openFile(file.getAbsolutePath());
             }
-
-            projectFiles.add(new FileProject(file.getAbsolutePath()));
-            jListProject.removeAll();
-            // ordino il vettore
-            Collections.sort(projectFiles,new Comparator(){
-                public int compare(Object a, Object b) {
-                    String id1 = ((FileProject)a).toString();
-                    String id2 = ((FileProject)b).toString();
-                    return (id1).compareToIgnoreCase(id2) ;
-                }
-            });
-            jListProject.setListData(projectFiles);
+            
+            project.addFile(file.getAbsolutePath());
         }
-        // Update and save the project
-        saveProject(false);
+        saveProject();
     }
-
-    // The project inherits the default switches
-    public void newProject(){
-        try{
+    
+    // The project inherits the default switches and mode
+    private void newProject() {
+        
+        try {
             JFileChooser chooser;
             chooser  = new JFileChooser();
             chooser.setDialogTitle(java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_NEW_PROJECT"));
             chooser.setApproveButtonText(java.util.ResourceBundle.getBundle("JIF").getString("MESSAGE_SAVE"));
             chooser.setMultiSelectionEnabled(false);
-            int returnVal = chooser.showOpenDialog(this);
-            if(returnVal == JFileChooser.CANCEL_OPTION) {
+            if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
                 return;
             }
             File file = chooser.getSelectedFile();
-
-            if (file.getName().indexOf(".jpf")==-1){
+            
+            if (file.getName().indexOf(".jpf") == -1) {
                 // Add the .jpf extension
-                file = new File(file.getAbsolutePath()+".jpf");
+                file = new File(file.getAbsolutePath() + ".jpf");
             }
-
-            if (file.exists()){
-                int res =  JOptionPane.showConfirmDialog(this,
+            
+            if (file.exists()) {
+                int result =  JOptionPane.showConfirmDialog(this,
                         java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_PROJECT_EXISTS_OVERWRITE"),
-                        file.getAbsolutePath() ,
+                        file.getAbsolutePath(),
                         JOptionPane.OK_CANCEL_OPTION);
-                if (res==2){
+                if (result == JOptionPane.CANCEL_OPTION) {
                     return;
                 }
                 file.delete();
             }
-
-            //file.createNewFile();
-            currentProject = file.getAbsolutePath();
-            updateProjectTitle("Project: "+
-                    currentProject.substring(
-                    currentProject.lastIndexOf(Constants.SEP)+1
-                    ,
-                    currentProject.length())
-                    );
-
-            jScrollPaneProject.setEnabled(true);
-
-            // Save the default switches from the Jif.cfg
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileini), Constants.fileFormat));
-            while ((riga = br.readLine())!=null){
-                sb.append(riga).append("\n");
-            }
-            br.close();
-            Charset charset = Charset.forName(Constants.fileFormat);
-            CharsetEncoder encoder = charset.newEncoder();
-            CharsetDecoder decoder = charset.newDecoder();
-            ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(sb.toString()));
-            CharBuffer cb = decoder.decode(bbuf);
-            Pattern patt = Pattern.compile("\n"+Constants.SWITCHTOKEN+"([^,]+),([^\n]+)");
-            Matcher m = patt.matcher(cb);
-            getJPanelProjectSwitch().removeAll();
-            Checkbox check;
-            while (m.find()){
-                switches.put(m.group(1),m.group(2));
-                check = new Checkbox(m.group(1));
-                check.setFont(new Font("Monospaced", Font.PLAIN, 11));
-                check.setState(m.group(2).trim().equals("on") ? true : false);
-                    getJPanelProjectSwitch().add(check);
-            }
-            saveProject(true);
-            enableProject();
-        } catch (Exception e){
-            System.out.println(e.getMessage());
+            
+            project.clear();
+            project.setFile(file.getAbsolutePath());
+            project.setSwitches(config.getSwitches());
+            project.setInformMode(config.getInformMode());
+            
+            saveProject();
+            saveProjectMessage();
+            enableProjectComponents();
+            
+        } catch (Exception e) {
+            System.out.println("ERROR New project: " + e.getMessage());
         }
     }
-
-
-    // Enables components when a project is open or created
-    public void enableProject(){
-        jMenuItemSaveProject.setEnabled(true);
-        jMenuItemCloseProject.setEnabled(true);
-        jMenuItemAddNewToProject.setEnabled(true);
-        jMenuItemAddFileToProject.setEnabled(true);
-        jMenuItemRemoveFromProject.setEnabled(true);
-        jMenuProjectProperties.setEnabled(true);
-        jMenuProjectSwitches.setEnabled(true);
+    
+    /**
+     * Enable components that are valid when a project is open.
+     */
+    private void enableProjectComponents() {
+        
+        // menu
+        saveProjectMenuItem.setEnabled(true);
+        closeProjectMenuItem.setEnabled(true);
+        addNewToProjectMenuItem.setEnabled(true);
+        addFileToProjectMenuItem.setEnabled(true);
+        removeFromProjectMenuItem.setEnabled(true);
+        projectPropertiesMenuItem.setEnabled(true);
+        projectSwitchesMenuItem.setEnabled(true);
+        
+        // popup menu
+        saveProjectPopupMenuItem.setEnabled(true);
+        closeProjectPopupMenuItem.setEnabled(true);
+        addNewToProjectPopupMenuItem.setEnabled(true);
+        addFileToProjectPopupMenuItem.setEnabled(true);
+        removeFromProjectPopupMenuItem.setEnabled(true);
+        openSelectedFilesPopupMenuItem.setEnabled(true);
+        setMainPopupMenuItem.setEnabled(true);
+        removeMainPopupMenuItem.setEnabled(true);
+        
+        // project tab
+        projectScrollPane.setEnabled(true);
+        
+        // search tab
+        searchProjectTextField.setEnabled(true);
+        searchProjectButton.setEnabled(true);
     }
-
-    // Disables components when a project is open or created
-    public void disableProject(){
-        jMenuItemSaveProject.setEnabled(false);
-        jMenuItemCloseProject.setEnabled(false);
-        jMenuItemAddNewToProject.setEnabled(false);
-        jMenuItemAddFileToProject.setEnabled(false);
-        jMenuItemRemoveFromProject.setEnabled(false);
-        jMenuProjectProperties.setEnabled(false);
-        jMenuProjectSwitches.setEnabled(false);
+    
+    /**
+     * Disable components that are invalid when no project is open.
+     */
+    private void disableProjectComponents() {
+        
+        // menu
+        saveProjectMenuItem.setEnabled(false);
+        closeProjectMenuItem.setEnabled(false);
+        addNewToProjectMenuItem.setEnabled(false);
+        addFileToProjectMenuItem.setEnabled(false);
+        removeFromProjectMenuItem.setEnabled(false);
+        projectPropertiesMenuItem.setEnabled(false);
+        projectSwitchesMenuItem.setEnabled(false);
+        
+        // popup menu
+        saveProjectPopupMenuItem.setEnabled(false);
+        closeProjectPopupMenuItem.setEnabled(false);
+        addNewToProjectPopupMenuItem.setEnabled(false);
+        addFileToProjectPopupMenuItem.setEnabled(false);
+        removeFromProjectPopupMenuItem.setEnabled(false);
+        openSelectedFilesPopupMenuItem.setEnabled(false);
+        setMainPopupMenuItem.setEnabled(false);
+        removeMainPopupMenuItem.setEnabled(false);
+        
+        // project tab
+        projectScrollPane.setEnabled(false);
+        
+        // search tab
+        searchProjectTextField.setEnabled(false);
+        searchProjectButton.setEnabled(false);
     }
-
-
-    public void updateProjectTitle(String title){
-        TitledBorder tb = new TitledBorder(title);
-        tb.setTitleFont(new Font("Dialog",Font.PLAIN,11));
-        jScrollPaneProject.setBorder(tb);
+    
+    private void updateProjectList() {
+        projectList.removeAll();
+        projectList.setListData(project.getFiles());
     }
-
-    // Reload just the project switches
-    public void reloadProject(String projectFile){
-        File file = new File(projectFile);
-        StringBuffer sb = new StringBuffer();
-        String riga;
-        sb.setLength(0);
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
-            while ((riga = br.readLine())!=null){
-                sb.append(riga).append("\n");
-            }
-            br.close();
-            Charset charset = Charset.forName(Constants.fileFormat);
-            CharsetEncoder encoder = charset.newEncoder();
-            CharsetDecoder decoder = charset.newDecoder();
-            ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(sb.toString()));
-            CharBuffer cb = decoder.decode(bbuf);
-
-            // Load project switches
-            Hashtable switches        = new Hashtable();
-            Pattern patt = Pattern.compile("\n"+Constants.SWITCHTOKEN+"([^,]+),([^\n]+)");
-            Matcher m = patt.matcher(cb);
-            getJPanelProjectSwitch().removeAll();
-            Checkbox check;
-            while (m.find()){
-                switches.put(m.group(1),m.group(2));
-                check = new Checkbox(m.group(1));
-                check.setFont(new Font("Monospaced", Font.PLAIN, 11));
-                check.setState(m.group(2).trim().equals("on") ? true : false);
-                getJPanelProjectSwitch().add(check);
-            }
-            setProjectSwitches(switches);
-
-        } catch (Exception e){}
+    
+    private void updateProjectMain() {
+        String title = (project.getMain() == null) 
+            ? ""
+            : project.getMain().getName();
+        mainFileLabel.setText("Main: " + title);
     }
-
-    public void openProject(String projectFile){
-        // Check for a poject opened
-        if (currentProject!=null && !currentProject.equals(Constants.PROJECTEMPTY)){
-            // Ask for saving before closing
-            saveProject(false);
-            closeProject();
-        }
-
-        projectClass = new Vector();
-        File file;
-        String auxFile;
-        if (null == projectFile){
-            JFileChooser chooser = new JFileChooser(lastOpenedProjectPath);
-            JifFileFilter infFilter = new JifFileFilter("jpf", "Jif Project File");
-            chooser.setFileFilter(infFilter);
-            int returnVal = chooser.showOpenDialog(this);
-            if(returnVal == JFileChooser.CANCEL_OPTION) {
-                return;
-            }
-            file = new File(chooser.getSelectedFile().getAbsolutePath());
-        } else{
-            file = new File(projectFile);
-        }
-
-        // Loading the JPF file and use regular expressions to find config
-        StringBuffer sb = new StringBuffer();
-        String riga;
-        sb.setLength(0);
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
-            while ((riga = br.readLine())!=null){
-                sb.append(riga).append("\n");
-            }
-            br.close();
-            Charset charset = Charset.forName(Constants.fileFormat);
-            CharsetEncoder encoder = charset.newEncoder();
-            CharsetDecoder decoder = charset.newDecoder();
-            ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(sb.toString()));
-            CharBuffer cb = decoder.decode(bbuf);
-            Vector fileToOpen=new Vector();
-
-            // project files
-            Pattern patt = Pattern.compile("\n\\[FILE\\]([^\n]+)");
-            Matcher m = patt.matcher(cb);
-            while (m.find()){
-                projectFiles.add(new FileProject(m.group(1)));
-                if (jCheckBoxScanProjectFiles.isSelected()){
-                    Utils.seekClass(projectClass, new File(m.group(1)));
-                }
-                fileToOpen.add(m.group(1));
-            }
-
-            // Find the Main class file
-            patt = Pattern.compile("\n\\[MAINFILE\\]([^\n]+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                mainFile = m.group(1);
-                if (mainFile.equals("null")){
-                    mainFile = null;
-                    jLabelMainFile.setText("Main: "+mainFile);
-                } else{
-                    jLabelMainFile.setText("Main: " + mainFile.substring(mainFile.lastIndexOf(Constants.SEP)+1,mainFile.length()));
-                }
-            }
-
-            // Set the Mode saved
-            patt = Pattern.compile("\n"+Constants.MODETOKEN+"(.+)");
-            m = patt.matcher(cb);
-            while (m.find()){
-                if(m.group(1).equalsIgnoreCase("inform")){
-                    jCheckBoxInformMode.setState(true);
-                    jCheckBoxGlulxMode.setState(false);
-                } else{
-                    jCheckBoxInformMode.setState(false);
-                    jCheckBoxGlulxMode.setState(true);
-                }
-            }
-
-
-            // Load project switches
-            Hashtable switches        = new Hashtable();
-            patt = Pattern.compile("\n"+Constants.SWITCHTOKEN+"([^,]+),([^\n]+)");
-            m = patt.matcher(cb);
-            getJPanelProjectSwitch().removeAll();
-            Checkbox check;
-            while (m.find()){
-                switches.put(m.group(1),m.group(2));
-                check = new Checkbox(m.group(1));
-                check.setFont(new Font("Monospaced", Font.PLAIN, 11));
-                check.setState(m.group(2).trim().equals("on") ? true : false);
-                getJPanelProjectSwitch().add(check);
-            }
-            setProjectSwitches(switches);
-
-            // ordino il vettore
-            Collections.sort(projectFiles,new Comparator(){
-                public int compare(Object a, Object b) {
-                    String id1 = ((FileProject)a).toString();
-                    String id2 = ((FileProject)b).toString();
-                    return (id1).compareToIgnoreCase(id2) ;
-                }
-            });
-
-            jListProject.setListData(projectFiles);
-
-            //open files if necesarry
-            if (jCheckBoxProjectOpenAllFiles.isSelected()){
-                for(int i=0;i<fileToOpen.size();i++){
-                    auxFile=(String)fileToOpen.elementAt(i);
-
-                    // don't open automatically *.h files
-                    if (!auxFile.endsWith(".h")){
-                        openFile(auxFile);
-                    }
-                    //in OpenFile riga is seted to null
-                }
-                jTabbedPane1.setSelectedIndex(0);
-            }
-
-            currentProject = file.getAbsolutePath();
-
-            updateProjectTitle("Project: "+
-                    currentProject.substring(
-                    currentProject.lastIndexOf(Constants.SEP)+1
-                    ,
-                    currentProject.length())
-                    );
-
-            jScrollPaneProject.setEnabled(true);
-
-            // View the Project Panel
-            jTabbedPaneLeft.setSelectedIndex(1);
-
-            // Last Project closed
-            lastProject = file.getAbsolutePath();
-            lastOpenedProjectPath = file.getAbsolutePath();
-            jMenuItemLastProject.setText(
-                    java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_OPEN") +" ("+
-                    currentProject.substring(
-                    currentProject.lastIndexOf(Constants.SEP)+1 ,
-                    currentProject.length())+")");
-
-            enableProject();
-        } catch (Exception e) {}
+    
+    private void updateProjectTitle() {
+        String title = (project.getFile() == null) 
+            ? Constants.PROJECTEMPTY
+            : project.getFile().getName();
+        TitledBorder tb = new TitledBorder("Project: " + title);
+        tb.setTitleFont(new Font("Dialog", Font.PLAIN, 11));
+        projectScrollPane.setBorder(tb);
     }
-
-    // Opening a project: the switches are overwritten by the project
-    // settings
-    public void openProjectOld(String projectFile){
-        // creo un nuovo vettore per le classi
-        projectClass = new Vector();
-        File file;
-
-        if (null == projectFile){
-            JFileChooser chooser = new JFileChooser(lastOpenedProjectPath);
-            JifFileFilter infFilter = new JifFileFilter("jpf", "Jif Project File");
-            chooser.setFileFilter(infFilter);
-            int returnVal = chooser.showOpenDialog(this);
-            if(returnVal == JFileChooser.CANCEL_OPTION) {
-                return;
-            }
-            file = new File(chooser.getSelectedFile().getAbsolutePath());
-        } else{
-            file = new File(projectFile);
-        }
-
-        try{
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
-            projectFiles = new Vector();
-            String idSwitch;
-            String valueSwitch;
-            String auxFile;
-            Checkbox ch;
-            Vector fileToOpen=new Vector(15);
-
-            while ((riga = br.readLine())!=null){
-                if (!(riga.startsWith(Constants.TOKENCOMMENT))&&!(riga.equals(""))){
-                    if (riga.indexOf("[FILE]=")!=-1){
-                        projectFiles.add(
-                                new FileProject(riga.substring(riga.indexOf("[FILE]=")+7))
-                                );
-
-                        // qui lancio un metodo che mi apre il file e mi cerca le classi
-                        // se ho impostato il flag jCheckBoxScanProjectFiles a true
-                        if (jCheckBoxScanProjectFiles.isSelected()){
-                            Utils.seekClass(projectClass, new File(riga.substring(riga.indexOf("[FILE]=")+7)));
-                        }
-                        // provo ad aprire il file, se il checkbox relativo è impostato
-                        // a TRUE
-                        fileToOpen.add(riga.substring(riga.indexOf("[FILE]=")+7));
-
-                    }
-                    if (riga.indexOf("[MAINFILE]=")!=-1){
-                        mainFile = riga.substring(riga.indexOf("[MAINFILE]=")+11);
-                        if (mainFile.equals("null")){
-                            mainFile = null;
-                            jLabelMainFile.setText("Main: "+mainFile);
-                        } else{
-                            jLabelMainFile.setText("Main: " + mainFile.substring(mainFile.lastIndexOf(Constants.SEP)+1,mainFile.length()));
-                        }
-                    }
-
-
-                    // Load project switches
-                    if (riga.indexOf("[SWITCH]=")!=-1){
-                        st = new StringTokenizer(riga.substring(riga.indexOf("[SWITCH]=")+9) , ",");
-                        idSwitch = st.nextToken();
-                        valueSwitch = st.nextToken();
-                        //System.out.println(idSwitch+"="+valueSwitch);
-                        int numeroSwitch1=jPanelSwitch1.getComponentCount();
-                        int numeroSwitch2=jPanelSwitch2.getComponentCount();
-                        for(int count=0; count < numeroSwitch1; count++){
-                            ch = (Checkbox) jPanelSwitch1.getComponent(count);
-                            if (ch.getLabel().equals(idSwitch)){
-                                ch.setState(valueSwitch.toLowerCase().equals("on")? true: false);
-                            }
-                        }
-                        for(int count=0; count < numeroSwitch2; count++){
-                            ch = (Checkbox) jPanelSwitch2.getComponent(count);
-                            if (ch.getLabel().equals(idSwitch)){
-                                ch.setState(valueSwitch.toLowerCase().equals("on")? true: false);
-                            }
-                        }
-                    }
-                }
-            }
-
-            br.close();
-
-            // ordino il vettore
-            Collections.sort(projectFiles,new Comparator(){
-                public int compare(Object a, Object b) {
-                    String id1 = ((FileProject)a).toString();
-                    String id2 = ((FileProject)b).toString();
-                    return (id1).compareToIgnoreCase(id2) ;
-                }
-            });
-
-            jListProject.setListData(projectFiles);
-
-            //open files if necesarry
-            if (jCheckBoxProjectOpenAllFiles.isSelected()){
-                for(int i=0;i<fileToOpen.size();i++){
-                    auxFile=(String)fileToOpen.elementAt(i);
-
-                    // don't open automatically *.h files
-                    if (!auxFile.endsWith(".h")){
-                        openFile(auxFile);
-                    }
-                    //in OpenFile riga is seted to null
-                }
-                jTabbedPane1.setSelectedIndex(0);
-            }
-
-        } catch(IOException e){
-            System.out.println(e.getMessage());
-        }
-
-        //currentProject = chooser.getSelectedFile().getAbsolutePath();
-        currentProject = file.getAbsolutePath();
-
-        updateProjectTitle("Project: "+
-                currentProject.substring(
-                currentProject.lastIndexOf(Constants.SEP)+1
-                ,
-                currentProject.length())
-                );
-
-        jScrollPaneProject.setEnabled(true);
-
-        // View the Project Panel
-        jTabbedPaneLeft.setSelectedIndex(1);
-
-        // Last Project closed
-        lastProject = file.getAbsolutePath();
-        lastOpenedProjectPath = file.getAbsolutePath();
-        jMenuItemLastProject.setText(
-                java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_OPEN") +" ("+
-                currentProject.substring(
-                currentProject.lastIndexOf(Constants.SEP)+1 ,
-                currentProject.length())+")");
-
-    }
-
-    // chiude un progetto. Inserire un flag per chiudere tutti i files
-    // relativi ad un progetto quando si chiude il progetto stesso
-    public void closeProject(){
-        currentProject = Constants.PROJECTEMPTY;
-        updateProjectTitle("Project: ");
-        projectFiles.removeAllElements();
-        Collections.sort(projectFiles,new Comparator(){
-            public int compare(Object a, Object b) {
-                String id1 = ((FileProject)a).toString();
-                String id2 = ((FileProject)b).toString();
-                return (id1).compareToIgnoreCase(id2) ;
-            }
-        });
-        jListProject.setListData(projectFiles);
-        jScrollPaneProject.setEnabled(false);
-        closeAllFiles();
-        loadConfigNew(new File(fileini));
-        projectClass = null;
-        mainFile = null;
-        jLabelMainFile.setText("Main:");
-    }
-
-
-    public void saveProject(boolean message){
-        try{
-            if (currentProject.equals(Constants.PROJECTEMPTY)){
-                return;
-            }
-            File file = new File(currentProject);
-            file.createNewFile();
-            FileOutputStream fos = new FileOutputStream(file);
-            Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
-
-            out.write("# Jif Configuration Project\n");
-            out.write("# "+currentProject+"\n");
-            out.write("\n");
-            for (int i=0; i<projectFiles.size();i++)  {
-                out.write("[FILE]" + ((FileProject)projectFiles.elementAt(i)).path+"\n");
-            }
-            out.write("[MAINFILE]"+mainFile+"\n");
-            out.write("[MODE]"+ (jCheckBoxInformMode.isSelected() ? "INFORM":"GLULX") +"\n");
-            out.write("\n");
-
-            // The project Switches
-            out.write("# WARNING! You can edit *only* this switches section!!!\n");
-            StringBuffer make = getSwitchesForSavingProject();
-            out.write(make.toString());
-            out.write("# WARNING! You can edit *only* this switches section!!!\n");
-            out.flush();
-            out.close();
-        }catch(Exception e ){
-            System.out.println(e.getMessage());
-        }
-
-        // silent save?
-        if (message){
-            JOptionPane.showMessageDialog(
-                    jDialogEditFileIni,
-                    currentProject +" " +java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE4"),
-                    java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE2") ,
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-
-
-    public void removeFileFromProject(){
-        FileProject fp = (FileProject)jListProject.getSelectedValue();
-        if (null==fp) return;
-        if (
-                JOptionPane.showConfirmDialog(this,
-                java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_DELETE_FILE_FROM_PROJECT") ,
-                "File : "+fp.name , JOptionPane.OK_CANCEL_OPTION)
-                ==0
-                ){
-            projectFiles.remove(fp);
-            jListProject.removeAll();
-            // ordino il vettore
-            Collections.sort(projectFiles,new Comparator(){
-                public int compare(Object a, Object b) {
-                    String id1 = ((FileProject)a).toString();
-                    String id2 = ((FileProject)b).toString();
-                    return (id1).compareToIgnoreCase(id2) ;
-                }
-            });
-
-            jListProject.setListData(projectFiles);
-
-            // Update and save the project
-            saveProject(false);
-        }
-    }
-
-    public void closeAllFiles(){
-        int numberOfComponents = jTabbedPane1.getTabCount();
-        for (int count=0; count < numberOfComponents; count++){
-            closeFile();
-        }
-        refreshTree();
-        System.gc();
-    }
-
-    // Lancia l'interprete senza passargli il file AT (.inf)
-    // This method has to be splitted in 2
-    public void runInterpreter() {
-        if (jCheckBoxInformMode.isSelected()){
-            runInformInterpreter();
-        } else runGlulxInterpreter();
-    }
-
-    public void runGlulxInterpreter(){
-        // Check out if a glulx interpreter exists
-        String auxGlux[]=new String[1];
-        File test = new File(getInterpreterglulxpath());
-        if (!test.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1")+" "+getInterpreterzcodepath()+java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
+    
+    private void openProject() {
+        
+        String search = (config.getLastProject() == null)
+            ? config.getWorkingDirectory()
+            : config.getLastProject().getPath();
+        
+        JFileChooser chooser = new JFileChooser(search);
+        JifFileFilter infFilter = new JifFileFilter("jpf", "Jif Project File");
+        chooser.setFileFilter(infFilter);
+        if (chooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
             return;
         }
-        try{
-            auxGlux[0]=new String(getInterpreterglulxpath());
+        
+        openProject(chooser.getSelectedFile().getAbsolutePath());
+    }
+    
+    private void openProject(String projectPath) {
+        
+        // Check whether there is already an open project
+        if (project.getFile() != null) {
+            saveProject();
+            closeProject();
+        }
+        
+        File projectSource = new File(projectPath);
+        project.setFile(projectSource.getAbsolutePath());
+        
+        try {
+            JifProjectDAO.reload(project);
+            
+        } catch (JifProjectException ex) {
+            System.out.println("ERROR Open project (" + projectPath + "): " + ex.getMessage());
+        }
+        
+        // Scan for project classes if neccesary
+        if (config.getScanProjectFiles()) {
+// DEBUG
+//            System.out.println(
+//                    "Open project(" +
+//                    projectSource.getAbsolutePath() +
+//                    ")"
+//            );
+            //System.out.println("============");
+            seekClasses();
+            seekClassToClass();
+        }
+        
+        // Open project files if neccesary
+        if (config.getOpenProjectFiles()) {
+            for (Iterator i = project.getFiles().iterator(); i.hasNext(); ) {
+                JifFileName projectFile = (JifFileName) i.next();
+                // don't open automatically *.h files
+                if (!projectFile.getType().equals("h")) {
+                    openFile(projectFile.getPath());
+                    fileTabbedPane.setSelectedIndex(0);
+                }
+            }
+        }
+        
+        // Set mode to project setting
+        if (project.getInformMode()) {
+            setInformMode();
+        } else {
+            setGlulxMode();
+        }
+        refreshTitle();
+        
+        // View the Project Panel
+        leftTabbedPane.setSelectedIndex(1);
+        
+        // Last Project opened
+        config.setLastProject(projectSource.getAbsolutePath());
+        
+        enableProjectComponents();
+    }
+    
+    /**
+     * Seek classes in a source CharBuffer adding each class found to the
+     * project class map and project node map.
+     *
+     * @param cb
+     *          <code>CharBuffer</code> of inform source code
+     */
+    private void seekClasses() {
+
+// DEBUG
+        //System.out.println("seek classes");
+        //System.out.println("============");
+        for (Iterator i = project.getFiles().iterator(); i.hasNext(); ) {
+            JifFileName projectFile = (JifFileName) i.next();
+            if (projectFile.getContentType() == JifFileName.INFORM) {
+                File file = new File(projectFile.getPath());
+                
+                try {
+                    // Get a buffer for the source file
+                    CharBuffer cb = JifDAO.buffer(file);
+                    
+                    Matcher m = classPattern.matcher(cb);
+                    while (m.find()) {
+// DEBUG
+                        System.out.println(
+                                "Found new class: " +
+                                m.group(2).toLowerCase() +
+                                " at " + m.start(2) +
+                                " in " + projectFile.getPath()
+                                );
+                        String className = m.group(2).toLowerCase();
+                        Inspect nullRef = new Inspect(className, -1);
+                        projectClasses.put(className, nullRef);
+                        projectNodes.put(className, new DefaultMutableTreeNode(nullRef));
+                    }
+                    
+                } catch (Exception ex) {
+                    System.out.println("ERROR: Seek classes " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    private void seekClassToClass() {
+        
+// DEBUG
+        //System.out.println("seek class to class");
+        //System.out.println("===================");
+        for (Iterator i = project.getFiles().iterator(); i.hasNext(); ) {
+            JifFileName projectFile = (JifFileName) i.next();
+            if (projectFile.getContentType() == JifFileName.INFORM) {
+                File file = new File(projectFile.getPath());
+                
+                try {
+                    // Get a buffer for the source file
+                    CharBuffer cb = JifDAO.buffer(file);
+                    
+                    Matcher m = classToClassPattern.matcher(cb);
+                    while (m.find()) {
+// DEBUG
+//                        System.out.println("Found class to class: " + m.group(1).toLowerCase() +
+//                                " at " + m.start(1) +
+//                                " to " + m.group(2).toLowerCase() +
+//                                " in " + projectFile.getPath()
+//                                );
+                        String child = m.group(1).toLowerCase();
+                        String parent = m.group(2).toLowerCase();
+                        projectRels.put(child, parent);
+                    }
+                    
+                } catch (Exception ex) {
+                    System.out.println("ERROR: Seek class to class " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    // chiude un progetto. Inserire un flag per chiudere tutti i files
+    // relativi ad un progetto quando si chiude il progetto stesso
+    private void closeProject() {
+        closeAllFiles();
+        disableProjectComponents();
+        project.clear();
+        projectClasses.clear();
+        projectNodes.clear();
+        projectRels.clear();
+        // Restore mode to configuration setting
+        if (config.getInformMode()) {
+            setInformMode();
+        } else {
+            setGlulxMode();
+        }
+        refreshTitle();
+    }
+    
+    private void saveProject() {
+        if (project.getFile() == null) {
+            return;
+        }
+        
+        try {
+            JifProjectDAO.store(project);
+            
+        } catch (JifProjectException ex ) {
+            System.out.println("ERROR Project save: " + ex.getMessage());
+        }
+    }
+    
+    private void saveProjectMessage() {
+        JOptionPane.showMessageDialog(
+                configDialog,
+                project.getFile().getName() +
+                " " +
+                java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE4"),
+                java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE2"),
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    private void clearMainForProject() {
+        JOptionPane.showMessageDialog(this,
+                "Clearing Main file",
+                "Main file",
+                JOptionPane.INFORMATION_MESSAGE);
+        project.clearMain();
+    }
+    
+    private void setMainForProject() {
+        JifFileName fp = (JifFileName) projectList.getSelectedValue();
+        if (fp == null || !fp.getType().equals("inf")) {
+            return;
+        }
+        project.setMain(fp);
+    }
+    
+    private void removeFileFromProject() {
+        JifFileName fp = (JifFileName) projectList.getSelectedValue();
+        if (fp == null) {
+            return;
+        }
+        // Confirm file removal
+        String message;
+        int option;
+        if (fp.equals(project.getMain())) {
+            message = java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_DELETE_MAIN_FROM_PROJECT");
+        } else {
+            message = java.util.ResourceBundle.getBundle("JIF").getString("PROJECT_DELETE_FILE_FROM_PROJECT");
+        }
+        if (JOptionPane.showConfirmDialog(this,
+                message,
+                "File : " + fp.getName(),
+                JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
+            return;
+        }
+        
+        // Remove the file and save the project
+        project.removeFile(fp);
+        saveProject();
+    }
+    
+    private void closeAllFiles() {
+        int numberOfComponents = fileTabbedPane.getTabCount();
+        for (int i=0; i < numberOfComponents; i++) {
+            closeFile();
+        }
+        disableFileComponents();
+// DEBUG
+        //System.out.println("close all - refresh tree");
+        refreshTree();
+        refreshTitle();
+        System.gc();
+    }
+    
+    // Lancia l'interprete senza passargli il file AT (.inf)
+    // This method has to be splitted in 2
+    private void runInterpreter() {
+        if (isInformMode()) {
+            runInformInterpreter();
+        } else {
+            runGlulxInterpreter();
+        }
+    }
+    
+    private void runGlulxInterpreter() {
+        // Check out if a glulx interpreter exists
+        File test = new File(config.getInterpreterGlulxPath());
+        if (!test.exists()) {
+            JOptionPane.showMessageDialog(this,
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1") + " " + config.getInterpreterGlulxPath() + java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"),
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3"),
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String auxGlux[] = new String[1];
+        auxGlux[0] = new String(config.getInterpreterGlulxPath());
+        
+        try {
             Runtime rt = Runtime.getRuntime();
             rt.exec(auxGlux);
-        } catch(IOException e){
-            System.out.println(e.getMessage());
+        } catch (IOException e) {
+            System.out.println("ERROR Running Glulx interpreter: " + e.getMessage());
         }
     }
-
-
-
-    public void runInformInterpreter(){
-        // controllo che esista l'interprete con il path  inserito nella Jif.cfg
-        // se non esiste visualizzo un messaggio di warning
-        String auxInter[]=new String[1];
-        try{
-            auxInter[0]=new String(getInterpreterzcodepath());
+    
+    private void runInformInterpreter() {
+        // Check out if a Zcode interpreter exists
+        File test = new File(config.getInterpreterZcodePath());
+        if (!test.exists()) {
+            JOptionPane.showMessageDialog(this,
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1") + " " + config.getInterpreterZcodePath() + java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"),
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3"),
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String auxInter[] = new String[1];
+        auxInter[0] = new String(config.getInterpreterZcodePath());
+        
+        try {
             Runtime rt = Runtime.getRuntime();
             rt.exec(auxInter); //Process proc =  unused
-        } catch(IOException e){
-            System.out.println(e.getMessage());
+        } catch (IOException e) {
+            System.out.println("ERROR Running Zcode interpreter: " + e.getMessage());
         }
     }
-
+    
     // visualizza un file con tasto OK
     // senza la syntax highlight
-    public void showFile(InputStream is){
-        jEditorPaneTutorial.setEditorKit(new StyledEditorKit());
-        jEditorPaneTutorial.setBackground(colorBackground);
-        jDialogTutorial.setTitle("Readme");
-        jDialogTutorial.setSize(700,550);
-        jDialogTutorial.setLocationRelativeTo(this);
-        jDialogTutorial.setVisible(true);
-        try{
-            BufferedReader br = new BufferedReader(new InputStreamReader(is, Constants.fileFormat));
-            sb.setLength(0);
-            while ((riga = br.readLine())!=null){
-                sb.append(riga).append("\n");
-            }
-            jEditorPaneTutorial.setText(sb.toString());
-            jLabelTutorial.setText("Tutorial");
-            jEditorPaneTutorial.setCaretPosition(0);
-            br.close();
-        } catch(IOException e){
-            System.out.println(e.getMessage());
+    private void showFile(InputStream is) {
+        tutorialEditorPane.setEditorKit(new StyledEditorKit());
+        tutorialEditorPane.setBackground(config.getContext().getBackground());
+        tutorialDialog.setTitle("Readme");
+        tutorialDialog.setSize(700, 550);
+        tutorialDialog.setLocationRelativeTo(this);
+        tutorialDialog.setVisible(true);
+        try {
+            tutorialEditorPane.setText(JifDAO.read(is));
+            tutorialEditorPane.setCaretPosition(0);
+            
+            tutorialLabel.setText("Tutorial");
+            
+        } catch (IOException e) {
+            System.out.println("ERROR Show tutorial file: " + e.getMessage());
         }
     }
-
-
-
-    public void updateColor(){
-        jLabelKeyword.setForeground(colorKeyword);
-        jButtonKeyword.setBackground(colorKeyword);
-        jLabelAttribute.setForeground(colorAttribute);
-        jButtonAttribute.setBackground(colorAttribute);
-        jLabelProperty.setForeground(colorProperty);
-        jButtonProperty.setBackground(colorProperty);
-        jLabelVerb.setForeground(colorVerb);
-        jButtonVerb.setBackground(colorVerb);
-        jLabelNormal.setForeground(colorNormal);
-        jButtonNormal.setBackground(colorNormal);
-        jLabelComment.setForeground(colorComment);
-        jButtonComment.setBackground(colorComment);
-        jLabelBackground.setForeground(colorBackground);
-        jButtonBackground.setBackground(colorBackground);        
-        jLabelString.setForeground(colorString);
-        jButtonString.setBackground(colorString);
+    
+    private void updateLastProject() {
+        if (config.getLastProject() == null) {
+            return;
+        }
+        
+        lastProjectMenuItem.setText(java.util.ResourceBundle.getBundle("JIF").getString("MENUITEM_OPEN") +
+                " (" +
+                config.getLastProject().getName() +
+                ")"
+                );
     }
-
-
-    public void updateColorEditor(){
-        jEditorPaneColor.setFont(defaultFont);
-        jEditorPaneColor.setDoubleBuffered(false);
-        jEditorPaneColor.setEditorKit(new StyledEditorKit());
-        jEditorPaneColor.setEditable(false);
-        jEditorPaneColor.setBackground(colorBackground);
-        jEditorPaneColor.setDocument(new InformDocument(this));
+    
+    private void updateRecentFiles() {
+        // Recentfiles
+        recentFilesMenu.removeAll();
+        for (Iterator i = config.getRecentFilesSet().iterator(); i.hasNext(); ) {
+            String file = (String) i.next();
+            JMenuItem mi = new JMenuItem(file);
+            mi.setName(file);
+            mi.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    openFile(((javax.swing.JMenuItem)evt.getSource()).getText());
+                }
+            });
+            recentFilesMenu.add(mi);
+        }
+    }
+    
+    private void updateMenues() {
+        // Recentfiles
+        insertNewMenu.removeAll();
+        for (Iterator i = config.getMenusSet().iterator(); i.hasNext(); ) {
+            String elem = (String) i.next();
+            JMenu menu = new JMenu(elem);
+            menu.setName(elem);
+            
+            // submenues
+            for (Iterator sub = config.getSubMenu(elem).iterator(); sub.hasNext(); ) {
+            	String submenu = (String) sub.next();
+            	JMenuItem mi = new JMenuItem(submenu);
+                mi.setName(submenu);
+                menu.add(mi).addMouseListener(menuListener);
+                //operations.put(m.group(1),m.group(2));
+            }
+            insertNewMenu.add(menu);
+        }                
+    }
+    
+    private void updateAttributeColor() {
+        Color color = optionContext.getForeground(InformSyntax.Attribute);
+        attributeColorLabel.setForeground(color);
+        attributeColorButton.setBackground(color);
+    }
+    
+    private void updateBackgroundColor() {
+        Color color =  optionContext.getBackground();
+        backgroundColorLabel.setForeground(color);
+        backgroundColorButton.setBackground(color);
+        colorEditorPane.setBackground(color);
+        highlightEditorPane.setBackground(color);
+    }
+    
+    private void updateBookmarksColor() {
+        Color color =  optionContext.getForeground(InformSyntax.Bookmarks);
+        bookmarkColorLabel.setForeground(color);
+        bookmarkColorButton.setBackground(color);
+    }
+    
+    private void updateBracketsColor() {
+        Color color =  optionContext.getForeground(InformSyntax.Brackets);
+        bracketColorLabel.setForeground(color);
+        bracketColorButton.setBackground(color);
+    }
+    
+    private void updateCommentColor() {
+        Color color = optionContext.getForeground(InformSyntax.Comment);
+        commentColorLabel.setForeground(color);
+        commentColorButton.setBackground(color);
+    }
+    
+    private void updateErrorsColor() {
+        Color color =  optionContext.getForeground(InformSyntax.Errors);
+        errorColorLabel.setForeground(color);
+        errorColorButton.setBackground(color);
+    }
+    
+    private void updateJumpToColor() {
+        Color color =  optionContext.getForeground(InformSyntax.JumpTo);
+        jumpToColorLabel.setForeground(color);
+        jumpToColorButton.setBackground(color);
+    }
+    
+    private void updateKeywordColor() {
+        Color color = optionContext.getForeground(InformSyntax.Keyword);
+        keywordColorLabel.setForeground(color);
+        keywordColorButton.setBackground(color);
+    }
+    
+    private void updateNormalColor() {
+        Color color = optionContext.getForeground(InformSyntax.Normal);
+        normalColorLabel.setForeground(color);
+        normalColorButton.setBackground(color);
+    }
+    
+    private void updateNumberColor() {
+        Color color = optionContext.getForeground(InformSyntax.Number);
+        numberColorLabel.setForeground(color);
+        numberColorButton.setBackground(color);
+    }
+    
+    private void updatePropertyColor() {
+        Color color = optionContext.getForeground(InformSyntax.Property);
+        propertyColorLabel.setForeground(color);
+        propertyColorButton.setBackground(color);
+    }
+    
+    private void updateStringColor() {
+        Color color = optionContext.getForeground(InformSyntax.String);
+        stringColorLabel.setForeground(color);
+        stringColorButton.setBackground(color);
+    }
+    
+    private void updateVerbColor() {
+        Color color = optionContext.getForeground(InformSyntax.Verb);
+        verbColorLabel.setForeground(color);
+        verbColorButton.setBackground(color);
+    }
+    
+    private void updateWarningsColor() {
+        Color color =  optionContext.getForeground(InformSyntax.Warnings);
+        warningColorLabel.setForeground(color);
+        warningColorButton.setBackground(color);
+    }
+    
+    private void updateWhiteColor() {
+        Color color = optionContext.getForeground(InformSyntax.White);
+        wordColorLabel.setForeground(color);
+        wordColorButton.setBackground(color);
+    }
+    
+    private void updateWordColor() {
+        Color color = optionContext.getForeground(InformSyntax.Word);
+        wordColorLabel.setForeground(color);
+        wordColorButton.setBackground(color);
+    }
+    
+    private void updateColor() {
+        // Background colour
+        updateBackgroundColor();
+        // Syntax colours
+        updateAttributeColor();
+        updateCommentColor();
+        updateKeywordColor();
+        updateNormalColor();
+        updateNumberColor();
+        updatePropertyColor();
+        updateStringColor();
+        updateVerbColor();
+        updateWhiteColor();
+        updateWordColor();
+    }
+    
+    private void updateHighlights() {
+        String selection = (String) highlightSelectedComboBox.getSelectedItem();
+        
+        if (optionHighlight != null) {
+            optionHighlight.removeHighlights(highlightEditorPane);
+        }
+            
+        if (selection.equals("Bookmark")) {
+            optionHighlight = new HighlightText(
+                    highlightEditorPane,
+                    optionContext.getForeground(InformSyntax.Bookmarks));
+            
+       } 
+        
+        if (selection.equals("Bracket")) {
+            optionHighlight = new HighlightText(
+                    highlightEditorPane,
+                    optionContext.getForeground(InformSyntax.Brackets));
+            
+       } 
+        
+        if (selection.equals("Error")) {
+            optionHighlight = new HighlightText(
+                    highlightEditorPane,
+                    optionContext.getForeground(InformSyntax.Errors));
+            
+       } 
+        
+        if (selection.equals("JumpTo")) {
+            optionHighlight = new HighlightText(
+                    highlightEditorPane,
+                    optionContext.getForeground(InformSyntax.JumpTo));
+            
+       } 
+        
+        if (selection.equals("Warning")) {
+            optionHighlight = new HighlightText(
+                    highlightEditorPane,
+                    optionContext.getForeground(InformSyntax.Warnings));
+            
+       }
+       optionHighlight.highlightFromTo(highlightEditorPane, 17, 159);
+    }
+    
+    private void updateHighlight() {
+        // Highlight colours
+        updateBookmarksColor();
+        updateBracketsColor();
+        updateErrorsColor();
+        updateJumpToColor();
+        updateWarningsColor();
+    }
+    
+    private void updateFont() {
+        fontNameComboBox.setSelectedItem(config.getContext().getFontName());
+        Integer fontSize = new Integer(config.getContext().getFontSize());
+        fontSizeComboBox.setSelectedItem(fontSize.toString());
+        tabSizeTextField.setText(String.valueOf(JifEditorKit.getTabSize()));
+    }
+    
+    
+    private void createHighlightEditor() {
+        highlightEditorPane.setDoubleBuffered(false);
+        highlightEditorPane.setEditorKit(new InformEditorKit());
+        highlightEditorPane.setEditable(false);
+        highlightEditorPane.setBackground(optionContext.getBackground());
+        highlightEditorPane.setDocument(new InformDocument(optionContext));
         StringBuffer sb = new StringBuffer();
         sb
                 .append("! Poisoned Apple\n")
                 .append("Object  apple \"Poisoned Apple\"\n")
-                .append("with  description \"It's a red apple.\",\n")
-                .append("before [;\n")
-                .append("   Eat : \n")
-                .append("   print \"This is a poisoned apple, isn't it?\"\n")
-                .append("   return true;\n")
-                .append("],\n")
+                .append("with\n")
+                .append("  description \"It's a red apple.\",\n")
+                .append("  name \'apple\' \'red\' \'poisoned\',\n")
+                .append("  number 1234,\n")
+                .append("  before [;\n")
+                .append("    Eat : \n")
+                .append("    print \"This is a poisoned apple, isn't it?\"\n")
+                .append("    return true;\n")
+                .append("  ],\n")
                 .append("has   light;\n");
-        jEditorPaneColor.setText(sb.toString());
+        highlightEditorPane.setText(sb.toString());
+        updateHighlights();
     }
-
-
-
+    
+    private void createColorEditor() {
+        colorEditorPane.setDoubleBuffered(false);
+        colorEditorPane.setEditorKit(new InformEditorKit());
+        colorEditorPane.setEditable(false);
+        colorEditorPane.setBackground(optionContext.getBackground());
+        colorEditorPane.setDocument(new InformDocument(optionContext));
+        StringBuffer sb = new StringBuffer();
+        sb
+                .append("! Poisoned Apple\n")
+                .append("Object  apple \"Poisoned Apple\"\n")
+                .append("with\n")
+                .append("  description \"It's a red apple.\",\n")
+                .append("  name \'apple\' \'red\' \'poisoned\',\n")
+                .append("  number 1234,\n")
+                .append("  before [;\n")
+                .append("    Eat : \n")
+                .append("    print \"This is a poisoned apple, isn't it?\"\n")
+                .append("    return true;\n")
+                .append("  ],\n")
+                .append("has   light;\n");
+        colorEditorPane.setText(sb.toString());
+    }
+    
     // If a string is on the system clipboard, this method returns it;
     // otherwise it returns null.
     public static String getClipboard() {
@@ -7301,419 +6982,436 @@ public class jFrame extends JFrame {
         }
         return null;
     }
-
-
-
-
+    
     // funzione che testa se TUTTI gli switch +language_name.....sono DISATTIVATI...
     // true : tutti spenti
     // false : almeno uno acceso
-    public boolean checkDefaultLanguage(){
+    // TODO This method is not used
+    private boolean checkDefaultLanguage() {
         // prendo il pannello 2 dello switch manager,
         // scandisco tutti i chechbox, se ne trovo uno solo che inizia con
         // +language_name ATTIVO, ritorno FALSE
         // altrimenti ritorno TRUE
-        boolean ritorno = true;
-        int numeroSwitch=jPanelSwitch2.getComponentCount();
-        Checkbox ch;
-
-        for(int count=0; count < numeroSwitch; count++){
-            ch = (Checkbox) jPanelSwitch2.getComponent(count);
-            if (ch.getLabel().startsWith("+language_name") && ch.getState()){
-                ritorno = false;
+        
+        for (int count=0; count < switchesLowerPanel.getComponentCount(); count++) {
+            Checkbox ch = (Checkbox) switchesLowerPanel.getComponent(count);
+            if (ch.getLabel().startsWith("+language_name") && ch.getState()) {
+                return false;
             }
         }
-        return ritorno;
+        return true;
     }
-
-
-    // questa funzione toglie i doppi apici o i singoli apici
-    // dai campi di PATH
-    public void unquote(){
-        String compiler = jTextFieldPathCompiler.getText();
-        String games = jTextFieldPathGames.getText();
-        String interpreter = jTextFieldPathInterpreter.getText();
-        String lib = jTextFieldPathLib.getText();
-        String libsec1 = jTextFieldPathLibSecondary1.getText();
-        String libsec2 = jTextFieldPathLibSecondary2.getText();
-        String libsec3 = jTextFieldPathLibSecondary3.getText();
-
-        compiler = Utils.replace(compiler , "\"", "");
-        compiler = Utils.replace(compiler , "'", "");
-        jTextFieldPathCompiler.setText(compiler);
-
-        games = Utils.replace(games , "\"", "");
-        games = Utils.replace(games , "'", "");
-        jTextFieldPathGames.setText(games);
-
-        interpreter = Utils.replace(interpreter , "\"", "");
-        interpreter = Utils.replace(interpreter , "'", "");
-        jTextFieldPathInterpreter.setText(interpreter);
-
-        lib = Utils.replace(lib , "\"", "");
-        lib = Utils.replace(lib , "'", "");
-        jTextFieldPathLib.setText(lib);
-
-        libsec1 = Utils.replace(libsec1 , "\"", "");
-        libsec1 = Utils.replace(libsec1 , "'", "");
-        jTextFieldPathLibSecondary1.setText(libsec1);
-
-        libsec2 = Utils.replace(libsec2 , "\"", "");
-        libsec2 = Utils.replace(libsec2 , "'", "");
-        jTextFieldPathLibSecondary2.setText(libsec2);
-
-        libsec3 = Utils.replace(libsec3 , "\"", "");
-        libsec3 = Utils.replace(libsec3 , "'", "");
-        jTextFieldPathLibSecondary3.setText(libsec3);
-
-
+    
+    // Refresh option paths to existing values
+    private void updateOptionPaths() {
+        
+        // Compiler path tab
+        compilerPathTextField.setText(config.getCompilerPath());
+        gamePathTextField.setText(config.getGamePath());
+        interpreterPathTextField.setText(config.getInterpreterZcodePath());
+        
+        // Library path tab
+        libraryPathTextField.setText(config.getLibraryPath());
+        libraryPath1TextField.setText(config.getLibraryPath1());
+        libraryPath2TextField.setText(config.getLibraryPath2());
+        libraryPath3TextField.setText(config.getLibraryPath3());
+        
+        // Glulx path tab
+        glulxPathTextField.setText(config.getInterpreterGlulxPath());
+        bresPathTextField.setText(config.getBresPath());
+        blcPathTextField.setText(config.getBlcPath());
+        
     }
-
-
-    public void defaultOptions(){
-        jCheckBoxOpenLastFile.setSelected(false);
-        jCheckBoxCreateNewFile.setSelected(false);
-        jCheckBoxMappingLive.setSelected(false);
-        jCheckBoxProjectOpenAllFiles.setSelected(false);
-        jCheckBoxHelpedCode.setSelected(true);
-        jCheckBoxNumberLines.setSelected(true);
-        jCheckBoxScanProjectFiles.setSelected(true);
-        jCheckBoxSyntax.setSelected(true);
-        jCheckBoxWrapLines.setSelected(false);
+    
+    // Update color editor settings to dark color defaults
+    private void defaultDarkColors() {
+        optionContext.defaultDarkColors();
+        updateColor();
     }
-
-
+    
+    // Update color editor settings to light color defaults
+    private void defaultLightColors() {
+        optionContext.defaultLightColors();
+        updateColor();
+    }
+    
+    // Update font editor settings to defaults
+    private void defaultFont() {
+        fontNameComboBox.setSelectedItem(InformContext.defaultFontName);
+        int fontSize = InformContext.defaultFontSize;
+        fontSizeComboBox.setSelectedItem((new Integer(fontSize)).toString());
+        tabSizeTextField.setText(Integer.toString(InformContext.defaultTabSize));
+    }
+    
+    private void defaultDarkHighlights() {
+        optionContext.defaultDarkSelections();
+        updateHighlight();
+        updateHighlights();
+    }
+    
+    private void defaultLightHighlights() {
+        optionContext.defaultLightSelections();
+        updateHighlight();
+        updateHighlights();
+    }
+    
+    // Update general editor settings to defaults
+    private void defaultOptions() {
+        openLastFileCheckBox.setSelected(false);
+        createNewFileCheckBox.setSelected(false);
+        mappingLiveCheckBox.setSelected(false);
+        projectOpenAllFilesCheckBox.setSelected(false);
+        helpedCodeCheckBox.setSelected(true);
+        numberLinesCheckBox.setSelected(true);
+        scanProjectFilesCheckBox.setSelected(true);
+        syntaxCheckBox.setSelected(true);
+        wrapLinesCheckBox.setSelected(false);
+    }
+    
     // run BLC SOURCE.blc source.blb to make blb (GLULX MODE)
-    public void makeBlb() {//AQUI!!
-
+    private void makeBlb() {//AQUI!!
+        String fileInf = "";
         // controllo che esista il compilatore con il path  inserito nella Jif.cfg
         // se non esiste visualizzo un messaggio di warning
-        File test = new File(getBlcpath());
-        if (!test.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1")+" "+getCompilerpath()+java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
+        File test = new File(resolveAbsolutePath(config.getWorkingDirectory(),config.getBlcPath()));
+        if (!test.exists()) {
+            JOptionPane.showMessageDialog(this,
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1") + " " + resolveAbsolutePath(config.getWorkingDirectory(),config.getBlcPath()) + java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3"),
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
-
+        
         // se l'utente ha tolto la visto della TextAreaOutput, la rendo visible..
-        if (!jCheckBoxOutput.getState()){
+        if (!outputCheckBoxMenuItem.getState()) {
             //jCheckBoxOutput.setState(true);
-            jSplitPane3.setBottomComponent(jTabbedPane2);
-            jTabbedPane2.setVisible(true);
+            mainSplitPane.setBottomComponent(outputTabbedPane);
+            outputTabbedPane.setVisible(true);
         }
         //imposto il focus sulla tabbedWindow della compilazione
-        jTabbedPane2.setSelectedComponent(jScrollPane2);
-
+        outputTabbedPane.setSelectedComponent(outputScrollPane);
+        
         //recupero l'attuale file name
-        if (mainFile != null && !mainFile.equals("")){
-            jTextAreaOutput.append("Using main file "+mainFile+" to compiling...\n");
-            fileInf = mainFile;
-        } else
-            fileInf = getCurrentFilename(); //jTabbedPane1.getTitleAt( jTabbedPane1.getSelectedIndex());
-
+        if (project.getMain() == null) {
+            fileInf = getCurrentFilename();
+        } else {
+            fileInf = project.getMain().getPath();
+            outputTextArea.append("Using main file " + fileInf + " to compiling...\n");
+        }
+        
         // Source file name
-        String source = fileInf.substring(0,fileInf.lastIndexOf("."));
-        String pathForCd=fileInf.substring(0,fileInf.lastIndexOf(Constants.SEP));
-        //jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
-        String process_string[]=new String[3];
-
-        process_string[0] = getBlcpath();
-        process_string[1] = new String(source+".blc");
-        process_string[2] = new String(source +".blb");
-
-        jTextAreaOutput.append(getBlcpath() + " " + source+".blc "+ source +".blb\n");
-
-        try{
+        String source = fileInf.substring(0, fileInf.lastIndexOf("."));
+        String pathForCd = fileInf.substring(0, fileInf.lastIndexOf(Constants.SEP));
+        //outputTextArea.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
+        String process_string[] = new String[3];
+        
+        process_string[0] = resolveAbsolutePath(config.getWorkingDirectory(),config.getBlcPath());
+        process_string[1] = new String(source + ".blc");
+        process_string[2] = new String(source + ".blb");
+        
+        outputTextArea.append(resolveAbsolutePath(config.getWorkingDirectory(),config.getBlcPath()) + " " + source + ".blc " + source + ".blb\n");
+        
+        try {
             Runtime rt = Runtime.getRuntime();
             Process proc = rt.exec(process_string, null, new File(pathForCd));
-            String line="";
+            String line = "";
             BufferedReader br= new BufferedReader( new InputStreamReader( proc.getInputStream(), Constants.fileFormat));
-
-            while ( (line = br.readLine() )!=null ){
-                jTextAreaOutput.append(line+"\n");
+            
+            while ( (line = br.readLine() )!= null ) {
+                outputTextArea.append(line + "\n");
             }
             proc.waitFor(); //unused int i =
-            jTextAreaOutput.append("\n");
-            jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
-            jTextAreaOutput.append("\n");
-        } catch(IOException e){
-            System.out.println(e.getMessage());
-        } catch(InterruptedException e){
-            System.out.println(e.getMessage());
+            outputTextArea.append("\n");
+            outputTextArea.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
+            outputTextArea.append("\n");
+        } catch (IOException e) {
+            System.out.println("ERROR Make blb: " + e.getMessage());
+        } catch (InterruptedException e) {
+            System.out.println("ERROR Make blb: " + e.getMessage());
         }
     }
-
+    
     // run BRE SOURCE to make resource (GLULX MODE) //aqui
-    public void makeResources() {
-
+    private void makeResources() {
+        String fileInf = "";
         // controllo che esista il compilatore con il path  inserito nella Jif.cfg
         // se non esiste visualizzo un messaggio di warning
-        File test = new File(getBrespath());
-        if (!test.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1")+" "+getBrespath()+" "+java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
+        File test = new File(resolveAbsolutePath(config.getWorkingDirectory(),config.getBresPath()));
+        if (!test.exists()) {
+            JOptionPane.showMessageDialog(this,
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER1") + " " + resolveAbsolutePath(config.getWorkingDirectory(),config.getBresPath()) + " " + java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER2"),
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3"),
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
-
+        
         // se l'utente ha tolto la visto della TextAreaOutput, la rendo visible..
-        if (!jCheckBoxOutput.getState()){
+        if (!outputCheckBoxMenuItem.getState()) {
             //jCheckBoxOutput.setState(true);
-            jSplitPane3.setBottomComponent(jTabbedPane2);
-            jTabbedPane2.setVisible(true);
+            mainSplitPane.setBottomComponent(outputTabbedPane);
+            outputTabbedPane.setVisible(true);
         }
         //imposto il focus sulla tabbedWindow della compilazione
-        jTabbedPane2.setSelectedComponent(jScrollPane2);
-
-        if (mainFile != null && !mainFile.equals("")){
-            jTextAreaOutput.append("Using main file "+mainFile+" to compiling...\n");
-            fileInf = mainFile;
-        } else
+        outputTabbedPane.setSelectedComponent(outputScrollPane);
+        
+        if (project.getMain() != null) {
+            fileInf = project.getMain().getPath();
+            outputTextArea.append("Using main file " + fileInf + " to compiling...\n");
+        } else {
             //recupero l'attuale file name
-            fileInf = getCurrentFilename(); //jTabbedPane1.getTitleAt( jTabbedPane1.getSelectedIndex());
-
+            fileInf = getCurrentFilename(); //fileTabbedPane.getTitleAt( fileTabbedPane.getSelectedIndex());
+        }
         // Source file name
-        String source = fileInf.substring(0,fileInf.lastIndexOf("."));
-
-        //jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
-        String process_string[]=new String[2];
-        process_string[0] = getBrespath();
+        String source = fileInf.substring(0, fileInf.lastIndexOf("."));
+        
+        //outputTextArea.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER1"));
+        String process_string[] = new String[2];
+        process_string[0] = resolveAbsolutePath(config.getWorkingDirectory(),config.getBresPath());
         process_string[1] = source;
-
-        jTextAreaOutput.append(getBrespath() + " " + source+"\n");
-
-        try{
+        
+        outputTextArea.append(resolveAbsolutePath(config.getWorkingDirectory(),config.getBresPath()) + " " + source + "\n");
+        
+        try {
             Runtime rt = Runtime.getRuntime();
-            Process proc = rt.exec(process_string, null, new File(getCompiledpath()));
-
-            String line="";
+            Process proc = rt.exec(process_string, null, new File(resolveAbsolutePath(config.getWorkingDirectory(),config.getGamePath())));
+            
+            String line = "";
             BufferedReader br= new BufferedReader( new InputStreamReader( proc.getInputStream(), Constants.fileFormat));
-
-            while ( (line = br.readLine() )!=null ){
-                jTextAreaOutput.append(line+"\n");
+            
+            while ( (line = br.readLine() )!=null ) {
+                outputTextArea.append(line + "\n");
             }
-
+            
             proc.waitFor(); //int i = unused
-            jTextAreaOutput.append("\n");
-            jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
-            jTextAreaOutput.append("\n");
-        } catch(IOException e){
-            System.out.println(e.getMessage());
-        } catch(InterruptedException e){
-            System.out.println(e.getMessage());
+            outputTextArea.append("\n");
+            outputTextArea.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
+            outputTextArea.append("\n");
+        } catch (IOException e) {
+            System.out.println("ERROR Make resource: " + e.getMessage());
+        } catch (InterruptedException e) {
+            System.out.println("ERROR Make resource: " + e.getMessage());
         }
     }
-
-
+    
+    
     // Set INFORM MODE
-    public void setInformMode(){
-        jMenuGlulx.setEnabled(false);
-        jMenuItemBuildAllGlulx.setEnabled(false);
-        jMenuItemMakeBlb.setEnabled(false);
-        jMenuItemMakeResource.setEnabled(false);
-        jMenuItemRunBlb.setEnabled(false);
-        jMenuItemRunUlx.setEnabled(false);
-        jMenuItemCompile.setEnabled(false);
+    private void setInformMode() {
+        
+        // Title
+        setJifVersion(Constants.JIFVERSION + "     Inform Mode");
+        
+        // Mode menu
+        glulxModeCheckBoxMenuItem.setState(false);
+        informModeCheckBoxMenuItem.setState(true);
+        
+        // Glulx menu
+        glulxMenu.setEnabled(false);
     }
-
+    
     // Set GLUX MODE
-    public void setGlulxMode(){
-        if(jTabbedPane1.getTabCount()>0){
-            jMenuGlulx.setEnabled(true);
-            jMenuItemBuildAllGlulx.setEnabled(true);
-            jMenuItemMakeBlb.setEnabled(true);
-            jMenuItemMakeResource.setEnabled(true);
-            jMenuItemRunBlb.setEnabled(true);
-            jMenuItemRunUlx.setEnabled(true);
-            jMenuItemCompile.setEnabled(true);
+    private void setGlulxMode() {
+        
+        // Title
+        setJifVersion(Constants.JIFVERSION + "     Glux Mode");
+        
+        // Mode menu check boxes
+        glulxModeCheckBoxMenuItem.setState(true);
+        informModeCheckBoxMenuItem.setState(false);
+        
+        // Glulx menu
+        if (fileTabbedPane.getTabCount() == 0) {
+            glulxMenu.setEnabled(false);
+        } else {
+            glulxMenu.setEnabled(true);
         }
+        
     }
-
+    
     // Esegue il file blb
-    public void runBlb() {
-        String inter = getInterpreterglulxpath();
-
-        // controllo che esista l'interprete con il path  inserito nella Jif.cfg
+    private void runBlb() {
+        String fileInf = "";
+        //String inter = config.getInterpreterGlulxPath();
+        String inter = config.getInterpreterPath();
+        
+        // controllo che esista l'interprete con il path inserito nella Jif.cfg
         // se non esiste visualizzo un messaggio di warning
         File test = new File(inter);
-        if (!test.exists()){
-            JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1")+" "+inter+" "+java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"), java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3") , JOptionPane.ERROR_MESSAGE);
+        if (!test.exists()) {
+            JOptionPane.showMessageDialog(this,
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER1") + " " + inter + " " + java.util.ResourceBundle.getBundle("JIF").getString("ERR_INTERPRETER2"),
+                    java.util.ResourceBundle.getBundle("JIF").getString("ERR_COMPILER3"),
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
-
+        
         //recupero l'attuale file name
-        if (mainFile != null && !mainFile.equals("")){
-            jTextAreaOutput.append("Using main file "+mainFile+"...\n");
-            fileInf = mainFile;
-        } else
-            fileInf = getCurrentFilename();//jTabbedPane1.getTitleAt( jTabbedPane1.getSelectedIndex());
-
+        if (project.getMain() == null) {
+            fileInf = getCurrentFilename();
+        } else {
+            fileInf = project.getMain().getPath();
+            outputTextArea.append("Using main file " + fileInf + "...\n");
+        }
+        
         clearOutput();
-        jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_RUN1"));
-
-        try{
+        outputTextArea.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_RUN1"));
+        
+        try {
             Runtime rt = Runtime.getRuntime();
             String command[]=new String[2];
             command[0]=inter;
             // in base al tipo di file di uscita, scelgo l'estensione del file da passare all'interprete
             String estensione = ".blb";
-
-            command[1] = new String(fileInf.substring(0,fileInf.indexOf(".inf"))+estensione);
-
-            jTextAreaOutput.append(command[0]+" "+command[1]+"\n");
-
+            
+            command[1] = new String(fileInf.substring(0,fileInf.indexOf(".inf")) + estensione);
+            
+            outputTextArea.append(command[0] + " " + command[1] + "\n");
+            
             rt.exec(command); //Process proc = unused
             //String line=""; unused
             //String out=""; unused
-
-            jTextAreaOutput.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
-        } catch(IOException e){
-            System.out.println(e.getMessage());
+            
+            outputTextArea.append(java.util.ResourceBundle.getBundle("JIF").getString("OK_COMPILER2"));
+        } catch (IOException e) {
+            System.out.println("ERROR Run blb: " + e.getMessage());
         }
     }
-
-
-    public String checkDefinitionCurrentFile(String entity){
-        String file ="", main ="";
-        file = getCurrentFilename();
+    
+    
+    private String checkDefinitionCurrentFile(String entity) {
+        String file = this.getCurrentFilename();
+        String main = "";
         // check only if the file is an INF or h file
-        if ( (file.indexOf(".inf")!=-1) || (file.indexOf(".INF")!=-1)){
+        if ( (file.indexOf(".inf")!=-1) || (file.indexOf(".INF")!=-1)) {
             // open and reads the file
-            try{
-                StringBuffer sb = new StringBuffer();
-                String riga;
-                sb.setLength(0);
-                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
-
-                while ((riga = br.readLine())!=null){
-                    sb.append(riga).append("\n");
-                }
-                br.close();
-                main = sb.toString();
+            try {
+                main = JifDAO.read(new File(file));
                 // Search for entity
                 String pattern = "Object ";
-                String hang="";
-                String tmp="";
+                String hang = "";
+                String tmp = "";
                 String appoggio;
                 int pos = 0;
                 StringTokenizer sttok;
-
-                while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){
-                    appoggio = main.substring(pos,main.indexOf("\n",pos));
+                
+                while ((pos = Utils.IgnoreCaseIndexOf(main, pattern, pos)) >= 0) {
+                    appoggio = main.substring(pos, main.indexOf("\n", pos));
                     int posizione_freccia=0;
                     posizione_freccia = appoggio.lastIndexOf("->");
-                    appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                    appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio, pattern));
                     appoggio = appoggio.trim();
-                    if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
+                    if (appoggio.indexOf("!")==-1 && appoggio.equals("")) {
                         if (posizione_freccia==-1) {
                             posizione_freccia=0;
                         } else posizione_freccia -=3;
-
+                        
                         tmp = main.substring(pos+pattern.length()-1+posizione_freccia);
-                        if (tmp.trim().startsWith("\"")){
-                            sttok = new StringTokenizer(tmp.trim(),"\"");
-                        } else{
-                            sttok = new StringTokenizer(tmp," ;");
+                        if (tmp.trim().startsWith("\"")) {
+                            sttok = new StringTokenizer(tmp.trim(), "\"");
+                        } else {
+                            sttok = new StringTokenizer(tmp, " ;");
                         }
                         hang = sttok.nextToken();
-                        //category4.add(new DefaultMutableTreeNode( new Inspect(hang,pos,pos+pattern.length()-1)));
-                        if (hang.toLowerCase().equals(entity)){
+                        //objectTree.addFile(new DefaultMutableTreeNode( new Inspect(hang,pos,pos+pattern.length()-1)));
+                        if (hang.toLowerCase().equals(entity)) {
                             return file;
                         }
                     }
                     pos += pattern.length();
                 }
-
-
-
+                
+                
+                
                 // ***************************************************
                 pattern = "Global ";
-                appoggio="";
+                appoggio = "";
                 pos = 0;
-                while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0)       {
-                    appoggio = main.substring(pos,main.indexOf("\n",pos));
-                    appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
-                    if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
-                        sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;=");
-                        if (sttok.nextToken().toLowerCase().equals(entity)){
+                while ((pos = Utils.IgnoreCaseIndexOf(main, pattern, pos)) >= 0) {
+                    appoggio = main.substring(pos,main.indexOf("\n", pos));
+                    appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio, pattern));
+                    if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")) {
+                        sttok = new StringTokenizer(main.substring(pos+pattern.length()), " ;=");
+                        if (sttok.nextToken().toLowerCase().equals(entity)) {
                             return file;
                         }
                     }
                     pos += pattern.length();
                 }
                 // ***************************************************
-
-
+                
+                
                 // ***************************************************
                 pattern = "Constant ";
                 pos = 0;
-                while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0)       {
-                    appoggio = main.substring(pos,main.indexOf("\n",pos));
-                    appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
-                    if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
+                while ((pos = Utils.IgnoreCaseIndexOf(main, pattern, pos)) >= 0) {
+                    appoggio = main.substring(pos,main.indexOf("\n", pos));
+                    appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio, pattern));
+                    if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")) {
                         sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;=");
-                        if (sttok.nextToken().toLowerCase().equals(entity)){
+                        if (sttok.nextToken().toLowerCase().equals(entity)) {
                             return file;
                         }
                     }
                     pos += pattern.length();
                 }
                 // ***************************************************
-
-
+                
+                
                 // ***************************************************
                 pattern = "Sub";
                 pos = 0;
-                tmp="";
-                while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){
+                tmp = "";
+                while ((pos = Utils.IgnoreCaseIndexOf(main, pattern, pos)) >= 0) {
                     appoggio = main.substring(pos,main.indexOf("\n",pos));
-                    if (appoggio.indexOf("!")==-1 && appoggio.indexOf('[')>=0 && appoggio.indexOf(';')>=0){
-                        tmp = main.substring(0,pos);
+                    if (appoggio.indexOf("!")==-1 && appoggio.indexOf('[')>=0 && appoggio.indexOf(';')>=0) {
+                        tmp = main.substring(0, pos);
                         tmp = tmp.substring(tmp.lastIndexOf('[')+1);
                         tmp = tmp.trim();
-                        if ((tmp+pattern).toLowerCase().equals(entity)){
+                        if ((tmp+pattern).toLowerCase().equals(entity)) {
                             return file;
                         }
                     }
                     pos += pattern.length();
                 }
                 // ***************************************************
-
+                
                 // ***************************************************
                 pattern = "Class ";
                 pos = 0;
-                while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){
-                    appoggio = main.substring(pos,main.indexOf("\n",pos));
-                    appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                while ((pos = Utils.IgnoreCaseIndexOf(main, pattern, pos)) >= 0) {
+                    appoggio = main.substring(pos,main.indexOf("\n", pos));
+                    appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio, pattern));
                     appoggio = appoggio.trim();
-                    if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
-                        sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;\n");
+                    if (appoggio.indexOf("!")==-1 && appoggio.equals("")) {
+                        sttok = new StringTokenizer(main.substring(pos+pattern.length()), " ;\n");
                         String nome = sttok.nextToken();
-                        if (nome.toLowerCase().equals(entity)){
+                        if (nome.toLowerCase().equals(entity)) {
                             return file;
                         }
                     }
                     pos += pattern.length();
                 }
                 // ***************************************************
-
-
+                
+                
                 // ***************************************************
                 // ****** Functions
-                pattern="[";
-                pos=0;
+                pattern = "[";
+                pos = 0;
                 //int lunghezza=0; unused
-                tmp ="";
-                while ((pos = main.indexOf(pattern, pos)) >= 0){
-                    appoggio = main.substring(pos,main.indexOf("\n",pos));
+                tmp = "";
+                while ((pos = main.indexOf(pattern, pos)) >= 0) {
+                    appoggio = main.substring(pos, main.indexOf("\n", pos));
                     appoggio = appoggio.trim();
-                    if (appoggio.indexOf("!")==-1  && appoggio.startsWith("[")){
+                    if (appoggio.indexOf("!")==-1  && appoggio.startsWith("[")) {
                         tmp = main.substring(pos);
-                        tmp = tmp.substring(1,tmp.indexOf(';'));
+                        tmp = tmp.substring(1, tmp.indexOf(';'));
                         tmp = tmp.trim();
-                        if (!tmp.equals("") && (tmp.indexOf('\"')==-1) && (tmp.indexOf("Sub"))==-1){
-                            sttok = new StringTokenizer(tmp," ;\n");
-                            if (sttok.hasMoreTokens()){
+                        if (!tmp.equals("") && (tmp.indexOf('\"')==-1) && (tmp.indexOf("Sub"))==-1) {
+                            sttok = new StringTokenizer(tmp, " ;\n");
+                            if (sttok.hasMoreTokens()) {
                                 tmp = sttok.nextToken();
                             }
-                            if (tmp.toLowerCase().equals(entity)){
+                            if (tmp.toLowerCase().equals(entity)) {
                                 return file;
                             }
                         }
@@ -7721,22 +7419,20 @@ public class jFrame extends JFrame {
                     pos += pattern.length();
                 }
                 // ***************************************************
-
+                
                 // ***************************************************
-                for (int j=0 ; j < projectClass.size(); j++){
-                    //String classe = (String) projectClass.get(j);
-                    //pattern = "Class ";
-                    pattern = (String) projectClass.get(j);
+                for (Iterator j=projectClasses.keySet().iterator(); j.hasNext(); ) {
+                    pattern = (String) j.next();
 //System.out.println("Classe ="+pattern);
                     pos = 0;
-                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){
-                        appoggio = main.substring(pos,main.indexOf("\n",pos));
-                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                    while ((pos = Utils.IgnoreCaseIndexOf(main, pattern, pos)) >= 0) {
+                        appoggio = main.substring(pos,main.indexOf("\n", pos));
+                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio, pattern));
                         appoggio = appoggio.trim();
-                        if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
-                            sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;\n");
+                        if (appoggio.indexOf("!")==-1 && appoggio.equals("")) {
+                            sttok = new StringTokenizer(main.substring(pos+pattern.length()), " ;\n");
                             String nome = sttok.nextToken();
-                            if (nome.toLowerCase().equals(entity)){
+                            if (nome.toLowerCase().equals(entity)) {
                                 return file;
                             }
                         }
@@ -7744,171 +7440,166 @@ public class jFrame extends JFrame {
                     }
                 }
                 // ***************************************************
-
-
-            }catch(Exception e){
+                
+                
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return null;
     }
-
+    
     // This method seeks for the definition of "entity" within the whole project
-    public String checkDefinition(String entity){
-
+    private String checkDefinition(String entity) {
+        
         // before I'll try the current filename
         String current = checkDefinitionCurrentFile(entity);
-        if (current != null){
+        if (current != null) {
             return current;
         }
-
-        String file ="";
-        String main ="";
-        for (int i=0; i<projectFiles.size();i++)  {
-            file = ((FileProject)projectFiles.elementAt(i)).path;
-
+        
+        String file = "";
+        String main = "";
+        Vector files = project.getFiles();
+        for (int i=0; i<files.size(); i++) {
+            file = ((JifFileName)files.elementAt(i)).getPath();
+            
             // check only if the file is an INF or h file
             // and if isn't the current file
-            if ( (file.indexOf(".inf")!=-1) || (file.indexOf(".INF")!=-1) || !file.equals(current)){
+            if ( (file.indexOf(".inf")!=-1) || (file.indexOf(".INF")!=-1) || !file.equals(current)) {
                 // open and reads the file
-                try{
-                    StringBuffer sb = new StringBuffer();
-                    String riga;
-                    sb.setLength(0);
-                    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
-                    while ((riga = br.readLine())!=null){
-                        sb.append(riga).append("\n");
-                    }
-                    br.close();
-                    main = sb.toString();
+                try {
+                    main = JifDAO.read(new File(file));
 //System.out.println("Cerco nel file="+file);
                     // Search for entity
                     String pattern = "Object ";
-                    String hang="";
-                    String tmp="";
+                    String hang = "";
+                    String tmp = "";
                     String appoggio;
                     int pos = 0;
                     StringTokenizer sttok;
-
-                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){
+                    
+                    while ((pos = Utils.IgnoreCaseIndexOf(main, pattern, pos)) >= 0) {
                         appoggio = main.substring(pos,main.indexOf("\n",pos));
-                        int posizione_freccia=0;
+                        int posizione_freccia = 0;
                         posizione_freccia = appoggio.lastIndexOf("->");
-                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio, pattern));
                         appoggio = appoggio.trim();
-                        if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
-                            if (posizione_freccia==-1) {
-                                posizione_freccia=0;
-                            } else posizione_freccia -=3;
-
+                        if (appoggio.indexOf("!") == -1 && appoggio.equals("")) {
+                            if (posizione_freccia == -1) {
+                                posizione_freccia = 0;
+                            } else {
+                                posizione_freccia -= 3;
+                            }
+                            
                             tmp = main.substring(pos+pattern.length()-1+posizione_freccia);
-                            if (tmp.trim().startsWith("\"")){
-                                sttok = new StringTokenizer(tmp.trim(),"\"");
-                            } else{
-                                sttok = new StringTokenizer(tmp," ;");
+                            if (tmp.trim().startsWith("\"")) {
+                                sttok = new StringTokenizer(tmp.trim(), "\"");
+                            } else {
+                                sttok = new StringTokenizer(tmp, " ;");
                             }
                             hang = sttok.nextToken();
-                            //category4.add(new DefaultMutableTreeNode( new Inspect(hang,pos,pos+pattern.length()-1)));
-                            if (hang.toLowerCase().equals(entity)){
+                            //objectTree.addFile(new DefaultMutableTreeNode( new Inspect(hang,pos,pos+pattern.length()-1)));
+                            if (hang.toLowerCase().equals(entity)) {
                                 return file;
                             }
                         }
                         pos += pattern.length();
                     }
-
-
-
+                    
+                    
+                    
                     // ***************************************************
                     pattern = "Global ";
-                    appoggio="";
+                    appoggio = "";
                     pos = 0;
-                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0)       {
-                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                    while ((pos = Utils.IgnoreCaseIndexOf(main, pattern, pos)) >= 0) {
+                        appoggio = main.substring(pos,main.indexOf("\n", pos));
                         appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
-                        if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
-                            sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;=");
-                            if (sttok.nextToken().toLowerCase().equals(entity)){
+                        if (appoggio.indexOf("!") == -1 && appoggio.trim().equals("")) {
+                            sttok = new StringTokenizer(main.substring(pos+pattern.length()), " ;=");
+                            if (sttok.nextToken().toLowerCase().equals(entity)) {
                                 return file;
                             }
                         }
                         pos += pattern.length();
                     }
                     // ***************************************************
-
-
+                    
+                    
                     // ***************************************************
                     pattern = "Constant ";
                     pos = 0;
-                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0)       {
+                    while ((pos = Utils.IgnoreCaseIndexOf(main, pattern, pos)) >= 0) {
                         appoggio = main.substring(pos,main.indexOf("\n",pos));
-                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
-                        if (appoggio.indexOf("!")==-1 && appoggio.trim().equals("")){
-                            sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;=");
-                            if (sttok.nextToken().toLowerCase().equals(entity)){
+                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio, pattern));
+                        if (appoggio.indexOf("!") == -1 && appoggio.trim().equals("")) {
+                            sttok = new StringTokenizer(main.substring(pos+pattern.length()), " ;=");
+                            if (sttok.nextToken().toLowerCase().equals(entity)) {
                                 return file;
                             }
                         }
                         pos += pattern.length();
                     }
                     // ***************************************************
-
-
+                    
+                    
                     // ***************************************************
                     pattern = "Sub";
                     pos = 0;
-                    tmp="";
-                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){
+                    tmp = "";
+                    while ((pos = Utils.IgnoreCaseIndexOf(main, pattern, pos)) >= 0) {
                         appoggio = main.substring(pos,main.indexOf("\n",pos));
-                        if (appoggio.indexOf("!")==-1 && appoggio.indexOf('[')>=0 && appoggio.indexOf(';')>=0){
-                            tmp = main.substring(0,pos);
+                        if (appoggio.indexOf("!")==-1 && appoggio.indexOf('[')>=0 && appoggio.indexOf(';')>=0) {
+                            tmp = main.substring(0, pos);
                             tmp = tmp.substring(tmp.lastIndexOf('[')+1);
                             tmp = tmp.trim();
-                            if ((tmp+pattern).toLowerCase().equals(entity)){
+                            if ((tmp+pattern).toLowerCase().equals(entity)) {
                                 return file;
                             }
                         }
                         pos += pattern.length();
                     }
                     // ***************************************************
-
+                    
                     // ***************************************************
                     pattern = "Class ";
                     pos = 0;
-                    while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){
-                        appoggio = main.substring(pos,main.indexOf("\n",pos));
-                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                    while ((pos = Utils.IgnoreCaseIndexOf(main, pattern, pos)) >= 0) {
+                        appoggio = main.substring(pos,main.indexOf("\n", pos));
+                        appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio, pattern));
                         appoggio = appoggio.trim();
-                        if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
-                            sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;\n");
+                        if (appoggio.indexOf("!") == -1 && appoggio.equals("")) {
+                            sttok = new StringTokenizer(main.substring(pos+pattern.length()), " ;\n");
                             String nome = sttok.nextToken();
-                            if (nome.toLowerCase().equals(entity)){
+                            if (nome.toLowerCase().equals(entity)) {
                                 return file;
                             }
                         }
                         pos += pattern.length();
                     }
                     // ***************************************************
-
-
+                    
+                    
                     // ***************************************************
                     // ****** Functions
-                    pattern="[";
-                    pos=0;
+                    pattern = "[";
+                    pos = 0;
                     //int lunghezza=0; unused
-                    tmp ="";
-                    while ((pos = main.indexOf(pattern, pos)) >= 0){
-                        appoggio = main.substring(pos,main.indexOf("\n",pos));
+                    tmp = "";
+                    while ((pos = main.indexOf(pattern, pos)) >= 0) {
+                        appoggio = main.substring(pos,main.indexOf("\n", pos));
                         appoggio = appoggio.trim();
-                        if (appoggio.indexOf("!")==-1  && appoggio.startsWith("[")){
+                        if (appoggio.indexOf("!") == -1  && appoggio.startsWith("[")) {
                             tmp = main.substring(pos);
                             tmp = tmp.substring(1,tmp.indexOf(';'));
                             tmp = tmp.trim();
-                            if (!tmp.equals("") && (tmp.indexOf('\"')==-1) && (tmp.indexOf("Sub"))==-1){
-                                sttok = new StringTokenizer(tmp," ;\n");
-                                if (sttok.hasMoreTokens()){
+                            if (!tmp.equals("") && (tmp.indexOf('\"')==-1) && (tmp.indexOf("Sub"))==-1) {
+                                sttok = new StringTokenizer(tmp, " ;\n");
+                                if (sttok.hasMoreTokens()) {
                                     tmp = sttok.nextToken();
                                 }
-                                if (tmp.toLowerCase().equals(entity)){
+                                if (tmp.toLowerCase().equals(entity)) {
                                     return file;
                                 }
                             }
@@ -7916,22 +7607,20 @@ public class jFrame extends JFrame {
                         pos += pattern.length();
                     }
                     // ***************************************************
-
+                    
                     // ***************************************************
-                    for (int j=0 ; j < projectClass.size(); j++){
-                        //String classe = (String) projectClass.get(j);
-                        //pattern = "Class ";
-                        pattern = (String) projectClass.get(j);
+                    for (Iterator j=projectClasses.keySet().iterator(); j.hasNext(); ) {
+                        pattern = (String) j.next();
 //System.out.println("Classe ="+pattern);
                         pos = 0;
-                        while ((pos = Utils.IgnoreCaseIndexOf(main,pattern, pos)) >= 0){
+                        while ((pos = Utils.IgnoreCaseIndexOf(main, pattern, pos)) >= 0) {
                             appoggio = main.substring(pos,main.indexOf("\n",pos));
-                            appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio,pattern));
+                            appoggio = appoggio.substring(0, Utils.IgnoreCaseIndexOf(appoggio, pattern));
                             appoggio = appoggio.trim();
-                            if (appoggio.indexOf("!")==-1 && appoggio.equals("")){
-                                sttok = new StringTokenizer(main.substring(pos+pattern.length())," ;\n");
+                            if (appoggio.indexOf("!") == -1 && appoggio.equals("")) {
+                                sttok = new StringTokenizer(main.substring(pos+pattern.length()), " ;\n");
                                 String nome = sttok.nextToken();
-                                if (nome.toLowerCase().equals(entity)){
+                                if (nome.toLowerCase().equals(entity)) {
                                     return file;
                                 }
                             }
@@ -7939,339 +7628,445 @@ public class jFrame extends JFrame {
                         }
                     }
                     // ***************************************************
-
-
-                }catch(Exception e){
+                    
+                    
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
         return null;
     }
-
-
-    // It will reload the current file to make it with a refreshed syntax
-    public void refreshSyntax(){
-        JIFTextPane jif = getCurrentJIFTextPane();
-
-        // Save the current Cursor Position
-        int position = jif.getCaretPosition();
-        String main = jif.getText();
-        jif.setText("");
-        jif.setText(main);
-        jif.setCaretPosition(position);
+    
+    private void symbolInsert() throws BadLocationException {
+        MutableAttributeSet attr = new SimpleAttributeSet();
+        if (config.getMappingLive() && config.getMapping().containsKey((String) symbolList.getSelectedValue())) {
+            getCurrentDoc().insertString(getCurrentJifTextPane().getCaretPosition(),
+                    (String) config.getMapping().get((String) symbolList.getSelectedValue()),
+                    attr);
+        } else {
+            getCurrentDoc().insertString(getCurrentJifTextPane().getCaretPosition(),
+                    (String) symbolList.getSelectedValue(),
+                    attr);
+        }
+        symbolDialog.setVisible(false);
     }
-
-    public JTabbedPane getTabbed(){
-        return jTabbedPane1;
+    
+    private void refreshDocuments() {
+        // Apply color and font changes to open documents
+        for (int i = 0; i < fileTabbedPane.getTabCount(); i++) {
+            JScrollPane sp = (JScrollPane) fileTabbedPane.getComponent(i);
+            JViewport vp = sp.getRowHeader();
+            if (vp != null) {
+                LineNumber ln = (LineNumber) vp.getView();
+                ln.setFont(config.getContext().getFont());
+            }
+            JifTextPane tp = (JifTextPane) sp.getViewport().getComponent(0);
+            tp.setBackground(config.getContext().getBackground());
+            tp.setCaretColor(config.getContext().getForeground(InformSyntax.Normal));
+        }
     }
-
-    public JTabbedPane getTabbed2(){
-        return jTabbedPane2;
+    
+    private void options() {
+        // Build general tab from current settings
+        openLastFileCheckBox.setSelected(config.getOpenLastFile());
+        createNewFileCheckBox.setSelected(config.getCreateNewFile());
+        mappingLiveCheckBox.setSelected(config.getMappingLive());
+        helpedCodeCheckBox.setSelected(config.getHelpedCode());
+        syntaxCheckBox.setSelected(config.getSyntaxHighlighting());
+        numberLinesCheckBox.setSelected(config.getNumberLines());
+        scanProjectFilesCheckBox.setSelected(config.getScanProjectFiles());
+        wrapLinesCheckBox.setSelected(config.getWrapLines());
+        projectOpenAllFilesCheckBox.setSelected(config.getOpenProjectFiles());
+        makeResourceCheckBox.setSelected(config.getMakeResource());
+        adventInLibCheckBox.setSelected(config.getAdventInLib());
+        
+        // Build colour and font tab from current settings
+        optionContext.replaceStyles(config.getContext());
+        createColorEditor();
+        updateColor();
+        updateFont();
+        
+        // Build highlight tab from current settings
+        createHighlightEditor();
+        updateHighlight();
+        
+        // Build path tabs from current settings
+        updateOptionPaths();
+        
+        // Display options
+        optionDialog.pack();
+        optionDialog.setLocationRelativeTo(this);
+        optionDialog.setVisible(true);
     }
-
-
-    public Hashtable getMapping(){
-        return this.mapping;
+    
+    private void optionSave() {
+        // Apply general tab settings
+        config.setOpenLastFile(openLastFileCheckBox.isSelected());
+        config.setCreateNewFile(createNewFileCheckBox.isSelected());
+        config.setMappingLive(mappingLiveCheckBox.isSelected());
+        config.setOpenProjectFiles(projectOpenAllFilesCheckBox.isSelected());
+        config.setHelpedCode(helpedCodeCheckBox.isSelected());
+        config.setNumberLines(numberLinesCheckBox.isSelected());
+        config.setScanProjectFiles(scanProjectFilesCheckBox.isSelected());
+        config.setSyntaxHighlighting(syntaxCheckBox.isSelected());
+        config.setWrapLines(wrapLinesCheckBox.isSelected());
+        
+        // Apply tab size to Jif documents
+        config.setTabSize(optionTabSize);
+        JifEditorKit.setTabSize(optionTabSize);
+        
+        // Update the common syntax highlighting styles with color editor styles
+        config.setContext(optionContext);
+        
+        // Apply changes to open documents
+        refreshDocuments();
+        
+        // Apply compiler tab paths
+        config.setGamePath(gamePathTextField.getText());
+        config.setCompilerPath(compilerPathTextField.getText());
+        config.setInterpreterZcodePath(interpreterPathTextField.getText());
+        
+        // Apply library tab paths
+        config.setLibraryPath(libraryPathTextField.getText());
+        config.setLibraryPath1(libraryPath1TextField.getText());
+        config.setLibraryPath2(libraryPath2TextField.getText());
+        config.setLibraryPath3(libraryPath3TextField.getText());
+        
+        // Apply Glulx tab paths
+        config.setInterpreterGlulxPath(glulxPathTextField.getText());
+        config.setBresPath(bresPathTextField.getText());
+        config.setBlcPath(blcPathTextField.getText());
+        
+        optionDialog.setVisible(false);
+        
+        try {
+            JifConfigurationDAO.store(config);
+        } catch (JifConfigurationException ex) {
+            ex.printStackTrace();
+            System.out.println("ERROR Option save: " + ex.getMessage());
+        }
     }
-
-    public Hashtable getAltkeys(){
-        return this.altkeys;
+    
+    private void projectPropertiesSave() {
+        // save the current project and reload the switches
+        File file = new File(project.getFile().getPath());
+        try {
+            JifDAO.save(file, projectPropertiesTextArea.getText());
+            JifProjectDAO.reload(project);
+            
+            // Set mode to project setting
+            if (project.getInformMode()) {
+                setInformMode();
+            } else {
+                setGlulxMode();
+            }
+            
+            JOptionPane.showMessageDialog(projectPropertiesDialog,
+                    java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE1"),
+                    java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE2"),
+                    JOptionPane.INFORMATION_MESSAGE);
+            
+        } catch (Exception ex) {
+            System.out.println("ERROR Project properties save: " + ex.getMessage());
+        }
     }
-
-    public Hashtable getExecutecommands(){
-        return this.executecommands;
+    
+    private void projectSwitches() {
+        projectSwitchesPanel.removeAll();
+        for (Iterator i = project.getSwitches().keySet().iterator(); i.hasNext(); ) {
+            String switchName = (String) i.next();
+            String setting = (String) project.getSwitches().get(switchName);
+            Checkbox check = new Checkbox(switchName);
+            check.setFont(new Font("Monospaced", Font.PLAIN, 11));
+            check.setState(setting.equals("on") ? true : false);
+            projectSwitchesPanel.add(check);
+        }
+        projectSwitchesDialog.pack();
+        projectSwitchesDialog.setLocationRelativeTo(this);
+        projectSwitchesDialog.setVisible(true);
+        projectSwitchesDialog.setTitle("Project Switches");
     }
-
-    public JCheckBoxMenuItem getCheckBoxOutput(){
-        return jCheckBoxOutput;
+    
+    private void projectSwitchesSave() {
+        for (int i=0; i < projectSwitchesPanel.getComponentCount(); i++) {
+            Checkbox ch = (Checkbox) projectSwitchesPanel.getComponent(i);
+            project.setSwitch(ch.getLabel(), (ch.getState())?"on":"off");
+        }
+        try {
+            JifProjectDAO.store(project);
+        } catch (JifProjectException ex) {
+            System.out.println("ERROR Save project switches:" + ex.getMessage());
+        } finally {
+            projectSwitchesDialog.setVisible(false);
+        }
     }
-
+    
+    private void configPropertiesSave() {
+        // Saving file
+        File file = new File(config.getFile().getPath());
+        try {
+            JifDAO.save(file, configTextArea.getText());
+            JifConfigurationDAO.reload(config);
+            if (project.getFile() == null) {
+                if (config.getInformMode()) {
+                    setInformMode();
+                } else {
+                    setGlulxMode();
+                }
+            }
+            refreshDocuments();
+            JOptionPane.showMessageDialog(configDialog,
+                    java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE1"),
+                    java.util.ResourceBundle.getBundle("JIF").getString("OK_SAVE2"),
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e ) {
+            System.out.println("ERROR Save configuration: " + e.getMessage());
+        }
+    }
+    
+    private void configSwitches() {
+        switchesLowerPanel.removeAll();
+        switchesUpperPanel.removeAll();
+        for (Iterator i = config.getSwitchesSet().iterator(); i.hasNext(); ) {
+            String switchName = (String) i.next();
+            String setting = (String) config.getSwitches().get(switchName);
+            Checkbox check = new Checkbox(switchName);
+            check.setFont(new Font("Monospaced", Font.PLAIN, 11));
+            check.setState(setting.equals("on") ? true : false);
+            if (switchName.length() < 4) {
+                switchesUpperPanel.add(check);
+            } else {
+                switchesLowerPanel.add(check);
+            }
+        }
+        switchesDialog.pack();
+        switchesDialog.setLocationRelativeTo(this);
+        switchesDialog.setVisible(true);
+    }
+    
+    private void configSwitchesSave() {
+        for (int i=0; i < switchesUpperPanel.getComponentCount(); i++) {
+            Checkbox ch = (Checkbox) switchesUpperPanel.getComponent(i);
+            config.setSwitch(ch.getLabel(), (ch.getState())?"on":"off");
+        }
+        for (int i=0; i < switchesLowerPanel.getComponentCount(); i++) {
+            Checkbox ch = (Checkbox) switchesLowerPanel.getComponent(i);
+            config.setSwitch(ch.getLabel(), (ch.getState())?"on":"off");
+        }
+        try {
+            JifConfigurationDAO.store(config);
+        } catch (JifConfigurationException ex) {
+            System.out.println("ERROR Save configuration switches:" + ex.getMessage());
+        } finally {
+            switchesDialog.setVisible(false);
+        }
+    }
+    
     /**
-     * Getter for property JWindowSymbols.
-     * @return Value of property JWindowSymbols.
+     * If workingpath+testpath exists this method returns workingpath+testpath
+     * else will return the testpath
      */
-    public javax.swing.JFrame getJWindowSymbols() {
-        return JWindowSymbols;
+    public String resolveAbsolutePath(String workingDirectory, String testpath){
+        File f = new File(workingDirectory+testpath);
+        if (f.exists()) return workingDirectory+testpath;
+        else return testpath;
+    }    
+    
+    // --- JifConfigurationObserver implementation -----------------------------
+    
+    public void updateConfiguration() {
+        updateLastProject();
+        updateRecentFiles();
+        updateMenues();
+        updateInformGlulxMode();
     }
+    
+    // --- JifProjectObserver implementation -----------------------------------
+    
+    private void updateInformGlulxMode() {
+        if (informModeCheckBoxMenuItem.getState()) {
+            setInformMode();
+            if (project.getFile() == null) {
+                config.setInformMode(informModeCheckBoxMenuItem.getState());
+            } else {
+            	config.setInformMode(informModeCheckBoxMenuItem.getState());
+                project.setInformMode(informModeCheckBoxMenuItem.getState());
+            }            
+        } else {
+            setGlulxMode();
+            if (project.getFile() == null) {
+                config.setInformMode(false);
+            } else {
+            	config.setInformMode(false);
+                project.setInformMode(false);
+            }            
+        }		
+	}
 
-    /**
-     * Setter for property JWindowSymbols.
-     * @param JWindowSymbols New value of property JWindowSymbols.
-     */
-    public void setJWindowSymbols(javax.swing.JFrame JWindowSymbols) {
-        this.JWindowSymbols = JWindowSymbols;
+	public void updateProject() {
+        updateProjectTitle();
+        updateProjectList();
+        updateProjectMain();
     }
-
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem About;
-    private javax.swing.JMenuItem BuildAll;
-    private javax.swing.JMenuItem Exit;
-    private javax.swing.JMenuItem New;
-    private javax.swing.JMenuItem Open;
-    private javax.swing.JButton OpenButton;
-    private javax.swing.JButton RebuildButton;
-    private javax.swing.JMenuItem Run;
-    private javax.swing.JButton RunButton;
-    private javax.swing.JMenuItem Save;
-    private javax.swing.JMenuItem SaveAs;
-    private javax.swing.JButton SaveAsButton;
-    private javax.swing.JButton SaveButton;
-    private javax.swing.JButton SaveButtonAll;
-    private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton13;
-    private javax.swing.JButton jButton14;
-    private javax.swing.JButton jButton15;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton21;
-    private javax.swing.JButton jButton23;
-    private javax.swing.JButton jButton24;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
-    private javax.swing.JButton jButtonAttribute;
-    private javax.swing.JButton jButtonBackground;
-    private javax.swing.JButton jButtonBlc;
-    private javax.swing.JButton jButtonBracketCheck;
-    private javax.swing.JButton jButtonBres;
-    private javax.swing.JButton jButtonClose;
-    private javax.swing.JButton jButtonCloseAll;
-    private javax.swing.JButton jButtonComment;
-    private javax.swing.JButton jButtonCommentSelection;
-    private javax.swing.JButton jButtonCompiledPath;
-    private javax.swing.JButton jButtonCompilerPath;
-    private javax.swing.JButton jButtonDefaultDark;
-    private javax.swing.JButton jButtonDefinition;
-    private javax.swing.JButton jButtonFind;
-    private javax.swing.JButton jButtonGlulxPath;
-    private javax.swing.JButton jButtonInsertSymbol;
-    private javax.swing.JButton jButtonInterpreter;
-    private javax.swing.JButton jButtonInterpreterPath;
-    private javax.swing.JButton jButtonKeyword;
-    private javax.swing.JButton jButtonLeftTab;
-    private javax.swing.JButton jButtonLibraryPath;
-    private javax.swing.JButton jButtonLibraryPath1;
-    private javax.swing.JButton jButtonLibraryPath2;
-    private javax.swing.JButton jButtonLibraryPath3;
-    private javax.swing.JButton jButtonNew;
-    private javax.swing.JButton jButtonNormal;
-    private javax.swing.JButton jButtonOption;
-    private javax.swing.JButton jButtonPrintTutorial;
-    private javax.swing.JButton jButtonProperty;
-    private javax.swing.JButton jButtonRedo;
-    private javax.swing.JButton jButtonReplace;
-    private javax.swing.JButton jButtonRightTab;
-    private javax.swing.JButton jButtonSearchProject;
-    private javax.swing.JButton jButtonString;
-    private javax.swing.JButton jButtonSwitchManager;
-    private javax.swing.JButton jButtonUncommentSelection;
-    private javax.swing.JButton jButtonUndo;
-    private javax.swing.JButton jButtonVerb;
-    private javax.swing.JCheckBox jCheckBoxAdventInLib;
-    private javax.swing.JCheckBox jCheckBoxCreateNewFile;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxGlulxMode;
-    public javax.swing.JCheckBox jCheckBoxHelpedCode;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxInformMode;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxJToolBar;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxJTree;
-    private javax.swing.JCheckBox jCheckBoxMakeResource;
-    public javax.swing.JCheckBox jCheckBoxMappingLive;
-    private javax.swing.JCheckBox jCheckBoxNumberLines;
-    private javax.swing.JCheckBox jCheckBoxOpenLastFile;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxOutput;
-    private javax.swing.JCheckBox jCheckBoxProjectOpenAllFiles;
-    private javax.swing.JCheckBox jCheckBoxScanProjectFiles;
-    public javax.swing.JCheckBox jCheckBoxSyntax;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxToggleFullscreen;
-    public javax.swing.JCheckBox jCheckBoxWrapLines;
-    private javax.swing.JComboBox jComboBoxFont;
-    private javax.swing.JComboBox jComboBoxFontSize;
-    private javax.swing.JDialog jDialogAbout;
-    private javax.swing.JDialog jDialogEditFileIni;
-    private javax.swing.JDialog jDialogInfo;
-    public javax.swing.JDialog jDialogOption;
-    private javax.swing.JDialog jDialogProjectProperties;
-    private javax.swing.JDialog jDialogProjectSwitches;
-    private javax.swing.JDialog jDialogReplace;
-    private javax.swing.JDialog jDialogSwitches;
-    private javax.swing.JDialog jDialogText;
-    private javax.swing.JDialog jDialogTutorial;
-    private javax.swing.JEditorPane jEditorPaneColor;
-    private javax.swing.JEditorPane jEditorPaneTutorial;
+    private javax.swing.JPanel aboutControlPanel;
+    private javax.swing.JDialog aboutDialog;
+    private javax.swing.JLabel aboutLabel;
+    private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton aboutOKButton;
+    private javax.swing.JTabbedPane aboutTabbedPane;
+    private javax.swing.JMenuItem addFileToProjectMenuItem;
+    private javax.swing.JMenuItem addFileToProjectPopupMenuItem;
+    private javax.swing.JMenuItem addNewToProjectMenuItem;
+    private javax.swing.JMenuItem addNewToProjectPopupMenuItem;
+    private javax.swing.JCheckBox adventInLibCheckBox;
+    private javax.swing.JButton attributeColorButton;
+    private javax.swing.JLabel attributeColorLabel;
+    private javax.swing.JPanel attributeColorjPanel;
+    private javax.swing.JButton backgroundColorButton;
+    private javax.swing.JLabel backgroundColorLabel;
+    private javax.swing.JPanel backgroundColorPanel;
+    private javax.swing.JButton blcPathButton;
+    private javax.swing.JLabel blcPathLabel;
+    private javax.swing.JPanel blcPathPanel;
+    private javax.swing.JTextField blcPathTextField;
+    private javax.swing.JButton bookmarkColorButton;
+    private javax.swing.JLabel bookmarkColorLabel;
+    private javax.swing.JPanel bookmarkColorPanel;
+    private javax.swing.JButton bracketCheckButton;
+    private javax.swing.JButton bracketColorButton;
+    private javax.swing.JLabel bracketColorLabel;
+    private javax.swing.JPanel bracketColorPanel;
+    private javax.swing.JButton bresPathButton;
+    private javax.swing.JLabel bresPathLabel;
+    private javax.swing.JPanel bresPathPanel;
+    private javax.swing.JTextField bresPathTextField;
+    private javax.swing.JButton buildAllButton;
+    private javax.swing.JMenuItem buildAllGlulxMenuItem;
+    private javax.swing.JMenuItem buildAllMenuItem;
+    private javax.swing.JMenu buildMenu;
+    private javax.swing.JMenuItem clearAllMenuItem;
+    private javax.swing.JMenuItem clearPopupMenuItem;
+    private javax.swing.JMenuItem clearRecentFilesMenuItem;
+    private javax.swing.JButton closeAllButton;
+    private javax.swing.JMenuItem closeAllMenuItem;
+    private javax.swing.JMenuItem closeAllPopupMenuItem;
+    private javax.swing.JButton closeButton;
+    private javax.swing.JMenuItem closeMenuItem;
+    private javax.swing.JMenuItem closePopupMenuItem;
+    private javax.swing.JMenuItem closeProjectMenuItem;
+    private javax.swing.JMenuItem closeProjectPopupMenuItem;
+    private javax.swing.JEditorPane colorEditorPane;
+    private javax.swing.JPanel colorFontPanel;
+    private javax.swing.JPanel colorHighlightPanel;
+    private javax.swing.JPanel colorPanel;
+    private javax.swing.JButton commentButton;
+    private javax.swing.JButton commentColorButton;
+    private javax.swing.JLabel commentColorLabel;
+    private javax.swing.JPanel commentColorPanel;
+    private javax.swing.JMenuItem commentSelectionMenuItem;
+    private javax.swing.JMenuItem compileMenuItem;
+    private javax.swing.JButton compilerPathButton;
+    private javax.swing.JLabel compilerPathLabel;
+    private javax.swing.JPanel compilerPathPanel;
+    private javax.swing.JTextField compilerPathTextField;
+    private javax.swing.JPanel complierPanel;
+    private javax.swing.JButton configCloseButton;
+    private javax.swing.JPanel configControlPanel;
+    private javax.swing.JDialog configDialog;
+    private javax.swing.JMenuItem configFileMenuItem;
+    private javax.swing.JLabel configLabel;
+    private javax.swing.JPanel configLabelPanel;
+    private javax.swing.JButton configSaveButton;
+    private javax.swing.JScrollPane configScrollPane;
+    private javax.swing.JTextArea configTextArea;
+    private javax.swing.JMenuItem copyMenuItem;
+    private javax.swing.JMenuItem copyPopupMenuItem;
+    private javax.swing.JCheckBox createNewFileCheckBox;
+    private javax.swing.JScrollPane creditsScrollPane;
+    private javax.swing.JTextArea creditsTextArea;
+    private javax.swing.JMenuItem cutMenuItem;
+    private javax.swing.JMenuItem cutPopupMenuItem;
+    private javax.swing.JPanel defaultColorPanel;
+    private javax.swing.JButton defaultDarkColorButton;
+    private javax.swing.JLabel defaultDarkColorLabel;
+    private javax.swing.JPanel defaultDarkColorPanel;
+    private javax.swing.JButton defaultDarkHighlightButton;
+    private javax.swing.JLabel defaultDarkHighlightLabel;
+    private javax.swing.JPanel defaultDarkhighlightPanel;
+    private javax.swing.JPanel defaultHighlightPanel;
+    private javax.swing.JButton defaultLightColorButton;
+    private javax.swing.JLabel defaultLightColorLabel;
+    private javax.swing.JPanel defaultLightColorPanel;
+    private javax.swing.JButton defaultLightHighlightButton;
+    private javax.swing.JLabel defaultLightHighlightLabel;
+    private javax.swing.JPanel defaultLightHighlightPanel;
+    private javax.swing.JButton definitionButton;
+    private javax.swing.JPanel definitionPanel;
+    private javax.swing.JTextField definitionTextField;
+    private javax.swing.JMenu editMenu;
+    private javax.swing.JButton errorColorButton;
+    private javax.swing.JLabel errorColorLabel;
+    private javax.swing.JPanel errorColorPanel;
+    private javax.swing.JMenuItem exitMenuItem;
+    private javax.swing.JMenuItem extractStringsMenuItem;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JPanel filePanel;
+    public javax.swing.JPopupMenu filePopupMenu;
+    private static final javax.swing.JTabbedPane fileTabbedPane = new javax.swing.JTabbedPane();
+    private javax.swing.JButton findButton;
+    public javax.swing.JTextField findTextField;
+    private javax.swing.JLabel fontLabel;
+    private javax.swing.JComboBox fontNameComboBox;
+    private javax.swing.JPanel fontPanel;
+    private javax.swing.JComboBox fontSizeComboBox;
+    private javax.swing.JButton gamePathButton;
+    private javax.swing.JLabel gamePathLabel;
+    private javax.swing.JPanel gamePathPanel;
+    private javax.swing.JTextField gamePathTextField;
+    private javax.swing.JMenuItem garbageCollectionMenuItem;
+    private javax.swing.JPanel generalPanel;
+    private javax.swing.JMenu glulxMenu;
+    private javax.swing.JCheckBoxMenuItem glulxModeCheckBoxMenuItem;
+    private javax.swing.JPanel glulxPanel;
+    private javax.swing.JButton glulxPathButton;
+    private javax.swing.JLabel glulxPathLabel;
+    private javax.swing.JPanel glulxPathPanel;
+    private javax.swing.JTextField glulxPathTextField;
+    private javax.swing.JMenu helpMenu;
+    public javax.swing.JCheckBox helpedCodeCheckBox;
+    private javax.swing.JEditorPane highlightEditorPane;
+    private javax.swing.JPanel highlightPanel;
+    private javax.swing.JComboBox highlightSelectedComboBox;
+    private javax.swing.JLabel highlightSelectedLabel;
+    private javax.swing.JPanel highlightSelectedPanel;
+    private javax.swing.JButton infoCloseButton;
+    private javax.swing.JPanel infoControlPanel;
+    private javax.swing.JDialog infoDialog;
+    private javax.swing.JScrollPane infoScrollPane;
+    private javax.swing.JTextArea infoTextArea;
+    private javax.swing.JCheckBoxMenuItem informModeCheckBoxMenuItem;
+    private javax.swing.JMenuItem insertFileMenuItem;
+    private javax.swing.JMenuItem insertFilePopupMenuItem;
+    private javax.swing.JMenu insertNewMenu;
+    private javax.swing.JButton insertSymbolButton;
+    private javax.swing.JMenuItem insertSymbolMenuItem;
+    private javax.swing.JMenuItem insertSymbolPopupMenuItem;
+    private javax.swing.JButton interpreterButton;
+    private javax.swing.JButton interpreterPathButton;
+    private javax.swing.JLabel interpreterPathLabel;
+    private javax.swing.JPanel interpreterPathPanel;
+    private javax.swing.JTextField interpreterPathTextField;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabelAttribute;
-    private javax.swing.JLabel jLabelBackground;
-    private javax.swing.JLabel jLabelBlc;
-    private javax.swing.JLabel jLabelBres;
-    private javax.swing.JLabel jLabelComment;
-    private javax.swing.JLabel jLabelDefaultDark;
-    private javax.swing.JLabel jLabelKeyword;
-    private javax.swing.JLabel jLabelMainFile;
-    private javax.swing.JLabel jLabelNormal;
-    private javax.swing.JLabel jLabelProperty;
-    private javax.swing.JLabel jLabelString;
-    private javax.swing.JLabel jLabelTutorial;
-    private javax.swing.JLabel jLabelVerb;
-    private javax.swing.JList jListProject;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenu jMenuBuild;
-    private javax.swing.JMenu jMenuEdit;
-    private javax.swing.JMenu jMenuFile;
-    private javax.swing.JMenu jMenuGlulx;
-    private javax.swing.JMenu jMenuHelp;
-    private javax.swing.JMenu jMenuInsertNew;
-    private javax.swing.JMenuItem jMenuItemAddFileToProject;
-    private javax.swing.JMenuItem jMenuItemAddNewToProject;
-    private javax.swing.JMenuItem jMenuItemBuildAllGlulx;
-    private javax.swing.JMenuItem jMenuItemClear;
-    private javax.swing.JMenuItem jMenuItemClearAll;
-    private javax.swing.JMenuItem jMenuItemClearRecentFiles;
-    private javax.swing.JMenuItem jMenuItemClose;
-    private javax.swing.JMenuItem jMenuItemCloseAll;
-    private javax.swing.JMenuItem jMenuItemCloseProject;
-    private javax.swing.JMenuItem jMenuItemCommentSelection;
-    private javax.swing.JMenuItem jMenuItemCompile;
-    private javax.swing.JMenuItem jMenuItemConfigFile;
-    private javax.swing.JMenuItem jMenuItemCopy;
-    private javax.swing.JMenuItem jMenuItemCopy1;
-    private javax.swing.JMenuItem jMenuItemCut;
-    private javax.swing.JMenuItem jMenuItemCut1;
-    private javax.swing.JMenuItem jMenuItemExtractStrings;
-    private javax.swing.JMenuItem jMenuItemGC;
-    private javax.swing.JMenuItem jMenuItemInsertFile;
-    private javax.swing.JMenuItem jMenuItemInsertFromFile;
-    private javax.swing.JMenuItem jMenuItemInsertSymbol;
-    private javax.swing.JMenuItem jMenuItemInsertSymbol1;
-    private javax.swing.JMenuItem jMenuItemJumpToSource;
-    private javax.swing.JMenuItem jMenuItemLastProject;
-    private javax.swing.JMenuItem jMenuItemLeftShift;
-    private javax.swing.JMenuItem jMenuItemMakeBlb;
-    private javax.swing.JMenuItem jMenuItemMakeResource;
-    private javax.swing.JMenuItem jMenuItemNewProject;
-    private javax.swing.JMenuItem jMenuItemNextBookmark;
-    private javax.swing.JMenuItem jMenuItemOpenProject;
-    private javax.swing.JMenuItem jMenuItemPaste;
-    private javax.swing.JMenuItem jMenuItemPopupAddNewToProject;
-    private javax.swing.JMenuItem jMenuItemPopupAddToProject;
-    private javax.swing.JMenuItem jMenuItemPopupClose;
-    private javax.swing.JMenuItem jMenuItemPopupCloseAllFiles;
-    private javax.swing.JMenuItem jMenuItemPopupCloseProject;
-    private javax.swing.JMenuItem jMenuItemPopupNewProject;
-    private javax.swing.JMenuItem jMenuItemPopupOpenProject;
-    private javax.swing.JMenuItem jMenuItemPopupOpenSelectedFiles;
-    private javax.swing.JMenuItem jMenuItemPopupRemoveFromProject;
-    private javax.swing.JMenuItem jMenuItemPopupSaveProject;
-    private javax.swing.JMenuItem jMenuItemPrint;
-    private javax.swing.JMenuItem jMenuItemPrint1;
-    private javax.swing.JMenuItem jMenuItemReadMe;
-    private javax.swing.JMenuItem jMenuItemRemoveFromProject;
-    private javax.swing.JMenuItem jMenuItemRemoveMainClass;
-    private javax.swing.JMenuItem jMenuItemReplace;
-    private javax.swing.JMenuItem jMenuItemRightShift;
-    private javax.swing.JMenuItem jMenuItemRunBlb;
-    private javax.swing.JMenuItem jMenuItemRunUlx;
-    private javax.swing.JMenuItem jMenuItemSaveAll;
-    private javax.swing.JMenuItem jMenuItemSaveProject;
-    private javax.swing.JMenuItem jMenuItemSearch;
-    private javax.swing.JMenuItem jMenuItemSearchAllFiles;
-    private javax.swing.JMenuItem jMenuItemSelectAll;
-    private javax.swing.JMenuItem jMenuItemSetBookmark;
-    private javax.swing.JMenuItem jMenuItemSetMainClass;
-    private javax.swing.JMenuItem jMenuItemSettings;
-    private javax.swing.JMenuItem jMenuItemSwitches;
-    private javax.swing.JMenuItem jMenuItemTranslate;
-    private javax.swing.JMenuItem jMenuItemUncommentSelection;
-    private javax.swing.JMenu jMenuMode;
-    private javax.swing.JMenu jMenuOptions;
-    private javax.swing.JMenu jMenuPaste;
-    private javax.swing.JMenu jMenuProject;
-    private javax.swing.JMenuItem jMenuProjectProperties;
-    private javax.swing.JMenuItem jMenuProjectSwitches;
-    private javax.swing.JMenu jMenuRecentFiles;
-    private javax.swing.JMenu jMenuView;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel12;
-    private javax.swing.JPanel jPanel13;
-    private javax.swing.JPanel jPanel14;
-    private javax.swing.JPanel jPanel16;
-    private javax.swing.JPanel jPanel17;
-    private javax.swing.JPanel jPanel18;
-    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel20;
-    private javax.swing.JPanel jPanel22;
-    private javax.swing.JPanel jPanel24;
-    private javax.swing.JPanel jPanel26;
-    private javax.swing.JPanel jPanel27;
-    private javax.swing.JPanel jPanel28;
-    private javax.swing.JPanel jPanel29;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel30;
-    private javax.swing.JPanel jPanel31;
-    private javax.swing.JPanel jPanel32;
-    private javax.swing.JPanel jPanel35;
-    private javax.swing.JPanel jPanel37;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel43;
-    private javax.swing.JPanel jPanel44;
-    private javax.swing.JPanel jPanel45;
-    private javax.swing.JPanel jPanel46;
-    private javax.swing.JPanel jPanel47;
-    private javax.swing.JPanel jPanel49;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
-    private javax.swing.JPanel jPanelColor;
-    private javax.swing.JPanel jPanelDefaultDark;
-    private javax.swing.JPanel jPanelDefinition;
-    private javax.swing.JPanel jPanelGeneral;
-    private javax.swing.JPanel jPanelGlulxPath;
-    private javax.swing.JPanel jPanelLibraryPath;
-    private javax.swing.JPanel jPanelMainFile;
-    private javax.swing.JPanel jPanelPath;
-    private javax.swing.JPanel jPanelProjectSwitches;
-    private javax.swing.JPanel jPanelSearch;
-    private javax.swing.JPanel jPanelSearchProject;
-    private javax.swing.JPanel jPanelSwitch1;
-    private javax.swing.JPanel jPanelSwitch2;
-    private javax.swing.JPanel jPanelTreeControl;
-    public javax.swing.JPopupMenu jPopupMenu1;
-    private javax.swing.JPopupMenu jPopupMenuProject;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane6;
-    private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JScrollPane jScrollPaneAbout;
-    private javax.swing.JScrollPane jScrollPaneInfo;
-    private javax.swing.JScrollPane jScrollPaneProject;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator10;
     private javax.swing.JSeparator jSeparator11;
@@ -8290,387 +8085,324 @@ public class jFrame extends JFrame {
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JSeparator jSeparator8;
     private javax.swing.JSeparator jSeparator9;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JSplitPane jSplitPane3;
-    private static final javax.swing.JTabbedPane jTabbedPane1 = new javax.swing.JTabbedPane();
-    private static final javax.swing.JTabbedPane jTabbedPane2 = new javax.swing.JTabbedPane();
-    private javax.swing.JTabbedPane jTabbedPane3;
-    private javax.swing.JTabbedPane jTabbedPaneLeft;
-    private javax.swing.JTabbedPane jTabbedPaneOption;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea4;
-    private javax.swing.JTextArea jTextAreaConfig;
-    private javax.swing.JTextArea jTextAreaInfo;
-    public javax.swing.JTextArea jTextAreaOutput;
-    private javax.swing.JTextArea jTextAreaProjectProperties;
-    private javax.swing.JTextField jTextFieldBlc;
-    private javax.swing.JTextField jTextFieldBres;
-    private javax.swing.JTextField jTextFieldDefinition;
-    public javax.swing.JTextField jTextFieldFind;
-    public javax.swing.JTextField jTextFieldFindAll;
-    private javax.swing.JTextField jTextFieldPathCompiler;
-    private javax.swing.JTextField jTextFieldPathGames;
-    private javax.swing.JTextField jTextFieldPathGlulx;
-    private javax.swing.JTextField jTextFieldPathInterpreter;
-    private javax.swing.JTextField jTextFieldPathLib;
-    private javax.swing.JTextField jTextFieldPathLibSecondary1;
-    private javax.swing.JTextField jTextFieldPathLibSecondary2;
-    private javax.swing.JTextField jTextFieldPathLibSecondary3;
-    private javax.swing.JTextField jTextFieldReplace;
-    private javax.swing.JTextField jTextFieldReplaceFind;
-    protected javax.swing.JTextField jTextFieldRowCol;
-    private javax.swing.JTextField jTextFieldTabSize;
     private static final javax.swing.JToolBar jToolBarCommon = new javax.swing.JToolBar();
-    private static javax.swing.JTree jTree1;
+    private javax.swing.JButton jumpToColorButton;
+    private javax.swing.JLabel jumpToColorLabel;
+    private javax.swing.JPanel jumpToColorPanel;
+    private javax.swing.JMenuItem jumpToSourceMenuItem;
+    private javax.swing.JButton keywordColorButton;
+    private javax.swing.JLabel keywordColorLabel;
+    private javax.swing.JPanel keywordColorPanel;
+    private javax.swing.JMenuItem lastProjectMenuItem;
+    private javax.swing.JTabbedPane leftTabbedPane;
+    private javax.swing.JPanel libraryPanel;
+    private javax.swing.JButton libraryPath1Button;
+    private javax.swing.JLabel libraryPath1Label;
+    private javax.swing.JPanel libraryPath1Panel;
+    private javax.swing.JTextField libraryPath1TextField;
+    private javax.swing.JButton libraryPath2Button;
+    private javax.swing.JLabel libraryPath2Label;
+    private javax.swing.JPanel libraryPath2Panel;
+    private javax.swing.JTextField libraryPath2TextField;
+    private javax.swing.JButton libraryPath3Button;
+    private javax.swing.JLabel libraryPath3Label;
+    private javax.swing.JPanel libraryPath3Panel;
+    private javax.swing.JTextField libraryPath3TextField;
+    private javax.swing.JButton libraryPathButton;
+    private javax.swing.JLabel libraryPathLabel;
+    private javax.swing.JPanel libraryPathPanel;
+    private javax.swing.JTextField libraryPathTextField;
+    private javax.swing.JLabel mainFileLabel;
+    private javax.swing.JMenuBar mainMenuBar;
+    private javax.swing.JSplitPane mainSplitPane;
+    private javax.swing.JMenuItem makeBlbMenuItem;
+    private javax.swing.JCheckBox makeResourceCheckBox;
+    private javax.swing.JMenuItem makeResourceMenuItem;
+    public javax.swing.JCheckBox mappingLiveCheckBox;
+    private javax.swing.JMenu modeMenu;
+    private javax.swing.JButton newButton;
+    private javax.swing.JMenuItem newMenuItem;
+    private javax.swing.JMenuItem newProjectMenuItem;
+    private javax.swing.JMenuItem newProjectPopupMenuItem;
+    private javax.swing.JMenuItem nextBookmarkMenuItem;
+    private javax.swing.JButton normalColorButton;
+    private javax.swing.JLabel normalColorLabel;
+    private javax.swing.JPanel normalColorPanel;
+    private javax.swing.JButton numberColorButton;
+    private javax.swing.JLabel numberColorLabel;
+    private javax.swing.JPanel numberColorPanel;
+    private javax.swing.JCheckBox numberLinesCheckBox;
+    private javax.swing.JButton openButton;
+    private javax.swing.JCheckBox openLastFileCheckBox;
+    private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JMenuItem openProjectMenuItem;
+    private javax.swing.JMenuItem openProjectPopupMenuItem;
+    private javax.swing.JMenuItem openSelectedFilesPopupMenuItem;
+    private javax.swing.JButton optionCancelButton;
+    private javax.swing.JPanel optionControlPanel;
+    private javax.swing.JButton optionDefaultButton;
+    public javax.swing.JDialog optionDialog;
+    private javax.swing.JButton optionSaveButton;
+    private javax.swing.JTabbedPane optionTabbedPane;
+    private javax.swing.JMenu optionsMenu;
+    private javax.swing.JCheckBoxMenuItem outputCheckBoxMenuItem;
+    private javax.swing.JScrollPane outputScrollPane;
+    private static final javax.swing.JTabbedPane outputTabbedPane = new javax.swing.JTabbedPane();
+    public javax.swing.JTextArea outputTextArea;
+    private javax.swing.JMenuItem pasteMenuItem;
+    private javax.swing.JMenu pastePopupMenu;
+    private javax.swing.JMenuItem printMenuItem;
+    private javax.swing.JMenuItem printPopupMenuItem;
+    private javax.swing.JList projectList;
+    private javax.swing.JMenu projectMenu;
+    private javax.swing.JCheckBox projectOpenAllFilesCheckBox;
+    private javax.swing.JPanel projectPanel;
+    private javax.swing.JPopupMenu projectPopupMenu;
+    private javax.swing.JButton projectPropertiesCloseButton;
+    private javax.swing.JPanel projectPropertiesControlPanel;
+    private javax.swing.JDialog projectPropertiesDialog;
+    private javax.swing.JMenuItem projectPropertiesMenuItem;
+    private javax.swing.JButton projectPropertiesSaveButton;
+    private javax.swing.JScrollPane projectPropertiesScrollPane;
+    private javax.swing.JTextArea projectPropertiesTextArea;
+    private javax.swing.JScrollPane projectScrollPane;
+    private javax.swing.JButton projectSwitchesCloseButton;
+    private javax.swing.JPanel projectSwitchesControlPanel;
+    private javax.swing.JDialog projectSwitchesDialog;
+    private javax.swing.JMenuItem projectSwitchesMenuItem;
+    private javax.swing.JPanel projectSwitchesPanel;
+    private javax.swing.JButton projectSwitchesSaveButton;
+    private javax.swing.JButton propertyColorButton;
+    private javax.swing.JLabel propertyColorLabel;
+    private javax.swing.JPanel propertyColorPanel;
+    private javax.swing.JMenuItem readMeMenuItem;
+    private javax.swing.JMenu recentFilesMenu;
+    private javax.swing.JButton redoButton;
+    private javax.swing.JMenuItem removeFromProjectMenuItem;
+    private javax.swing.JMenuItem removeFromProjectPopupMenuItem;
+    private javax.swing.JMenuItem removeMainPopupMenuItem;
+    private javax.swing.JButton replaceAllButton;
+    private javax.swing.JButton replaceButton;
+    private javax.swing.JButton replaceCloseButton;
+    private javax.swing.JPanel replaceControlPanel;
+    private javax.swing.JDialog replaceDialog;
+    private javax.swing.JButton replaceFindButton;
+    private javax.swing.JLabel replaceFindLabel;
+    private javax.swing.JTextField replaceFindTextField;
+    private javax.swing.JMenuItem replaceMenuItem;
+    private javax.swing.JPanel replacePanel;
+    private javax.swing.JButton replaceReplaceButton;
+    private javax.swing.JLabel replaceReplaceLabel;
+    private javax.swing.JTextField replaceReplaceTextField;
+    protected javax.swing.JTextField rowColTextField;
+    private javax.swing.JMenuItem runBlbMenuItem;
+    private javax.swing.JButton runButton;
+    private javax.swing.JMenuItem runMenuItem;
+    private javax.swing.JMenuItem runUlxMenuItem;
+    private javax.swing.JButton saveAllButton;
+    private javax.swing.JMenuItem saveAllMenuItem;
+    private javax.swing.JButton saveAsButton;
+    private javax.swing.JMenuItem saveAsMenuItem;
+    private javax.swing.JButton saveButton;
+    private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JMenuItem saveProjectMenuItem;
+    private javax.swing.JMenuItem saveProjectPopupMenuItem;
+    private javax.swing.JCheckBox scanProjectFilesCheckBox;
+    private javax.swing.JMenuItem searchAllMenuItem;
+    private javax.swing.JMenuItem searchMenuItem;
+    private javax.swing.JPanel searchPanel;
+    private javax.swing.JButton searchProjectButton;
+    private javax.swing.JPanel searchProjectPanel;
+    public javax.swing.JTextField searchProjectTextField;
+    private javax.swing.JMenuItem selectAllMenuItem;
+    private javax.swing.JMenuItem setBookmarkMenuItem;
+    private javax.swing.JMenuItem setMainPopupMenuItem;
+    private javax.swing.JButton settingsButton;
+    private javax.swing.JMenuItem settingsMenuItem;
+    private javax.swing.JButton stringColorButton;
+    private javax.swing.JLabel stringColorLabel;
+    private javax.swing.JPanel stringColorPanel;
+    private javax.swing.JButton switchManagerButton;
+    private javax.swing.JButton switchesCloseButton;
+    private javax.swing.JPanel switchesControlPanel;
+    private javax.swing.JDialog switchesDialog;
+    private javax.swing.JPanel switchesLowerPanel;
+    private javax.swing.JMenuItem switchesMenuItem;
+    private javax.swing.JPanel switchesPanel;
+    private javax.swing.JButton switchesSaveButton;
+    private javax.swing.JPanel switchesUpperPanel;
+    private javax.swing.JDialog symbolDialog;
+    private javax.swing.JList symbolList;
+    private javax.swing.JScrollPane symbolScrollPane;
+    public javax.swing.JCheckBox syntaxCheckBox;
+    private javax.swing.JButton tabLeftButton;
+    private javax.swing.JMenuItem tabLeftMenuItem;
+    private javax.swing.JButton tabRightButton;
+    private javax.swing.JMenuItem tabRightMenuItem;
+    private javax.swing.JLabel tabSizeLabel;
+    private javax.swing.JPanel tabSizePanel;
+    private javax.swing.JTextField tabSizeTextField;
+    private javax.swing.JButton textCloseButton;
+    private javax.swing.JPanel textControlPanel;
+    private javax.swing.JDialog textDialog;
+    private javax.swing.JLabel textLabel;
+    private javax.swing.JScrollPane textScrollPane;
+    private javax.swing.JTextArea textTextArea;
+    private javax.swing.JCheckBoxMenuItem toggleFullscreenCheckBoxMenuItem;
+    private javax.swing.JCheckBoxMenuItem toolbarCheckBoxMenuItem;
+    private javax.swing.JPanel toolbarPanel;
+    private javax.swing.JMenuItem translateMenuItem;
+    private javax.swing.JCheckBoxMenuItem treeCheckBoxMenuItem;
+    private javax.swing.JPanel treePanel;
+    private javax.swing.JScrollPane treeScrollPane;
+    private static javax.swing.JTree treeTree;
+    private javax.swing.JPanel tutorialControlPanel;
+    private javax.swing.JDialog tutorialDialog;
+    private javax.swing.JEditorPane tutorialEditorPane;
+    private javax.swing.JLabel tutorialLabel;
+    private javax.swing.JButton tutorialOKButton;
+    private javax.swing.JButton tutorialPrintButton;
+    private javax.swing.JScrollPane tutorialScrollPane;
+    private javax.swing.JButton uncommentButton;
+    private javax.swing.JMenuItem uncommentSelectionMenuItem;
+    private javax.swing.JButton undoButton;
+    private javax.swing.JSplitPane upperSplitPane;
+    private javax.swing.JButton verbColorButton;
+    private javax.swing.JLabel verbColorLabel;
+    private javax.swing.JPanel verbColorPanel;
+    private javax.swing.JMenu viewMenu;
+    private javax.swing.JButton warningColorButton;
+    private javax.swing.JLabel warningColorLabel;
+    private javax.swing.JPanel warningColorPanel;
+    private javax.swing.JButton wordColorButton;
+    private javax.swing.JLabel wordColorLabel;
+    private javax.swing.JPanel wordColorPanel;
+    public javax.swing.JCheckBox wrapLinesCheckBox;
     // End of variables declaration//GEN-END:variables
-
-    // PATHS
-    private String fileini;
-    private String workingDir;
-    private String librarypath;
-    private String librarypathsecondary1;
-    private String librarypathsecondary2;
-    private String librarypathsecondary3;
-    private String compiledpath;
-    private String interpreterzcodepath;
-    private String interpreterglulxpath;
-    private String compilerpath;
-    private String brespath;
-    private String blcpath;
-
-    private String fileInf = "";
-    private String insertnewdir="";    // JIF si ricorda dell'ultima directory scelta per "insert new"
-    protected DefaultStyledDocument doc;
-    MouseListener popupListenerProject = new PopupListenerProject();
-    MouseListener menuListener  = new MenuListener();
-
-    // gestione syntax highlights on/off
-    protected StringBuffer sb = new StringBuffer();
-
-    // element per mostrare il numero di riga
-    private Element el;
-
+    
+    private MouseListener popupListenerProject = new PopupListenerProject();
+    private MouseListener menuListener  = new MenuListener();
+    
+    // Configuration
+    JifConfiguration config;
+    
     // gestione albero INSPECT
-    private DefaultMutableTreeNode top,category1,category2,category4,category5,category7;
-    private TreePath treePath1,treePath2,treePath4,treePath5,treePath7;
-    private HighlightText hlighterOutputErrors,hlighterOutputWarnings;
-    private StringTokenizer st;
     private DefaultTreeModel treeModel;
-    private volatile String riga;
-
-    // gestione aggiunta automatica codice assistito
-    private String ultima;          // ultima keyword digitata
-
-    // Jif ini configuration
-    private Hashtable altkeys;
-    private Hashtable executecommands;
-    private Hashtable helpcode;
-    private Hashtable operations;
-    private Hashtable mapping;
-    private Hashtable switches;
-    private Hashtable projectSwitches;
-    private HashSet recentFiles;
-    // Syntax highlight
-    private HashSet attributes;
-    private HashSet properties;
-    private HashSet verbs;
-    private HashSet keywords;
-    // Case Sensitive Management
-    private HashSet attributes_cs;
-    private HashSet properties_cs;
-    private HashSet verbs_cs;
-    private HashSet keywords_cs;
-    // Special symbols
-    private HashSet symbols;
-
+    private DefaultMutableTreeNode top;
+    private DefaultMutableTreeNode classTree;
+    private DefaultMutableTreeNode constantTree;
+    private DefaultMutableTreeNode functionTree;
+    private DefaultMutableTreeNode globalTree;
+    private DefaultMutableTreeNode objectTree;
+    
+    // Output pane highlighters
+    private HighlightText hlighterOutputErrors;
+    private HighlightText hlighterOutputWarnings;
+    
+    // Tree regular expressions
+    private Pattern classPattern = Pattern.compile("(?:^|;)(?:\\s|(?:!.*\n))*\n+\\s*(Class)\\s+(\\w+)",
+            Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+    private Pattern classToClassPattern = Pattern.compile("\n+\\s*Class\\s+(\\w+)(?:\\s|,|(?:\\(.+\\)))+class\\s+(\\w+)",
+            Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+    private Pattern constantPattern = Pattern.compile("\n+\\s*Constant\\s+(\\w+)",
+            Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+    private Pattern functionPattern = Pattern.compile(";(?:\\s|(?:!.*\n))*\n+\\s*\\[\\s*(\\w+)",
+            Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+    private Pattern globalPattern = Pattern.compile("\n+\\s*Global\\s+(\\w+)",
+            Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+    private Pattern objectPattern = Pattern.compile("\n+\\s*Object\\s+(->\\s+)*(\\w+)",
+            Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+    
     // per scegliere l'estensione del file da passare all'interprete
     private String tipoz = "";
-    // Vettore che contiene i nomi delle nuove classi all'interno del sorgente
-    private DefaultMutableTreeNode tmp_nodo;
     // New Files name counter
-    private int countNewFile=0;
-    // Gestione finestra con i simboli (come la windowObject)
-    private JFrame JWindowSymbols;
-    private JList jListSymbols;
+    private int countNewFile = 0;
     // titolo di JIF, serve per aggiungerci il nome del progetto aperto
-    private String jifVersion = "Jif "+ Constants.JIFVERSION;
-
-    // COLORS
-    public Color colorKeyword;
-    public Color colorAttribute;
-    public Color colorProperty;
-    public Color colorVerb;
-    public Color colorNormal;
-    public Color colorComment;
-    public Color colorString;
-    public Color colorWord;
-    public Color colorBackground;
-    public Font defaultFont;
-    private String lastFile;
-    public int tabSize = 4;
-    private String lastProject;
-    private String lastOpenedProjectPath = null;
-    private String lastDir = null;
-
-    // PROJECT VARIABLES
-    private String currentProject = Constants.PROJECTEMPTY;
-    private Vector projectFiles ;
-    private Vector projectClass = new Vector();
-    private String mainFile="";
+    private String jifVersion = Constants.JIFVERSION;
+    
+    // Option dialog colours, font and tab size
+    private InformContext optionContext = new InformContext();
+    private int optionTabSize = 4;
+    private HighlightText optionHighlight = null;
+   
+    // Project
+    private JifProject project = new JifProject();
+    // String name to Inspect
+    private Map projectClasses = new TreeMap();
+    // String name to DefaultMutableTreeNode
+    private Map projectNodes = new TreeMap();
+    // String name child to string parent
+    private Map projectRels = new TreeMap();
+    
     // alphabetical sorting
     private Vector objTree;
-    // hack variable
-    private int int_var = 0;
+    
+    // --- Accessor methods ----------------------------------------------------
+    
+    public Map getAltkeys() {
+        return config.getAltKeys();
+    }
+    
+    public Map getExecuteCommands() {
+        return config.getExecuteCommands();
+    }
+    
+    public JTabbedPane getFileTabbed() {
+        return fileTabbedPane;
+    }
+    
+    public Map getHelpCode() {
+        return config.getHelpCodes();
+    }
     
     public String getJifVersion() {
         return jifVersion;
     }
-
+    
     public void setJifVersion(String jifVersion) {
         this.jifVersion = jifVersion;
     }
-
-    public void setAltkeys(Hashtable altkeys) {
-        this.altkeys = altkeys;
+    
+    public JDialog getSymbolDialog() {
+        return symbolDialog;
     }
-
-    public void setExecutecommands(Hashtable executecommands) {
-        this.executecommands = executecommands;
+    
+    public Map getMapping() {
+        return config.getMapping();
     }
-
-    public Hashtable getHelpcode() {
-        return helpcode;
+    
+    public Map getOperations() {
+        return config.getOperations();
     }
-
-    public void setHelpcode(Hashtable helpcode) {
-        this.helpcode = helpcode;
+    
+    public JCheckBoxMenuItem getOutputCheckBox() {
+        return outputCheckBoxMenuItem;
     }
-
-    public void setMapping(Hashtable mapping) {
-        this.mapping = mapping;
+    
+    public JTabbedPane getOutputTabbed() {
+        return outputTabbedPane;
     }
-
-    public javax.swing.JMenu getJMenuInsertNew() {
-        return jMenuInsertNew;
+    
+    public InformContext getInformContext() {
+        return config.getContext();
     }
-
-    public Hashtable getOperations() {
-        return operations;
+    
+    public boolean isInformMode() {
+        return (project.getFile() == null) ?
+            config.getInformMode() :
+            project.getInformMode();
     }
-
-    public void setOperations(Hashtable operations) {
-        this.operations = operations;
+    
+    public boolean isGlulxMode() {
+        return (project.getFile() == null) ?
+            !config.getInformMode() :
+            !project.getInformMode();
     }
-
-    public javax.swing.JPanel getJPanelProjectSwitch() {
-        return jPanelProjectSwitches;
+    
+    public Map getSwitches() {
+        return (project.getFile() == null) ?
+            config.getSwitches() :
+            project.getSwitches();
     }
-
-    public javax.swing.JPanel getJPanelSwitch1() {
-        return jPanelSwitch1;
-    }
-
-    public javax.swing.JPanel getJPanelSwitch2() {
-        return jPanelSwitch2;
-    }
-
-    public Hashtable getSwitches() {
-        return switches;
-    }
-
-    public void setSwitches(Hashtable switches) {
-        this.switches = switches;
-    }
-
-    public HashSet getSymbols() {
-        return symbols;
-    }
-
-    public void setSymbols(HashSet symbols) {
-        this.symbols = symbols;
-    }
-
-    public HashSet getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(HashSet attributes) {
-        this.attributes = attributes;
-    }
-
-    public HashSet getProperties() {
-        return properties;
-    }
-
-    public void setProperties(HashSet properties) {
-        this.properties = properties;
-    }
-
-    public HashSet getVerbs() {
-        return verbs;
-    }
-
-    public void setVerbs(HashSet verbs) {
-        this.verbs = verbs;
-    }
-
-    public HashSet getKeywords() {
-        return keywords;
-    }
-
-    public void setKeywords(HashSet keywords) {
-        this.keywords = keywords;
-    }
-
-    public HashSet getAttributes_cs() {
-        return attributes_cs;
-    }
-
-    public void setAttributes_cs(HashSet attributes_cs) {
-        this.attributes_cs = attributes_cs;
-    }
-
-    public HashSet getProperties_cs() {
-        return properties_cs;
-    }
-
-    public void setProperties_cs(HashSet properties_cs) {
-        this.properties_cs = properties_cs;
-    }
-
-    public HashSet getVerbs_cs() {
-        return verbs_cs;
-    }
-
-    public void setVerbs_cs(HashSet verbs_cs) {
-        this.verbs_cs = verbs_cs;
-    }
-
-    public HashSet getKeywords_cs() {
-        return keywords_cs;
-    }
-
-    public void setKeywords_cs(HashSet keywords_cs) {
-        this.keywords_cs = keywords_cs;
-    }
-
-    public JList getJListSymbols() {
-        return jListSymbols;
-    }
-
-    public void setJListSymbols(JList jListSymbols) {
-        this.jListSymbols = jListSymbols;
-    }
-
-    public String getLibrarypath() {
-        return librarypath;
-    }
-
-    public void setLibrarypath(String librarypath) {
-        this.librarypath = librarypath;
-    }
-
-    public String getLibrarypathsecondary1() {
-        return librarypathsecondary1;
-    }
-
-    public void setLibrarypathsecondary1(String librarypathsecondary1) {
-        this.librarypathsecondary1 = librarypathsecondary1;
-    }
-
-    public String getLibrarypathsecondary2() {
-        return librarypathsecondary2;
-    }
-
-    public void setLibrarypathsecondary2(String librarypathsecondary2) {
-        this.librarypathsecondary2 = librarypathsecondary2;
-    }
-
-    public String getLibrarypathsecondary3() {
-        return librarypathsecondary3;
-    }
-
-    public void setLibrarypathsecondary3(String librarypathsecondary3) {
-        this.librarypathsecondary3 = librarypathsecondary3;
-    }
-
-    public String getCompiledpath() {
-        return compiledpath;
-    }
-
-    public void setCompiledpath(String compiledpath) {
-        this.compiledpath = compiledpath;
-    }
-
-    public String getInterpreterzcodepath() {
-        return interpreterzcodepath;
-    }
-
-    public void setInterpreterzcodepath(String interpreterzcodepath) {
-        this.interpreterzcodepath = interpreterzcodepath;
-    }
-
-    public String getInterpreterglulxpath() {
-        return interpreterglulxpath;
-    }
-
-    public void setInterpreterglulxpath(String interpreterglulxpath) {
-        this.interpreterglulxpath = interpreterglulxpath;
-    }
-
-    public String getCompilerpath() {
-        return compilerpath;
-    }
-
-    public void setCompilerpath(String compilerpath) {
-        this.compilerpath = compilerpath;
-    }
-
-    public String getBrespath() {
-        return brespath;
-    }
-
-    public void setBrespath(String brespath) {
-        this.brespath = brespath;
-    }
-
-    public String getBlcpath() {
-        return blcpath;
-    }
-
-    public void setBlcpath(String blcpath) {
-        this.blcpath = blcpath;
-    }
-
-    public javax.swing.JMenu getJMenuRecentFiles() {
-        return jMenuRecentFiles;
-    }
-
-    public void setJMenuRecentFiles(javax.swing.JMenu jMenuRecentFiles) {
-        this.jMenuRecentFiles = jMenuRecentFiles;
-    }
-
-    public String getFileini() {
-        return fileini;
-    }
-
-    public void setFileini(String fileini) {
-        this.fileini = fileini;
-    }
-
-    public Hashtable getProjectSwitches() {
-        return projectSwitches;
-    }
-
-    public void setProjectSwitches(Hashtable projectSwitches) {
-        this.projectSwitches = projectSwitches;
-    }
-
-    public HashSet getRecentFiles() {
-        return recentFiles;
-    }
-
-    public void setRecentFiles(HashSet recentFiles) {
-        this.recentFiles = recentFiles;
-    }
+    
 }

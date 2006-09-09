@@ -72,13 +72,12 @@ public class Utils {
     public Utils() {
     }
     
-    
     /**
      * Calculates total number of brackets in the text
      * @param testo String Text
      * @return The total number of brackets in the text
      */
-    public static int numberOfBrackets(String testo){
+    public static int numberOfBrackets(String testo) {
         String pattern="\"";
         int numero=0,pos=0;
         while ((pos = testo.indexOf(pattern, pos)) >= 0){
@@ -89,7 +88,7 @@ public class Utils {
     }
     
     
-    public static String spacesForTab(int numberofspaces){
+    public static String spacesForTab(int numberofspaces) {
         String tmp="";
         for (int i = 0; i < numberofspaces+1; i++) {
             tmp+=" ";
@@ -112,55 +111,16 @@ public class Utils {
         while ((e = str.indexOf(pattern, s)) >= 0) {
             result.append(str.substring(s, e));
             result.append(replace);
-            s = e+pattern.length();
+            s = e + pattern.length();
         }
         result.append(str.substring(s));
         return result.toString();
     }
-    
-    
-    
+
     /**
-     * Open the file and seek for classes
-     * 1. if file hasn't got .h or .inf extension, return
-     * 2. load the file into a string
-     * 3. seek for classes, for each found add it into the
-     *   classes vector
-     * @param vett Classes Vector
-     * @param file The file to open fo find the classes
+     * Print Inform document
      */
-    public static void seekClass(Vector vett, File file){
-        Pattern patt = Pattern.compile("\n+\\s*Class\\s+(\\w+)\\s", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-        if (file.getAbsolutePath().endsWith(".h") || file.getAbsolutePath().endsWith(".inf")){
-            if (null!=file){
-                try{
-                    // Get a channel for the source file
-                    FileInputStream fis = new FileInputStream(file);
-                    FileChannel fc = fis.getChannel();
-                    ByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, (int) fc.size());
-                    Charset cs = Charset.forName(Constants.fileFormat);
-                    CharsetDecoder cd = cs.newDecoder();
-                    CharBuffer cb = cd.decode(bb);
-                    Matcher m = patt.matcher(cb);
-                    while (m.find()){
-                        //System.out.println("Found new class: "+m.group(1));
-                        vett.add(m.group(1));
-                    }
-                    fc.close();
-                    fis.close();
-                } catch(Exception e){
-                    System.out.println("ERR: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-        } // end IF
-        return;
-    }
-    
-    
-    
-    
-    public void printInform(jFrame jframe,String title, JTextComponent jif){
+    public void printInform(jFrame jframe, String title, JTextComponent jif) {
         Properties prop = new Properties();
         PrintJob pjob = jframe.getToolkit().getPrintJob(jframe, title, prop);
         if (pjob != null) {
@@ -179,7 +139,7 @@ public class Utils {
     private void printLongString(PrintJob pjob, Graphics pg, String s) {
         
         // Replacing the TABS with spaces
-        s = Utils.replace(s,"\t","    ");
+        s = Utils.replace(s, "\t", "    ");
         
         int margin = 50;
         int pageNum = 1;
@@ -273,63 +233,30 @@ public class Utils {
      * Returns a string with all occurrences of the target string in file
      *
      */
-    public static String searchString(String target, File file){
+    public static String searchString(String target, File file) {
         // open file
-        String head = new String("File="+file.getName());
+        String head = "File=" + file.getName();
         String filename = file.getAbsolutePath();
         StringBuffer out = new StringBuffer();
-        try{
+        try {
             String riga;
             int lineCount=0;
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
-            while ((riga = br.readLine())!=null){
+            while ((riga = br.readLine()) != null) {
                 lineCount++;
-                if (Utils.IgnoreCaseIndexOf(riga,target)!=-1){
-                    out.append("\n"+Constants.TOKENSEARCH+filename+Constants.TOKENSEARCH+lineCount+Constants.TOKENSEARCH+": "+ riga);
+                if (Utils.IgnoreCaseIndexOf(riga, target) != -1) {
+                    out.append("\n" + Constants.TOKENSEARCH + filename + Constants.TOKENSEARCH + lineCount + Constants.TOKENSEARCH + ": " + riga);
                 }
             }
             br.close();
-        } catch(IOException e){
+        } catch(IOException e) {
             System.out.println(e.getMessage());
         }
-        if (out.length() == 0){
+        if (out.length() == 0) {
             return null; // find no string "target" in the current file
-        } else return (head+out.toString()+"\n");
-    }
-    
-    /**
-     * Creates a Jif.cfg file if not exists.
-     */
-    public static String createNewConfigFile(String filename) {
-        InputStream is = null;
-        StringBuffer sb = new StringBuffer();
-        String riga = "";
-        File cfgfile = null;
-                
-        try {
-            // Load the Jif.cfg file from the jar file to restore it
-            is = ClassLoader.getSystemClassLoader().getResource(Constants.configFileName).openStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(is, Constants.fileFormat));
-            sb.setLength(0);
-            while ((riga = br.readLine())!=null){
-                sb.append(riga).append("\n");
-            }
-            br.close();
-            
-            // Saving the new file
-            cfgfile = new File(filename);
-            FileOutputStream fos = new FileOutputStream(cfgfile);
-            Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
-            out.write(sb.toString());
-            out.flush();
-            out.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } else {
+            return (head + out.toString() + "\n");
         }
-        
-        return cfgfile.getAbsolutePath();
     }
-    
-    
-    
+
 }

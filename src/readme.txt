@@ -1,10 +1,10 @@
-_______________________________________________________________________________________________
-                        >>>>>>> JIF - a java editor for Inform <<<<<<<
-                                        Version 3.0 
-                           © Copyright 2003-2006 Alessandro Schillaci
-_______________________________________________________________________________________________
+_____________________________________________________________________________________________
+                       >>>>>>> JIF - a java editor for Inform <<<<<<<
+                                       Version 3.2 
+                          © Copyright 2003-2006 Alessandro Schillaci
+_____________________________________________________________________________________________
 
->>> Last Update of this document: 2006-01-12 at 19:35<<<
+>>> Last Update of this document: 2006-08-31 at 19:35<<<
 
 >>> [ Shortcuts  ]__________________________________________________________________
       ^^^^^^^^^
@@ -60,8 +60,8 @@ Right Button (mouse)    Menu Popup 1 (from the Text Editor)
 >>> [ Jif Configuration and other stuff ]___________________________________________
       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 What's new?
-Well, Jif 3.0 has been improved, many bugs have been fixed and the configuration management revised.
-The main change is that now Jif 3.0 configuration information is stored into a single INI file.
+Well, Jif 3.2 has been improved, many bugs have been fixed and the configuration management revised.
+The main change is that now Jif 3.2 configuration information is stored into a single INI file.
 You can edit this file ("Jif.cfg") out of Jif and restart Jif to see your changes take 
 effects. You can also edit this file within Jif (without the need to re-start Jif): just go to 
 the Options-> Jif INI file (menu) and edit it. Then save and see the changes on Jif.
@@ -552,10 +552,10 @@ Third part components:
 
     * Everaldo: Some Icons used by Jif ( www.everaldo.com )
 
-_______________________________________________________________________________________________
-                       Web:      http://www.slade.altervista.org/JIF/   
-                     Project:  http://developer.berlios.de/projects/jif/
+_____________________________________________________________________________________________
+                      Web:      http://www.slade.altervista.org/JIF/   
+                    Project:  http://developer.berlios.de/projects/jif/
 
-                       silver.slade@tiscalinet.it (Alessandro Schillaci)
+                      silver.slade@tiscalinet.it (Alessandro Schillaci)
                         luisfernandez@gmail.com    (Luis Fernandez)
-_______________________________________________________________________________________________
+_____________________________________________________________________________________________

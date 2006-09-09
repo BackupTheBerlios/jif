@@ -41,16 +41,21 @@ import javax.swing.*;
  */
 public  class PopupListener extends MouseAdapter {
     JPopupMenu jpopupmenu;
-    JIFTextPane jif;
+    JifTextPane jif;
     jFrame jframe;
 
     /**
      * Creates a new PopupListener for right mouse click menu
-     * @param jif The instance of JIFTextPane
-     * @param jframe The Instance of Main jFrame
+     * 
+     * 
+     * 
+     * @param jif
+     *          The instance ofJifTextPanee
+     * @param jframe
+     *          The Instance of Main jFrame
      */
-    public PopupListener(JIFTextPane jif, jFrame jframe){
-        this.jpopupmenu = jframe.jPopupMenu1;
+    public PopupListener(JifTextPane jif, jFrame jframe) {
+        this.jpopupmenu = jframe.filePopupMenu;
         this.jframe = jframe;
         this.jif = jif;
     }
@@ -58,7 +63,9 @@ public  class PopupListener extends MouseAdapter {
 
     /**
      * Mouse pressed event
-     * @param e mouse event
+     *
+     * @param e 
+     *          mouse event
      */
     public void mousePressed(MouseEvent e) {
         maybeShowPopup(e);
@@ -67,13 +74,13 @@ public  class PopupListener extends MouseAdapter {
         jif.removeHighlighterBrackets();
         
         // hiding JWindowSymbols
-        if (null != jframe.getJWindowSymbols()  && jframe.getJWindowSymbols().isVisible()) {
-            jframe.getJWindowSymbols().setVisible(false);
+        if (jframe.getSymbolDialog() != null && jframe.getSymbolDialog().isVisible()) {
+            jframe.getSymbolDialog().setVisible(false);
         }
 
         // if the JtextAreaOutput is hidden
-        if (!jframe.getCheckBoxOutput().getState()){
-            jframe.getTabbed2().setVisible(false);
+        if (!jframe.getOutputCheckBox().getState()) {
+            jframe.getOutputTabbed().setVisible(false);
         }
     }
 
