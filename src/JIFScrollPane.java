@@ -1,5 +1,5 @@
 /*
- * JIFTextPane.java
+ * JifScrollPane.java
  *
  * This file is part of JIF.
  *
@@ -30,24 +30,24 @@
  *
  */
 
-import javax.swing.*;
+import javax.swing.*; 
 
-public class JIFScrollPane extends JScrollPane{
-    /**
-    * 
-    */
+public class JifScrollPane extends JScrollPane {
+
     private static final long serialVersionUID = -4897501931771671145L;
     String filePath;
-    /** Creates a new instance of JIFScrollPane */
-    public JIFScrollPane(JIFTextPane aJIFTextPane,String aPath) {
+    /**
+     * Creates a new instance of JifScrollPane
+     */
+    public JifScrollPane(JifTextPane aJIFTextPane, String aPath) {
         super(aJIFTextPane);
         this.setToolTipText(aPath);
-        this.filePath=aPath;
+        this.filePath = aPath;
     }
-    String getFile(){
+    String getFile() {
         return filePath;
     }
-    void setFile(String filename){
+    void setFile(String filename) {
         this.filePath = filename;
     }
 }

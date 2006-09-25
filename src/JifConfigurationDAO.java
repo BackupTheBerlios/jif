@@ -104,7 +104,7 @@ public class JifConfigurationDAO {
         private static final Keyword PATH             = new Keyword("[PATH]");
         private static final Keyword LIBRARY          = new Keyword("[LIBRAYPATH]");
         private static final Keyword LIBRARY1         = new Keyword("[LIBRAYPATHSECONDARY1]");
-        private static final Keyword LIBRARY2         = new Keyword("[LIBRAYPATHSECONDARY1]");
+        private static final Keyword LIBRARY2         = new Keyword("[LIBRAYPATHSECONDARY2]");
         private static final Keyword LIBRARY3         = new Keyword("[LIBRAYPATHSECONDARY3]");
         private static final Keyword COMPILED         = new Keyword("[COMPILEDPATH]");
         private static final Keyword INTERPRETERZCODE = new Keyword("[INTERPRETERZCODEPATH]");

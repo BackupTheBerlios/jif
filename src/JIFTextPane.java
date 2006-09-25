@@ -1,5 +1,5 @@
-/*
- * JIFTextPane.java
+/* 
+ * JifTextPane.java
  *
  * This file is part of JIF.
  *
@@ -30,119 +30,129 @@
  *
  */
 
-import javax.swing.*;
-import javax.swing.text.*;
-import java.io.*;
-import java.awt.*;
-import javax.swing.undo.*;
-import javax.swing.event.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Vector;
+import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
+import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Utilities;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 /**
  * This is a sub-class of JTextPane, with the Inform source management.
  * @author Alessandro Schillaci
  */
-public class JIFTextPane extends JTextPane{
+public class JifTextPane extends JTextPane {
     
-    /**
-     *
-     */
     private static final long serialVersionUID = 1475021670099346825L;
-    UndoManager undoF;
-    jFrame jframe;
-    Element el;
-    MouseListener popupListener;
-    String pathfile;
-    String subPath;
-    private HighlightText hlighter;
+    private UndoManager undoF;
+    private jFrame jframe;
+    private Element el;
+    private MouseListener popupListener;
+    private String pathfile;
+    private String subPath;
+    private HighlightText hlighterJumpTo;
     private HighlightText hlighterBrackets;
     private HighlightText hlighterErrors;
     private HighlightText hlighterWarnings;
     private HighlightBookmark hlighterBookmarks;
-    java.util.List bookmarks;
-    private DefaultStyledDocument dsdoc;
+    private java.util.List bookmarks;
+    private JifDocument doc;
+    private JifEditorKit editor;
     
     /**
-     * Creates a new instance of JIFTextPane
-     * @param parent The instance of main jFrame
-     * @param file File to be load into JIFTextPane.
-     * If this is NULL, a new empty JIFTextPane will be created
+     * Creates a new instance of JifTextPane
+     * 
+     * @param parent
+     *           The instance of main jFrame
+     * @param fileName 
+     *           Name of the file to be load into JifTextPane.
      */
-    public JIFTextPane(jFrame parent, File file) {
-        this.jframe = parent;
-        this.pathfile = (file != null ? file.getAbsolutePath() : "");
-        this.popupListener = new PopupListener(this, jframe);
-        hlighterBrackets = new HighlightText(this, new Color(255, 153, 50));
-        hlighterBookmarks = new HighlightBookmark(this,new Color(51, 100, 255));
-        hlighterErrors = new HighlightText(this, Constants.colorErrors);
-        hlighterWarnings = new HighlightText(this, Constants.colorWarnings);
-        hlighter = new HighlightText(this, Constants.colorJumpto);
-        this.bookmarks = new ArrayList();
-        this.setPaths(this.pathfile);
+    public JifTextPane(jFrame parent, JifFileName fileName, File file, InformContext context) {
+        jframe = parent;
+        pathfile = fileName.getPath();
+        popupListener = new PopupListener(this, jframe);
+        hlighterBookmarks = new HighlightBookmark(
+                this,
+                context.getForeground(InformSyntax.Bookmarks)
+                );
+        hlighterBrackets = new HighlightText(
+                this,
+                context.getForeground(InformSyntax.Brackets)
+                );
+        hlighterErrors = new HighlightText(
+                this,
+                context.getForeground(InformSyntax.Errors)
+                );
+        hlighterJumpTo = new HighlightText(
+                this,
+                context.getForeground(InformSyntax.JumpTo)
+                );
+        hlighterWarnings = new HighlightText(
+                this,
+                context.getForeground(InformSyntax.Warnings)
+                );
+        bookmarks = new ArrayList();
+        setPaths(pathfile);
         
-        setBackground(jframe.colorBackground);
-        setCaretColor(jframe.colorNormal);
-        getCaret().setBlinkRate(200);
         setDoubleBuffered(true);
-        setEditorKit(new StyledEditorKit());
         setEditable(true);
-        setFont(jframe.defaultFont);
-        setCaretColor(jframe.colorNormal);
-        
-        // If the JCheckBoxSyntax = true, using InformDocument, otherwise using Document
-        if (jframe.jCheckBoxSyntax.isSelected()){
-            if (file==null){
-                // This is a new file, I'll apply the Inform Syntax Highlighting
-                //setDocument(new InformDocument(jframe));
-                dsdoc = new InformDocument(jframe);
-            } else {
-                if (pathfile.endsWith(".inf")||(pathfile.endsWith(".h"))){
-                    // .inf or .h file
-                    //setDocument(new InformDocument(jframe));
-                    dsdoc = new InformDocument(jframe);
-                } else if (pathfile.endsWith(".res")){
-                    // Resource File, I'll use the ResDocument for Syntax Highlighting
-                    //setDocument(new ResDocument(jframe));
-                    dsdoc = new ResDocument(jframe);
-                } else {
-                    // a Normal Document. I'll use a DefaultStyledDocument
-                    //setDocument(new DefaultStyledDocument());
-                    dsdoc = new DefaultStyledDocument();
-                    setBackground(Color.white);
-                    setCaretColor(Color.black);
-                }
-            }
-        } else{
-            // a Normal Document. I'll use a DefaultStyledDocument
-            //setDocument(new DefaultStyledDocument());
-            dsdoc = new DefaultStyledDocument();
-            setBackground(Color.white);
-            setCaretColor(Color.black);
+        setFont(context.getFont());
+        setBackground(context.getBackground());
+        setCaretColor(context.getForeground(InformSyntax.Normal));
+        getCaret().setBlinkRate(200);
+
+        if (jframe.config.getSyntaxHighlighting()) {
+            editor = fileName.createEditorKit();
+        } else {
+            editor = new JifEditorKit();
         }
         
-        //long tempo1=System.currentTimeMillis();
+        doc = editor.createDefaultDocument(context);
+
+        long tempo1=System.currentTimeMillis();
         loadFile(file);
-        //System.out.println("Tempo impiegato= "+(System.currentTimeMillis()-tempo1));
+        System.out.println("Tempo impiegato= "+(System.currentTimeMillis()-tempo1));
         
         undoF = new UndoManager();
         undoF.setLimit(5000);
-        //Document doc = getDocument();
         
-        dsdoc.addUndoableEditListener(new UndoableEditListener() {
+        doc.addUndoableEditListener(new UndoableEditListener() {
             public void undoableEditHappened(UndoableEditEvent evt) {
                 undoF.addEdit(evt.getEdit());
                 // adding a "*" to the file name, when the file has changed but not saved
-                if (jframe.getTabbed().getComponentCount()!=0  && jFrame.getCurrentFilename().indexOf("*")==-1){
-                    jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), subPath+"*");
-//                    JIFScrollPane aScrollPane=(JIFScrollPane)jframe.getTabbed().getComponentAt(jframe.getTabbed().getSelectedIndex());        
-//                    aScrollPane.setFile(subPath+"*");                                
-                    jframe.setTitle(jframe.getJifVersion() +" - " + jFrame.getCurrentFilename());
+                if (jframe.getFileTabbed().getComponentCount()!=0  && jFrame.getCurrentFilename().indexOf("*")==-1) {
+                    jframe.getFileTabbed().setTitleAt( jframe.getFileTabbed().getSelectedIndex(), subPath + "*");
+                    jframe.setTitle(jframe.getJifVersion() + " - " + jFrame.getCurrentFilename());
                 }
             }
         });
@@ -157,10 +167,8 @@ public class JIFTextPane extends JTextPane{
                         }
                         undoF.undo();
                         // adding a "*" to the file name, when the file has changed but not saved
-                        if (jframe.getTabbed().getComponentCount()!=0  && jFrame.getCurrentFilename().indexOf("*")==-1){
-                            jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), subPath+"*");
-//                            JIFScrollPane aScrollPane=(JIFScrollPane)jframe.getTabbed().getComponentAt(jframe.getTabbed().getSelectedIndex());        
-//                            aScrollPane.setFile(subPath+"*");                                                            
+                        if (jframe.getFileTabbed().getComponentCount()!=0  && jFrame.getCurrentFilename().indexOf("*")==-1){
+                            jframe.getFileTabbed().setTitleAt( jframe.getFileTabbed().getSelectedIndex(), subPath + "*");
                             jframe.setTitle(jframe.getJifVersion() +" - " + jFrame.getCurrentFilename());
                         }
                     }
@@ -182,8 +190,8 @@ public class JIFTextPane extends JTextPane{
                         }
                         undoF.redo();
                         // adding a "*" to the file name, when the file has changed but not saved
-                        if (jframe.getTabbed().getComponentCount()!=0  && jFrame.getCurrentFilename().indexOf("*")==-1){
-                            jframe.getTabbed().setTitleAt( jframe.getTabbed().getSelectedIndex(), subPath+"*");
+                        if (jframe.getFileTabbed().getComponentCount()!=0  && jFrame.getCurrentFilename().indexOf("*")==-1){
+                            jframe.getFileTabbed().setTitleAt( jframe.getFileTabbed().getSelectedIndex(), subPath + "*");
                             jframe.setTitle(jframe.getJifVersion() +" - " + jFrame.getCurrentFilename());
                         }
                     }
@@ -195,98 +203,95 @@ public class JIFTextPane extends JTextPane{
         
         getInputMap().put(KeyStroke.getKeyStroke("control Y"), "Redo");
         
-        
-        // New file (file==null)
-        if (file==null){
-            addKeyListener(new EditorKeyAdapter(jframe, this));
-        } else {
-            // Syntax highlighting is used only with .inf and .h files
-            if (pathfile.endsWith(".inf")||(pathfile.endsWith(".h"))){
+        // Editor key adapter is only used with inform content
+        if (fileName.getContentType() == JifFileName.INFORM) {
                 addKeyListener(new EditorKeyAdapter(jframe, this));
             }
-        }
         
         // Add Mouse Listener for the right-mouse popup
         addMouseListener(popupListener);
         
-        addCaretListener(new CaretListener(){
-            public void caretUpdate(CaretEvent ce){
+        addCaretListener(new CaretListener() {
+            public void caretUpdate(CaretEvent ce) {
                 int pos = getCaretPosition();
                 //Element map = getDocument().getDefaultRootElement();
-                Element map = dsdoc.getDefaultRootElement();
+                Element map = doc.getDefaultRootElement();
                 int row = map.getElementIndex(pos);
                 Element lineElem = map.getElement(row);
                 int col = pos - lineElem.getStartOffset();
-                jframe.jTextFieldRowCol.setText((row+1)+" | "+(col+1));
+                jframe.rowColTextField.setText((row+1)+" | "+(col+1));
             }
         });
         
-        this.setDocument(dsdoc);
+        setEditorKit(editor);
+        setDocument(doc);
     }
     
     
     /**
-     * Load text from a file into a JIFTextPane
-     * @param file The file to load into JIFTextPane
+     * Load text from a file into a JifTextPane
+     * 
+     * @param file 
+     *           The file to load into JifTextPane
      */
-    public void loadFile(File file){
-        if (null!=file){
-            try{
-                StringBuffer sb = new StringBuffer();
-                String riga;
-                sb.setLength(0);
-                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
-                while ((riga = br.readLine())!=null){
-                    sb.append(riga).append("\n");
-                }
-                br.close();
-                //setText(sb.toString());
-                SimpleAttributeSet sas = new SimpleAttributeSet();
-                
-                // Check for \t characters
-                if (sb.indexOf("\t")!=-1){
-                    jframe.jTextAreaOutput.setText(java.util.ResourceBundle.getBundle("JIF").getString("JIF_TAB_WARNING"));
-                    dsdoc.insertString(0, Utils.replace(sb.toString(),"\t",Utils.spacesForTab(jframe.tabSize-1)), sas);
-                } else{
-                    dsdoc.insertString(0,sb.toString(), sas);
-                }
-                
-            }catch(Exception e){
-                System.out.println("ERR: " + e.getMessage());
-                e.printStackTrace();
+    public void loadFile(File file) {
+        if (file == null) {
+            return;
+        }
+        try {
+            String text = JifDAO.read(file);
+
+            SimpleAttributeSet sas = new SimpleAttributeSet();
+
+            // Check for \t characters
+            if (text.indexOf("\t")!=-1) {
+                jframe.outputTextArea.setText(java.util.ResourceBundle.getBundle("JIF").getString("JIF_TAB_WARNING"));
+                doc.insertString(0,
+                        Utils.replace(text,
+                                "\t",
+                                JifEditorKit.getTabString()),
+                        sas);
+            } else {
+                doc.insertString(0, text, sas);
             }
+            
+            setCaretPosition(0);
+
+        } catch (Exception e) {
+            System.out.println("ERROR Load file: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     
-    public CharBuffer getCharBuffer(){
+    public CharBuffer getCharBuffer() {
         Charset charset = Charset.forName(Constants.fileFormat);
         CharsetEncoder encoder = charset.newEncoder();
         CharsetDecoder decoder = charset.newDecoder();
-        CharBuffer cb;
+        CharBuffer cb = null;
         try {
-            ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(this.getText()));
+            ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(getText()));
             cb = decoder.decode(bbuf);
-        } catch (Exception e){
-            System.out.println("ERR:"+e.getMessage());
-            return null;
+        } catch (Exception ex) {
+            System.out.println("ERROR getCharBuffer:" + ex.getMessage());
+        } finally {
+            return cb;
         }
-        return cb;
     }
     
     
     /**
-     * Returns the current row (as a String) from the current
-     * Caret position
+     * Returns the current row (as a String) from the current caret position
+     *
      * @return the current caret row
      */
-    public String getCurrentRow(){
+    public String getCurrentRow() {
         String lastRow = null;
-        try{
+        try {
             Element el = getDocument().getDefaultRootElement();
             int ind = el.getElementIndex(getCaretPosition()-1);
             el = getDocument().getDefaultRootElement().getElement(ind);
             lastRow = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
-        } catch(BadLocationException e){
+        } catch (BadLocationException e) {
             System.out.println(e.getMessage());
         }
         return lastRow;
@@ -295,35 +300,40 @@ public class JIFTextPane extends JTextPane{
     
     /**
      * Returns the current row (as a String) from a given Caret position
-     * @param posizione The position of Caret
+     *
+     * @param posizione
+     *          The position of Caret
      * @return The row at the position
      */
-    public String getRowAt(int posizione){
+    public String getRowAt(int posizione) {
         String lastRow = null;
-        try{
+        try {
             Element el = getDocument().getDefaultRootElement();
             int ind = el.getElementIndex(posizione);
             el = getDocument().getDefaultRootElement().getElement(ind);
             lastRow = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
-        } catch(BadLocationException e){
+        } catch (BadLocationException e) {
             System.out.println(e.getMessage());
         }
         return lastRow;
     }
     
     /**
-     * Returns the current row (as a String to UPPER CASE) from a given Caret position
-     * @param posizione The position of Caret
+     * Returns the current row (as a String to UPPER CASE) from a given Caret
+     * position
+     *
+     * @param posizione
+     *          The position of Caret
      * @return The row at the position
      */
-    public String getUpperRowAt(int posizione){
+    public String getUpperRowAt(int posizione) {
         String lastRow = null;
-        try{
+        try {
             Element el = getDocument().getDefaultRootElement();
             int ind = el.getElementIndex(posizione);
             el = getDocument().getDefaultRootElement().getElement(ind);
             lastRow = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
-        } catch(BadLocationException e){
+        } catch (BadLocationException e) {
             System.out.println(e.getMessage());
             System.out.println("position = "+posizione);
         }
@@ -331,89 +341,88 @@ public class JIFTextPane extends JTextPane{
     }
     
     
-    void searchCloseBracket(String start, String end){
-        try{
+    void searchCloseBracket(String start, String end) {
+        try {
             int posizioneIniziale = getCaretPosition()-1;
             int c=1;
-            int opened=0;  // number of open brackets
-            boolean found=false;
+            int opened = 0;  // number of open brackets
+            boolean found = false;
             
-            while (!found){
-                if ((getText(posizioneIniziale + c,1).equals(end))&&(opened==0)){
+            while (!found) {
+                if ((getText(posizioneIniziale + c,1).equals(end)) && (opened==0)) {
                     found = true;
                 }
                 // if an open bracket is found, opened++
-                if (getText(posizioneIniziale + c,1).equals(start)){
+                if (getText(posizioneIniziale + c,1).equals(start)) {
                     opened++;
                 }
                 // if a closed bracket is found, opened--
-                if (getText(posizioneIniziale + c,1).equals(end)&&(opened!=0)) {
+                if (getText(posizioneIniziale + c,1).equals(end) && (opened!=0)) {
                     opened--;
                 }
                 c++;
             }
-            if (found){
+            if (found) {
                 hlighterBrackets.highlightFromTo(this, posizioneIniziale+c-1, posizioneIniziale+c);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
         }
     }
     
     
     
     // Seek and highlight open brackets
-    void searchOpenBracket(String start, String end){
+    void searchOpenBracket(String start, String end) {
         try{
             int posizioneIniziale = getCaretPosition()-1;
             int c=1;
-            int closed=0;  // number of closed brackets
-            boolean found=false;
+            int closed = 0;  // number of closed brackets
+            boolean found = false;
             while (!found){
-                if ((getText(posizioneIniziale - c,1).equals(end))&&(closed==0)){
+                if ((getText(posizioneIniziale - c,1).equals(end)) && (closed==0)) {
                     found = true;
                 }
                 // if a closed bracket is found, closed++
-                if (getText(posizioneIniziale - c,1).equals(start)){
+                if (getText(posizioneIniziale - c,1).equals(start)) {
                     closed++;
                 }
                 // if an open bracket is found, opened--
-                if (getText(posizioneIniziale - c,1).equals(end)&&(closed!=0)) {
+                if (getText(posizioneIniziale - c,1).equals(end) && (closed!=0)) {
                     closed--;
                 }
                 c++;
             }
             
-            if (found){
+            if (found) {
                 hlighterBrackets.highlightFromTo(this, posizioneIniziale-c+1, posizioneIniziale-c+2);
             }
-        } catch (Exception e){
-        }
+        } catch (Exception e) {}
     }
     
     // Seek and highlight closed brackets
-    int searchCloseBracket(String start, String end, int posizione){
+    int searchCloseBracket(String start, String end, int posizione) {
         try{
             int posizioneIniziale = posizione;
             int c=1;
-            int opened=0;  // number of opened brackets
-            boolean found=false;
+            int opened = 0;  // number of opened brackets
+            boolean found = false;
             while (!found){
-                if ((getText(posizioneIniziale + c,1).equals(end))&&(opened==0)){
+                if ((getText(posizioneIniziale + c,1).equals(end)) && (opened==0)) {
                     found = true;
                 }
                 // if an open bracket is found, opened++
-                if (getText(posizioneIniziale + c,1).equals(start)){
+                if (getText(posizioneIniziale + c,1).equals(start)) {
                     opened++;
                 }
                 // if a closed bracket is found, opened--
-                if (getText(posizioneIniziale + c,1).equals(end)&&(opened!=0)) {
+                if (getText(posizioneIniziale + c,1).equals(end) && (opened!=0)) {
                     opened--;
                 }
                 c++;
             }
             return 0;  // no errors
             
-        } catch (Exception e){
+        } catch (Exception e) {
             el = getDocument().getDefaultRootElement();
             int ind = el.getElementIndex(posizione);
             el = getDocument().getDefaultRootElement().getElement(ind);
@@ -423,28 +432,29 @@ public class JIFTextPane extends JTextPane{
     }
     
     // Seek and highlight the open bracket
-    int searchOpenBracket(String start, String end, int posizione){
+    int searchOpenBracket(String start, String end, int posizione) {
         try{
             int posizioneIniziale = posizione;
             int c=1;
-            int closed=0;  // number of closed brackets
-            boolean found=false;
-            while (!found){
-                if ((getText(posizioneIniziale - c,1).equals(end))&&(closed==0)){
+            int closed = 0;  // number of closed brackets
+            boolean found = false;
+            while (!found) {
+                if ((getText(posizioneIniziale - c,1).equals(end)) && (closed==0)) {
                     found = true;
                 }
                 // if an open bracket is found, closed++
-                if (getText(posizioneIniziale - c,1).equals(start)){
+                if (getText(posizioneIniziale - c,1).equals(start)) {
                     closed++;
                 }
                 // if a close bracket is found, closed--
-                if (getText(posizioneIniziale - c,1).equals(end)&&(closed!=0)) {
+                if (getText(posizioneIniziale - c,1).equals(end) && (closed!=0)) {
                     closed--;
                 }
                 c++;
             }
             return 0;  // no errors
-        } catch (Exception e){
+            
+        } catch (Exception e) {
             el = getDocument().getDefaultRootElement();
             int ind = el.getElementIndex(posizione);
             el = getDocument().getDefaultRootElement().getElement(ind);
@@ -456,12 +466,12 @@ public class JIFTextPane extends JTextPane{
     
     /**
      * Performs a brackets validation.
-     * If this find a incomplete bracket (not opened
+     * If this find an incomplete bracket (not opened
      * or not closed), JIF will highlight the
      * wrong brackets to be fixed.
      * @param parent Instance of Main jFrame
      */
-    public void checkBrackets(jFrame parent){
+    public void checkBrackets(jFrame parent) {
         
         // 1. Check the brackets { opened
         String pattern = "{";
@@ -477,7 +487,7 @@ public class JIFTextPane extends JTextPane{
         int errore33=1;
         
         String testo = getText();
-        while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
+        while ((pos = testo.indexOf(pattern, pos)) >= 0) {
             if (searchCloseBracket(pattern, close, pos)==-1) {
                 errore = true;
                 break;
@@ -496,7 +506,7 @@ public class JIFTextPane extends JTextPane{
         pos = 0;
         errore= false;
         testo = getText();
-        while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
+        while ((pos = testo.indexOf(pattern, pos)) >= 0) {
             if (searchCloseBracket(pattern, close, pos)==-1) {
                 errore = true;
                 break;
@@ -516,7 +526,7 @@ public class JIFTextPane extends JTextPane{
         pos = 0;
         errore= false;
         testo = getText();
-        while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
+        while ((pos = testo.indexOf(pattern, pos)) >= 0) {
             if (searchCloseBracket(pattern, close, pos)==-1) {
                 errore = true;
                 break;
@@ -538,7 +548,7 @@ public class JIFTextPane extends JTextPane{
         errore= false;
         
         
-        while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
+        while ((pos = testo.indexOf(pattern, pos)) >= 0) {
             if (searchOpenBracket(pattern, close, pos)==-1) {
                 errore = true;
                 break;
@@ -558,16 +568,16 @@ public class JIFTextPane extends JTextPane{
         pos = 0;
         errore= false;
         testo = getText();
-        while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
+        while ((pos = testo.indexOf(pattern, pos)) >= 0) {
             if (searchOpenBracket(pattern, close, pos)==-1) {
                 errore = true;
                 break;
             }
             pos += pattern.length();
         }
-        if (errore){
+        if (errore) {
             setCaretPosition(pos);
-        } else{
+        } else {
             errore22=0;
         }
         
@@ -578,7 +588,7 @@ public class JIFTextPane extends JTextPane{
         pos = 0;
         errore= false;
         testo = getText();
-        while ((pos = testo.indexOf(pattern, pos)) >= 0)       {
+        while ((pos = testo.indexOf(pattern, pos)) >= 0) {
             if (searchOpenBracket(pattern, close, pos)==-1) {
                 errore = true;
                 break;
@@ -590,7 +600,7 @@ public class JIFTextPane extends JTextPane{
         } else{
             errore33=0;
         }
-        if ((errore1 + errore2 + errore3 + errore11 + errore22 + errore33)==0){
+        if ((errore1 + errore2 + errore3 + errore11 + errore22 + errore33)==0) {
             JOptionPane.showMessageDialog(parent,
                     java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_CHECK_BRACKET_OK"),
                     "OK", JOptionPane.INFORMATION_MESSAGE);
@@ -599,22 +609,22 @@ public class JIFTextPane extends JTextPane{
     
     
     /**
-     * Finds a String in the JIFTextPane and
+     * Finds a String in the JifTextPane and
      * highlight it.
      * The target String to be found, it taken from
      * the Search TextField
      */
-    public void findString(jFrame parent){
+    public void findString(jFrame parent) {
         int pos = getCaretPosition();   // current position
-        String pattern = jframe.jTextFieldFind.getText();
+        String pattern = jframe.findTextField.getText();
         
-        try{
+        try {
             String text = getDocument().getText(0, getDocument().getLength());
             boolean found = false;
             
             //while ( ( (pos = text.indexOf(pattern, pos)) >= 0) && (!found)) {
             while ( ( (pos = Utils.IgnoreCaseIndexOf(text,pattern, pos)) >= 0)  && (!found)) {
-                //hlighter.highlightFromTo(this, pos, pos + pattern.length());
+                //hlighterJumpTo.highlightFromTo(this, pos, pos + pattern.length());
                 // Bug #4416
                 this.setSelectionStart(pos);
                 this.setSelectionEnd(pos + pattern.length());
@@ -627,21 +637,21 @@ public class JIFTextPane extends JTextPane{
             
             
             // If the string not found, JIF will move the Caret position to 0 (zero)
-            if (!found){
+            if (!found) {
                 // if at least one string is found
                 if (Utils.IgnoreCaseIndexOf(text,pattern, 0)!=-1){
                     // append a message in the outputwindow
-                    parent.jTextAreaOutput.setText(java.util.ResourceBundle.getBundle("JIF").getString("JIF_END_OF_FILE"));
+                    parent.outputTextArea.setText(java.util.ResourceBundle.getBundle("JIF").getString("JIF_END_OF_FILE"));
                     setCaretPosition(0);
                     findString(parent);
-                } else{
+                } else {
                     // if there aren't any occurences of the string
                     // append a message in the outputwindow
-                    parent.jTextAreaOutput.setText("String \""+parent.jTextFieldFind.getText()+"\" not found");
+                    parent.outputTextArea.setText("String \""+parent.findTextField.getText()+"\" not found");
                 }
             }
             
-        } catch (BadLocationException e)  {
+        } catch (BadLocationException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -650,16 +660,16 @@ public class JIFTextPane extends JTextPane{
      * Returns the current HighlighterWarnings
      * @return the current HighlighterWarnings
      */
-    public HighlightText getHlighterWarnings(){
-        return this.hlighterWarnings;
+    public HighlightText getHlighterWarnings() {
+        return hlighterWarnings;
     }
     
     /**
      * Returns the current HighlighterErrors
      * @return the current HighlighterErrors
      */
-    public HighlightText getHlighterErrors(){
-        return this.hlighterErrors;
+    public HighlightText getHlighterErrors() {
+        return hlighterErrors;
     }
     
     
@@ -667,45 +677,49 @@ public class JIFTextPane extends JTextPane{
      * Returns the current Highlighter
      * @return the current Highlighter
      */
-    public HighlightText getHlighter(){
-        return this.hlighter;
+    public HighlightText getHlighter() {
+        return hlighterJumpTo;
     }
     
     /**
-     * Remove current highlighter from the JIFTextPane
+     * Remove current highlighter from the JifTextPane
      */
-    public void removeHighlighter(){
-        if (null != this.hlighter){
-            this.hlighter.removeHighlights(this);
-        }
+    public void removeHighlighter() {
+        if (hlighterJumpTo == null) {
+            return;
+        }    
+        hlighterJumpTo.removeHighlights(this);
     }
     
     /**
      * Remove all the check-brackets highlighters from
-     * current JIFTextPane
+     * current JifTextPane
      */
-    public void removeHighlighterBrackets(){
-        if (null != this.hlighterBrackets){
-            this.hlighterBrackets.removeHighlights(this);
+    public void removeHighlighterBrackets() {
+        if (hlighterBrackets == null) {
+            return;
         }
+        hlighterBrackets.removeHighlights(this);
     }
     
     /**
-     * Remove current highlighterErrors from the JIFTextPane
+     * Remove current highlighterErrors from the JifTextPane
      */
-    public void removeHighlighterErrors(){
-        if (null != this.hlighterErrors){
-            this.hlighterErrors.removeHighlights(this);
+    public void removeHighlighterErrors() {
+        if (hlighterErrors == null) {
+            return;
         }
+        hlighterErrors.removeHighlights(this);
     }
     
     /**
-     * Remove current highlighterWarnings from the JIFTextPane
+     * Remove current highlighterWarnings from the JifTextPane
      */
-    public void removeHighlighterWarnings(){
-        if (null != this.hlighterWarnings){
-            this.hlighterWarnings.removeHighlights(this);
+    public void removeHighlighterWarnings() {
+        if (hlighterWarnings == null) {
+            return;
         }
+        hlighterWarnings.removeHighlights(this);
     }
     
     /**
@@ -713,15 +727,15 @@ public class JIFTextPane extends JTextPane{
      * before performing a SHIFT RIGHT/LEFT
      * COMMENT/UNCOMMENT action
      */
-    public void selectionText(){
-        if (null == getSelectedText()) {
+    public void selectionText() {
+        if (getSelectedText()==null) {
             // Select the current row
             Element el = getDocument().getDefaultRootElement();
             int ind = el.getElementIndex(getCaretPosition());
             el = getDocument().getDefaultRootElement().getElement(ind);
             setSelectionStart(el.getStartOffset());
             setSelectionEnd(el.getEndOffset()-1);
-        } else{
+        } else {
             int indstart = getDocument().getDefaultRootElement().getElementIndex(getSelectionStart());
             int indend   = getDocument().getDefaultRootElement().getElementIndex(getSelectionEnd());
             Element elmstart = getDocument().getDefaultRootElement().getElement(indstart);
@@ -734,11 +748,11 @@ public class JIFTextPane extends JTextPane{
     /**
      * Comment the current text selection
      */
-    public void commentSelection(){
+    public void commentSelection() {
         
         selectionText();
         
-        String riga="";
+        String riga = "";
         StringBuffer output = new StringBuffer();
         int start   = getSelectionStart();
         int end     = getSelectionEnd();
@@ -746,8 +760,8 @@ public class JIFTextPane extends JTextPane{
         
         int index_start = el.getElementIndex(start);
         int index_end = el.getElementIndex(end);
-        try{
-            for (int i=index_start; i<index_end ;i++){
+        try {
+            for (int i=index_start; i<index_end; i++) {
                 el = getDocument().getDefaultRootElement().getElement(i);
                 riga = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
                 output.append("!").append(riga);
@@ -763,7 +777,7 @@ public class JIFTextPane extends JTextPane{
             setSelectionStart(start);
             setSelectionEnd(end + index_end - index_start +1);
             
-        } catch(BadLocationException e){
+        } catch(BadLocationException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -773,11 +787,11 @@ public class JIFTextPane extends JTextPane{
     /**
      * Remove Comment from the current text selection
      */
-    public void unCommentSelection(){
+    public void uncommentSelection() {
         
         selectionText();
         
-        String riga="";
+        String riga = "";
         StringBuffer output = new StringBuffer();
         int start = getSelectionStart();
         int end = getSelectionEnd();
@@ -786,8 +800,8 @@ public class JIFTextPane extends JTextPane{
         int index_start = el.getElementIndex(start);
         int index_end = el.getElementIndex(end);
         boolean error = false;  // if true, at least one row starts with !
-        try{
-            for (int i=index_start; i<index_end ;i++){
+        try {
+            for (int i=index_start; i<index_end; i++) {
                 el = getDocument().getDefaultRootElement().getElement(i);
                 riga = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
                 if (riga.indexOf("!")==-1) {
@@ -810,10 +824,13 @@ public class JIFTextPane extends JTextPane{
                 setSelectionStart(start);
                 setSelectionEnd(start+output.length());
             } else {
-                JOptionPane.showMessageDialog(null,java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_UNCOMMENT_ERROR"),"Warning", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null,
+                        java.util.ResourceBundle.getBundle("JIF").getString("JFRAME_UNCOMMENT_ERROR"),
+                        "Warning", 
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
-        } catch(BadLocationException e){
+        } catch (BadLocationException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -821,7 +838,7 @@ public class JIFTextPane extends JTextPane{
     /**
      * Right shift tab the selected text
      */
-    public void tabSelection(){
+    public void tabRightSelection() {
         selectionText();
         
         String riga="";
@@ -833,15 +850,15 @@ public class JIFTextPane extends JTextPane{
         int index_start = el.getElementIndex(start);
         int index_end = el.getElementIndex(end);
         
-        try{
-            for (int i=index_start; i<index_end+1 ;i++){
+        try {
+            for (int i=index_start; i<index_end+1; i++) {
                 el = getDocument().getDefaultRootElement().getElement(i);
                 riga = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
                 
-                if (i == index_end){
-                    output.append(Utils.spacesForTab(jframe.tabSize-1)).append(riga.substring(0,riga.indexOf('\n')));
-                } else{
-                    output.append(Utils.spacesForTab(jframe.tabSize-1)).append(riga);
+                if (i == index_end) {
+                    output.append(JifEditorKit.getTabString()).append(riga.substring(0,riga.indexOf('\n')));
+                } else {
+                    output.append(JifEditorKit.getTabString()).append(riga);
                 }
             }
             
@@ -850,20 +867,20 @@ public class JIFTextPane extends JTextPane{
             // Selected rows will be selected again
             requestFocus();
             setSelectionStart(start);
-            setSelectionEnd(end + ((index_end - index_start+1)*(jframe.tabSize)));
+            setSelectionEnd(end + ((index_end - index_start+1)*(JifEditorKit.getTabSize())));
             
-        } catch(BadLocationException e){
-            System.out.println(e.getMessage());
+        } catch (BadLocationException e) {
+            System.out.println("ERROR: Tab Right Selection " + e.getMessage());
         }
     }
     
     /**
      * Left shift tab the selected text
      */
-    public void removeTabSelection(){
+    public void tabLeftSelection() {
         selectionText();
         
-        String riga="";
+        String riga = "";
         StringBuffer output = new StringBuffer();
         int start = getSelectionStart();
         int end = getSelectionEnd();
@@ -871,20 +888,20 @@ public class JIFTextPane extends JTextPane{
         int index_start = el.getElementIndex(start);
         int index_end = el.getElementIndex(end);
         
-        try{
-            for (int i=index_start; i<index_end+1 ;i++){
+        try {
+            for (int i=index_start; i<index_end+1; i++) {
                 el = getDocument().getDefaultRootElement().getElement(i);
                 riga = getText(el.getStartOffset(), el.getEndOffset()-el.getStartOffset());
                 
-                if (i == index_end){
-                    if (riga.startsWith(Utils.spacesForTab(jframe.tabSize-1))){
-                        output.append(riga.substring(jframe.tabSize,riga.indexOf('\n')));
-                    } else{
+                if (i == index_end) {
+                    if (riga.startsWith(JifEditorKit.getTabString())) {
+                        output.append(riga.substring(JifEditorKit.getTabSize(),riga.indexOf('\n')));
+                    } else {
                         output.append(riga.substring(0,riga.indexOf('\n')));
                     }
                 } else {
-                    if (riga.startsWith(Utils.spacesForTab(jframe.tabSize-1))){
-                        output.append(riga.substring(jframe.tabSize));
+                    if (riga.startsWith(JifEditorKit.getTabString())) {
+                        output.append(riga.substring(JifEditorKit.getTabSize()));
                     } else {
                         output.append(riga);
                     }
@@ -899,8 +916,8 @@ public class JIFTextPane extends JTextPane{
             setSelectionStart(posizione);
             setSelectionEnd(posizione+output.length());
             
-        } catch(BadLocationException e){
-            System.out.println(e.getMessage());
+        } catch (BadLocationException e) {
+            System.out.println("ERROR: Tab Left Selection " + e.getMessage());
         }
     }
     
@@ -912,29 +929,30 @@ public class JIFTextPane extends JTextPane{
     /**
      * This method extracts all strings from source Inform code
      * and save them into a new file ("translate.txt")
-     *
+     * 
      * The format is:
-     *
+     * 
      * *****
      * STRING1
      * =====
      * STRING1 TRANSLATION
-     *
+     * 
      * *****
      * STRING2
      * =====
      * STRING2 TRANSLATION
-     *
+     * 
      * ...
-     *
-     *
-     * This file will be used by the "InsertTranslate()" method
+     * 
+     * 
+     * This file will be used by the "insertTranslate()" method
      * to rescue the translations from translate.txt file and
      * merge into the current file to create a new file with
      * the translation ("translated.inf")
+     * 
      * @param file The Output File (i.e. "translate.txt")
      */
-    public void ExtractTranslate(File file){
+    public void extractTranslate(File file) {
         StringBuffer translate = new StringBuffer();
         String appoggio;
         String testo = getText();
@@ -944,13 +962,13 @@ public class JIFTextPane extends JTextPane{
         
         StringTokenizer stok = new StringTokenizer(testo,"\"\"");
         stok.nextToken();
-        while (stok.hasMoreTokens()){
+        while (stok.hasMoreTokens()) {
             appoggio = stok.nextToken();
             // To eliminate cases like: ".", "   "
             if (
                     !(appoggio.trim().equals("")) &&
                     (appoggio.length()>1)
-                    ){
+                    ) {
                 translate.append("*****\n");
                 translate.append(appoggio);
                 translate.append("\n=====\n");
@@ -960,14 +978,17 @@ public class JIFTextPane extends JTextPane{
                 stok.nextToken();
             }
         }
-        try{
+        try {
             FileOutputStream fos = new FileOutputStream(file);
             Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
             out.write(translate.toString());
             out.flush();
             out.close();
-            JOptionPane.showMessageDialog(null,"OK","Message", JOptionPane.INFORMATION_MESSAGE);
-        } catch(IOException e ){
+            JOptionPane.showMessageDialog(null,
+                    "OK",
+                    "Message",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e ) {
             System.out.println(e.getMessage());
         }
     }
@@ -979,10 +1000,12 @@ public class JIFTextPane extends JTextPane{
      * This method rescues the translations from translate.txt
      * file and merges into the current file to create a new file with
      * the translation ("translated.inf")
-     * @param file Current file in the JIFTextPane
+     * 
+     * 
+     * @param file Current file in the JifTextPane
      * @param fileout The output file (i.e. "translated.inf")
      */
-    public void InsertTranslate(File file, File fileout){
+    public void insertTranslate(File file, File fileout) {
         String testo = getText();
         try{
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
@@ -992,10 +1015,10 @@ public class JIFTextPane extends JTextPane{
             String riga;
             Vector strings = new Vector();
             
-            while ((riga = br.readLine())!=null){
-                if (riga.startsWith("*****")){
+            while ((riga = br.readLine())!=null) {
+                if (riga.startsWith("*****")) {
                     chiave=true;
-                    if (obj!=null){
+                    if (obj!=null) {
                         // serve come entry nel caso della prima key
                         // inserisco la chiave al passo precedente
                         if (key.startsWith("\n")) {
@@ -1010,19 +1033,19 @@ public class JIFTextPane extends JTextPane{
                         key="";
                         obj="";
                     }
-                } else if (riga.startsWith("=====")){
+                } else if (riga.startsWith("=====")) {
                     chiave=false;
-                } else if (chiave==true){
+                } else if (chiave==true) {
                     // sto leggendo una chiave
-                    if (key!=null){
-                        key = key +"\n" +riga;
+                    if (key!=null) {
+                        key = key + "\n" + riga;
                     } else {
                         key = riga;
                     }
-                } else if (chiave==false){
+                } else if (chiave==false) {
                     // sto leggendo una chiave
-                    if (obj!=null){
-                        obj = obj +"\n" + riga;
+                    if (obj!=null) {
+                        obj = obj + "\n" + riga;
                     } else {
                         obj = riga;
                     }
@@ -1041,30 +1064,33 @@ public class JIFTextPane extends JTextPane{
             });
             
             // Execute the translation using the sorted strings
-            for (Iterator ite = strings.iterator(); ite.hasNext(); ){
+            for (Iterator ite = strings.iterator(); ite.hasNext(); ) {
                 TranslatedString ts = (TranslatedString) ite.next();
                 testo = Utils.replace(testo, "\""+ts.getSource()+"\"" , "\""+ts.getResult()+"\"");
             }
             // FIX
             
-        } catch(IOException e){
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
         
         // saving the output file
-        try{
+        try {
             FileOutputStream fos = new FileOutputStream(fileout);
             Writer out = new OutputStreamWriter( fos, Constants.fileFormat );
             out.write(testo);
             out.flush();
             out.close();              
-            JOptionPane.showMessageDialog(null,"OK","Message", JOptionPane.INFORMATION_MESSAGE);
-        } catch(IOException e ){
+            JOptionPane.showMessageDialog(null,
+                    "OK",
+                    "Message",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e ) {
             System.out.println(e.getMessage());
         }
     }
     
-    public void setBookmark(){
+    public void setBookmark() {
         int pos = getCaretPosition();
         Element map = getDocument().getDefaultRootElement();
         int row = map.getElementIndex(pos);
@@ -1072,49 +1098,49 @@ public class JIFTextPane extends JTextPane{
     }
     
     
-    public void nextBookmark(){
+    public void nextBookmark() {
         // position = actual row
         int jumpto = 0;
         
-        if(bookmarks.size()==0){
+        if (bookmarks.size()==0) {
             return;
         }
         
         
         int row = getDocument().getDefaultRootElement().getElementIndex(getCaretPosition());
         
-        for (Iterator ite=bookmarks.iterator(); ite.hasNext();){
+        for (Iterator ite=bookmarks.iterator(); ite.hasNext();) {
             Integer ind = (Integer) ite.next();
-            if (row < ind.intValue()){
+            if (row < ind.intValue()) {
                 jumpto = ind.intValue();
                 break;
             }
         }
         
         // last bookmark
-        if (jumpto == 0 && bookmarks.size() != 0){
+        if (jumpto == 0 && bookmarks.size() != 0) {
             jumpto = ( (Integer)bookmarks.get(0)).intValue();
         }
         
         // Jump to the bookmark row
         Element ele = getDocument().getDefaultRootElement().getElement(jumpto);
-        try{
+        try {
             scrollRectToVisible(modelToView(getDocument().getLength()));
             scrollRectToVisible(modelToView(ele.getStartOffset()));
             setCaretPosition(ele.getStartOffset());
-        } catch (BadLocationException ble){
+        } catch (BadLocationException ble) {
             System.out.println(ble);
         }
     }
     
-    public void applyBookmarks(){
+    public void applyBookmarks() {
         // Removing the hlighterBookmarks
-        if (null != this.hlighterBookmarks){
+        if (this.hlighterBookmarks != null) {
             this.hlighterBookmarks.removeHighlights(this);
         }
         // Repaint all the highlights
         Element element;
-        for (Iterator ite=bookmarks.iterator(); ite.hasNext();){
+        for (Iterator ite=bookmarks.iterator(); ite.hasNext();) {
             Integer ind = (Integer) ite.next();
             element = getDocument().getDefaultRootElement().getElement(ind.intValue());
             hlighterBookmarks.highlightFromTo(this, element.getStartOffset(), element.getEndOffset());
@@ -1123,10 +1149,10 @@ public class JIFTextPane extends JTextPane{
     
     
     public void updateBookmark(Integer line) {
-        if (this.bookmarks.contains(line)){
+        if (this.bookmarks.contains(line)) {
             this.bookmarks.remove(line);
             applyBookmarks();
-        } else{
+        } else {
             this.bookmarks.add(line);
             applyBookmarks();
         }
@@ -1137,19 +1163,28 @@ public class JIFTextPane extends JTextPane{
         int start = Utilities.getWordStart(this, getCaretPosition());
         int end = Utilities.getWordEnd(this, getCaretPosition());
         String word = getDocument().getText(start, end-start);
-        if(word.indexOf(".")!=-1){
-            word=word.substring(0,word.lastIndexOf("."));
+        if (word.indexOf(".") != -1) {
+            word = word.substring(0, word.lastIndexOf("."));
         }
         //System.out.println( "Selected word: " + word );
         return word;
     }
     
-    public void setPaths(String aString){
-        this.pathfile=aString;
-        if(this.pathfile.length()>20)
-            this.subPath=this.pathfile.substring(0 ,  10)+"..." + this.pathfile.substring(this.pathfile.length()-20 ,  this.pathfile.length());
-        else
-            this.subPath=this.pathfile;
+    // --- Accessor methods ----------------------------------------------------
+    
+    public void setPaths(String aString) {
+        this.pathfile = aString;
+        if (pathfile.length() > 20) {
+            subPath = pathfile.substring(0,  10) + 
+                    "..." + 
+                    pathfile.substring(pathfile.length()-20,  pathfile.length());
+        } else {
+            subPath = pathfile;
+        }
+    }
+    
+    public String getSubPath() {
+        return subPath;
     }
     
 }
