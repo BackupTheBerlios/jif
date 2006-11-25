@@ -1,5 +1,5 @@
 /*
- * JifTextPane.java
+ * JifScrollPane.java
  *
  * This file is part of JIF.
  *
@@ -9,7 +9,7 @@
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2006  Alessandro Schillaci
+ * Copyright (C) 2004-2006  Alessandro Schillaci 
  *
  * WeB   : http://www.slade.altervista.org/JIF/
  * e-m@il: silver.slade@tiscali.it
@@ -30,7 +30,7 @@
  *
  */
 
-import javax.swing.*;
+import javax.swing.*; 
 
 public class JifScrollPane extends JScrollPane {
 
