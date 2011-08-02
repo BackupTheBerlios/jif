@@ -1,0 +1,33 @@
+LIST OF IMAGES USED BY JIF
+==========================
+(see the license file for using them)
+
+2005-11-14
+
+about.png
+check.png
+comment.png
+compfile.png
+configure.png
+delete.png
+edit.png
+fileclose.png
+filecloseAll.png
+filefind.png
+filenew.png
+fileopen.png
+filesave.png
+filesaveall.png
+filesaveas.png
+find.png
+insertFunction.png
+insertObject.png
+insertSymbol.png
+launch.png
+leftIndent.png
+redo.png
+rightIndent.gif
+runInterpreter.png
+TREE_objects.png
+uncomment.png
+undo.png

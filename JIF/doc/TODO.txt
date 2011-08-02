@@ -1,0 +1,1 @@
+- don't save/load jFrame Position and size
