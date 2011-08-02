@@ -846,7 +846,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         creditsTextArea.setEditable(false);
         creditsTextArea.setFont(new java.awt.Font("MonoSpaced", 0, 11));
         creditsTextArea.setRows(5);
-        creditsTextArea.setText("JIF, a java editor for Inform\nby Alessandro Schillaci\nhttp://www.slade.altervista.org/\n\nDevelopment: \n- Alessandro Schillaci\n- Luis Fernandez\n- Peter F. Piggott\n\nContributors:\nPaolo Lucchesi\nVincenzo Scarpa\nBaltasar GarcÃ­a Perez-Schofield\nChristof Menear\nGiles Boutel\nJavier San JosÃ©\nDavid Moreno\nEric Forgeot\nMax Kalus\nAdrien Saurat\nAlex V Flinsch\nDaryl McCullough\nGiancarlo Niccolai\nIgnazio di Napoli\nJoerg Rosenbauer\nMatteo De Simone\nTommaso Caldarola");
+        creditsTextArea.setText("JIF, a java editor for Inform\nby Alessandro Schillaci\nhttp://www.slade.altervista.org/\n\nDevelopment: \n- Alessandro Schillaci\n- Luis Fernandez\n- Peter F. Piggott\n\nContributors:\nPaolo Lucchesi\nVincenzo Scarpa\nBaltasar García Perez-Schofield\nChristof Menear\nGiles Boutel\nJavier San José\nDavid Moreno\nEric Forgeot\nMax Kalus\nAdrien Saurat\nAlex V Flinsch\nDaryl McCullough\nGiancarlo Niccolai\nIgnazio di Napoli\nJoerg Rosenbauer\nMatteo De Simone\nTommaso Caldarola");
         creditsTextArea.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 3));
         creditsScrollPane.setViewportView(creditsTextArea);
 
@@ -2559,10 +2559,11 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         jToolBarCommon.add(settingsButton);
 
         findTextField.setColumns(15);
-        findTextField.setFont(new java.awt.Font("Courier New", 0, 12));
+        findTextField.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         findTextField.setToolTipText(bundle.getString("JTOOLBAR_SEARCH")); // NOI18N
         findTextField.setMaximumSize(new java.awt.Dimension(111, 20));
         findTextField.setMinimumSize(new java.awt.Dimension(10, 22));
+        findTextField.setPreferredSize(new java.awt.Dimension(111, 29));
         jToolBarCommon.add(findTextField);
 
         findButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png"))); // NOI18N
@@ -2612,8 +2613,8 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         rowColTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         rowColTextField.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         rowColTextField.setDisabledTextColor(new java.awt.Color(212, 208, 200));
-        rowColTextField.setMaximumSize(new java.awt.Dimension(100, 38));
-        rowColTextField.setMinimumSize(new java.awt.Dimension(50, 38));
+        rowColTextField.setMaximumSize(new java.awt.Dimension(100, 29));
+        rowColTextField.setMinimumSize(new java.awt.Dimension(50, 20));
         rowColTextField.setPreferredSize(new java.awt.Dimension(50, 19));
         jToolBarCommon.add(rowColTextField);
 
@@ -2703,11 +2704,11 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         searchProjectPanel.setPreferredSize(new java.awt.Dimension(180, 55));
         searchProjectPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 0, 0));
 
-        searchProjectTextField.setFont(new java.awt.Font("Courier New", 0, 12));
+        searchProjectTextField.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         searchProjectTextField.setToolTipText(bundle.getString("JTOOLBAR_SEARCH")); // NOI18N
-        searchProjectTextField.setMaximumSize(new java.awt.Dimension(150, 20));
-        searchProjectTextField.setMinimumSize(new java.awt.Dimension(30, 22));
-        searchProjectTextField.setPreferredSize(new java.awt.Dimension(90, 20));
+        searchProjectTextField.setMaximumSize(new java.awt.Dimension(250, 20));
+        searchProjectTextField.setMinimumSize(new java.awt.Dimension(130, 22));
+        searchProjectTextField.setPreferredSize(new java.awt.Dimension(120, 20));
         searchProjectPanel.add(searchProjectTextField);
 
         searchProjectButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/fileprojectfind.png"))); // NOI18N
@@ -2743,7 +2744,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         definitionTextField.setFont(new java.awt.Font("Courier New", 0, 12));
         definitionTextField.setMaximumSize(new java.awt.Dimension(150, 20));
         definitionTextField.setMinimumSize(new java.awt.Dimension(30, 20));
-        definitionTextField.setPreferredSize(new java.awt.Dimension(90, 20));
+        definitionTextField.setPreferredSize(new java.awt.Dimension(120, 20));
         definitionPanel.add(definitionTextField);
 
         definitionButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filefind.png"))); // NOI18N
@@ -3435,7 +3436,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         helpMenu.setDelay(0);
         helpMenu.setFont(new java.awt.Font("Dialog", 0, 11));
 
-        readMeMenuItem.setFont(new java.awt.Font("Dialog", 0, 11)); // NOI18N
+        readMeMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
         readMeMenuItem.setText(bundle.getString("README")); // NOI18N
         readMeMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
