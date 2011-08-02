@@ -132,7 +132,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         initFrame();
     }
 
-    public final void initFrame() {
+    void initFrame() {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/runInterpreter.png")));
 
         String directory = System.getProperty("user.dir");
@@ -5022,11 +5022,11 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
             String id = ((javax.swing.JMenuItem) e.getSource()).getText();
             try {
                 //se non trovo nessun carattere "ยง" non vado a capo
-                if (((String) getOperations().get((String) id)).indexOf("ยง") == -1) {
+                if (((String) getOperations().get((String) id)).indexOf("ง") == -1) {
                     // inserisco la stringa senza andare a capo
                     getCurrentDoc().insertString(getCurrentJifTextPane().getCaretPosition(), (String) getOperations().get((String) id), attr);
                 } else {
-                    StringTokenizer st = new StringTokenizer((String) getOperations().get((String) id), "ยง");
+                    StringTokenizer st = new StringTokenizer((String) getOperations().get((String) id), "ง");
                     while (st.hasMoreTokens()) {
                         getCurrentDoc().insertString(getCurrentJifTextPane().getCaretPosition(), st.nextToken() + "\n", attr);
                     }
