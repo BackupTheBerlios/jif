@@ -1,5 +1,3 @@
-package it.schillaci.jif.gui;
-
 /*
  * EditorKeyAdapter.java
  *
@@ -31,11 +29,10 @@ package it.schillaci.jif.gui;
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
+package it.schillaci.jif.gui;
 
 import it.schillaci.jif.core.JifEditorKit;
 import it.schillaci.jif.core.Utils;
-import it.schillaci.jif.gui.jFrame;
-import it.schillaci.jif.gui.JifTextPane;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
