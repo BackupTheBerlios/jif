@@ -9,6 +9,7 @@ JIF 3.5 (Aug 2011)
 - [NF] Project refactored
 - [NF] switch manager cancelled (in the last inform compiler, now you can pass switches
   straight in the source) TODO
+- [NF] 800x600 standard size (if Jif.cfg is not found)
 
 
 

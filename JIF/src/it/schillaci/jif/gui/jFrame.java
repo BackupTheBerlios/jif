@@ -173,13 +173,14 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
 
         initComponents();
 
-        if (config.getFrameWidth() * config.getFrameHeight() * config.getFrameX() * config.getFrameY() != 0) {
+        //if (config.getFrameWidth() * config.getFrameHeight() * config.getFrameX() * config.getFrameY() != 0) {
+        if (config.getFrameWidth() * config.getFrameHeight() != 0) {
             setSize(config.getFrameWidth(), config.getFrameHeight());
             setLocation(config.getFrameX(), config.getFrameY());
         } else {
             // first time JIF runs
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            setSize(screenSize.width - 200, screenSize.height - 140);
+            setSize(screenSize.width - 320, screenSize.height - 320);
             setLocation(screenSize.width / 2 - (getWidth() / 2), screenSize.height / 2 - (getHeight() / 2));
         }
 
