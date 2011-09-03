@@ -2560,7 +2560,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         jToolBarCommon.add(settingsButton);
 
         findTextField.setColumns(15);
-        findTextField.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        findTextField.setFont(new java.awt.Font("Courier New", 0, 12));
         findTextField.setToolTipText(bundle.getString("JTOOLBAR_SEARCH")); // NOI18N
         findTextField.setMaximumSize(new java.awt.Dimension(111, 20));
         findTextField.setMinimumSize(new java.awt.Dimension(10, 22));
@@ -2705,7 +2705,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         searchProjectPanel.setPreferredSize(new java.awt.Dimension(180, 55));
         searchProjectPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 0, 0));
 
-        searchProjectTextField.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        searchProjectTextField.setFont(new java.awt.Font("Courier New", 0, 12));
         searchProjectTextField.setToolTipText(bundle.getString("JTOOLBAR_SEARCH")); // NOI18N
         searchProjectTextField.setMaximumSize(new java.awt.Dimension(250, 20));
         searchProjectTextField.setMinimumSize(new java.awt.Dimension(130, 22));
@@ -2808,7 +2808,6 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         outputTextArea.setEditable(false);
         outputTextArea.setFont(new java.awt.Font("Tahoma", 0, 11));
         outputTextArea.setTabSize(4);
-        outputTextArea.setAutoscrolls(false);
         outputTextArea.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 5, 2, 5));
         outputTextArea.setMinimumSize(new java.awt.Dimension(0, 45));
         outputTextArea.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -3437,7 +3436,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         helpMenu.setDelay(0);
         helpMenu.setFont(new java.awt.Font("Dialog", 0, 11));
 
-        readMeMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        readMeMenuItem.setFont(new java.awt.Font("Dialog", 0, 11)); // NOI18N
         readMeMenuItem.setText(bundle.getString("README")); // NOI18N
         readMeMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3446,6 +3445,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         helpMenu.add(readMeMenuItem);
 
+        changelogMenuItem.setFont(new java.awt.Font("Dialog", 0, 11)); // NOI18N
         changelogMenuItem.setText("Changelog");
         changelogMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3455,7 +3455,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         helpMenu.add(changelogMenuItem);
         helpMenu.add(jSeparator7);
 
-        aboutMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
+        aboutMenuItem.setFont(new java.awt.Font("Dialog", 0, 11)); // NOI18N
         aboutMenuItem.setText(bundle.getString("ABOUTJIF")); // NOI18N
         aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
