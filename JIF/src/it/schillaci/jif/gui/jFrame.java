@@ -260,6 +260,11 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         aboutLabel = new javax.swing.JLabel();
         creditsScrollPane = new javax.swing.JScrollPane();
         creditsTextArea = new javax.swing.JTextArea();
+        donate = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
         aboutControlPanel = new javax.swing.JPanel();
         aboutOKButton = new javax.swing.JButton();
         configDialog = new JDialog (this, "", false);
@@ -845,13 +850,32 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
 
         creditsTextArea.setColumns(20);
         creditsTextArea.setEditable(false);
-        creditsTextArea.setFont(new java.awt.Font("MonoSpaced", 0, 11));
+        creditsTextArea.setFont(new java.awt.Font("MonoSpaced", 0, 11)); // NOI18N
         creditsTextArea.setRows(5);
         creditsTextArea.setText("JIF, a java editor for Inform\nby Alessandro Schillaci\nhttp://www.slade.altervista.org/\n\nDevelopment: \n- Alessandro Schillaci\n- Luis Fernandez\n- Peter F. Piggott\n\nContributors:\nPaolo Lucchesi\nVincenzo Scarpa\nBaltasar García Perez-Schofield\nChristof Menear\nGiles Boutel\nJavier San José\nDavid Moreno\nEric Forgeot\nMax Kalus\nAdrien Saurat\nAlex V Flinsch\nDaryl McCullough\nGiancarlo Niccolai\nIgnazio di Napoli\nJoerg Rosenbauer\nMatteo De Simone\nTommaso Caldarola");
         creditsTextArea.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 5, 3, 3));
         creditsScrollPane.setViewportView(creditsTextArea);
 
         aboutTabbedPane.addTab("Credits", creditsScrollPane);
+
+        donate.setLayout(new java.awt.BorderLayout());
+
+        jScrollPane1.setEnabled(false);
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("Monospaced", 0, 11)); // NOI18N
+        jTextArea1.setRows(5);
+        jTextArea1.setText("Jif is an open source software.\nIf you want to support it, please \nconsider to donate by PayPal \nto silver.slade@tiscali.it\n\nThanks");
+        jScrollPane1.setViewportView(jTextArea1);
+
+        donate.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/donate.png"))); // NOI18N
+        jPanel2.add(jLabel4);
+
+        donate.add(jPanel2, java.awt.BorderLayout.SOUTH);
+
+        aboutTabbedPane.addTab("Donate", donate);
 
         aboutDialog.getContentPane().add(aboutTabbedPane, java.awt.BorderLayout.NORTH);
 
@@ -3436,7 +3460,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         helpMenu.setDelay(0);
         helpMenu.setFont(new java.awt.Font("Dialog", 0, 11));
 
-        readMeMenuItem.setFont(new java.awt.Font("Dialog", 0, 11)); // NOI18N
+        readMeMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
         readMeMenuItem.setText(bundle.getString("README")); // NOI18N
         readMeMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3445,7 +3469,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         helpMenu.add(readMeMenuItem);
 
-        changelogMenuItem.setFont(new java.awt.Font("Dialog", 0, 11)); // NOI18N
+        changelogMenuItem.setFont(new java.awt.Font("Dialog", 0, 11));
         changelogMenuItem.setText("Changelog");
         changelogMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -7914,6 +7938,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
     private javax.swing.JButton definitionButton;
     private javax.swing.JPanel definitionPanel;
     private javax.swing.JTextField definitionTextField;
+    private javax.swing.JPanel donate;
     private javax.swing.JMenu editMenu;
     private javax.swing.JButton errorColorButton;
     private javax.swing.JLabel errorColorLabel;
@@ -7970,9 +7995,12 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator10;
     private javax.swing.JSeparator jSeparator11;
@@ -7992,6 +8020,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
     private javax.swing.JPopupMenu.Separator jSeparator7;
     private javax.swing.JSeparator jSeparator8;
     private javax.swing.JSeparator jSeparator9;
+    private javax.swing.JTextArea jTextArea1;
     private static final javax.swing.JToolBar jToolBarCommon = new javax.swing.JToolBar();
     private javax.swing.JButton jumpToColorButton;
     private javax.swing.JLabel jumpToColorLabel;
