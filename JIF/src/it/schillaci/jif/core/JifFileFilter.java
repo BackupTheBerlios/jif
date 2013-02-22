@@ -11,7 +11,7 @@ package it.schillaci.jif.core;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -34,9 +34,9 @@ package it.schillaci.jif.core;
 
 
 import java.io.File;
-import java.util.Hashtable;
 import java.util.Enumeration;
-import javax.swing.filechooser.*;
+import java.util.Hashtable;
+import javax.swing.filechooser.FileFilter;
 
 
 
@@ -76,15 +76,16 @@ public class JifFileFilter extends FileFilter {
      * @param f The file to open
      * @return If the file is openable
      */
+    @Override
     public boolean accept(File f) {
-        if(f != null) {
-            if(f.isDirectory()) {
+        if (f != null) {
+            if (f.isDirectory()) {
                 return true;
             }
             String extension = getExtension(f);
-            if(extension != null && filters.get(getExtension(f)) != null) {
+            if (extension != null && filters.get(getExtension(f)) != null) {
                 return true;
-            };
+            }
         }
         return false;
     }
@@ -95,13 +96,13 @@ public class JifFileFilter extends FileFilter {
      * @return The extension
      * @param f The file to open
      */
-    public String getExtension(File f) {
+    private String getExtension(File f) {
         if(f != null) {
             String filename = f.getName();
             int i = filename.lastIndexOf('.');
             if(i>0 && i<filename.length()-1) {
                 return filename.substring(i+1);
-            };
+            }
         }
         return null;
     }
@@ -123,6 +124,7 @@ public class JifFileFilter extends FileFilter {
      * Returns file description
      * @return the description
      */
+    @Override
     public String getDescription() {
         if(fullDescription == null) {
             if(description == null || isExtensionListInDescription()) {
@@ -166,6 +168,6 @@ public class JifFileFilter extends FileFilter {
      * @return The boolean value
      */
     public boolean isExtensionListInDescription() {
-    	return useExtensionsInDescription;
+        return useExtensionsInDescription;
     }
 }

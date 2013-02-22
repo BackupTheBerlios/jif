@@ -11,7 +11,7 @@ package it.schillaci.jif.gui;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -33,15 +33,15 @@ package it.schillaci.jif.gui;
  */
 
 
-import it.schillaci.jif.gui.jFrame;
-import it.schillaci.jif.gui.JifTextPane;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.*;
+import javax.swing.JPopupMenu;
 
 /**
- * Popup listener class
+ * Pop up listener class
  * @author Alessandro Schillaci
+ * @author Peter Piggott
+ * @version 2.0
  */
 public  class PopupListener extends MouseAdapter {
     JPopupMenu jpopupmenu;
@@ -58,7 +58,7 @@ public  class PopupListener extends MouseAdapter {
      * @param jframe
      *          The Instance of Main jFrame
      */
-    public PopupListener(JifTextPane jif, jFrame jframe) {
+    public PopupListener(jFrame jframe, JifTextPane jif) {
         this.jpopupmenu = jframe.filePopupMenu;
         this.jframe = jframe;
         this.jif = jif;
@@ -71,6 +71,7 @@ public  class PopupListener extends MouseAdapter {
      * @param e 
      *          mouse event
      */
+    @Override
     public void mousePressed(MouseEvent e) {
         maybeShowPopup(e);
         // Removing all the eventual highlights
@@ -78,13 +79,13 @@ public  class PopupListener extends MouseAdapter {
         jif.removeHighlighterBrackets();
         
         // hiding JWindowSymbols
-        if (jframe.getSymbolDialog() != null && jframe.getSymbolDialog().isVisible()) {
-            jframe.getSymbolDialog().setVisible(false);
+        if (jframe.isSymbolsVisible()) {
+            jframe.symbolsHide();
         }
 
         // if the JtextAreaOutput is hidden
-        if (!jframe.getOutputCheckBox().getState()) {
-            jframe.getOutputTabbed().setVisible(false);
+        if (!jframe.isOutputVisible()) {
+            jframe.outputHide();
         }
     }
 
@@ -92,14 +93,17 @@ public  class PopupListener extends MouseAdapter {
      * mouse released event
      * @param e mouse event
      */
+    @Override
     public void mouseReleased(MouseEvent e) {
         maybeShowPopup(e);
     }
 
     private void maybeShowPopup(MouseEvent e) {
         if (e.isPopupTrigger()) {
-            jpopupmenu.show(e.getComponent(),
-                       e.getX(), e.getY());
+            jpopupmenu.show(
+                    e.getComponent(),
+                    e.getX(),
+                    e.getY());
         }
     }
 }

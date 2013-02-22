@@ -11,7 +11,7 @@ package it.schillaci.jif.configuration;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -32,9 +32,9 @@ package it.schillaci.jif.configuration;
  *
  */
 
-import it.schillaci.jif.inform.InformContext;
 import it.schillaci.jif.core.JifDocument;
 import it.schillaci.jif.core.JifEditorKit;
+import it.schillaci.jif.inform.InformContext;
 import javax.swing.JEditorPane;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
@@ -63,20 +63,23 @@ public class JifConfigurationEditorKit extends JifEditorKit {
      * 
      * @return the type
      */
+    @Override
     public String getContentType() {
         return "text/config";
     }
     
     /**
-     * Creates an uninitialized text storage model (<code>JifConfigurationDocument</code>)
+     * Creates an uninitialised text storage model (<code>JifConfigurationDocument</code>)
      * that is appropriate for this type of editor.
      * 
      * @return the model
      */
+    @Override
     public Document createDefaultDocument() {
         return new JifConfigurationDocument();
     }
     
+    @Override
     public JifDocument createDefaultDocument(InformContext context) {
         return new JifConfigurationDocument(context);
     }
@@ -124,7 +127,8 @@ public class JifConfigurationEditorKit extends JifEditorKit {
                 return (JifConfigurationDocument) doc;
             }
             throw new IllegalArgumentException(
-                    "document must be JifConfigurationDocument");
+                    "document must be JifConfigurationDocument"
+                    );
         }
 
         /**
@@ -142,7 +146,8 @@ public class JifConfigurationEditorKit extends JifEditorKit {
                 return (JifConfigurationEditorKit) kit;
             }
             throw new IllegalArgumentException(
-                    "EditorKit must be JifConfigurationEditorKit");
+                    "EditorKit must be JifConfigurationEditorKit"
+                    );
         }
     }
 }

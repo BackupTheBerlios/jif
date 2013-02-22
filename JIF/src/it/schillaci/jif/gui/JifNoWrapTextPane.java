@@ -11,7 +11,7 @@ package it.schillaci.jif.gui;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -32,17 +32,13 @@ package it.schillaci.jif.gui;
  *
  */
 
-import it.schillaci.jif.inform.InformContext;
 import it.schillaci.jif.core.JifFileName;
-import it.schillaci.jif.gui.jFrame;
-import it.schillaci.jif.gui.JifTextPane;
+import it.schillaci.jif.inform.InformContext;
 import java.awt.Dimension;
 import java.io.File;
 
 /**
  * Version of JifTextPane with text wrapping
- * 
- * 
  * 
  * @author Alessandro Schillaci
  * @author Peter Piggott
@@ -57,6 +53,7 @@ public class JifNoWrapTextPane extends JifTextPane {
         super(parent, fileName, file, context);
     }
 
+    @Override
     public boolean getScrollableTracksViewportWidth() {
         if (getSize().width < getParent().getSize().width) {
             return true;
@@ -64,6 +61,7 @@ public class JifNoWrapTextPane extends JifTextPane {
         return false;
     }
 
+    @Override
     public void setSize(Dimension d) {
         if (d.width < getParent().getSize().width) {
             d.width = getParent().getSize().width;
@@ -72,4 +70,3 @@ public class JifNoWrapTextPane extends JifTextPane {
     }
 
 }
-

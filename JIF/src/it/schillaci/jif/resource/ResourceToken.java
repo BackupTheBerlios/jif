@@ -11,7 +11,7 @@ package it.schillaci.jif.resource;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -101,7 +101,7 @@ public class ResourceToken {
     *
     * @param id
     *           A lexeme identifying the type of token.
-    * @param startPosition
+    * @param startPos
     *           The position of the start of the token text within the Resource
     *           source code.
     * @param endPos
@@ -123,7 +123,7 @@ public class ResourceToken {
     *
     * @param id
     *           A lexeme identifying the type of token.
-    * @param startPosition
+    * @param startPos
     *           The position of the start of the token text within the Resource
     *           source code.
     * @param endPos

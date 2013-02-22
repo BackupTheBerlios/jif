@@ -11,7 +11,7 @@ package it.schillaci.jif.core;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -32,29 +32,41 @@ package it.schillaci.jif.core;
  *
  */
 
-import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 
 /**
  * General Class with some constants
  * @author Alessandro Schillaci
+ * @author Peter Piggott
+ * @version 2.0
  */
 public class Constants {
     
     /**
+     * JIF Name
+     */
+    public static final String NAME = "Jif";
+    
+    /**
      * JIF Version
      */
-    public static final String JIFVERSION = "Jif 3.5 (build 20110903)";
+    public static final String VERSION = "3.6";
+    
+    /**
+     * JIF Build
+     */
+    public static final String BUILD = "20130218";
+    
+    /**
+     * JIF Version
+     */
+    public static final String TITLE = NAME + " " + VERSION + " (build " + BUILD + ")";
     
     /**
      * Max files in the recent file menu
      */
     public static final int MAXRECENTFILES = 15;
-    
-    /**
-     * File Separator, depending on which Operative System is executing JIF
-     */
-    public static final String SEP = File.separator;
     
     /**
      * MAX dimension of the copy/paste menu
@@ -72,37 +84,7 @@ public class Constants {
     public static final String TOKENSEARCH = "*";
     
     /**
-     * Empty project
-     */
-    public static final String PROJECTEMPTY = "blank";
-    
-    /**
-     * Bookmarks color highlighting
-     */
-    public static final Color colorBookmarks = new Color(51, 102, 255);
-    
-    /**
-     * Brackets color highlighting
-     */
-    public static final Color colorBrackets = new Color(255, 153, 51);
-    
-    /**
-     * Errors color highlighting
-     */
-    public static final Color colorErrors = new Color(255, 102, 102);
-    
-    /**
-     * Jump tree color highlighting
-     */
-    public static final Color colorJumpto = new Color(102, 153, 255);
-    
-    /**
-     * Warning color highlighting
-     */
-    public static final Color colorWarnings = new Color(102, 153, 255);
-    
-    /**
-     * Config File Name
+     * Configuration File Name
      */
     public static final String configFileName = "Jif.cfg";
     
@@ -111,6 +93,6 @@ public class Constants {
      */
     public static final String fileFormat = "ISO-8859-1";
     
-    // Configuration INI file, read by Regular Expressions
-
+    public static final Font defaultFont = new java.awt.Font("Thaoma", 0, 13);
+    
 }

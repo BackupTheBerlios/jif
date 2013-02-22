@@ -1,7 +1,7 @@
 package it.schillaci.jif.configuration;
 
 /*
- * JifConfigurationToken.java - Lexical token for the JifConfiguration file
+ * JifConfigurationToken.java
  *
  * This file is part of JIF.
  *
@@ -11,7 +11,7 @@ package it.schillaci.jif.configuration;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -31,7 +31,6 @@ package it.schillaci.jif.configuration;
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
-
 
 /**
  * JifConfigurationToken: Stores the information about a lexical token
@@ -78,6 +77,7 @@ public class JifConfigurationToken {
             return name;
         }
         
+        @Override
         public String toString() {
             return "Lexeme[name: " + name + "]";
         }
@@ -101,7 +101,7 @@ public class JifConfigurationToken {
     *
     * @param id
     *           A lexeme identifying the type of token.
-    * @param startPosition
+    * @param startPos
     *           The position of the start of the token text within the Jif
     *           Configuration file.
     * @param endPos
@@ -123,7 +123,7 @@ public class JifConfigurationToken {
     *
     * @param id
     *           A lexeme identifying the type of token.
-    * @param startPosition
+    * @param startPos
     *           The position of the start of the token text within the Jif 
     *           Configuration file.
     * @param endPos
@@ -187,6 +187,7 @@ public class JifConfigurationToken {
 
    /**Converts the Configuration token into a string representation.
     */
+    @Override
    public String toString() {
 
       return "JifConfigurationToken[id: " + id.getName() + 

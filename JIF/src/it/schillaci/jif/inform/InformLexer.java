@@ -11,7 +11,7 @@ package it.schillaci.jif.inform;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -294,6 +294,7 @@ public final class InformLexer {
             case 'N':
             case 'O':
             case 'P':
+            case 'Q':
             case 'R':
             case 'S':
             case 'T':
@@ -391,14 +392,12 @@ public final class InformLexer {
                         tokenContent += source[endPos];
                         ++endPos;
                     }
-                    ;
                     tokenType = InformToken.BINARY;
                 } else {
                     while (isHexidecimal(source[endPos])) {
                         tokenContent += source[endPos];
                         ++endPos;
                     }
-                    ;
                     tokenType = InformToken.HEXIDECIMAL;
                 }
                 break;
@@ -681,48 +680,53 @@ public final class InformLexer {
 
     private boolean isWhiteSpace(char c) {
 
-        if (c == ' ' || c == '\t')
+        if (c == ' ' || c == '\t') {
             return true;
-        else
+        } else {
             return false;
+        }
 
     }
 
     private boolean isBinary(char c) {
 
-        if (c == '0' || c == '1')
+        if (c == '0' || c == '1') {
             return true;
-        else
+        } else {
             return false;
+        }
 
     }
 
     private boolean isDecimal(char c) {
 
-        if (c >= '0' && c <= '9')
+        if (c >= '0' && c <= '9') {
             return true;
-        else
+        } else {
             return false;
+        }
 
     }
 
     private boolean isHexidecimal(char c) {
 
         if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')
-                || (c >= 'A' && c <= 'F'))
+                || (c >= 'A' && c <= 'F')) {
             return true;
-        else
+        } else {
             return false;
+        }
 
     }
 
     private boolean isIdentifier(char c) {
 
         if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z')
-                || (c >= 'A' && c <= 'Z') || (c == '_'))
+                || (c >= 'A' && c <= 'Z') || (c == '_')) {
             return true;
-        else
+        } else {
             return false;
+        }
 
     }
 }

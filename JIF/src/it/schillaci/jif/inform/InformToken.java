@@ -11,7 +11,7 @@ package it.schillaci.jif.inform;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -37,7 +37,7 @@ package it.schillaci.jif.inform;
  * InformToken: Stores the information about a lexical token
  *
  * @author Peter Piggott
- * @version Revision: 1.0
+ * @version 2.0
  * @since 3.1
  */
 
@@ -182,6 +182,7 @@ public class InformToken {
             return name;
         }
         
+        @Override
         public String toString() {
             return "Lexeme[name: " + name + "]";
         }
@@ -192,7 +193,6 @@ public class InformToken {
 // Class variables
 
    public Lexeme id;
-   public int level;
    public int startPosition;
    public int endPosition;
    public String content;
@@ -206,10 +206,10 @@ public class InformToken {
     *
     * @param id
     *           A number identifying the type of token.
-    * @param startPosition 
+    * @param startPos 
     *           The position of the start of the token text within the Inform
     *           source code.
-    * @param endPosition
+    * @param endPos
     *           The position of the end of the token text within the Inform
     *           source code.
     * @param content
@@ -228,10 +228,10 @@ public class InformToken {
     *
     * @param id
     *           A number identifying the type of token.
-    * @param startPosition
+    * @param startPos
     *           The position of the start of the token text within the Inform
     *           source code.
-    * @param endPosition
+    * @param endPos
     *           The position of the end of the token text within the Inform
     *           source code.
     */
@@ -244,7 +244,8 @@ public class InformToken {
    }
 // Class methods
 
-   /**Gets the name of the Inform lexical token.
+   /**
+    * Gets the name of the Inform lexical token.
     */
    public String getName() {
 
@@ -262,36 +263,42 @@ public class InformToken {
          this.id = id;
    }
 
-   /**Gets a lexeme representing the type of the Inform lexical token.
+   /**
+    * Gets a lexeme representing the type of the Inform lexical token.
     */
    public Lexeme getType() {
 
       return id;
    }
 
-   /**Gets the start position of the Inform lexical token.
+   /**
+    * Gets the start position of the Inform lexical token.
     */
    public int getStartPosition() {
 
       return startPosition;
    }
 
-   /**Gets the end position of the Inform lexical token.
+   /**
+    * Gets the end position of the Inform lexical token.
     */
    public int getEndPosition() {
 
       return endPosition;
    }
 
-   /**Gets the source of the Inform lexical token.
+   /**
+    * Gets the source of the Inform lexical token.
     */
    public String getContent() {
 
       return content;
    }
 
-   /**Converts the Inform token into a string representation.
+   /**
+    * Converts the Inform token into a string representation.
     */
+    @Override
    public String toString() {
 
       return "InformToken[id: " + id.getName() + 

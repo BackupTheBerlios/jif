@@ -11,7 +11,7 @@ package it.schillaci.jif.configuration;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -33,26 +33,14 @@ package it.schillaci.jif.configuration;
  */
 
 import it.schillaci.jif.core.Constants;
+import it.schillaci.jif.core.JifDAO;
 import it.schillaci.jif.inform.InformContext;
 import it.schillaci.jif.inform.InformSyntax;
-import it.schillaci.jif.core.JifDAO;
 import java.awt.Color;
 import java.awt.Font;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -63,7 +51,7 @@ import java.util.regex.Pattern;
  * Data access object for JIF configuration
  *
  * @author Peter Piggott
- * @version 1.0
+ * @version 2.0
  * @since JIF 3.2
  */
 public class JifConfigurationDAO {
@@ -86,6 +74,7 @@ public class JifConfigurationDAO {
             return name;
         }
 
+        @Override
         public String toString() {
             return "JifConfigurationDAO.Keyword[Name: " + name + "]";
         }
@@ -93,7 +82,7 @@ public class JifConfigurationDAO {
         // JifProject keyword name
         private String name;
 
-        // --- Inform Keyords -----------------------------------------------
+        // --- Inform Keyords --------------------------------------------------
         
         private static final Keyword ALTKEYS          = new Keyword("[ALTKEYS]");
         private static final Keyword EXECUTE          = new Keyword("[EXECUTE]");
@@ -285,10 +274,10 @@ public class JifConfigurationDAO {
     }
     
     /**
-     * Load a new configuration object from persistant storage
+     * Load a new configuration object from persistent storage
      * 
      * @param file
-     *              the persistant storage from which to load the configuration
+     *              the persistent storage from which to load the configuration
      * @throws JifConfigurationException
      */
     public static JifConfiguration load(File file)
@@ -449,7 +438,7 @@ public class JifConfigurationDAO {
             }
             
             // Help code setting
-            m = helpedCodePattern.matcher(cb);
+            m = helpedCodeCheckPattern.matcher(cb);
             while (m.find()) {
                 config.setHelpedCode(m.group(1).equals("true"));
             }
@@ -505,7 +494,7 @@ public class JifConfigurationDAO {
             // Settings - TABSIZE
             m = tabSizePattern.matcher(cb);
             while (m.find()) {
-                int tabSize = 0;
+                int tabSize;
                 try {
                     tabSize = Integer.parseInt(m.group(1));
                 } catch (Exception e) {
@@ -518,9 +507,11 @@ public class JifConfigurationDAO {
             m = colorBookmarkPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
-                            Integer.parseInt(m.group(3)));
+                            Integer.parseInt(m.group(3))
+                            );
                     context.setForeground(InformSyntax.Bookmarks, color);
                 } catch (Exception ex) {}
             }
@@ -529,9 +520,11 @@ public class JifConfigurationDAO {
             m = colorBracketPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
-                            Integer.parseInt(m.group(3)));
+                            Integer.parseInt(m.group(3))
+                            );
                     context.setForeground(InformSyntax.Brackets, color);
                 } catch (Exception ex) {}
             }
@@ -540,9 +533,11 @@ public class JifConfigurationDAO {
             m = colorErrorPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
-                            Integer.parseInt(m.group(3)));
+                            Integer.parseInt(m.group(3))
+                            );
                     context.setForeground(InformSyntax.Errors, color);
                 } catch (Exception ex) {}
             }
@@ -551,7 +546,8 @@ public class JifConfigurationDAO {
             m = colorJumpToPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
                             Integer.parseInt(m.group(3)));
                     context.setForeground(InformSyntax.JumpTo, color);
@@ -559,10 +555,11 @@ public class JifConfigurationDAO {
             }
             
             // Warning color
-            m = colorAttributePattern.matcher(cb);
+            m = colorWarningPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
                             Integer.parseInt(m.group(3)));
                     context.setForeground(InformSyntax.Attribute, color);
@@ -573,7 +570,8 @@ public class JifConfigurationDAO {
             m = colorAttributePattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
                             Integer.parseInt(m.group(3)));
                     context.setForeground(InformSyntax.Attribute, color);
@@ -584,7 +582,8 @@ public class JifConfigurationDAO {
             m = colorCommentPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
                             Integer.parseInt(m.group(3)));
                     context.setForeground(InformSyntax.Comment, color);
@@ -595,7 +594,8 @@ public class JifConfigurationDAO {
             m = colorKeywordPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
                             Integer.parseInt(m.group(3)));
                     context.setForeground(InformSyntax.Keyword, color);
@@ -606,9 +606,11 @@ public class JifConfigurationDAO {
             m = colorNormalPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
-                            Integer.parseInt(m.group(3)));
+                            Integer.parseInt(m.group(3))
+                            );
                     context.setForeground(InformSyntax.Normal, color);
                 } catch (Exception ex) {}
             }
@@ -617,9 +619,11 @@ public class JifConfigurationDAO {
             m = colorNumberPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
-                            Integer.parseInt(m.group(3)));
+                            Integer.parseInt(m.group(3))
+                            );
                     context.setForeground(InformSyntax.Number, color);
                 } catch (Exception ex) {}
             }
@@ -628,9 +632,11 @@ public class JifConfigurationDAO {
             m = colorPropertyPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
-                            Integer.parseInt(m.group(3)));
+                            Integer.parseInt(m.group(3))
+                            );
                     context.setForeground(InformSyntax.Property, color);
                 } catch (Exception ex) {}
             }
@@ -639,9 +645,11 @@ public class JifConfigurationDAO {
             m = colorStringPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
-                            Integer.parseInt(m.group(3)));
+                            Integer.parseInt(m.group(3))
+                            );
                     context.setForeground(InformSyntax.String, color);
                 } catch (Exception ex) {}
             }
@@ -650,9 +658,11 @@ public class JifConfigurationDAO {
             m = colorVerbPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
-                            Integer.parseInt(m.group(3)));
+                            Integer.parseInt(m.group(3))
+                            );
                     context.setForeground(InformSyntax.Verb, color);
                 } catch (Exception ex) {}
             }
@@ -661,9 +671,11 @@ public class JifConfigurationDAO {
             m = colorWhitePattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
-                            Integer.parseInt(m.group(3)));
+                            Integer.parseInt(m.group(3))
+                            );
                     context.setForeground(InformSyntax.White, color);
                 } catch (Exception ex) {}
             }
@@ -672,9 +684,11 @@ public class JifConfigurationDAO {
             m = colorWordPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
-                            Integer.parseInt(m.group(3)));
+                            Integer.parseInt(m.group(3))
+                            );
                     context.setForeground(InformSyntax.Word, color);
                 } catch (Exception ex) {}
             }
@@ -683,7 +697,8 @@ public class JifConfigurationDAO {
             m = colorBackgroundPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Color color = new Color(Integer.parseInt(m.group(1)),
+                    Color color = new Color(
+                            Integer.parseInt(m.group(1)),
                             Integer.parseInt(m.group(2)),
                             Integer.parseInt(m.group(3)));
                     context.setBackground(color);
@@ -694,9 +709,11 @@ public class JifConfigurationDAO {
             m = fontPattern.matcher(cb);
             while (m.find()) {
                 try {
-                    Font font = new Font(m.group(1),
+                    Font font = new Font(
+                            m.group(1),
                             Integer.parseInt(m.group(2)),
-                            Integer.parseInt(m.group(3)));
+                            Integer.parseInt(m.group(3))
+                            );
                     context.setFont(font);
                 } catch (Exception ex) {}
             }
@@ -736,25 +753,25 @@ public class JifConfigurationDAO {
             // Inform mode (Inform/Glulx)
             m = modePattern.matcher(cb);
             while (m.find()) {
-                config.setInformMode(m.group(1).equalsIgnoreCase("inform")); 
+                config.setInformMode(m.group(1).equalsIgnoreCase("inform"));
             }
             
             // Output window shown 
             m = outputPattern.matcher(cb);
             while (m.find()) {
-                config.setOutput(m.group(1).equals("true")?true:false);
+                config.setOutputVisible(m.group(1).equals("true")?true:false);
             }
             
             // Toolbar shown
             m = toolbarPattern.matcher(cb);
             while (m.find()) {
-                config.setToolbar(m.group(1).equals("true")?true:false);
+                config.setToolbarVisible(m.group(1).equals("true")?true:false);
             }
             
             // Project/Tree/Search window shown
             m = treePattern.matcher(cb);
             while (m.find()) {
-                config.setTree(m.group(1).equals("true")?true:false);
+                config.setTreeVisible(m.group(1).equals("true")?true:false);
             }
             
             // Fullscreen setting
@@ -804,168 +821,168 @@ public class JifConfigurationDAO {
     }
 
     /**
-     * Store a configuration object to persistant storage
+     * Store a configuration object to persistent storage
      *
-     * @param configuration
+     * @param config
      *              the <code>JifConfiguration</code> to be stored
      * @throws JifProjectException
      */
     public static void store(JifConfiguration config)
             throws JifConfigurationException {
         
-        File file = new File(config.getFile().getPath());
+        File file = new File(config.getFilePath());
 
         try {
-            StringBuffer output = new StringBuffer();
+            StringBuilder output = new StringBuilder();
             output
                     .append("############################################################################\n")
                     .append("# Main Jif configuration file                                               \n")
                     .append("############################################################################\n");
                     
             // ALTKEYS Section - alpha sequence
-            output.append("\n# " + Keyword.ALTKEYS.getName() + " Section\n\n");
+            output.append("\n# ").append(Keyword.ALTKEYS.getName()).append(" Section\n\n");
             for (Iterator i = config.getAltKeysAlpha().iterator(); i.hasNext();) {
                 String key = (String) i.next();
                 String value = (String) config.getAltKeys().get(key);
-                output.append(Keyword.ALTKEYS.getName() + key + "," + value + "\n");
+                output.append(Keyword.ALTKEYS.getName()).append(key).append(",").append(value).append("\n");
             }
             for (Iterator i = config.getExecuteCommands().keySet().iterator(); i.hasNext();) {
                 String key = (String) i.next();
                 String value = (String) config.getExecuteCommands().get(key);
-                output.append(Keyword.EXECUTE.getName() + key + "," + value + "\n");
+                output.append(Keyword.EXECUTE.getName()).append(key).append(",").append(value).append("\n");
             }
             
             // HELPEDCODE Section - alpha sequence
             output
-                    .append("\n# "+ Keyword.HELPEDCODE.getName() +" Section\n\n")
+                    .append("\n# ").append(Keyword.HELPEDCODE.getName()).append(" Section\n\n")
                     .append("# [ret] = Return\n")
                     .append("# [tab] = Tab char\n")
                     .append("# @     = Cursor Position\n\n");
             for (Iterator i = config.getHelpCodesAlpha().iterator(); i.hasNext();) {
                 String key = (String) i.next();
                 String value = (String) config.getHelpCodes().get(key);
-                output.append(Keyword.HELPEDCODE.getName() + key + "," + value + "\n");
+                output.append(Keyword.HELPEDCODE.getName()).append(key).append(",").append(value).append("\n");
             }
             
             // MAPPING Section
-            output.append("\n# " + Keyword.MAPPING.getName() + " Section\n\n");
-            for (Iterator i = config.getMappingAlpha().iterator(); i.hasNext();) {
+            output.append("\n# ").append(Keyword.MAPPING.getName()).append(" Section\n\n");
+            for (Iterator i = config.getMappingsAlpha().iterator(); i.hasNext();) {
                 String key = (String) i.next();
-                String value = (String) config.getMapping().get(key);
-                output.append(Keyword.MAPPING.getName() + key + "," + value + "\n");
+                String value = (String) config.getMappings().get(key);
+                output.append(Keyword.MAPPING.getName()).append(key).append(",").append(value).append("\n");
             }
             
             // MENU Section - entry sequence
-            output.append("\n# " + Keyword.MENU.getName() + " Section\n\n");
-            for (Iterator i = config.getMenusSet().iterator(); i.hasNext();) {
+            output.append("\n# ").append(Keyword.MENU.getName()).append(" Section\n\n");
+            for (Iterator i = config.menuIterator(); i.hasNext();) {
                 String menu = (String) i.next();
-                output.append(Keyword.MENU.getName() + "[" + menu + "]*\n");
+                output.append(Keyword.MENU.getName()).append("[").append(menu).append("]*\n");
                 for (Iterator j = config.getSubMenu(menu).iterator(); j.hasNext();) {
                     String subMenu  = (String) j.next();
-                    output.append(Keyword.MENU.getName() + "[" + menu + "]" + subMenu + "," + config.getOperations().get(subMenu) + "\n");
+                    output.append(Keyword.MENU.getName()).append("[").append(menu).append("]").append(subMenu).append(",").append(config.getOperations().get(subMenu)).append("\n");
                 }
             }
             
             // # [SWITCH] Section - entry sequence
-            output.append("\n# " + Keyword.SWITCH.getName() + " Section\n\n");
+            output.append("\n# ").append(Keyword.SWITCH.getName()).append(" Section\n\n");
             for (Iterator i = config.getSwitchesSet().iterator(); i.hasNext();) {
                 String key = (String) i.next();
                 String value = (String) config.getSwitches().get(key);
-                output.append(Keyword.SWITCH.getName() + key + "," + value + "\n");
+                output.append(Keyword.SWITCH.getName()).append(key).append(",").append(value).append("\n");
             }
             
             // # [SYNTAX] Section - alpha sequence
-            output.append("\n# " + Keyword.SYNTAX.getName() + " Section\n\n");
+            output.append("\n# ").append(Keyword.SYNTAX.getName()).append(" Section\n\n");
             for (Iterator i = config.getAttributesAlpha().iterator(); i.hasNext();) {
                 String key = (String) i.next();
-                output.append(Keyword.SYNTAX.getName() + Keyword.ATTRIBUTE.getName() + key + "\n");
+                output.append(Keyword.SYNTAX.getName()).append(Keyword.ATTRIBUTE.getName()).append(key).append("\n");
             }
             for (Iterator i = config.getKeywordsAlpha().iterator(); i.hasNext();) {
                 String key = (String) i.next();
-                output.append(Keyword.SYNTAX.getName() + Keyword.KEYWORD.getName() + key + "\n");
+                output.append(Keyword.SYNTAX.getName()).append(Keyword.KEYWORD.getName()).append(key).append("\n");
             }
             for (Iterator i = config.getPropertiesAlpha().iterator(); i.hasNext();) {
                 String key = (String) i.next();
-                output.append(Keyword.SYNTAX.getName() + Keyword.PROPERTY.getName() + key + "\n");
+                output.append(Keyword.SYNTAX.getName()).append(Keyword.PROPERTY.getName()).append(key).append("\n");
             }
             for (Iterator i = config.getVerbsAlpha().iterator(); i.hasNext();) {
                 String key = (String) i.next();
-                output.append(Keyword.SYNTAX.getName() + Keyword.VERB.getName() + key + "\n");
+                output.append(Keyword.SYNTAX.getName()).append(Keyword.VERB.getName()).append(key).append("\n");
             }
             
             //# [SYMBOLS] Section
-            output.append("\n# " + Keyword.SYMBOL.getName() + " Section\n\n");
-            for (Iterator i = config.getSymbolsAlpha().iterator(); i.hasNext();) {
+            output.append("\n# ").append(Keyword.SYMBOL.getName()).append(" Section\n\n");
+            for (Iterator i = config.symbolIterator(); i.hasNext();) {
                 String key = (String) i.next();
-                output.append(Keyword.SYMBOL.getName() + key + "\n");
+                output.append(Keyword.SYMBOL.getName()).append(key).append("\n");
             }
             
             // PATHS section
             output
-                    .append("\n# " + Keyword.PATH.getName() + " Section\n\n")
-                    .append(Keyword.LIBRARY.getName() + config.getLibraryPath() + "\n")
-                    .append(Keyword.LIBRARY1.getName() + config.getLibraryPath1() + "\n")
-                    .append(Keyword.LIBRARY2.getName() + config.getLibraryPath2() + "\n")
-                    .append(Keyword.LIBRARY3.getName() + config.getLibraryPath3() + "\n")
-                    .append(Keyword.COMPILED.getName() + config.getGamePath() + "\n")
-                    .append(Keyword.INTERPRETERZCODE.getName() + config.getInterpreterZcodePath() + "\n")
-                    .append(Keyword.INTERPRETERGLULX.getName() + config.getInterpreterGlulxPath() + "\n")
-                    .append(Keyword.COMPILER.getName() + config.getCompilerPath() + "\n")
-                    .append(Keyword.BRES.getName() + config.getBresPath() + "\n")
-                    .append(Keyword.BLC.getName() + config.getBlcPath() + "\n");
+                    .append("\n# ").append(Keyword.PATH.getName()).append(" Section\n\n")
+                    .append(Keyword.LIBRARY.getName()).append(config.getLibraryPath()).append("\n")
+                    .append(Keyword.LIBRARY1.getName()).append(config.getLibraryPath1()).append("\n")
+                    .append(Keyword.LIBRARY2.getName()).append(config.getLibraryPath2()).append("\n")
+                    .append(Keyword.LIBRARY3.getName()).append(config.getLibraryPath3()).append("\n")
+                    .append(Keyword.COMPILED.getName()).append(config.getGamePath()).append("\n")
+                    .append(Keyword.INTERPRETERZCODE.getName()).append(config.getInterpreterZcodePath()).append("\n")
+                    .append(Keyword.INTERPRETERGLULX.getName()).append(config.getInterpreterGlulxPath()).append("\n")
+                    .append(Keyword.COMPILER.getName()).append(config.getCompilerPath()).append("\n")
+                    .append(Keyword.BRES.getName()).append(config.getBresPath()).append("\n")
+                    .append(Keyword.BLC.getName()).append(config.getBlcPath()).append("\n");
             
             // SETTINGS section
             InformContext context = config.getContext();
             output
-                    .append("\n# " + Keyword.SETTING.getName() + " Section\n\n")
-                    .append(Keyword.WRAPLINES.getName() + config.getWrapLines() + "\n")
-                    .append(Keyword.SYNTAXCHECK.getName() + config.getSyntaxHighlighting() + "\n")
-                    .append(Keyword.HELPEDCODECHECK.getName() + config.getHelpedCode() + "\n")
-                    .append(Keyword.MAPPINGCODE.getName() + config.getMappingLive() + "\n")
-                    .append(Keyword.NUMBERLINES.getName() + config.getNumberLines() + "\n")
-                    .append(Keyword.SCANPROJECT.getName() + config.getScanProjectFiles() + "\n")
-                    .append(Keyword.OPENPROJECTFILES.getName() + config.getOpenProjectFiles() + "\n")
-                    .append(Keyword.USECOMPILED.getName() + config.getAdventInLib() + "\n")
-                    .append(Keyword.OPENLASTFILE.getName() + config.getOpenLastFile() + "\n")
-                    .append(Keyword.CREATENEWFILE.getName() + config.getCreateNewFile() + "\n")
-                    .append(Keyword.MAKERESOURCE.getName() + config.getMakeResource() + "\n")
-                    .append(Keyword.TABSIZE.getName() + config.getTabSize() + "\n")
-                    .append(Keyword.COLORBOOKMARK.getName() + context.getForegroundRGB(InformSyntax.Bookmarks) + "\n")
-                    .append(Keyword.COLORBRACKET.getName() + context.getForegroundRGB(InformSyntax.Brackets) + "\n")
-                    .append(Keyword.COLORERROR.getName() + context.getForegroundRGB(InformSyntax.Errors) + "\n")
-                    .append(Keyword.COLORJUMPTO.getName() + context.getForegroundRGB(InformSyntax.JumpTo) + "\n")
-                    .append(Keyword.COLORWARNING.getName() + context.getForegroundRGB(InformSyntax.Warnings) + "\n")
-                    .append(Keyword.COLORATTRIBUTE.getName() + context.getForegroundRGB(InformSyntax.Attribute) + "\n")
-                    .append(Keyword.COLORCOMMENT.getName() + context.getForegroundRGB(InformSyntax.Comment) + "\n")
-                    .append(Keyword.COLORKEYWORD.getName() + context.getForegroundRGB(InformSyntax.Keyword) + "\n")
-                    .append(Keyword.COLORNORMAL.getName() + context.getForegroundRGB(InformSyntax.Normal) + "\n")
-                    .append(Keyword.COLORNUMBER.getName() + context.getForegroundRGB(InformSyntax.Number) + "\n")
-                    .append(Keyword.COLORPROPERTY.getName() + context.getForegroundRGB(InformSyntax.Property) + "\n")
-                    .append(Keyword.COLORSTRING.getName() + context.getForegroundRGB(InformSyntax.String) + "\n")
-                    .append(Keyword.COLORVERB.getName() + context.getForegroundRGB(InformSyntax.Verb) + "\n")
-                    .append(Keyword.COLORWHITE.getName() + context.getForegroundRGB(InformSyntax.White) + "\n")
-                    .append(Keyword.COLORWORD.getName() + context.getForegroundRGB(InformSyntax.Word) + "\n")
-                    .append(Keyword.COLORBACKGROUND.getName() + context.getBackgroundRGB() + "\n")
-                    .append(Keyword.FONT.getName() + context.getFontNameStyleSize()+"\n")
-                    .append(Keyword.LOCATIONX.getName() + config.getFrameX()+"\n")
-                    .append(Keyword.LOCATIONY.getName() + config.getFrameY()+"\n")
-                    .append(Keyword.WIDTH.getName() + config.getFrameWidth()+"\n")
-                    .append(Keyword.HEIGHT.getName() + config.getFrameHeight()+"\n")
-                    .append(Keyword.MODE.getName() + (config.getInformMode()?"INFORM":"GLULX") +"\n")
-                    .append(Keyword.OUTPUT.getName() + config.getOutput()+"\n")
-                    .append(Keyword.TOOLBAR.getName() + config.getToolbar()+"\n")
-                    .append(Keyword.TREE.getName() + config.getTree()+"\n")
-                    .append(Keyword.FULLSCREEN.getName() + config.getFullScreen()+"\n")
-                    .append(Keyword.DIVIDER1.getName() + config.getDivider1()+"\n")
-                    .append(Keyword.DIVIDER3.getName() + config.getDivider3()+"\n")
-                    .append(Keyword.LASTFILE.getName() + (config.getLastFile()==null?"":config.getLastFile().getPath())+"\n")
-                    .append(Keyword.LASTPROJECT.getName() + (config.getLastProject()==null?"":config.getLastProject().getPath())+"\n");
+                    .append("\n# ").append(Keyword.SETTING.getName()).append(" Section\n\n")
+                    .append(Keyword.WRAPLINES.getName()).append(config.getWrapLines()).append("\n")
+                    .append(Keyword.SYNTAXCHECK.getName()).append(config.getSyntaxHighlighting()).append("\n")
+                    .append(Keyword.HELPEDCODECHECK.getName()).append(config.getHelpedCode()).append("\n")
+                    .append(Keyword.MAPPINGCODE.getName()).append(config.getMappingLive()).append("\n")
+                    .append(Keyword.NUMBERLINES.getName()).append(config.getNumberLines()).append("\n")
+                    .append(Keyword.SCANPROJECT.getName()).append(config.getScanProjectFiles()).append("\n")
+                    .append(Keyword.OPENPROJECTFILES.getName()).append(config.getOpenProjectFiles()).append("\n")
+                    .append(Keyword.USECOMPILED.getName()).append(config.getAdventInLib()).append("\n")
+                    .append(Keyword.OPENLASTFILE.getName()).append(config.getOpenLastFile()).append("\n")
+                    .append(Keyword.CREATENEWFILE.getName()).append(config.getCreateNewFile()).append("\n")
+                    .append(Keyword.MAKERESOURCE.getName()).append(config.getMakeResource()).append("\n")
+                    .append(Keyword.TABSIZE.getName()).append(config.getTabSize()).append("\n")
+                    .append(Keyword.COLORBOOKMARK.getName()).append(context.getForegroundRGB(InformSyntax.Bookmarks)).append("\n")
+                    .append(Keyword.COLORBRACKET.getName()).append(context.getForegroundRGB(InformSyntax.Brackets)).append("\n")
+                    .append(Keyword.COLORERROR.getName()).append(context.getForegroundRGB(InformSyntax.Errors)).append("\n")
+                    .append(Keyword.COLORJUMPTO.getName()).append(context.getForegroundRGB(InformSyntax.JumpTo)).append("\n")
+                    .append(Keyword.COLORWARNING.getName()).append(context.getForegroundRGB(InformSyntax.Warnings)).append("\n")
+                    .append(Keyword.COLORATTRIBUTE.getName()).append(context.getForegroundRGB(InformSyntax.Attribute)).append("\n")
+                    .append(Keyword.COLORCOMMENT.getName()).append(context.getForegroundRGB(InformSyntax.Comment)).append("\n")
+                    .append(Keyword.COLORKEYWORD.getName()).append(context.getForegroundRGB(InformSyntax.Keyword)).append("\n")
+                    .append(Keyword.COLORNORMAL.getName()).append(context.getForegroundRGB(InformSyntax.Normal)).append("\n")
+                    .append(Keyword.COLORNUMBER.getName()).append(context.getForegroundRGB(InformSyntax.Number)).append("\n")
+                    .append(Keyword.COLORPROPERTY.getName()).append(context.getForegroundRGB(InformSyntax.Property)).append("\n")
+                    .append(Keyword.COLORSTRING.getName()).append(context.getForegroundRGB(InformSyntax.String)).append("\n")
+                    .append(Keyword.COLORVERB.getName()).append(context.getForegroundRGB(InformSyntax.Verb)).append("\n")
+                    .append(Keyword.COLORWHITE.getName()).append(context.getForegroundRGB(InformSyntax.White)).append("\n")
+                    .append(Keyword.COLORWORD.getName()).append(context.getForegroundRGB(InformSyntax.Word)).append("\n")
+                    .append(Keyword.COLORBACKGROUND.getName()).append(context.getBackgroundRGB()).append("\n")
+                    .append(Keyword.FONT.getName()).append(context.getFontNameStyleSize()).append("\n")
+                    .append(Keyword.LOCATIONX.getName()).append(config.getFrameX()).append("\n")
+                    .append(Keyword.LOCATIONY.getName()).append(config.getFrameY()).append("\n")
+                    .append(Keyword.WIDTH.getName()).append(config.getFrameWidth()).append("\n")
+                    .append(Keyword.HEIGHT.getName()).append(config.getFrameHeight()).append("\n")
+                    .append(Keyword.MODE.getName()).append((config.getInformMode()?"INFORM":"GLULX") ).append("\n")
+                    .append(Keyword.OUTPUT.getName()).append(config.isOutputVisible()).append("\n")
+                    .append(Keyword.TOOLBAR.getName()).append(config.isToolbarVisible()).append("\n")
+                    .append(Keyword.TREE.getName()).append(config.isTreeVisible()).append("\n")
+                    .append(Keyword.FULLSCREEN.getName()).append(config.isFullScreen()).append("\n")
+                    .append(Keyword.DIVIDER1.getName()).append(config.getDivider1()).append("\n")
+                    .append(Keyword.DIVIDER3.getName()).append(config.getDivider3()).append("\n")
+                    .append(Keyword.LASTFILE.getName()).append((config.getLastFile()==null?"":config.getLastFilePath())).append("\n")
+                    .append(Keyword.LASTPROJECT.getName()).append((config.getLastProject()==null?"":config.getLastProjectPath())).append("\n");
             
             // Recent files section - entry sequence
-            output.append("\n# " + Keyword.RECENTFILES.getName() + " Section\n\n");
-            for (Iterator i = config.getRecentFilesSet().iterator(); i.hasNext(); ) {
+            output.append("\n# ").append(Keyword.RECENTFILES.getName()).append(" Section\n\n");
+            for (Iterator i = config.recentFileIterator(); i.hasNext(); ) {
                 String filePath = (String) i.next();
-                output.append(Keyword.RECENTFILES.getName() + filePath + "\n");
+                output.append(Keyword.RECENTFILES.getName()).append(filePath).append("\n");
             }
             
             JifDAO.save(file, output.toString());
@@ -976,16 +993,16 @@ public class JifConfigurationDAO {
     }
     
     /**
-     * Reloads an existing configuration object from persistant storage
+     * Reloads an existing configuration object from persistent storage
      *
-     * @param configuration
+     * @param config
      *              the <code>JifConfiguration</code> to be reloaded
      * @throws JifConfigurationException
      */
     public static void reload(JifConfiguration config) 
             throws JifConfigurationException {
 
-        File file = new File(config.getFile().getPath());
+        File file = new File(config.getFilePath());
         JifConfiguration newConfig = JifConfigurationDAO.load(file);
 
         config.setAdventInLib(newConfig.getAdventInLib());
@@ -1004,28 +1021,28 @@ public class JifConfigurationDAO {
         config.setFrameWidth(newConfig.getFrameWidth());
         config.setFrameX(newConfig.getFrameX());
         config.setFrameY(newConfig.getFrameY());
-        config.setFullScreen(newConfig.getFullScreen());
+        config.setGamePath(newConfig.getGamePath());
         config.setHelpCodes(newConfig.getHelpCodes());
         config.setHelpedCode(newConfig.getHelpedCode());
         config.setInformMode(newConfig.getInformMode());
         config.setInterpreterGlulxPath(newConfig.getInterpreterGlulxPath());
         config.setInterpreterZcodePath(newConfig.getInterpreterZcodePath());
         config.setKeywords(newConfig.getKeywords());
-        config.setLastFile((newConfig.getLastFile() == null)?"":newConfig.getLastFile().getPath());
-        config.setLastProject((newConfig.getLastProject() == null)?"":newConfig.getLastProject().getPath());
+        config.setLastFile((newConfig.getLastFile() == null)?"":newConfig.getLastFilePath());
+        config.setLastProject((newConfig.getLastProject() == null)?"":newConfig.getLastProjectPath());
         config.setLibraryPath(newConfig.getLibraryPath());
         config.setLibraryPath1(newConfig.getLibraryPath1());
         config.setLibraryPath2(newConfig.getLibraryPath2());
         config.setLibraryPath3(newConfig.getLibraryPath3());
         config.setMakeResource(newConfig.getMakeResource());
-        config.setMapping(newConfig.getMapping());
+        config.setMappings(newConfig.getMappings());
         config.setMappingLive(newConfig.getMappingLive());
         config.setMenus(newConfig.getMenus());
         config.setNumberLines(newConfig.getNumberLines());
         config.setOpenLastFile(newConfig.getOpenLastFile());
         config.setOpenProjectFiles(newConfig.getOpenProjectFiles());
         config.setOperations(newConfig.getOperations());
-        config.setOutput(newConfig.getOutput());
+        config.setOutputVisible(newConfig.isOutputVisible());
         config.setProperties(newConfig.getProperties());
         config.setRecentFiles(newConfig.getRecentFiles());
         config.setScanProjectFiles(newConfig.getScanProjectFiles());
@@ -1033,8 +1050,8 @@ public class JifConfigurationDAO {
         config.setSymbols(newConfig.getSymbols());
         config.setSyntaxHighlighting(newConfig.getSyntaxHighlighting());
         config.setTabSize(newConfig.getTabSize());
-        config.setToolbar(newConfig.getToolbar());
-        config.setTree(newConfig.getTree());
+        config.setToolbarVisible(newConfig.isToolbarVisible());
+        config.setTreeVisible(newConfig.isTreeVisible());
         config.setVerbs(newConfig.getVerbs());
         config.setWorkingDirectory(newConfig.getWorkingDirectory());
         config.setWrapLines(newConfig.getWrapLines());
@@ -1052,4 +1069,3 @@ public class JifConfigurationDAO {
     }
 
 }
-

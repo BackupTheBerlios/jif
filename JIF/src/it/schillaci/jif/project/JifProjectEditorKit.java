@@ -11,7 +11,7 @@ package it.schillaci.jif.project;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -32,9 +32,9 @@ package it.schillaci.jif.project;
  *
  */
 
-import it.schillaci.jif.inform.InformContext;
 import it.schillaci.jif.core.JifDocument;
 import it.schillaci.jif.core.JifEditorKit;
+import it.schillaci.jif.inform.InformContext;
 import javax.swing.JEditorPane;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
@@ -63,20 +63,23 @@ public class JifProjectEditorKit extends JifEditorKit {
      * 
      * @return the type
      */
+    @Override
     public String getContentType() {
         return "text/project";
     }
     
     /**
-     * Creates an uninitialized text storage model (<code>JifProjectDocument</code>)
+     * Creates an uninitialised text storage model (<code>JifProjectDocument</code>)
      * that is appropriate for this type of editor.
      * 
      * @return the model
      */
+    @Override
     public Document createDefaultDocument() {
         return new JifProjectDocument();
     }
     
+    @Override
     public JifDocument createDefaultDocument(InformContext context) {
         return new JifProjectDocument(context);
     }

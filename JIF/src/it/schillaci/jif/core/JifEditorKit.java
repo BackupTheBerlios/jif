@@ -11,7 +11,7 @@ package it.schillaci.jif.core;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -34,14 +34,21 @@ package it.schillaci.jif.core;
 
 import it.schillaci.jif.inform.InformContext;
 import java.awt.event.ActionEvent;
-
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import javax.swing.Action;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.Element;
-import javax.swing.text.JTextComponent;
+import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.TextAction;
 import javax.swing.text.Utilities;
@@ -59,12 +66,122 @@ public class JifEditorKit extends StyledEditorKit {
     private static final long serialVersionUID = -3980786464262375494L;
     private static int tabSize = 4;
     private static String commentString = "!";
-    private static String tabString = "    ";
+    private static String tabString = Utils.spacesForTab(tabSize);
+
+    /**
+     * When reading a document if a TAB is encountered a property
+     * with this name is added and the value will be "true". Otherwise a
+     * property with this name is added and the value will be "false". 
+     */
+    public static final String TabConversionProperty = "__TabConversion__";
+
 
     public JifEditorKit() {
         super();
     }
     
+    // -------------------------------------------------------------------------
+    
+    /**
+     * Inserts content from the given file which is expected 
+     * to be in a format appropriate for this kind of content
+     * handler.
+     * 
+     * @param in  The file to read from
+     * @param doc The destination for the insertion.
+     * @param pos The location in the document to place the
+     *   content >= 0.
+     * @exception IOException on any I/O error
+     * @exception BadLocationException if pos represents an invalid
+     *   location within the document.
+     */
+    public void read(File in, Document doc, int pos) 
+        throws IOException, BadLocationException {
+
+        read(new FileInputStream(in), doc, pos);
+    }
+    
+    /**
+     * Inserts content from the given stream which is expected 
+     * to be in a format appropriate for this kind of content
+     * handler.
+     * 
+     * @param in  The stream to read from
+     * @param doc The destination for the insertion.
+     * @param pos The location in the document to place the
+     *   content >= 0.
+     * @exception IOException on any I/O error
+     * @exception BadLocationException if pos represents an invalid
+     *   location within the document.
+     */
+    @Override
+    public void read(InputStream in, Document doc, int pos) 
+        throws IOException, BadLocationException {
+
+        read(new InputStreamReader(in, Constants.fileFormat), doc, pos);
+    }
+
+    /**
+     * Inserts content from the given buffered reader, which will be
+     * treated as plain text.
+     *
+     * @param in  The buffered stream to read from
+     * @param doc The destination for the insertion.
+     * @param pos The location in the document to place the
+     *   content >= 0.
+     * @exception IOException on any I/O error
+     * @exception BadLocationException if pos represents an invalid
+     *   location within the document.
+     */
+    @Override
+    public void read(Reader in, Document doc, int pos)
+            throws IOException, BadLocationException {
+     
+        BufferedReader br = new BufferedReader(in);
+        SimpleAttributeSet sas = new SimpleAttributeSet();
+        StringBuilder sb = new StringBuilder();
+        String line = "";
+        
+        while ((line = br.readLine()) != null) {
+            sb.append(line).append("\n");
+        }
+        
+        br.close();
+
+        String text = sb.toString();
+                
+        // Check for tab characters
+        if (text.indexOf("\t")!=-1) {
+            doc.putProperty(TabConversionProperty, "true");
+            doc.insertString(
+                    0,
+                    Utils.replace(text, "\t", JifEditorKit.getTabString()),
+                    sas);
+        } else {
+            doc.putProperty(TabConversionProperty, "false");
+            doc.insertString(0, text, sas);
+        }
+    }
+    
+    /**
+     * Writes content from a document to the given stream
+     * in a format appropriate for this kind of content handler.
+     * 
+     * @param out The file to write to
+     * @param doc The source for the write.
+     * @param pos The location in the document to fetch the
+     *   content >= 0.
+     * @param len The amount to write out >= 0.
+     * @exception IOException on any I/O error
+     * @exception BadLocationException if pos represents an invalid
+     *   location within the document.
+     */
+    public void write(File out, Document doc, int pos, int len) 
+        throws IOException, BadLocationException {
+        
+        write(new FileOutputStream(out), doc, pos, len);
+    }
+
     // --- EditorKit methods ---------------------------------------------------
 
     /**
@@ -74,16 +191,18 @@ public class JifEditorKit extends StyledEditorKit {
      * 
      * @return the command list
      */
+    @Override
     public Action[] getActions() {
         return TextAction.augmentList(super.getActions(), JifActions);
     }
     
     /**
-     * Creates an uninitialized text storage model (<code>JifDocument</code>)
+     * Creates an uninitialised text storage model (<code>JifDocument</code>)
      * that is appropriate for this type of editor.
      * 
      * @return the model
      */
+    @Override
     public Document createDefaultDocument() {
         return new JifDocument();
     }
@@ -114,7 +233,7 @@ public class JifEditorKit extends StyledEditorKit {
      * Get the tab size for indenting Jif documents
      * 
      * 
-     * @param tabSize
+     * @return
      *            The number of spaces in one level of indenting
      */
     public static int getTabSize() {
@@ -141,6 +260,12 @@ public class JifEditorKit extends StyledEditorKit {
      */
     public static final String commentAction = "comment-line";
     
+   /**
+     * Name of the <code>Action</code> to apply a tab key to a Jif document
+     * (or subclass).
+     */
+    public static final String tabAction = "tab-key";
+    
     /**
      * Name of the <code>Action</code> to apply an indent to a selected block
      * of paragraphs in a Jif document (or subclass).
@@ -163,6 +288,7 @@ public class JifEditorKit extends StyledEditorKit {
 
     private static final Action[] JifActions = {
         new CommentAction(),
+        new TabAction(),
         new TabRightAction(),
         new TabLeftAction(),
         new UncommentAction()
@@ -210,7 +336,7 @@ public class JifEditorKit extends StyledEditorKit {
             throw new IllegalArgumentException(
                     "document must be JifDocument");
         }
-        
+
         /**
          * Gets the editor kit associated with an editor pane.
          *
@@ -240,7 +366,7 @@ public class JifEditorKit extends StyledEditorKit {
         protected final void addPrefixBlock(JEditorPane editor, String prefix)
                 throws BadLocationException {
             
-            StringBuffer output = new StringBuffer();
+            StringBuilder output = new StringBuilder();
             int p0 = editor.getSelectionStart();
             int p1 = editor.getSelectionEnd();
             JifDocument doc = getJifDocument(editor);
@@ -270,35 +396,33 @@ public class JifEditorKit extends StyledEditorKit {
         protected final void removePrefixBlock(JEditorPane editor, String prefix)
                 throws BadLocationException {
 
-            StringBuffer output = new StringBuffer();
+            StringBuilder output = new StringBuilder();
             int p0 = editor.getSelectionStart();
             int p1 = editor.getSelectionEnd();
             JifDocument doc = getJifDocument(editor);
             Element root = doc.getDefaultRootElement();
             int startIndex = root.getElementIndex(p0);
             int endIndex = root.getElementIndex(p1);
-            
+
             for (int i = startIndex; i < endIndex; i++) {
                 Element line = root.getElement(i);
-                
-                String lineString = doc.getText(line.getStartOffset(), 
+
+                String lineString = doc.getText(line.getStartOffset(),
                         line.getEndOffset() - line.getStartOffset());
 
                 if (lineString.startsWith(prefix)) {
                     output.append(
                             lineString.substring(
-                                    prefix.length(),
-                                    lineString.length()
-                                    )
-                            );
+                            prefix.length(),
+                            lineString.length()));
                 } else {
                     output.append(lineString);
                 }
             }
-            
+
             editor.replaceSelection(output.toString());
             setSelection(editor, p0, output.length());
-            
+
         }
         
         /*
@@ -358,6 +482,7 @@ public class JifEditorKit extends StyledEditorKit {
          * @param e
          *            the action event
          */
+        @Override
         public void actionPerformed(ActionEvent e) {
             JEditorPane editor = getEditor(e);
             if (editor == null) {
@@ -371,6 +496,46 @@ public class JifEditorKit extends StyledEditorKit {
             }
         }
         
+    }
+    
+    /**
+     * Insert spaces at the caret instead of a tab character or indent if there 
+     * is a current selection.
+     */
+    private static class TabAction extends JifTextAction {
+        
+        private static final long serialVersionUID = -1;
+        
+        /**
+         * Constructs a new tab action.
+         */
+        public TabAction() {
+            super(tabAction);
+        }
+                
+        /**
+         * Indent the lines in the current selection.
+         * 
+         * @param e
+         *            the action event
+         */
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JEditorPane editor = getEditor(e);
+            if (editor == null) {
+                return;
+            }
+            if (editor.getSelectionStart() == editor.getSelectionEnd()) {
+                editor.replaceSelection(JifEditorKit.getTabString());
+            } else {
+                selectBlock(editor);
+                try {
+                    addPrefixBlock(editor, JifEditorKit.getTabString());
+                } catch (BadLocationException ble) {
+                    ble.printStackTrace();
+                }
+            }
+        }
     }
     
     /**
@@ -393,6 +558,7 @@ public class JifEditorKit extends StyledEditorKit {
          * @param e
          *            the action event
          */
+        @Override
         public void actionPerformed(ActionEvent e) {
             JEditorPane editor = getEditor(e);
             if (editor == null) {
@@ -409,7 +575,7 @@ public class JifEditorKit extends StyledEditorKit {
     }
 
     /**
-     * Remove an indent from the block of pragraphs around the current selection.
+     * Remove an indent from the block of paragraphs around the current selection.
      */
     public static class TabLeftAction extends JifTextAction {
 
@@ -428,6 +594,7 @@ public class JifEditorKit extends StyledEditorKit {
          * @param e
          *            the action event
          */
+        @Override
         public void actionPerformed(ActionEvent e) {
             JEditorPane editor = getEditor(e);
             if (editor == null) {
@@ -463,6 +630,7 @@ public class JifEditorKit extends StyledEditorKit {
          * @param e
          *            the action event
          */
+        @Override
         public void actionPerformed(ActionEvent e) {
             JEditorPane editor = getEditor(e);
             if (editor == null) {

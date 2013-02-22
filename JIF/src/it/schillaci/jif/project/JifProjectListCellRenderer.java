@@ -11,7 +11,7 @@ package it.schillaci.jif.project;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscalinet.it
@@ -33,8 +33,8 @@ package it.schillaci.jif.project;
  */
 
 import it.schillaci.jif.core.JifFileName;
+import it.schillaci.jif.gui.jFrame;
 import java.awt.Component;
-
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -42,36 +42,53 @@ import javax.swing.JList;
 import javax.swing.UIManager;
 
 /**
- * List cell renderer to display JIF files in a JIF project list
+ * List cell renderer to display Jif files in a Jif project list
  * This displays the file using <code>getName()</code> rather than 
  * <code>toString()</code>.
  * 
  * @author Peter Piggott
- * @version 1.0
+ * @version 2.0
  * @since JIF 3.2
  */
 public class JifProjectListCellRenderer extends DefaultListCellRenderer {
 
     private static final long serialVersionUID = 6230808318112643998L;
-    // List bullet icon
-    private static Icon listIcon;
+    // Back regerence to Jif user interface
+    private static jFrame view;
+    // Default list bullet icon
+    private static Icon defaultIcon;
+    // List bullet icon for a closed project file
+    private static Icon fileClosedIcon;
+    // List bullet icon for an open project file
+    private static Icon fileOpenIcon;
+    // List bullet icon for a closed project main file
+    private static Icon mainClosedIcon;
+    // List bullet icon for an open project main file
+    private static Icon mainOpenIcon;
 
-    public JifProjectListCellRenderer() {
+    public JifProjectListCellRenderer(jFrame view) {
         super();
-        listIcon = new ImageIcon(getClass().getResource("/images/TREE_objects.png"));
+        this.view = view;
+        defaultIcon = new ImageIcon(getClass().getResource("/images/TREE_objects.png"));
+        fileClosedIcon = new ImageIcon(getClass().getResource("/images/LIST_file_closed.png"));
+        fileOpenIcon = new ImageIcon(getClass().getResource("/images/LIST_file_open.png"));
+        mainClosedIcon = new ImageIcon(getClass().getResource("/images/LIST_main_closed.png"));
+        mainOpenIcon = new ImageIcon(getClass().getResource("/images/LIST_main_open.png"));
     }
 
     // --- DefaultListCellRenderer methods -------------------------------------
-    
     /**
-     * Overriden to use <code>getName()</code> rather than <code>toString()</code>
+     * Overridden to use
+     * <code>getName()</code> rather than
+     * <code>toString()</code>
      */
+    @Override
     public Component getListCellRendererComponent(JList list,
             Object value,
             int index,
             boolean isSelected,
             boolean cellHasFocus) {
-        
+
         setComponentOrientation(list.getComponentOrientation());
 
         if (isSelected) {
@@ -81,12 +98,25 @@ public class JifProjectListCellRenderer extends DefaultListCellRenderer {
             setBackground(list.getBackground());
             setForeground(list.getForeground());
         }
-        
-        setIcon(listIcon);
-       
+
         if (value instanceof JifFileName) {
-            setText((value == null) ? "" : ((JifFileName) value).getName());
+            JifFileName fileName = (JifFileName) value;
+            if (view.isOpen(fileName)) {
+                if (view.isMain(fileName)) {
+                    setIcon(mainOpenIcon);
+                } else {
+                    setIcon(fileOpenIcon);
+                }
+            } else {
+                if (view.isMain(fileName)) {
+                    setIcon(mainClosedIcon);
+                } else {
+                    setIcon(fileClosedIcon);
+                }
+            }
+            setText((value == null) ? "" : fileName.getName());
         } else {
+            setIcon(defaultIcon);
             setText((value == null) ? "" : value.toString());
         }
 
@@ -95,11 +125,5 @@ public class JifProjectListCellRenderer extends DefaultListCellRenderer {
         setBorder((cellHasFocus) ? UIManager.getBorder("List.focusCellHighlightBorder") : noFocusBorder);
 
         return this;
-    }
-    
-    // --- Class methods -------------------------------------------------------
-    
-    public void setListIcon(Icon listIcon) {
-        this.listIcon = listIcon;
     }
 }

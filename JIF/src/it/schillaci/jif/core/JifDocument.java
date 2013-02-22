@@ -11,7 +11,7 @@ package it.schillaci.jif.core;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -32,21 +32,26 @@ package it.schillaci.jif.core;
  *
  */
 
-import it.schillaci.jif.inform.InformSyntax;
 import it.schillaci.jif.inform.InformContext;
+import it.schillaci.jif.inform.InformLexer;
+import it.schillaci.jif.inform.InformSyntax;
+import it.schillaci.jif.inform.InformToken;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Element;
 import javax.swing.text.GapContent;
 import javax.swing.text.StyleContext;
 
 /**
- * An extension of Jif Document for Inform Syntax Highlighting
+ * An extension of DefaultStyledDocument for Inform Syntax Highlighting
  * 
  * @author Peter Piggott
- * @version 1.0
+ * @version 2.0
  * @since JIF 3.1
  */
 public class JifDocument extends DefaultStyledDocument {
@@ -93,6 +98,7 @@ public class JifDocument extends DefaultStyledDocument {
      * @throws BadLocationException 
      *            If the insert action fails
      */
+    @Override
     public void insertString(int offset, String str, AttributeSet a)
             throws BadLocationException {
 
@@ -100,11 +106,73 @@ public class JifDocument extends DefaultStyledDocument {
 
     }
 
+    // TODO
+    // JifDocument specific routine but this is really Inform source code specific
+    public Iterator bracketErrors() {
+        Set errors = new TreeSet();
+        try {
+            int routine = 0;
+            Stack stack = new Stack();
+            InformLexer lexer = new InformLexer(getText(0, getLength()));
+            InformToken token = lexer.nextBracket();
+            InformToken peek;
+            InformToken.Lexeme type = token.getType();
+            while (type != InformToken.EOS) {
+                if (type == InformToken.OPENBRACE ||
+                        type == InformToken.OPENBRACKET ||
+                        type == InformToken.OPENROUTINE) {
+                    stack.push(token);
+                }
+                if (type == InformToken.CLOSEBRACE) {
+                    if (stack.empty()) {
+                        errors.add(new Integer(token.getStartPosition()));
+                    } else {
+                        peek = (InformToken) stack.pop();
+                        if (peek.getType() != InformToken.OPENBRACE) {
+                            errors.add(new Integer(peek.getStartPosition()));
+                            errors.add(new Integer(token.getStartPosition()));
+                        }
+                    }
+                }
+                if (type == InformToken.CLOSEBRACKET) {
+                    if (stack.empty()) {
+                        errors.add(new Integer(token.getStartPosition()));
+                    } else {
+                        peek = (InformToken) stack.pop();
+                        if (peek.getType() != InformToken.OPENBRACKET) {
+                            errors.add(new Integer(peek.getStartPosition()));
+                            errors.add(new Integer(token.getStartPosition()));
+                        }
+                    }
+                }
+                if (type == InformToken.CLOSEROUTINE) {
+                    if (stack.empty()) {
+                        errors.add(new Integer(token.getStartPosition()));
+                    } else {
+                        peek = (InformToken) stack.pop();
+                        if (peek.getType() != InformToken.OPENROUTINE) {
+                            errors.add(new Integer(peek.getStartPosition()));
+                            errors.add(new Integer(token.getStartPosition()));
+                        }
+                    }
+                }
+            }
+            
+            while (!stack.empty()) {
+                peek = (InformToken) stack.pop();
+                errors.add(new Integer(peek.getStartPosition()));
+            }
+        } catch (BadLocationException ex) {
+        } finally {
+            return errors.iterator();
+        }
+    }
+    
     // --- Class methods ----------------------------------------------------
     /**
      * get the tab size for indenting Jif documents
      * 
-     * @param tabSize
+     * @return
      *            The number of spaces in one level of indenting
      */
     public static int getTabSize() {

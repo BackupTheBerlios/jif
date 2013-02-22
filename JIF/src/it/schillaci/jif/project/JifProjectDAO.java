@@ -11,7 +11,7 @@ package it.schillaci.jif.project;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -34,28 +34,15 @@ package it.schillaci.jif.project;
 
 import it.schillaci.jif.core.JifDAO;
 import it.schillaci.jif.core.JifFileName;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import it.schillaci.jif.core.JifDAO;
 
 /**
  * Data access object for project configuration
@@ -84,6 +71,7 @@ public class JifProjectDAO {
             return name;
         }
 
+        @Override
         public String toString() {
             return "JifProjectDAO.Keyword[Name: " + name + "]";
         }
@@ -93,10 +81,10 @@ public class JifProjectDAO {
 
         // --- Inform Keyords -----------------------------------------------
         
-        private static Keyword FILE   = new Keyword("[FILE]");
-        private static Keyword MAIN   = new Keyword("[MAINFILE]");
-        private static Keyword SWITCH = new Keyword("[SWITCH]");
-        private static Keyword MODE   = new Keyword("[MODE]");
+        private static final Keyword FILE   = new Keyword("[FILE]");
+        private static final Keyword MAIN   = new Keyword("[MAINFILE]");
+        private static final Keyword SWITCH = new Keyword("[SWITCH]");
+        private static final Keyword MODE   = new Keyword("[MODE]");
 
 
         // JifProject file keywords
@@ -133,10 +121,10 @@ public class JifProjectDAO {
     }
         
     /**
-     * Load a project from persistant storage
+     * Load a project from persistent storage
      * 
      * @param file
-     *              the persistant storage from which to load the project
+     *              the persistent storage from which to load the project
      * @throws JifProjectException
      */
     public static JifProject load(File file)
@@ -163,17 +151,16 @@ public class JifProjectDAO {
                 if (main.equals("null")) {
                     project.clearMain();
                 } else {
-                	// Checkfor relative paths
-                	File f = new File(project.getProjectDirectory()+File.separator+main);
-                	if (f.exists()){
-                		project.setMain(new JifFileName(project.getProjectDirectory()+File.separator+main));                		
-                	}
-                	else{
-                		project.setMain(new JifFileName(main));
-                	}                	
+                    // Check for relative paths
+                    File f = new File(project.getDirectory() + File.separator + main);
+                    if (f.exists()) {
+                        project.setMain(new JifFileName(project.getDirectory() + File.separator + main));
+                    } else {
+                        project.setMain(new JifFileName(main));
+                    }
                 }
             }
-            
+
             // Compiler switch settings
             m = switchPattern.matcher(cb);
             while (m.find()) {
@@ -193,7 +180,7 @@ public class JifProjectDAO {
     }
     
     /**
-     * Store a project object to persistant storage
+     * Store a project object to persistent storage
      * Modified to manage Relative paths
      * 
      * @param project
@@ -203,43 +190,42 @@ public class JifProjectDAO {
     public static void store(JifProject project)
             throws JifProjectException {
         
-        File file = new File(project.getFile().getPath());
+        File file = new File(project.getPath());
         
         try {
-            StringBuffer output = new StringBuffer();
+            StringBuilder output = new StringBuilder();
             
             output.append("# Jif Configuration Project\n");
-            output.append("# " + project.getFile().getPath() + "\n");
+            output.append("# ").append(project.getPath()).append("\n");
             output.append("\n");
             Vector files = project.getFiles();
-            for (int i=0; i<files.size(); i++) {
+            for (int i = 0; i < files.size(); i++) {
                 output.append(Keyword.FILE.getName());
-                if (isRelativeFile(project,((JifFileName)files.elementAt(i)).getName())){
-                	output.append(((JifFileName)files.elementAt(i)).getName()+"\n");
-                }
-                else{
-                	output.append(((JifFileName)files.elementAt(i)).getPath()+"\n");
+                if (isRelativeFile(project, ((JifFileName) files.elementAt(i)).getName())) {
+                    output.append(((JifFileName) files.elementAt(i)).getName()).append("\n");
+                } else {
+                    output.append(((JifFileName) files.elementAt(i)).getPath()).append("\n");
                 }
             }
             output.append(Keyword.MAIN.getName());
-            if (project.getMain() == null){
-            	output.append("\n");
+            if (project.isMainClear()) {
+                output.append("\n");
             }
-            else if (isRelativeFile(project,project.getMain().getName())){
-            	output.append(project.getMain().getName() + "\n");
+            else if (isRelativeFile(project, project.getMainName())) {
+                output.append(project.getMainName() + "\n");
+            } else {
+                output.append(project.getMainPath() + "\n");
             }
-            else{
-            	output.append(project.getMain().getPath() + "\n");
-            }
-            output.append(Keyword.MODE.getName() + (project.getInformMode() ? "INFORM":"GLULX") + "\n");
+            output.append(Keyword.MODE.getName()).append((project.getInformMode() ? "INFORM":"GLULX")).append("\n");
             output.append("\n");
             
             // The project Switches
             output.append("# WARNING! You can edit *only* this switches section!!!\n");
-            for (Iterator i = project.getSwitches().keySet().iterator(); i.hasNext(); ) {
-                String key = (String) i.next();
-                String value = (String) project.getSwitches().get(key);
-                output.append(Keyword.SWITCH.getName() + key + "," + value + "\n");
+            for (Iterator i = project.getSwitches().entrySet().iterator(); i.hasNext(); ) {
+                Entry e = (Entry) i.next();
+                String key = (String) e.getKey();
+                String value = (String) e.getValue();
+                output.append(Keyword.SWITCH.getName()).append(key).append(",").append(value).append("\n");
             }
             
             output.append("# WARNING! You can edit *only* this switches section!!!\n");
@@ -252,7 +238,7 @@ public class JifProjectDAO {
     }
     
     /**
-     * Reloads an existing project object from persistant storage
+     * Reloads an existing project object from persistent storage
      *
      * @param project
      *              the <code>JifProject</code> to be reloaded
@@ -261,7 +247,7 @@ public class JifProjectDAO {
     public static void reload(JifProject project) 
             throws JifProjectException {
 
-        File file = new File(project.getFile().getPath());
+        File file = new File(project.getPath());
         JifProject newProj = JifProjectDAO.load(file);
         
         project.setFiles(newProj.getFiles());
@@ -285,19 +271,17 @@ public class JifProjectDAO {
     /**
      * If the file exists in the directory of file.jpf, it will write without
      * the path.
-     * This methods returns true if the relative file exits, false otherwise.
      * 
      * @param project
-     * @param absolutepath
-     * @return
+     * @param name
+     * @return <code>true</code> if the relative file exits, <code>false</code> otherwise.
      */
-    public static boolean isRelativeFile(JifProject project, String name){
-    	File f = new File(project.getProjectDirectory()+File.separator+name);
-    	if (f.exists()){
-    		return true;                		
-    	}
-    	else{
-    		return false;
-    	}     
+    public static boolean isRelativeFile(JifProject project, String name) {
+        File f = new File(project.getDirectory() + File.separator + name);
+        if (f.exists()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

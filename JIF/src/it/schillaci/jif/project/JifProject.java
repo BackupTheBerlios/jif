@@ -11,7 +11,7 @@ package it.schillaci.jif.project;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2003-2006  Alessandro Schillaci
+ * Copyright (C) 2003-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscalinet.it
@@ -32,26 +32,31 @@ package it.schillaci.jif.project;
  *
  */
 
+import it.schillaci.jif.core.InformAsset;
 import it.schillaci.jif.core.JifFileName;
+import it.schillaci.jif.gui.Inspect;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.Vector;
 
 /**
  * JifProject: Class for project information within Jif.
  *
  * @author Peter Piggott
- * @version 1.0
+ * @version 2.0
  * @since JIF 3.2
  */
 public class JifProject {
 
+    // Closed project title
+    private static final String closedTitle = "blank";
+    
     // Project observers
     private ArrayList observers = new ArrayList();
     
@@ -59,45 +64,56 @@ public class JifProject {
     private JifFileName projectFile = null;
     
     // Main file for project compilation
-    private JifFileName mainFile    = null;
-    
-    // Files contained in the project
-    private Vector files        = new Vector();
-    
-    // Switches
-    private Map switches        = new LinkedHashMap();
+    private JifFileName mainFile = null;
     
     // Mode
     private boolean informMode  = true;
     
+    // Files contained in the project
+    private Vector files = new Vector();
+    
+    // Class definitions founsd in project files
+    private Map classes = new TreeMap();
+    
+    // Switches
+    private Map switches        = new LinkedHashMap();
+    
     // Actual Directory of the project (for the relative paths management)
     private String projectDirectory = null;
+    
+    // --- Constructors --------------------------------------------------------
     
     /** Creates a new instance of JifProject */
     public JifProject() {
     }
 
+    // --- Methods -------------------------------------------------------------
+    
     public void addFile(String filePath) {
-        // check for relative paths    	
-    	File f = new File(projectFile.getDirectory()+File.separator+filePath);
-    	JifFileName file = null;
-    	if (f.exists()){
-    		file = new JifFileName(projectFile.getDirectory()+File.separator+filePath);	
-    	}
-    	else{
-    		file = new JifFileName(filePath);
-    	}
-    	
-        files.add(file);
+        // check for relative paths
+        File f = new File(projectFile.getDirectory() + File.separator + filePath);
+        JifFileName file = null;
+        if (f.exists()) {
+            file = new JifFileName(projectFile.getDirectory() + File.separator + filePath);
+        } else {
+            file = new JifFileName(filePath);
+        }
+        
+        addFile(file);
+    }
+
+    public void addFile(JifFileName fileName) {
+        files.add(fileName);
         Collections.sort(files);
         notifyObservers();
     }
-    
+
     public void removeFile(JifFileName file) {
         files.remove(file);
         if (file.equals(mainFile)) {
             mainFile = null;
         }
+        clear(file.getPath());
         notifyObservers();
     }
     
@@ -110,20 +126,103 @@ public class JifProject {
         projectFile = null;
         mainFile = null;
         files.removeAllElements();
+        classes.clear();
         notifyObservers();
     }
     
+    public void clear(String name) {
+        for (Iterator i=classes.entrySet().iterator(); i.hasNext(); ) {
+            Entry e = (Entry) i.next();
+            InformAsset ia = (InformAsset) e.getValue();
+            String path = ia.getPath();
+            if (path!=null && path.equals(name)) {
+                clearChildren(ia, name);
+                if (ia.hasChildren()) {
+                    ia.setLocation(new Inspect(ia.getName(), null, -1));
+                } else {
+                    i.remove();
+                }
+            }
+        }            
+    }
+    
+    private void clearChildren(InformAsset ia, String name) {
+        for (Iterator i=ia.iterator(); i.hasNext(); ) {
+            String childName = (String) i.next();
+            if (classes.containsKey(childName)) {
+                InformAsset child = (InformAsset) classes.get(childName);
+                if (child.getPath().equals(name)) {
+                    i.remove();
+                }
+            }
+        }
+    }
+    
     // --- Accessor methods ----------------------------------------------------
+    
+    public void addClasses(Map classes) {
+        this.classes.putAll(classes);
+    }
+    
+    public Map getClasses() {
+        return Collections.unmodifiableMap(classes);
+    }
+    
+    // ---
     
     public JifFileName getFile() {
         return projectFile;
     }
 
-    public void setFile(String projectFilePath) {
-        JifFileName projectFile = new JifFileName(projectFilePath);
+    public void setFile(JifFileName projectFile) {
         this.projectFile = projectFile;
-        this.setProjectDirectory(projectFile.getDirectory());
         notifyObservers();
+    }
+
+    public void setFile(String projectFilePath) {
+        projectFile = new JifFileName(projectFilePath);
+        notifyObservers();
+    }
+    
+    
+    public String getDirectory() {
+        return projectFile.getDirectory();
+    }
+    
+    public String getName() {
+        return projectFile.getName();
+    }
+    
+    public String getPath() {
+        return projectFile.getPath();
+    }
+
+    public String getTitle() {
+        return (String) ((isClosed()) ? 
+            closedTitle :
+            projectFile.getName());
+    }
+    
+    public boolean isClosed() {
+        return projectFile == null;
+    }
+    
+    public boolean isOpen() {
+        return projectFile != null;
+    }
+    
+    // ---
+    
+    public boolean contains(String path) {
+        return contains(new JifFileName(path));
+    }
+    
+    public boolean contains(JifFileName fileName) {
+        return files.contains(fileName);
+    }
+    
+    public Iterator iterator() {
+        return getFiles().iterator();
     }
     
     public Vector getFiles() {
@@ -153,6 +252,31 @@ public class JifProject {
         notifyObservers();
     }
     
+    public String getMainName() {
+        return (isMainClear()) ? "" : mainFile.getName();
+    }
+    
+    public String getMainPath() {
+        return mainFile.getPath();
+    }
+    
+    public boolean isMain(JifFileName file) {
+        if (mainFile == null) {
+            return false;
+        }
+        return mainFile.equals(file);
+    }
+    
+    public boolean isMainClear() {
+        return mainFile == null;
+    }
+    
+    public boolean isMainSet() {
+        return mainFile != null;
+    }
+    
+    // ---
+    
     public void addSwitch(String switchName, String setting) {
         switches.put(switchName, setting);
     }
@@ -171,7 +295,14 @@ public class JifProject {
         this.switches.clear();
         this.switches.putAll(switches);
     }
-    
+
+    public String getProjectDirectory() {
+        return projectDirectory;
+    }
+
+    public void setProjectDirectory(String projectDirectory) {
+        this.projectDirectory = projectDirectory;
+    }
     
     // --- Project observer methods --------------------------------------------
     
@@ -192,13 +323,5 @@ public class JifProject {
             observers.remove(i);
         }
     }
-
-	public String getProjectDirectory() {
-		return projectDirectory;
-	}
-
-	public void setProjectDirectory(String projectDirectory) {
-		this.projectDirectory = projectDirectory;
-	}
     
 }

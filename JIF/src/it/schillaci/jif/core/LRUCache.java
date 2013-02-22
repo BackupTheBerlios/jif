@@ -11,7 +11,7 @@ package it.schillaci.jif.core;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2003-2006  Alessandro Schillaci
+ * Copyright (C) 2003-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscalinet.it
@@ -37,7 +37,7 @@ import java.util.Map;
 
 /**
  * LRUCache: A least recently used cache. When an entry is added and the cache 
- * is already full (as defined by maximum enties), the eldest entry is removed
+ * is already full (as defined by maximum entries), the eldest entry is removed
  * to make space for the new entry.
  *
  * @author Peter Piggott
@@ -59,6 +59,7 @@ public class LRUCache extends LinkedHashMap {
         this.maxEntries = maxEntries;
     }
     
+    @Override
     public boolean removeEldestEntry(Map.Entry eldest) {
         return size() > maxEntries;
     }

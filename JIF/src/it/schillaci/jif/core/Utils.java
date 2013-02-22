@@ -11,7 +11,7 @@ package it.schillaci.jif.core;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -42,24 +42,11 @@ import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.io.OutputStreamWriter;
 import java.io.StringReader;
-import java.io.Writer;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 import java.util.Properties;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.swing.text.JTextComponent;
 
 
@@ -68,39 +55,42 @@ import javax.swing.text.JTextComponent;
  * @author Alessandro Schillaci
  */
 public class Utils {
-    
+
     jFrame jframe;
-    
-    /** Creates a new instance of Utils */
+
+    /**
+     * Creates a new instance of Utils
+     */
     public Utils() {
     }
-    
+
     /**
      * Calculates total number of brackets in the text
+     *
      * @param testo String Text
      * @return The total number of brackets in the text
      */
     public static int numberOfBrackets(String testo) {
-        String pattern="\"";
-        int numero=0,pos=0;
-        while ((pos = testo.indexOf(pattern, pos)) >= 0){
+        String pattern = "\"";
+        int numero = 0, pos = 0;
+        while ((pos = testo.indexOf(pattern, pos)) >= 0) {
             numero++;
             pos += pattern.length();
         }
         return numero;
     }
-    
-    
+
     public static String spacesForTab(int numberofspaces) {
-        String tmp="";
-        for (int i = 0; i < numberofspaces+1; i++) {
-            tmp+=" ";
+        String tmp = "";
+        for (int i = 0; i < numberofspaces + 1; i++) {
+            tmp += " ";
         }
         return tmp;
     }
-    
+
     /**
      * Replaces the string "pattern" with "replace" into a text
+     *
      * @param str The main string
      * @param pattern The string to be replaced
      * @param replace The target string of replacing
@@ -109,8 +99,8 @@ public class Utils {
     public static String replace(String str, String pattern, String replace) {
         int s = 0;
         int e = 0;
-        StringBuffer result = new StringBuffer();
-        
+        StringBuilder result = new StringBuilder();
+
         while ((e = str.indexOf(pattern, s)) >= 0) {
             result.append(str.substring(s, e));
             result.append(replace);
@@ -136,14 +126,14 @@ public class Utils {
             pjob.end();
         }
     }
-    
+
     // Print string to graphics via printjob
     // Does not deal with word wrap or tabs
     private void printLongString(PrintJob pjob, Graphics pg, String s) {
-        
+
         // Replacing the TABS with spaces
         s = Utils.replace(s, "\t", "    ");
-        
+
         int margin = 50;
         int pageNum = 1;
         int linesForThisPage = 0;
@@ -187,7 +177,7 @@ public class Utils {
                     if (pg != null) {
                         pg.drawString(nextLine, margin, curHeight - fontDescent);
                         linesForThisPage++;
-                        
+
                         linesForThisJob++;
                     } else {
                         //System.out.println ("pg null");
@@ -203,35 +193,33 @@ public class Utils {
         //System.out.println ("pages printed: " + pageNum);
         //System.out.println ("total lines printed: " + linesForThisJob);
     }
-    
-    
-    
+
     public static int IgnoreCaseIndexOf(String mainString, String str, int fromIndex) {
         String s1 = mainString.toLowerCase();
         String t1 = str.toLowerCase();
         return s1.indexOf(t1, fromIndex);
     }
-    
+
     public static int IgnoreCaseIndexOf(String mainString, String str) {
         String s1 = mainString.toLowerCase();
         String t1 = str.toLowerCase();
         return s1.indexOf(t1);
     }
-    
-    
+
     /**
      * Return the code assistant
+     *
      * @param code
      */
-    public static String assistCode(String code){
+    public static String assistCode(String code) {
         //	[ret] = return
         //	[tab] = tab char
-        code = replace(code,"[ret]","\n");
-        code = replace(code,"[tab]","\t");
-        code = replace(code,"@","");
+        code = replace(code, "[ret]", "\n");
+        code = replace(code, "[tab]", "\t");
+        code = replace(code, "@", "");
         return code;
     }
-    
+
     /**
      * Returns a string with all occurrences of the target string in file
      *
@@ -240,19 +228,26 @@ public class Utils {
         // open file
         String head = "File=" + file.getName();
         String filename = file.getAbsolutePath();
-        StringBuffer out = new StringBuffer();
+        StringBuilder out = new StringBuilder();
         try {
             String riga;
-            int lineCount=0;
+            int lineCount = 0;
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), Constants.fileFormat));
             while ((riga = br.readLine()) != null) {
                 lineCount++;
                 if (Utils.IgnoreCaseIndexOf(riga, target) != -1) {
-                    out.append("\n" + Constants.TOKENSEARCH + filename + Constants.TOKENSEARCH + lineCount + Constants.TOKENSEARCH + ": " + riga);
+                    out.append("\n")
+                            .append(Constants.TOKENSEARCH)
+                            .append(filename)
+                            .append(Constants.TOKENSEARCH)
+                            .append(lineCount)
+                            .append(Constants.TOKENSEARCH)
+                            .append(": ")
+                            .append(riga);
                 }
             }
             br.close();
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
         if (out.length() == 0) {
@@ -261,5 +256,4 @@ public class Utils {
             return (head + out.toString() + "\n");
         }
     }
-
 }

@@ -11,7 +11,7 @@ package it.schillaci.jif.core;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -42,93 +42,84 @@ import javax.swing.text.JTextComponent;
 /**
  * Class for Highlighting text in a JTextComponent
  * @author Alessandro Schillaci
+ * @version 1.0
  */
 public class HighlightBookmark extends DefaultHighlighter.DefaultHighlightPainter {
 
-        JTextComponent jif;
+    JTextComponent jif;
 
-        /**
-         * Creates an Highlighter Object for a JTextComponent
-         *
-         * @param jif
-         *              The instance of JTextComponent to apply the highlighting
-         * @param color
-         *              Color of highlighting
-         */
-	public HighlightBookmark(JTextComponent jif, Color color) {
-            super(color);
-            this.jif = jif;
-        }
-
-        /**
-         * Creates an Highlighter Object for a generic JTextComponent
-         *
-         * @param color
-         *              Color of highlighting
-         */
-	public HighlightBookmark(Color color) {
-            super(color);
-            this.jif = null;
-        }
-
-        /**
-         * Highlight a string in a JifTextComponent
-         *
-         * @param component
-         *              Instance of JTextComponent
-         * @param pattern
-         *              String to be highlighted
-         */
-        public void highlight(JTextComponent component, String pattern)   {
-            try{
-                Highlighter hilite = component.getHighlighter();
-                String text = jif.getText();
-                int pos = 0;
-                while ((pos = text.indexOf(pattern, pos)) >= 0)       {
-                    hilite.addHighlight(pos, pos + pattern.length(), this);
-                    pos += pattern.length();
-                }
-            } catch (BadLocationException e)  {
-                System.out.println(e.getMessage());
-                System.err.println(e.getMessage());
-            }
-        }
-
-        // si puo' applicare a qlc JTextComponent
-        /**
-         * Highlight a string in a JTextComponent
-         *
-         * @param component
-         *              Instance of JTextComponent
-         * @param start
-         *              Start position to be highlighted
-         * @param end
-         *              End position to be highlighted
-         */
-        public void highlightFromTo(JTextComponent component, int start, int end)   {
-            try{
-                Highlighter hilite = component.getHighlighter();
-                hilite.addHighlight(start, end , this);
-            } catch (BadLocationException e)  {
-                System.out.println(e.getMessage());
-                System.err.println(e.getMessage());
-            }
-        }
-
-        /**
-         * Remove all the Highlights from a JTextComponent
-         *
-         * @param component
-         *          Instance of JTextComponent
-         */
-        public void removeHighlights(JTextComponent component)  {
-            Highlighter hilite = component.getHighlighter();
-            Highlighter.Highlight[] hilites = hilite.getHighlights();
-            for (int i = 0; i < hilites.length; i++)     {
-                if (hilites[i].getPainter() instanceof HighlightBookmark){
-                    hilite.removeHighlight(hilites[i]);
-                }
-            }
-        }
-        
+    /**
+     * Creates an Highlighter Object for a JTextComponent
+     *
+     * @param jif The instance of JTextComponent to apply the highlighting
+     * @param color Color of highlighting
+     */
+    public HighlightBookmark(JTextComponent jif, Color color) {
+        super(color);
+        this.jif = jif;
     }
+
+    /**
+     * Creates an Highlighter Object for a generic JTextComponent
+     *
+     * @param color Color of highlighting
+     */
+    public HighlightBookmark(Color color) {
+        super(color);
+        this.jif = null;
+    }
+
+    /**
+     * Highlight a string in a JifTextComponent
+     *
+     * @param component Instance of JTextComponent
+     * @param pattern String to be highlighted
+     */
+    public void highlight(JTextComponent component, String pattern) {
+        try {
+            Highlighter hilite = component.getHighlighter();
+            String text = jif.getText();
+            int pos = 0;
+            while ((pos = text.indexOf(pattern, pos)) >= 0) {
+                hilite.addHighlight(pos, pos + pattern.length(), this);
+                pos += pattern.length();
+            }
+        } catch (BadLocationException e) {
+            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
+        }
+    }
+
+    // si puo' applicare a qlc JTextComponent
+    /**
+     * Highlight a string in a JTextComponent
+     *
+     * @param component Instance of JTextComponent
+     * @param start Start position to be highlighted
+     * @param end End position to be highlighted
+     */
+    public void highlightFromTo(JTextComponent component, int start, int end) {
+        try {
+            Highlighter hilite = component.getHighlighter();
+            hilite.addHighlight(start, end, this);
+        } catch (BadLocationException e) {
+            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Remove all the Highlights from a JTextComponent
+     *
+     * @param component Instance of JTextComponent
+     */
+    public void removeHighlights(JTextComponent component) {
+        Highlighter hilite = component.getHighlighter();
+        Highlighter.Highlight[] hilites = hilite.getHighlights();
+        for (int i = 0; i < hilites.length; i++) {
+            if (hilites[i].getPainter() instanceof HighlightBookmark) {
+                hilite.removeHighlight(hilites[i]);
+            }
+        }
+    }
+}

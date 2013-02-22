@@ -1,5 +1,7 @@
 package it.schillaci.jif.core;
 
+import java.io.File;
+
 /*
  * FileProject.java
  *
@@ -52,7 +54,7 @@ package it.schillaci.jif.core;
          */
         public FileProject(String absPath){
             path = absPath;
-            name = absPath.substring(absPath.lastIndexOf(Constants.SEP)+1 ,  absPath.length());
+            name = absPath.substring(absPath.lastIndexOf(File.separator)+1 ,  absPath.length());
 
         }
 

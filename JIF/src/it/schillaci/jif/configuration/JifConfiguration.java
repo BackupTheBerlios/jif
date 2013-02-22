@@ -3,18 +3,18 @@ package it.schillaci.jif.configuration;
 /*
  * JifConfiguration.java
  *
- * This projectFile is part of JIF.
+ * This file is part of JIF.
  *
  * Jif is substantially an editor entirely written in java that allows the
- * projectFile management for the creation of text-adventures based on Graham
+ * file management for the creation of text-adventures based on Graham
  * Nelson's Inform standard [a programming language for Interactive Fiction].
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2003-2006  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
- * e-m@il: silver.slade@tiscalinet.it
+ * e-m@il: silver.slade@tiscali.it
  *
  * Jif is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,14 +33,18 @@ package it.schillaci.jif.configuration;
  */
 
 import it.schillaci.jif.core.Constants;
-import it.schillaci.jif.inform.InformContext;
 import it.schillaci.jif.core.JifFileName;
 import it.schillaci.jif.core.LRUCache;
+import it.schillaci.jif.inform.InformContext;
+import it.schillaci.jif.inform.InformSyntax;
+import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -48,13 +52,13 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Vector;
 
 /**
- * JifConfiguration: Class for configuration information within Jif.
+ * JifConfiguration: Class for configuration information within the Jif
+ * application
  *
  * @author Peter Piggott
- * @version 1.0
+ * @version 2.0
  * @since JIF 3.2
  */
 public class JifConfiguration {
@@ -112,10 +116,10 @@ public class JifConfiguration {
     private boolean syntaxHighlighting     = true;
     private boolean wrapLines              = false;
     // Window settings
-    private boolean fullscreen             = false;
-    private boolean output                 = true; 
-    private boolean toolbar                = true;
-    private boolean tree                   = true; 
+    private boolean fullScreen             = false;
+    private boolean outputVisible          = true;
+    private boolean toolbarVisible         = true;
+    private boolean treeVisible            = true;
     // Window dividers
     private int divider1                   = 0;
     private int divider3                   = 0;
@@ -132,15 +136,25 @@ public class JifConfiguration {
     public JifConfiguration() {
     }
     
+    // --- Methods -------------------------------------------------------------
+    
+    public boolean isInitial() {
+        return frameWidth*frameHeight*frameX*frameY == 0;
+    }
+    
     // --- Accessor methods ----------------------------------------------------
 
     public JifFileName getFile() {
         return configurationFile;
     }
     
+    public String getFilePath() {
+        return configurationFile.getPath();
+    }
+    
     public void setFile(String configurationFilePath) {
-        JifFileName configurationFile = new JifFileName(configurationFilePath);
-        this.configurationFile = configurationFile;
+        JifFileName file = new JifFileName(configurationFilePath);
+        this.configurationFile = file;
     }
     
     // ---
@@ -153,7 +167,7 @@ public class JifConfiguration {
         this.workingDirectory = workingDirectory;
     }
     
-    // ---
+    // --- Alt keys
     
     public void addAltKey(String key, String translation) {
         altKeys.put(key, translation);
@@ -161,6 +175,14 @@ public class JifConfiguration {
     
     public Map getAltKeys() {
         return Collections.unmodifiableMap(altKeys);
+    }
+    
+    public boolean containsAltKey(String key) {
+        return altKeys.containsKey(key);
+    }
+    
+    public String getAltKey(String key) {
+        return (String) altKeys.get(key);
     }
     
     public Set getAltKeysAlpha() {
@@ -174,10 +196,18 @@ public class JifConfiguration {
         this.altKeys.putAll(altKeys);
     }
     
-    // ---
+    // --- Execute commands
     
     public void addExecuteCommand(String key, String command) {
         executeCommands.put(key, command);
+    }
+    
+    public boolean containsExecuteCommand(String key) {
+        return executeCommands.containsKey(key);
+    }
+    
+    public String getExecuteCommand(String key) {
+        return (String) executeCommands.get(key);
     }
     
     public Map getExecuteCommands() {
@@ -195,10 +225,14 @@ public class JifConfiguration {
         this.executeCommands.putAll(executeCommands);
     }
     
-    // ---
+    // --- Help codes
     
     public void addHelpCode(String key, String translation) {
         helpCodes.put(key, translation);
+    }
+    
+    public String getHelpCode(String key) {
+        return (String) helpCodes.get(key);
     }
     
     public Map getHelpCodes() {
@@ -216,28 +250,38 @@ public class JifConfiguration {
         this.helpCodes.putAll(helpCode);
     } 
 
-    // ---
+    // --- Mappings
     
     public void addMapping(String character, String translation) {
         mappings.put(character, translation);
     }
     
-    public Map getMapping() {
+    public Map getMappings() {
         return Collections.unmodifiableMap(mappings);
     }
     
-    public Set getMappingAlpha() {
+    public String getMapping(String key) {
+        return isMapping(key) ? 
+            (String) mappings.get(key) : 
+            key;
+    }
+    
+    public boolean isMapping(String key) {
+        return mappingLive && mappings.containsKey(key);
+    }
+    
+    public Set getMappingsAlpha() {
         TreeMap alpha = new TreeMap();
         alpha.putAll(mappings);
         return alpha.keySet();
     }
     
-    public void setMapping(Map mapping) {
+    public void setMappings(Map mapping) {
         this.mappings.clear();
         this.mappings.putAll(mapping);
     }
     
-    // ---
+    // --- Menu
     
     public void addMenu(String menu) {
         menus.put(menu, new LinkedHashSet());
@@ -252,16 +296,24 @@ public class JifConfiguration {
         return Collections.unmodifiableSet(menus.keySet());
     }
     
+    public Iterator menuIterator() {
+        return getMenusSet().iterator();
+    }
+    
     public void setMenus(Map menus) {
         this.menus.clear();
         this.menus.putAll(menus);
         notifyObservers();
     }
     
-    // ---
+    // --- Operations
     
     public void addOperation(String subMenu, String translation) {
         operations.put(subMenu, translation);
+    }
+    
+    public String getOperation(String key) {
+        return (String) operations.get(key);
     }
     
     public Map getOperations() {
@@ -273,7 +325,7 @@ public class JifConfiguration {
         this.operations.putAll(operations);
     }
     
-    // ---
+    // --- Sub menus
     
     public void addSubMenu(String menu, String subMenu) {
         LinkedHashSet subMenus = (LinkedHashSet) menus.get(menu);
@@ -284,7 +336,7 @@ public class JifConfiguration {
         return Collections.unmodifiableSet((LinkedHashSet) menus.get(menu));
     }
     
-    // ---
+    // --- Switches
     
     public void addSwitch(String switchName, String setting) {
         switches.put(switchName, setting);
@@ -309,7 +361,7 @@ public class JifConfiguration {
         this.switches.putAll(switches);
     }
     
-    // ---
+    // --- Recent files
     
     public void addRecentFile(String file) {
         if (recentFiles.containsKey(file)) {
@@ -331,13 +383,17 @@ public class JifConfiguration {
         recentFiles.clear();
     }
     
+    public Iterator recentFileIterator() {
+        return getRecentFilesSet().iterator();
+    }
+    
     public void setRecentFiles(Map recentFiles) {
         clearRecentFiles();
         this.recentFiles.putAll(recentFiles);
         notifyObservers();
     }
     
-    // ---
+    // --- Attributes
     
     public void addAttribute(String attribute) {
         attributes.add(attribute);
@@ -358,7 +414,7 @@ public class JifConfiguration {
         this.attributes.addAll(attributes);
     }
     
-    // ---
+    // --- Keywords
     
     public void addKeyword(String keyword) {
         keywords.add(keyword);
@@ -379,7 +435,7 @@ public class JifConfiguration {
         this.keywords.addAll(keywords);
     }
     
-    // ---
+    // --- Properties
     
     public void addProperty(String property) {
         properties.add(property);
@@ -400,7 +456,7 @@ public class JifConfiguration {
         this.properties.addAll(properties);
     }
     
-    // ---
+    // --- Symbols
     
     public void addSymbol(String symbol) {
         symbols.add(symbol);
@@ -416,12 +472,16 @@ public class JifConfiguration {
         return alpha;
     }
     
+    public Iterator symbolIterator() {
+        return getSymbolsAlpha().iterator();
+    }
+    
     public void setSymbols(Set symbols) {
         this.symbols.clear();
         this.symbols.addAll(symbols);
     }
     
-    // ---
+    // --- Verbs
     
     public void addVerb(String verb) {
         verbs.add(verb);
@@ -442,17 +502,38 @@ public class JifConfiguration {
         this.verbs.addAll(verbs);
     }
     
-    // ---
+    // --- Styles
     
     public InformContext getContext() {
         return context;
     }
     
+    public Color getBackground() {
+        return context.getBackground();
+    }
+    
+    public Color getForeground(InformSyntax syntax) {
+        return context.getForeground(syntax);
+    }
+    
+    public Font getFont() {
+        return context.getFont();
+    }
+    
+    public String getFontName() {
+        return context.getFontName();
+    }
+    
+    public int getFontSize() {
+        return context.getFontSize();
+    }
+    
     public void setContext(InformContext context) {
         this.context.replaceStyles(context);
+        notifyObservers();
     }
 
-    // ---
+    // --- Blc
     
     public String getBlcPath() {
         return (blc == null) ? "": blc.getPath();
@@ -462,7 +543,7 @@ public class JifConfiguration {
         this.blc = (blcPath.trim().equals(""))?null:new JifFileName(blcPath);
     }
     
-    // ---
+    // --- Bres
     
     public String getBresPath() {
         return (bres == null) ? "" : bres.getPath();
@@ -472,7 +553,7 @@ public class JifConfiguration {
         this.bres = (bresPath.trim().equals(""))?null:new JifFileName(bresPath);
     }
     
-    // ---
+    // --- Compiler
     
     public String getCompilerPath() {
         return (compiler == null) ? "" : compiler.getPath();
@@ -482,7 +563,7 @@ public class JifConfiguration {
         this.compiler = (compilerPath.trim().equals(""))?null:new JifFileName(compilerPath);
     }
     
-    // ---
+    // --- Game destination
     
     public String getGamePath() {
         return (game == null) ? "" : game.getPath();
@@ -492,66 +573,91 @@ public class JifConfiguration {
         this.game = (gamePath.trim().equals(""))?null:new JifFileName(gamePath);
     }
     
-    // ---
+    // --- Interpreter
     
     public String getInterpreterPath() {
-    	File f;
-    	if (informMode){
-    		f = new File(workingDirectory+interpreterZcode);
-    		if (f.exists()) return workingDirectory+interpreterZcode;
-    		else return getInterpreterZcodePath();
-    	}
-    	else{
-    		f = new File(workingDirectory+interpreterGlulx);
-    		if (f.exists()) return workingDirectory+interpreterGlulx;
-    		else return getInterpreterGlulxPath();
-    	}
+        File f;
+        if (informMode) {
+            f = new File(workingDirectory + interpreterZcode);
+            if (f.exists()) {
+                return workingDirectory + interpreterZcode;
+            } else {
+                return getInterpreterZcodePath();
+            }
+        } else {
+            f = new File(workingDirectory + interpreterGlulx);
+            if (f.exists()) {
+                return workingDirectory + interpreterGlulx;
+            } else {
+                return getInterpreterGlulxPath();
+            }
+        }
     }
-    
-    // ---
+
+    // --- Glulx
     
     public String getInterpreterGlulxPath() {
-    	return (interpreterGlulx == null) ? "" : interpreterGlulx.getPath();
+        return (interpreterGlulx == null) ? "" : interpreterGlulx.getPath();
     }
-    
+
     public void setInterpreterGlulxPath(String interpreterGlulxPath) {
         this.interpreterGlulx = (interpreterGlulxPath.trim().equals(""))?null:new JifFileName(interpreterGlulxPath);
     }
     
-    // ---
+    // --- Zcode
     
-    public String getInterpreterZcodePath () {
-    	return (interpreterZcode == null) ? "" : interpreterZcode.getPath();
+    public String getInterpreterZcodePath() {
+        return (interpreterZcode == null) ? "" : interpreterZcode.getPath();
     }
-    
+
     public void setInterpreterZcodePath(String interpreterZcodePath) {
         this.interpreterZcode = (interpreterZcodePath.trim().equals(""))?null:new JifFileName(interpreterZcodePath);
     }
     
-    // ---
+    // --- Last file
     
     public JifFileName getLastFile() {
         return lastFile;
+    }
+    
+    public String getLastFileDirectory() {
+        return lastFile.getDirectory();
+    }
+    
+    public String getLastFilePath() {
+        return lastFile.getPath();
     }
     
     public void setLastFile(String lastFile) {
         this.lastFile = (lastFile.trim().equals(""))?null:new JifFileName(lastFile);
     }
     
-    // ---
+    // --- Last insert
     
     public JifFileName getLastInsert() {
         return lastInsert;
+    }
+    
+    public String getLastInsertDirectory() {
+        return lastInsert.getDirectory();
     }
     
     public void setLastInsert(String lastInsert) {
         this.lastInsert = (lastInsert.trim().equals(""))?null:new JifFileName(lastInsert);
     }
     
-    // ---
+    // --- Last project
     
     public JifFileName getLastProject() {
         return lastProject;
+    }
+    
+    public String getLastProjectName() {
+        return lastProject.getName();
+    }
+    
+    public String getLastProjectPath() {
+        return lastProject.getPath();
     }
     
     public void setLastProject(String lastProject) {
@@ -559,7 +665,7 @@ public class JifConfiguration {
         notifyObservers();
     }
     
-    // ---
+    // --- Libraries
     
     public String getLibraryPath() {
         return (library[0] == null) ? "" : library[0].getPath();
@@ -599,7 +705,7 @@ public class JifConfiguration {
         this.library[3] = (libraryPath3.trim().equals(""))?null:new JifFileName(libraryPath3);
     }
     
-    // ---
+    // --- Adventure in library
     
     public boolean getAdventInLib() {
         return adventInLib;
@@ -609,7 +715,7 @@ public class JifConfiguration {
         this.adventInLib = adventInLib;
     } 
     
-    // ---
+    // --- Create new file
     
     public boolean getCreateNewFile() {
         return createNewFile;
@@ -619,7 +725,7 @@ public class JifConfiguration {
         this.createNewFile = createNewFile;
     }
     
-    // ---
+    // --- Helped code
     
     public boolean getHelpedCode() {
         return helpedCode;
@@ -629,7 +735,7 @@ public class JifConfiguration {
         this.helpedCode = helpedCode;
     }
     
-    // ---
+    // --- Mode
     
     public boolean getInformMode() {
         return informMode;
@@ -639,7 +745,7 @@ public class JifConfiguration {
         this.informMode = informMode;
     }
     
-    // ---
+    // --- Make resource
     
     public boolean getMakeResource() {
         return makeResource;
@@ -649,7 +755,7 @@ public class JifConfiguration {
         this.makeResource = makeResource;
     }
     
-    // ---
+    // --- Mapping live
     
     public boolean getMappingLive() {
         return mappingLive;
@@ -667,19 +773,24 @@ public class JifConfiguration {
     
     public void setNumberLines(boolean numberLines) {
         this.numberLines = numberLines;
+        notifyObservers();
     }
     
-    // ---
+    // --- Open last file
     
     public boolean getOpenLastFile() {
         return openLastFile;
+    }
+    
+    public boolean isOpenLastFile() {
+        return openLastFile && lastFile != null;
     }
     
     public void setOpenLastFile(boolean openLastFile) {
         this.openLastFile = openLastFile;
     }
     
-    // ---
+    // --- Open last project
     
     public boolean getOpenProjectFiles() {
         return openProjectFiles;
@@ -689,7 +800,7 @@ public class JifConfiguration {
         this.openProjectFiles = openProjectFiles;
     }
     
-    // ---
+    // --- Scan project files
     
     public boolean getScanProjectFiles() {
         return scanProjectFiles;
@@ -699,7 +810,7 @@ public class JifConfiguration {
         this.scanProjectFiles = scanProjectFiles;
     }
     
-    // ---
+    // --- Syntax highlighting
     
     public boolean getSyntaxHighlighting() {
         return syntaxHighlighting;
@@ -709,7 +820,7 @@ public class JifConfiguration {
         this.syntaxHighlighting = syntaxHighlighting;
     }
     
-    // ---
+    // --- Wrap lines
     
     public boolean getWrapLines() {
         return wrapLines;
@@ -717,49 +828,64 @@ public class JifConfiguration {
     
     public void setWrapLines(boolean wrapLines) {
         this.wrapLines = wrapLines;
+        notifyObservers();
     }
     
-    // ---
+    // --- Full screen
     
-    public boolean getFullScreen() {
-        return fullscreen;
+    public boolean isFullScreen() {
+        return fullScreen;
     }
     
-    public void setFullScreen(boolean fullscreen) {
-        this.fullscreen = fullscreen;
+    public void verifyFullScreen() {
+        fullScreen = !(outputVisible || toolbarVisible || treeVisible);
     }
     
-    // ---
-    
-    public boolean getOutput() {
-        return output;
+    public void setFullScreen(boolean fullScreen) {
+        this.fullScreen = fullScreen;
+        outputVisible = !fullScreen;
+        toolbarVisible = !fullScreen;
+        treeVisible = !fullScreen;
+        notifyObservers();
     }
     
-    public void setOutput(boolean output) {
-        this.output = output;
+    // --- Output visible
+    
+    public boolean isOutputVisible() {
+        return outputVisible;
     }
     
-    // ---
-    
-    public boolean getToolbar() {
-        return toolbar;
+    public void setOutputVisible(boolean output) {
+        this.outputVisible = output;
+        verifyFullScreen();
+        notifyObservers();
     }
     
-    public void setToolbar(boolean toolbar) {
-        this.toolbar = toolbar;
+    // --- Toolbar visible
+    
+    public boolean isToolbarVisible() {
+        return toolbarVisible;
     }
     
-    // ---
-    
-    public boolean getTree() {
-        return tree;
+    public void setToolbarVisible(boolean toolbar) {
+        this.toolbarVisible = toolbar;
+        verifyFullScreen();
+        notifyObservers();
     }
     
-    public void setTree(boolean tree) {
-        this.tree = tree;
+    // --- Tree visible
+    
+    public boolean isTreeVisible() {
+        return treeVisible;
     }
     
-    // ---
+    public void setTreeVisible(boolean tree) {
+        this.treeVisible = tree;
+        verifyFullScreen();
+        notifyObservers();
+    }
+    
+    // --- Divider 1
     
     public int getDivider1() {
         return divider1;
@@ -769,7 +895,7 @@ public class JifConfiguration {
         this.divider1 = divider1;
     }
     
-    // ---
+    // --- Divider 3
     
     public int getDivider3() {
         return divider3;
@@ -779,7 +905,7 @@ public class JifConfiguration {
         this.divider3 = divider3;
     }
     
-    // ---
+    // --- Frame height
     
     public int getFrameHeight() {
         return frameHeight;
@@ -789,7 +915,7 @@ public class JifConfiguration {
         this.frameHeight = frameHeight;
     }
     
-    // ---
+    // --- Frame width
     
     public int getFrameWidth() {
         return frameWidth;
@@ -799,7 +925,7 @@ public class JifConfiguration {
         this.frameWidth = frameWidth;
     }
     
-    // ---
+    // --- Frame X
     
     public int getFrameX() {
         return frameX;
@@ -809,7 +935,7 @@ public class JifConfiguration {
         this.frameX = frameX;
     }
     
-    // ---
+    // --- Frame Y
     
     public int getFrameY() {
         return frameY;
@@ -819,7 +945,7 @@ public class JifConfiguration {
         this.frameY = FrameY;
     }
     
-    // ---
+    // --- Tab size
     
     public int getTabSize() {
         return tabSize;

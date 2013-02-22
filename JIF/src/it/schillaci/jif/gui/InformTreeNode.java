@@ -11,7 +11,7 @@ package it.schillaci.jif.gui;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscalinet.it
@@ -33,79 +33,138 @@ package it.schillaci.jif.gui;
  */
 
 import java.util.Collections;
-import java.util.Hashtable;
+import java.util.Enumeration;
+import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
 
 /**
  * Node for the Inform code tree.
  * 
  * @author  Peter Piggott
- * @version 1.0
+ * @version 2.0
  * @since   JIF 3.2
  */
-public class InformTreeNode extends DefaultMutableTreeNode 
+public class InformTreeNode extends DefaultMutableTreeNode
         implements Comparable {
-    
+
     /**
-     * Creates an Inform tree node with no parent, no children, initialized with
+     * Creates an Inform tree node with no parent, no children, initialised with
      * the specified user object, and that allows children only if specified.
-     * 
-     * @param userObject
-     *              an Object provided by the user that constitutes the node's
-     *              data
-     * @param allowsChildren
-     *              if <code>true</code>, the node is allowed to have child
-     *              nodes -- otherwise, it is always a leaf node
+     *
+     * @param userObject an Object provided by the user that constitutes the
+     * node's data
+     * @param allowsChildren if <code>true</code>, the node is allowed to have
+     * child nodes -- otherwise, it is always a leaf node
      */
     public InformTreeNode(Object userObject, boolean allowsChildren) {
         super(userObject, allowsChildren);
     }
 
     /**
-     * Creates an Inform tree node with no parent, no children, but which allows 
-     * children, and initializes it with the specified user object.
-     * 
-     * @param userObject
-     *              an Object provided by the user that constitutes the node's
-     *              data
+     * Creates an Inform tree node with no parent, no children, but which allows
+     * children, and initialises it with the specified user object.
+     *
+     * @param userObject an Object provided by the user that constitutes the
+     * node's data
      */
     public InformTreeNode(Object userObject) {
         super(userObject);
     }
-    
+
     /**
-     * Creates an Inform tree node with no parent, no children, but which allows 
+     * Creates an Inform tree node with no parent, no children, but which allows
      * children.
-     */ 
+     */
     public InformTreeNode() {
         super();
     }
-    
+
     /**
-     * Recusive sort of this Inform tree node's children in alphabetical order.
+     * Recursive search of this tree node's children in depth first order for a
+     * child with a user object with the given label.
+     *
+     * @param label The label to find
+     * @return The label location
+     */
+    public Inspect search(String label) {
+        for (Enumeration e = depthFirstEnumeration(); e.hasMoreElements();) {
+            Object o = ((InformTreeNode) e.nextElement()).getUserObject();
+            if (o instanceof Inspect) {
+                Inspect ins = (Inspect) o;
+                if (ins.getLabel().equalsIgnoreCase(label)
+                        || ins.getLabel().equalsIgnoreCase(label + "sub")) {
+                    return ins;
+                }
+            }
+        }
+        return new Inspect(label);
+    }
+
+    /**
+     * Replace all of this Inform tree node's children in alphabetical order
+     * based on a list of label locations.
+     *
+     * @param list The new children (label locations) for the node
+     */
+    public void replaceChildren(List list) {
+        Collections.sort(list);
+        removeAllChildren();
+        for (int i = 0, size = list.size(); i < size; i++) {
+            add(new InformTreeNode((Inspect) list.get(i)));
+        }
+    }
+
+    /**
+     * Recursive sort of this Inform tree node's children in alphabetical order.
      */
     public void sort() {
         if (children == null) {
             return;
         }
         Collections.sort(children);
-        
-        for (int i=0; i<children.size(); i++) {
+
+        for (int i = 0; i < children.size(); i++) {
             Object child = children.get(i);
             if (child instanceof InformTreeNode) {
                 ((InformTreeNode) child).sort();
             }
         }
     }
-    
-    // --- Comparable implementation -------------------------------------------
 
+    /**
+     * Insert new child in alphabetical order.
+     *
+     * @param newChild The InformTreeNode to insert under this node
+     * @exception    ArrayIndexOutOfBoundsException    if <code>childIndex</code> is
+     * out of bounds
+     * @exception    IllegalArgumentException    if <code>newChild</code> is null or
+     * is an ancestor of this node
+     * @exception    IllegalStateException    if this node does not allow children
+     */
+    public void insert(InformTreeNode newChild) {
+        if (!allowsChildren) {
+            throw new IllegalStateException("node does not allow children");
+        } else if (newChild == null) {
+            throw new IllegalArgumentException("new child is null");
+        } else if (isNodeAncestor(newChild)) {
+            throw new IllegalArgumentException("new child is an ancestor");
+        }
+
+        int index = (children == null)
+                ? -1
+                : Collections.binarySearch(children, newChild);
+
+        if (index < 0) {
+            insert(newChild, -index - 1);
+        }
+    }
+
+    // --- Comparable implementation -------------------------------------------
+    @Override
     public int compareTo(Object o) {
         InformTreeNode node = (InformTreeNode) o;
-        
+
         // Compare node userObjects
         return toString().compareTo(node.toString());
     }
-    
 }

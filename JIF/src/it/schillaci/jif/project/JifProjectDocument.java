@@ -11,7 +11,7 @@ package it.schillaci.jif.project;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -33,10 +33,10 @@ package it.schillaci.jif.project;
  */
 
 
-import it.schillaci.jif.inform.InformContext;
-import it.schillaci.jif.inform.InformSyntax;
 import it.schillaci.jif.core.JifDocument;
 import it.schillaci.jif.gui.jFrame;
+import it.schillaci.jif.inform.InformContext;
+import it.schillaci.jif.inform.InformSyntax;
 import java.util.Hashtable;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -51,7 +51,8 @@ import javax.swing.text.StyleContext;
  * An extension of DefaultStyledDocument for the JifProject Syntax Highlight
  *
  * @author Alessandro Schillaci
- * @author Peter Piggott 
+ * @author Peter Piggott
+ * @version 2.0
  */
 public class JifProjectDocument extends JifDocument {
     /**
@@ -63,8 +64,6 @@ public class JifProjectDocument extends JifDocument {
     MutableAttributeSet normal;
     MutableAttributeSet keyword;
     MutableAttributeSet comment;
-    
-    
     Hashtable keywords;
 
     /**
@@ -79,7 +78,6 @@ public class JifProjectDocument extends JifDocument {
      */
     protected  JifProjectDocument(Content c, StyleContext styles) {
         super(c, styles);
-        putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
     }
 
     /**
@@ -138,6 +136,7 @@ public class JifProjectDocument extends JifDocument {
      * @throws BadLocationException 
      *            If the insert action fails
      */
+    @Override
     public void insertString(int offset, String str, AttributeSet a)
             throws BadLocationException {
         
@@ -155,6 +154,7 @@ public class JifProjectDocument extends JifDocument {
      * @throws BadLocationException 
      *            If the remove action fails
      */
+    @Override
     public void remove(int offset, int length)
             throws BadLocationException {
         
@@ -241,25 +241,26 @@ public class JifProjectDocument extends JifDocument {
         JifProjectLexer lexer = new JifProjectLexer(source, offset);
         JifProjectToken token = lexer.nextElement();
         
-        while(token.getType() != JifProjectToken.EOS) {
-            
+        while (token.getType() != JifProjectToken.EOS) {
+
             startOffset = token.getStartPosition();
             endOffset = token.getEndPosition();
             tokenLength = endOffset - startOffset;
-            
-            if (token.getType() == JifProjectToken.COMMENT) 
+
+            if (token.getType() == JifProjectToken.COMMENT) {
                 syntax = getStyle(InformSyntax.Comment.getName());
-            else if (token.getType() == JifProjectToken.SYMBOL) {
-                if (JifProjectDAO.isKeyword(token.getContent()))
+            } else if (token.getType() == JifProjectToken.SYMBOL) {
+                if (JifProjectDAO.isKeyword(token.getContent())) {
                     syntax = getStyle(InformSyntax.Keyword.getName());
-                else
+                } else {
                     syntax = getStyle(InformSyntax.Normal.getName());
-            }
-            else if (token.getType() == JifProjectToken.WHITESPACE)
+                }
+            } else if (token.getType() == JifProjectToken.WHITESPACE) {
                 syntax = getStyle(InformSyntax.White.getName());
-            else 
+            } else {
                 syntax = getStyle(InformSyntax.Normal.getName());
-           
+            }
+
             setCharacterAttributes(startOffset, tokenLength, syntax, true);
             token = lexer.nextElement();
         }

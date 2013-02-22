@@ -1,7 +1,7 @@
 package it.schillaci.jif.resource;
 
 /*
- * Inform.java
+ * Resource.java
  *
  * This file is part of JIF.
  *
@@ -11,7 +11,7 @@ package it.schillaci.jif.resource;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscalinet.it
@@ -74,9 +74,7 @@ public class Resource {
         // --- Resource Keyords ------------------------------------------------
         
         public static final Keyword Code = new Keyword("code");
-
         public static final Keyword Picture = new Keyword("picture");
-
         public static final Keyword Sound = new Keyword("sound");
 
         // Resource keywords (not case sensitive)

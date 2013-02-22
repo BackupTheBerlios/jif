@@ -11,7 +11,7 @@ package it.schillaci.jif.resource;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -33,10 +33,10 @@ package it.schillaci.jif.resource;
  */
 
 
-import it.schillaci.jif.inform.InformContext;
-import it.schillaci.jif.inform.InformSyntax;
 import it.schillaci.jif.core.JifDocument;
 import it.schillaci.jif.gui.jFrame;
+import it.schillaci.jif.inform.InformContext;
+import it.schillaci.jif.inform.InformSyntax;
 import java.util.Hashtable;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -51,7 +51,9 @@ import javax.swing.text.StyleContext;
  * An extension of DefaultStyledDocument for the Resource Syntax Highlight
  *
  * @author Alessandro Schillaci
- * @author Peter Piggott 
+ * @author Peter Piggott
+ * @version 2.0
+ * @since 3.2
  */
 public class ResourceDocument extends JifDocument {
     /**
@@ -63,8 +65,6 @@ public class ResourceDocument extends JifDocument {
     MutableAttributeSet normal;
     MutableAttributeSet keyword;
     MutableAttributeSet comment;
-    
-    
     Hashtable keywords;
 
     /**
@@ -138,6 +138,7 @@ public class ResourceDocument extends JifDocument {
      * @throws BadLocationException 
      *            If the insert action fails
      */
+    @Override
     public void insertString(int offset, String str, AttributeSet a)
             throws BadLocationException {
         
@@ -155,6 +156,7 @@ public class ResourceDocument extends JifDocument {
      * @throws BadLocationException 
      *            If the remove action fails
      */
+    @Override
     public void remove(int offset, int length)
             throws BadLocationException {
         
@@ -241,27 +243,28 @@ public class ResourceDocument extends JifDocument {
         ResourceLexer lexer = new ResourceLexer(source, offset);
         ResourceToken token = lexer.nextElement();
         
-        while(token.getType() != ResourceToken.EOS) {
-            
+        while (token.getType() != ResourceToken.EOS) {
+
             startOffset = token.getStartPosition();
             endOffset = token.getEndPosition();
             tokenLength = endOffset - startOffset;
-            
-            if (token.getType() == ResourceToken.COMMENT) 
+
+            if (token.getType() == ResourceToken.COMMENT) {
                 syntax = getStyle(InformSyntax.Comment.getName());
-            else if (token.getType() == ResourceToken.STRING)
+            } else if (token.getType() == ResourceToken.STRING) {
                 syntax = getStyle(InformSyntax.String.getName());
-            else if (token.getType() == ResourceToken.SYMBOL) {
-                if (Resource.isKeyword(token.getContent()))
+            } else if (token.getType() == ResourceToken.SYMBOL) {
+                if (Resource.isKeyword(token.getContent())) {
                     syntax = getStyle(InformSyntax.Keyword.getName());
-                else
+                } else {
                     syntax = getStyle(InformSyntax.Normal.getName());
-            }
-            else if (token.getType() == ResourceToken.WHITESPACE)
+                }
+            } else if (token.getType() == ResourceToken.WHITESPACE) {
                 syntax = getStyle(InformSyntax.White.getName());
-            else 
+            } else {
                 syntax = getStyle(InformSyntax.Normal.getName());
-           
+            }
+
             setCharacterAttributes(startOffset, tokenLength, syntax, true);
             token = lexer.nextElement();
         }

@@ -11,7 +11,7 @@ package it.schillaci.jif.configuration;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -32,15 +32,13 @@ package it.schillaci.jif.configuration;
  *
  */
 
-
-import it.schillaci.jif.inform.InformContext;
-import it.schillaci.jif.inform.InformSyntax;
 import it.schillaci.jif.core.JifDocument;
 import it.schillaci.jif.gui.jFrame;
+import it.schillaci.jif.inform.InformContext;
+import it.schillaci.jif.inform.InformSyntax;
 import java.util.Hashtable;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
 import javax.swing.text.GapContent;
@@ -58,6 +56,7 @@ public class JifConfigurationDocument extends JifDocument {
      *
      */
     private static final long serialVersionUID = 4399244071115666713L;
+    
     jFrame jframe;
     DefaultStyledDocument doc;
     MutableAttributeSet normal;
@@ -77,9 +76,8 @@ public class JifConfigurationDocument extends JifDocument {
      *            the set of styles for Inform syntax highlighting which may be
      *            shared across documents
      */
-    protected  JifConfigurationDocument(Content c, StyleContext styles) {
+    protected JifConfigurationDocument(Content c, StyleContext styles) {
         super(c, styles);
-        putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
     }
 
     /**
@@ -138,6 +136,7 @@ public class JifConfigurationDocument extends JifDocument {
      * @throws BadLocationException 
      *            If the insert action fails
      */
+    @Override
     public void insertString(int offset, String str, AttributeSet a)
             throws BadLocationException {
         
@@ -155,6 +154,7 @@ public class JifConfigurationDocument extends JifDocument {
      * @throws BadLocationException 
      *            If the remove action fails
      */
+    @Override
     public void remove(int offset, int length)
             throws BadLocationException {
         
@@ -231,36 +231,36 @@ public class JifConfigurationDocument extends JifDocument {
      */
     public void applyHighlighting(int offset, int length)
             throws BadLocationException {
-        
+
         int startOffset;
         int endOffset;
         int tokenLength;
         MutableAttributeSet syntax;
-        
+
         String source = getText(offset, length);
         JifConfigurationLexer lexer = new JifConfigurationLexer(source, offset);
         JifConfigurationToken token = lexer.nextElement();
-        
-        while(token.getType() != JifConfigurationToken.EOS) {
-            
+
+        while (token.getType() != JifConfigurationToken.EOS) {
+
             startOffset = token.getStartPosition();
             endOffset = token.getEndPosition();
             tokenLength = endOffset - startOffset;
-            
+
             if (token.getType() == JifConfigurationToken.COMMENT) {
                 syntax = getStyle(InformSyntax.Comment.getName());
-            } 
-            else if (token.getType() == JifConfigurationToken.SYMBOL) {
-                if (JifConfigurationDAO.isKeyword(token.getContent()))
+            } else if (token.getType() == JifConfigurationToken.SYMBOL) {
+                if (JifConfigurationDAO.isKeyword(token.getContent())) {
                     syntax = getStyle(InformSyntax.Keyword.getName());
-                else
+                } else {
                     syntax = getStyle(InformSyntax.Normal.getName());
-            }
-            else if (token.getType() == JifConfigurationToken.WHITESPACE)
+                }
+            } else if (token.getType() == JifConfigurationToken.WHITESPACE) {
                 syntax = getStyle(InformSyntax.White.getName());
-            else 
+            } else {
                 syntax = getStyle(InformSyntax.Normal.getName());
-           
+            }
+
             setCharacterAttributes(startOffset, tokenLength, syntax, true);
             token = lexer.nextElement();
         }

@@ -11,7 +11,7 @@ package it.schillaci.jif.core;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscalinet.it
@@ -32,21 +32,18 @@ package it.schillaci.jif.core;
  *
  */
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JEditorPane;
-import javax.swing.text.EditorKit;
 
 /**
  * JifFileName: Immutable data class for JIF file information that provides
  * convenience methods for accessing the type, directory, name and content type 
  * from the absolute path of the file.
  * 
- * 
- * 
- * 
  * @author Peter Piggott
- * @version 1.0
+ * @version 2.0
  * @since JIF 3.2
  */
 public class JifFileName implements Comparable {
@@ -60,6 +57,9 @@ public class JifFileName implements Comparable {
     // Directory for the file, without the file name
     private String directory;
 
+    // Tab title
+    private String tabTitle;
+    
     // File type
     private String type;
 
@@ -67,25 +67,27 @@ public class JifFileName implements Comparable {
     private String content;
 
     /**
-     * Constructor to create a new JifFileName from an path directory string.
-     * 
-     * 
+     * Constructor to create a new JifFileName from a path string.
+     *
      * @param absolutePath
-     *            file path directory - any quotes are removed.
+     *              file path - any single or double quotes are removed.
      */
     public JifFileName(String absolutePath) {
         path = Utils.replace(absolutePath, "\'", "");
         path = Utils.replace(path, "\"", "");
-        name = path.substring(path.lastIndexOf(Constants.SEP) + 1, path.length());
-        directory = path.substring(0, path.lastIndexOf(Constants.SEP));
+        name = path.substring(path.lastIndexOf(File.separator) + 1, path.length());
+        directory = path.substring(0, path.lastIndexOf(File.separator));
         type = name.substring(name.lastIndexOf(".") + 1, name.length()).toLowerCase();
         content = getContentTypeForFileType(type);
+        tabTitle = (path.length() > 20)
+            ? path.substring(0, 10) + "..." + path.substring(path.length()-20,  path.length())
+            : path;
     }
     
     /**
-     * Creates a jif editor kit based on the type of the file 
+     * Creates a Jif editor kit based on the type of the file 
      *
-     * @return suitable jif editor kit for file
+     * @return suitable Jif editor kit for file
      */
     public JifEditorKit createEditorKit() {
         return createEditorKitForFileType(type);
@@ -107,16 +109,22 @@ public class JifFileName implements Comparable {
         return directory;
     }
     
+    public String getTabTitle() {
+        return tabTitle;
+    }
+    
     public String getType() {
         return type;
     }
     
     // --- Object methods ------------------------------------------------------
     
+    @Override
     public String toString() {
         return path;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof JifFileName)) {
             return false;
@@ -125,12 +133,14 @@ public class JifFileName implements Comparable {
         return path.equals(jf.getPath());
     }
     
+    @Override
     public int hashCode() {
         return path.hashCode();
     }
 
     // --- Comparable implementation -------------------------------------------
     
+    @Override
     public int compareTo(Object o) {
         JifFileName jf = (JifFileName) o;
         
@@ -151,11 +161,11 @@ public class JifFileName implements Comparable {
     private static final Map fileAssociation;
     
     // Constants for editor kits
-    public static final String CONFIGEDITOR   = "JifConfigurationEditorKit";
-    public static final String INFORMEDITOR   = "InformEditorKit";
-    public static final String PLAINEDITOR    = "JifEditorKit";
-    public static final String PROJECTEDITOR  = "JifProjectEditorKit";
-    public static final String RESOURCEEDITOR = "ResourceEditorKit";
+    public static final String CONFIG_EDITOR   = "it.schillaci.jif.configuration.JifConfigurationEditorKit";
+    public static final String INFORM_EDITOR   = "it.schillaci.jif.inform.InformEditorKit";
+    public static final String PLAIN_EDITOR    = "it.schillaci.jif.core.JifEditorKit";
+    public static final String PROJECT_EDITOR  = "it.schillaci.jif.project.JifProjectEditorKit";
+    public static final String RESOURCE_EDITOR = "it.schillaci.jif.resource.ResourceEditorKit";
     
     // Constants for content types
     public static final String CONFIG   = "text/config";
@@ -186,15 +196,15 @@ public class JifFileName implements Comparable {
         fileAssociation.put(RES, RESOURCE);
         fileAssociation.put(TXT, PLAIN);
         
-        JEditorPane.registerEditorKitForContentType(CONFIG,   CONFIGEDITOR);
-        JEditorPane.registerEditorKitForContentType(INFORM,   INFORMEDITOR);
-        JEditorPane.registerEditorKitForContentType(PLAIN,    PLAINEDITOR);
-        JEditorPane.registerEditorKitForContentType(PROJECT,  PROJECTEDITOR);
-        JEditorPane.registerEditorKitForContentType(RESOURCE, RESOURCEEDITOR);
+        JEditorPane.registerEditorKitForContentType(CONFIG,   CONFIG_EDITOR);
+        JEditorPane.registerEditorKitForContentType(INFORM,   INFORM_EDITOR);
+        JEditorPane.registerEditorKitForContentType(PLAIN,    PLAIN_EDITOR);
+        JEditorPane.registerEditorKitForContentType(PROJECT,  PROJECT_EDITOR);
+        JEditorPane.registerEditorKitForContentType(RESOURCE, RESOURCE_EDITOR);
     }
 
     /**
-     * Registars an association from a file type to a content type.
+     * Registers an association from a file type to a content type.
      * 
      * @param type the file extension
      * @param content
@@ -207,7 +217,7 @@ public class JifFileName implements Comparable {
      * Returns the content type for a file type.
      *
      * @param type the file type to look up
-     * @returns the content type
+     * @return the content type
      */
     public static String getContentTypeForFileType(String type) {
         
@@ -215,15 +225,15 @@ public class JifFileName implements Comparable {
             return (String) fileAssociation.get(type);
         }
         
-        return (String) fileAssociation.get(ANY);        
+        return (String) fileAssociation.get(ANY);
     }
     
     /**
-     * Returns the jif editor kit for a file type.
+     * Returns the Jif editor kit for a file type.
      *
      * @param type
      *              the file type to look up
-     * @returns the jif editor kit
+     * @return the Jif editor kit
      */
     public static JifEditorKit createEditorKitForFileType(String type) {
         

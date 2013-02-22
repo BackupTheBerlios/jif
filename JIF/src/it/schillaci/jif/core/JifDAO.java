@@ -11,7 +11,7 @@ package it.schillaci.jif.core;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -53,7 +54,7 @@ import java.nio.charset.CharsetEncoder;
  * Data access object
  *
  * @author Peter Piggott
- * @version 1.0
+ * @version 2.0
  * @since JIF 3.2
  */
 public class JifDAO {
@@ -122,9 +123,21 @@ public class JifDAO {
      */
     public static String read(InputStream is) 
             throws IOException {
-        
-        BufferedReader br = new BufferedReader(new InputStreamReader(is, Constants.fileFormat));
-        StringBuffer sb = new StringBuffer();
+        return read(new InputStreamReader(is, Constants.fileFormat));
+    }
+    
+    /**
+     * Reads an <code>Reader</code> into a <code>String</code>
+     *
+     * @param in
+     *              <code>Reader</code> to read string from
+     * @return <code>String</code> representation of the <code>InputStream</code>
+     * @throws IOException
+     */
+    public static String read(Reader in) 
+            throws IOException {
+        BufferedReader br = new BufferedReader(in);
+        StringBuilder sb = new StringBuilder();
         String line = "";
         
         while ((line = br.readLine()) != null) {

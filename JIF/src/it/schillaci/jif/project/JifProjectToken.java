@@ -1,7 +1,7 @@
 package it.schillaci.jif.project;
 
 /*
- * JifProjectToken.java - Lexical token for the JifProject file
+ * JifProjectToken.java
  *
  * This file is part of JIF.
  *
@@ -11,7 +11,7 @@ package it.schillaci.jif.project;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -37,162 +37,154 @@ package it.schillaci.jif.project;
  * JifProjectToken: Stores the information about a lexical token
  *
  * @author Peter Piggott
- * @version Revision: 1.0
+ * @version 1.0
  * @since 3.2
  */
 
 public class JifProjectToken {
-    
+
     // Token lexeme values
-    
-    public static final Lexeme EOS        = new Lexeme("end-of-file");
-    public static final Lexeme COMMENT    = new Lexeme("comment");
-    public static final Lexeme DELIMITER  = new Lexeme("delimiter");
-    public static final Lexeme KEYWORD    = new Lexeme("keyword");
-    public static final Lexeme STRING     = new Lexeme("string");
-    public static final Lexeme SYMBOL     = new Lexeme("symbol");
+    public static final Lexeme EOS = new Lexeme("end-of-file");
+    public static final Lexeme COMMENT = new Lexeme("comment");
+    public static final Lexeme DELIMITER = new Lexeme("delimiter");
+    public static final Lexeme KEYWORD = new Lexeme("keyword");
+    public static final Lexeme STRING = new Lexeme("string");
+    public static final Lexeme SYMBOL = new Lexeme("symbol");
     public static final Lexeme WHITESPACE = new Lexeme("whitespace");
-    
-   // Lexical token types
 
-    private static final Lexeme types[] =
-        {EOS,
-         COMMENT,
-         DELIMITER,
-         KEYWORD,
-         STRING,
-         SYMBOL,
-         WHITESPACE
-        };
+    // Lexical token types
+    private static final Lexeme types[] = {
+        EOS,
+        COMMENT,
+        DELIMITER,
+        KEYWORD,
+        STRING,
+        SYMBOL,
+        WHITESPACE
+    };
 
-    
     public static class Lexeme {
-        
+
         private static String name;
-        
+
         Lexeme(String name) {
             this.name = name;
         }
-        
+
         public String getName() {
             return name;
         }
-        
+
+        @Override
         public String toString() {
             return "Lexeme[name: " + name + "]";
         }
- 
     }
-    
-  // Class variables
-
-   public Lexeme id;
-   public int level;
-   public int startPosition;
-   public int endPos;
-   public String content;
-
+    // Class variables
+    public Lexeme id;
+    public int startPosition;
+    public int endPos;
+    public String content;
 
 // Class constructors
+    /**
+     * Creates a new JifProject token object identifying a lexical token within
+     * the JifProject file.
+     *
+     * @param id A lexeme identifying the type of token.
+     * @param startPos The position of the start of the token text within the
+     * Jif Configuration file.
+     * @param endPos The position of the end of the token text within the Jif
+     * Configuration file.
+     * @param content The source text of the Configuration lexical token.
+     */
+    public JifProjectToken(Lexeme id, int startPos, int endPos, String content) {
 
-   /**
-    * Creates a new JifProject token object identifying a lexical token
-    * within the JifProject file.
-    *
-    * @param id
-    *           A lexeme identifying the type of token.
-    * @param startPosition
-    *           The position of the start of the token text within the Jif
-    *           Configuration file.
-    * @param endPos
-    *           The position of the end of the token text within the Jif
-    *           Configuration file.
-    * @param content
-    *           The source text of the Configuration lexical token.
-    */
-   public JifProjectToken(Lexeme id, int startPos, int endPos, String content) {
+        this(id, startPos, endPos);
+        this.content = content;
 
-     this(id, startPos, endPos);
-     this.content = content;
+    }
 
-   }
+    /**
+     * Creates a new Jif Configuration token object identifying a lexical token
+     * within the Jif Configuration file.
+     *
+     * @param id A lexeme identifying the type of token.
+     * @param startPos The position of the start of the token text within the
+     * Jif Configuration file.
+     * @param endPos The position of the end of the token text within the Jif
+     * Configuration file.
+     */
+    public JifProjectToken(Lexeme id, int startPos, int endPos) {
 
-   /**
-    * Creates a new Jif Configuration token object identifying a lexical token
-    * within the Jif Configuration file.
-    *
-    * @param id
-    *           A lexeme identifying the type of token.
-    * @param startPosition
-    *           The position of the start of the token text within the Jif 
-    *           Configuration file.
-    * @param endPos
-    *           The position of the end of the token text within the Jif 
-    *           Configuration file.
-    */
-   public JifProjectToken(Lexeme id, int startPos, int endPos) {
+        this.id = id;
+        this.startPosition = startPos;
+        this.endPos = endPos;
 
-     this.id = id;
-     this.startPosition = startPos;
-     this.endPos = endPos;
+    }
 
-   }
-   
 // Class methods
+    
+    /**
+     * Gets the name of the Configuration lexical token.
+     */
+    public String getName() {
 
-   /**Gets the name of the Configuration lexical token.
-    */
-   public String getName() {
+        return id.getName();
+    }
 
-      return id.getName();
-   }
+    /**
+     * Sets the lexeme representing the type of the Configuration lexical token.
+     *
+     * @param id a lexeme identifying The type of token.
+     */
+    public void setType(Lexeme id) {
 
-   /**Sets the lexeme representing the type of the Configuration lexical token.
-    *
-    * @param id
-    *           a lexeme identifying The type of token.
-    */
-   public void setType(Lexeme id) {
+        this.id = id;
+    }
 
-         this.id = id;
-   }
+    /**
+     * Gets a lexeme representing the type of the Configuration lexical token.
+     */
+    public Lexeme getType() {
 
-   /**Gets a lexeme representing the type of the Configuration lexical token.
-    */
-   public Lexeme getType() {
+        return id;
+    }
 
-      return id;
-   }
+    /**
+     * Gets the start position of the Configuration lexical token.
+     */
+    public int getStartPosition() {
 
-   /**Gets the start position of the Configuration lexical token.
-    */
-   public int getStartPosition() {
+        return startPosition;
+    }
 
-      return startPosition;
-   }
+    /**
+     * Gets the end position of the Configuration lexical token.
+     */
+    public int getEndPosition() {
 
-   /**Gets the end position of the Configuration lexical token.
-    */
-   public int getEndPosition() {
+        return endPos;
+    }
 
-      return endPos;
-   }
+    /**
+     * Gets the source of the Configuration lexical token.
+     */
+    public String getContent() {
 
-   /**Gets the source of the Configuration lexical token.
-    */
-   public String getContent() {
+        return content;
+    }
 
-      return content;
-   }
+    /**
+     * Converts the Configuration token into a string representation.
+     */
+    @Override
+    public String toString() {
 
-   /**Converts the Configuration token into a string representation.
-    */
-   public String toString() {
-
-      return "JifProjectToken[id: " + id.getName() + 
-              ", start: " + startPosition +
-              ", end: " + endPos + 
-              ", content: " + content +
-              "]";
-   }
+        return "JifProjectToken[id: " + id.getName()
+                + ", start: " + startPosition
+                + ", end: " + endPos
+                + ", content: " + content
+                + "]";
+    }
 }

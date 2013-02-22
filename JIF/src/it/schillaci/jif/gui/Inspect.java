@@ -11,7 +11,7 @@ package it.schillaci.jif.gui;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscali.it
@@ -33,37 +33,109 @@ package it.schillaci.jif.gui;
  */
 
 /**
- * A Class for The Object Tree
+ * A representation of inform source code symbols in the Object Tree
+ * 
  * @author Alessandro Schillaci
+ * @author Peter Piggott
+ * @version 2.0
  */
-public class Inspect {
-    /**
-     * The Inform keyword to be highlighted when selected from
-     * the Object Tree
-     */
-    public String Ilabel;   //pattern
-    /**
-     * Initial position of the Keyword
-     */
-    public int Iposition;   //posizione iniziale
+public class Inspect implements Comparable {
+
+    // The label to display for a symbol in the object tree
+    private String label;
     
+    // Absolute path of the file containing the symbol
+    private String path;
+    
+    // Initial position of the symbol in the file
+    private int position;
+
+    // --- Constructors --------------------------------------------------------
     
     /**
-     * Creates a new Inspect Object.
-     * The object tree is a tree of Inspect objects
-     * @param label The keyword
-     * @param position Position of keyword in the inform document
+     * Constructor to create a new Inspect from a label and its location in a
+     * file expressed as a file path and offset position within the file.
+     * 
+     * @param path
+     *              The absolute path of the inform document file which
+     *              contains the symbol
+     * @param label
+     *              The label to use for the symbol
+     * @param position
+     *              The offset position of keyword in the inform document
+     */
+    public Inspect(String label, String path, int position) {
+        this.label = label;
+        this.path = path;
+        this.position = position;
+    }
+    
+    /**
+     * Constructor to create a new Inspect from a symbol and its location in
+     * a file expressed as a offset position.
+     *
+     * @param label
+     *              The label to use for the symbol
+     * @param position
+     *              The position of the symbol in the inform document
      */
     public Inspect(String label, int position) {
-        Ilabel=label;
-        Iposition = position;
+        this(label, null, position);
     }
     
     /**
-     * This method is used by the Object Tree
-     * @return The keyword
+     * Constructor to create a new Inspect from just a symbol.
+     *
+     * @param label
+     *              The label to use for the symbol
      */
-    public String toString() {
-        return Ilabel;
+    public Inspect(String label) {
+        this(label, null, -1);
     }
+    
+    // --- Accessor methods ----------------------------------------------------
+    
+    public String getLabel() {
+        return label;
+    }
+    
+    public String getPath() {
+        return path;
+    }
+    
+    public int getPosition() {
+        return this.position;
+    }
+
+    // --- Object methods ------------------------------------------------------
+    
+    @Override
+    public String toString() {
+        return label;
+    }
+    
+    // --- Comparable implementation -------------------------------------------
+    
+    @Override
+    public int compareTo(Object o) {
+        Inspect i = (Inspect) o;
+        
+        // Compare symbols
+        int compare = label.compareTo(i.getLabel());
+        
+        if (compare != 0) {
+            return compare;
+        }
+        
+        // Names are equal, compare file paths
+        compare = path.compareTo(i.getPath());
+        
+        if (compare != 0) {
+            return compare;
+        }
+        
+        // File paths are equal compare positions
+        return position - i.getPosition();
+    }
+
 }

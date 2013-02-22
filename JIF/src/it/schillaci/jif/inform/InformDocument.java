@@ -11,7 +11,7 @@ package it.schillaci.jif.inform;
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2004-2011  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
  * e-m@il: silver.slade@tiscalinet.it
@@ -33,6 +33,10 @@ package it.schillaci.jif.inform;
  */
 
 import it.schillaci.jif.core.JifDocument;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
@@ -45,8 +49,10 @@ import javax.swing.text.StyleContext;
  * 
  * @author Alessandro Schillaci
  * @author Peter Piggott
+ * @version 2.0
+ * @since Jif 3.2
  */
-public class InformDocument extends JifDocument {
+public class InformDocument extends JifDocument implements InformParser.Callback {
 
     private static final long serialVersionUID = 5856047697369563208L;
     
@@ -120,6 +126,7 @@ public class InformDocument extends JifDocument {
      * @throws BadLocationException 
      *            If the insert action fails
      */
+    @Override
     public void insertString(int offset, String str, AttributeSet a)
             throws BadLocationException {
 
@@ -138,6 +145,7 @@ public class InformDocument extends JifDocument {
      * @throws BadLocationException
      *            If the remove action fails
      */
+    @Override
     public void remove(int offset, int length) throws BadLocationException {
 
         super.remove(offset, length);
@@ -209,80 +217,98 @@ public class InformDocument extends JifDocument {
      * 
      * @param offset 
      *            The initial offset at which to apply syntax highlighting
-     * @param changeLength 
+     * @param length 
      *            The changeLength of the document text to be highlighted
      * @throws BadLocationException
      *            If applying highlighting fails
      */
     public void applyHighlighting(int offset, int length) throws BadLocationException {
-        
+
         int startOffset;
         int endOffset;
         int changeLength;
         MutableAttributeSet syntax;
-        
+
         String source = getText(offset, length);
         InformLexer lexer = new InformLexer(source, offset);
         InformToken token = lexer.nextElement();
-        
-        while(token.getType() != InformToken.EOS) {
-            
+
+        while (token.getType() != InformToken.EOS) {
+
             startOffset = token.getStartPosition();
             endOffset = token.getEndPosition();
             changeLength = endOffset - startOffset;
-            
-            if (token.getType() == InformToken.COMMENT) 
+
+            if (token.getType() == InformToken.COMMENT) {
                 syntax = getStyle(InformSyntax.Comment.getName());
-            else if (token.getType() == InformToken.NUMBER) 
+            } else if (token.getType() == InformToken.NUMBER) {
                 syntax = getStyle(InformSyntax.Number.getName());
-            else if (token.getType() == InformToken.STRING)
+            } else if (token.getType() == InformToken.STRING) {
                 syntax = getStyle(InformSyntax.String.getName());
-            else if (token.getType() == InformToken.SYMBOL) {
-                if (isAttribute(token.getContent()))
+            } else if (token.getType() == InformToken.SYMBOL) {
+                if (isAttribute(token.getContent())) {
                     syntax = getStyle(InformSyntax.Attribute.getName());
-                else if (isProperty(token.getContent()))
+                } else if (isProperty(token.getContent())) {
                     syntax = getStyle(InformSyntax.Property.getName());
-                else if (isVerb(token.getContent()))
+                } else if (isVerb(token.getContent())) {
                     syntax = getStyle(InformSyntax.Verb.getName());
-                else if (isKeyword(token.getContent()))
+                } else if (isKeyword(token.getContent())) {
                     syntax = getStyle(InformSyntax.Keyword.getName());
-                else 
+                } else {
                     syntax = getStyle(InformSyntax.Normal.getName());
                 }
-            else if (token.getType() == InformToken.WHITESPACE)
+            } else if (token.getType() == InformToken.WHITESPACE) {
                 syntax = getStyle(InformSyntax.White.getName());
-            else if (token.getType() == InformToken.WORD)
+            } else if (token.getType() == InformToken.WORD) {
                 syntax = getStyle(InformSyntax.Word.getName());
-            else 
+            } else {
                 syntax = getStyle(InformSyntax.Normal.getName());
+            }
 
             setCharacterAttributes(startOffset, changeLength, syntax, true);
             token = lexer.nextElement();
-        }        
+        }
     }
     
-    private boolean isKeyword(String token) {
-        return Inform.isDirective(token) || Inform.isKeyword(token);
+    @Override
+    public void handleToken(InformToken token) {
+        setCharacterAttributes(
+                token.getStartPosition(),
+                token.getEndPosition() - token.getStartPosition(),
+                getStyle(token.getType().getName()),
+                true);
     }
 
-    // TODO Fix this to include document declared attributes
-    private boolean isAttribute(String token){
-        return Inform.isAttribute(token);
+    @Override
+    public boolean isAttribute(String name){
+        return InformLibrary.isAttribute(name);
     }
     
-    // TODO Fix this to include document declared properties
-    private boolean isProperty(String token){
-        return Inform.isProperty(token);
+    public boolean isDirective(String name) {
+        return InformLibrary.isDirective(name);
     }
 
-    // TODO Fix this to include document declared verbs
-    private boolean isVerb(String token){
-        return Inform.isVerb(token);
+    public boolean isKeyword(String name) {
+        return InformLibrary.isKeyword(name) || InformLibrary.isDirective(name);
     }
 
+    @Override
+    public boolean isProperty(String name){
+        return InformLibrary.isProperty(name);
+    }
+
+    public boolean isStatement(String name) {
+        return InformLibrary.isStatement(name);
+    }
+
+    @Override
+    public boolean isVerb(String name) {
+        return InformLibrary.isVerb(name);
+    }
+    
     // TODO Fix automatic bracket and quote completion 
-    protected String addMatchingBrace(String brace,int offset) throws BadLocationException {
-        StringBuffer whiteSpace = new StringBuffer();
+    protected String addMatchingBrace(String brace, int offset) throws BadLocationException {
+        StringBuilder whiteSpace = new StringBuilder();
         int line = getDefaultRootElement().getElementIndex(offset);
         int i = getDefaultRootElement().getElement(line).getStartOffset();
         while (true) {
@@ -290,11 +316,79 @@ public class InformDocument extends JifDocument {
             if (temp.equals(" ") || temp.equals("\t")) {
                 whiteSpace.append(temp);
                 i++;
-            } else
+            } else {
                 break;
+            }
         }
-        return (brace.equals("{")?"{":"[")+"\n" + whiteSpace.toString() + whiteSpace.toString() + "\n"
-        + whiteSpace.toString() + (brace.equals("{")?"}":"]");
+        return (brace.equals("{") ? "{" : "[") + "\n" + whiteSpace.toString() + whiteSpace.toString() + "\n"
+                + whiteSpace.toString() + (brace.equals("{") ? "}" : "]");
     }
-    
+
+    /**
+     * Find any logical errors in the significant brackets in the Inform source
+     * code in the document. This ignores comments, strings and words.
+     *
+     * @return <code>Iterator</code> for bracket error positions in the document
+     */
+    @Override
+    public Iterator bracketErrors() {
+        Set errors = new TreeSet();
+        try {
+            Stack stack = new Stack();
+            InformLexer lexer = new InformLexer(getText(0, getLength()));
+            InformToken token = lexer.nextBracket();
+            InformToken.Lexeme type = token.getType();
+            InformToken peek = null;
+            while (type != InformToken.EOS) {
+                if (type == InformToken.OPENBRACE
+                        || type == InformToken.OPENBRACKET
+                        || type == InformToken.OPENROUTINE) {
+                    stack.push(token);
+                }
+                if (type == InformToken.CLOSEBRACE) {
+                    if (stack.empty()) {
+                        errors.add(new Integer(token.getStartPosition()));
+                    } else {
+                        peek = (InformToken) stack.pop();
+                        if (peek.getType() != InformToken.OPENBRACE) {
+                            errors.add(new Integer(peek.getStartPosition()));
+                            errors.add(new Integer(token.getStartPosition()));
+                        }
+                    }
+                }
+                if (type == InformToken.CLOSEBRACKET) {
+                    if (stack.empty()) {
+                        errors.add(new Integer(token.getStartPosition()));
+                    } else {
+                        peek = (InformToken) stack.pop();
+                        if (peek.getType() != InformToken.OPENBRACKET) {
+                            errors.add(new Integer(peek.getStartPosition()));
+                            errors.add(new Integer(token.getStartPosition()));
+                        }
+                    }
+                }
+                if (type == InformToken.CLOSEROUTINE) {
+                    if (stack.empty()) {
+                        errors.add(new Integer(token.getStartPosition()));
+                    } else {
+                        peek = (InformToken) stack.pop();
+                        if (peek.getType() != InformToken.OPENROUTINE) {
+                            errors.add(new Integer(peek.getStartPosition()));
+                            errors.add(new Integer(token.getStartPosition()));
+                        }
+                    }
+                }
+                token = lexer.nextBracket();
+                type = token.getType();
+            }
+
+            while (!stack.empty()) {
+                peek = (InformToken) stack.pop();
+                errors.add(new Integer(peek.getStartPosition()));
+            }
+        } catch (BadLocationException ex) {
+        } finally {
+            return errors.iterator();
+        }
+    }
 }

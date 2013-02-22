@@ -63,7 +63,7 @@ What's new?
 Jif has been improved, many bugs have been fixed and the configuration management revised.
 The main change is that now Jif configuration information is stored into a single INI file.
 You can edit this file ("Jif.cfg") out of Jif and restart Jif to see your changes take 
-effects. You can also edit this file within Jif (without the need to re-start Jif): just go to 
+effect. You can also edit this file within Jif (without the need to re-start Jif): just go to 
 the Options-> Jif INI file (menu) and edit it. Then save and see the changes on Jif.
 
 For the Linux/Unix/MacOsX users: now Jif can load the configuration from a different file.

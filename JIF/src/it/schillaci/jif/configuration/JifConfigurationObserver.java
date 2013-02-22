@@ -3,18 +3,18 @@ package it.schillaci.jif.configuration;
 /*
  * JifConfigurationObserver.java
  *
- * This projectFile is part of JIF.
+ * This file is part of JIF.
  *
  * Jif is substantially an editor entirely written in java that allows the
- * projectFile management for the creation of text-adventures based on Graham
+ * file management for the creation of text-adventures based on Graham
  * Nelson's Inform standard [a programming language for Interactive Fiction].
  * With Jif, it's possible to edit, compile and run a Text Adventure in
  * Inform format.
  *
- * Copyright (C) 2003-2006  Alessandro Schillaci
+ * Copyright (C) 2004-2013  Alessandro Schillaci
  *
  * WeB   : http://www.slade.altervista.org/
- * e-m@il: silver.slade@tiscalinet.it
+ * e-m@il: silver.slade@tiscali.it
  *
  * Jif is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
