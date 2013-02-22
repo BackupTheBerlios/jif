@@ -687,14 +687,14 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         jSeparator7 = new javax.swing.JPopupMenu.Separator();
         aboutMenuItem = new javax.swing.JMenuItem();
 
-        filePopupMenu.setFont(Constants.defaultFont); // NOI18N
+        filePopupMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("JIF"); // NOI18N
         insertNewMenu.setText(bundle.getString("POPUPMENU_MENU_NEW")); // NOI18N
-        insertNewMenu.setFont(Constants.defaultFont); // NOI18N
+        insertNewMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         filePopupMenu.add(insertNewMenu);
 
-        insertSymbolPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        insertSymbolPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         insertSymbolPopupMenuItem.setText(bundle.getString("JFRAME_INSERT_SYMBOL")); // NOI18N
         insertSymbolPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -703,7 +703,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         filePopupMenu.add(insertSymbolPopupMenuItem);
 
-        insertFilePopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        insertFilePopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         insertFilePopupMenuItem.setText(bundle.getString("JFRAME_INSERT_FROM_FILE")); // NOI18N
         insertFilePopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -713,7 +713,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         filePopupMenu.add(insertFilePopupMenuItem);
         filePopupMenu.add(jSeparator3);
 
-        cutPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        cutPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         cutPopupMenuItem.setText(bundle.getString("JFRAME_EDIT_CUT")); // NOI18N
         cutPopupMenuItem.setActionCommand("KEY JFRAME_EDIT_CUT : RB JIF");
         cutPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -723,7 +723,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         filePopupMenu.add(cutPopupMenuItem);
 
-        copyPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        copyPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         copyPopupMenuItem.setText(bundle.getString("POPUPMENU_MENUITEM_COPY")); // NOI18N
         copyPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -733,10 +733,10 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         filePopupMenu.add(copyPopupMenuItem);
 
         pastePopupMenu.setText(bundle.getString("POPUPMENU_MENU_PASTE")); // NOI18N
-        pastePopupMenu.setFont(Constants.defaultFont); // NOI18N
+        pastePopupMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         filePopupMenu.add(pastePopupMenu);
 
-        clearPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        clearPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         clearPopupMenuItem.setText(bundle.getString("POPUPMENU_MENUITEM_CLEAR")); // NOI18N
         clearPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -746,7 +746,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         filePopupMenu.add(clearPopupMenuItem);
         filePopupMenu.add(jSeparator13);
 
-        printPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        printPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         printPopupMenuItem.setText(bundle.getString("MENUITEM_PRINT")); // NOI18N
         printPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -755,7 +755,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         filePopupMenu.add(printPopupMenuItem);
 
-        closePopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        closePopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         closePopupMenuItem.setText(bundle.getString("MENUITEM_CLOSE")); // NOI18N
         closePopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -764,7 +764,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         filePopupMenu.add(closePopupMenuItem);
 
-        closeAllPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        closeAllPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         closeAllPopupMenuItem.setText(bundle.getString("MENUITEM_CLOSEALL")); // NOI18N
         closeAllPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -773,7 +773,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         filePopupMenu.add(closeAllPopupMenuItem);
 
-        jumpToSourceMenuItem.setFont(Constants.defaultFont); // NOI18N
+        jumpToSourceMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jumpToSourceMenuItem.setText(bundle.getString("MENU_JUMP_TO_SOURCE")); // NOI18N
         jumpToSourceMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -782,9 +782,9 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         filePopupMenu.add(jumpToSourceMenuItem);
 
-        projectPopupMenu.setFont(Constants.defaultFont); // NOI18N
+        projectPopupMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
-        newProjectPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        newProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         newProjectPopupMenuItem.setText(bundle.getString("PROJECT_NEW_PROJECT")); // NOI18N
         newProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -793,7 +793,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectPopupMenu.add(newProjectPopupMenuItem);
 
-        openProjectPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        openProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         openProjectPopupMenuItem.setText(bundle.getString("PROJECT_OPEN_PROJECT")); // NOI18N
         openProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -802,7 +802,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectPopupMenu.add(openProjectPopupMenuItem);
 
-        saveProjectPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        saveProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         saveProjectPopupMenuItem.setText(bundle.getString("PROJECT_SAVE_PROJECT")); // NOI18N
         saveProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -811,7 +811,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectPopupMenu.add(saveProjectPopupMenuItem);
 
-        closeProjectPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        closeProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         closeProjectPopupMenuItem.setText(bundle.getString("PROJECT_CLOSE_PROJECT")); // NOI18N
         closeProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -821,7 +821,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         projectPopupMenu.add(closeProjectPopupMenuItem);
         projectPopupMenu.add(jSeparator6);
 
-        addNewToProjectPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        addNewToProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         addNewToProjectPopupMenuItem.setText(bundle.getString("PROJECT_ADD_NEWFILE_TO_PROJECT")); // NOI18N
         addNewToProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -830,7 +830,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectPopupMenu.add(addNewToProjectPopupMenuItem);
 
-        addFileToProjectPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        addFileToProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         addFileToProjectPopupMenuItem.setText(bundle.getString("PROJECT_ADD_FILE_TO_PROJECT")); // NOI18N
         addFileToProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -839,7 +839,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectPopupMenu.add(addFileToProjectPopupMenuItem);
 
-        removeFromProjectPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        removeFromProjectPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         removeFromProjectPopupMenuItem.setText(bundle.getString("PROJECT_POPUP_REMOVE")); // NOI18N
         removeFromProjectPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -848,7 +848,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectPopupMenu.add(removeFromProjectPopupMenuItem);
 
-        openSelectedFilesPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        openSelectedFilesPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         openSelectedFilesPopupMenuItem.setText(bundle.getString("PROJECT_OPEN_SELECTED_FILES")); // NOI18N
         openSelectedFilesPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -858,7 +858,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         projectPopupMenu.add(openSelectedFilesPopupMenuItem);
         projectPopupMenu.add(jSeparator19);
 
-        setMainPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        setMainPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         setMainPopupMenuItem.setText(bundle.getString("PROJECT_SET_AS_MAIN_FILE")); // NOI18N
         setMainPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -867,7 +867,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectPopupMenu.add(setMainPopupMenuItem);
 
-        removeMainPopupMenuItem.setFont(Constants.defaultFont); // NOI18N
+        removeMainPopupMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         removeMainPopupMenuItem.setText(bundle.getString("PROJECT_REMOVE_MAIN_FILE")); // NOI18N
         removeMainPopupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2768,16 +2768,17 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
 
         getContentPane().add(toolbarPanel, java.awt.BorderLayout.NORTH);
 
+        mainSplitPane.setDividerLocation(450);
         mainSplitPane.setDividerSize(3);
         mainSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         mainSplitPane.setDoubleBuffered(true);
 
         upperSplitPane.setDividerSize(3);
         upperSplitPane.setDoubleBuffered(true);
-        upperSplitPane.setMinimumSize(new java.awt.Dimension(180, 248));
+        upperSplitPane.setMinimumSize(new java.awt.Dimension(180, 328));
         upperSplitPane.setPreferredSize(new java.awt.Dimension(180, 328));
 
-        leftTabbedPane.setFont(Constants.defaultFont); // NOI18N
+        leftTabbedPane.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         treePanel.setLayout(new javax.swing.BoxLayout(treePanel, javax.swing.BoxLayout.Y_AXIS));
 
@@ -2814,11 +2815,11 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
 
         projectPanel.setLayout(new javax.swing.BoxLayout(projectPanel, javax.swing.BoxLayout.Y_AXIS));
 
-        projectScrollPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Project", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, Constants.defaultFont)); // NOI18N
-        projectScrollPane.setFont(Constants.defaultFont); // NOI18N
+        projectScrollPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Project", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12))); // NOI18N
+        projectScrollPane.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         projectScrollPane.setPreferredSize(new java.awt.Dimension(90, 131));
 
-        projectList.setFont(Constants.defaultFont); // NOI18N
+        projectList.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         projectList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 projectListMouseClicked(evt);
@@ -2831,7 +2832,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
 
         projectPanel.add(projectScrollPane);
 
-        mainFileLabel.setFont(Constants.defaultFont); // NOI18N
+        mainFileLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         mainFileLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         mainFileLabel.setText("Main:");
         mainFileLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
@@ -2844,7 +2845,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         searchPanel.setPreferredSize(new java.awt.Dimension(180, 220));
         searchPanel.setLayout(new javax.swing.BoxLayout(searchPanel, javax.swing.BoxLayout.Y_AXIS));
 
-        searchProjectPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search all project files", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, Constants.defaultFont)); // NOI18N
+        searchProjectPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search all project files", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12))); // NOI18N
         searchProjectPanel.setMaximumSize(new java.awt.Dimension(180, 55));
         searchProjectPanel.setMinimumSize(new java.awt.Dimension(180, 55));
         searchProjectPanel.setPreferredSize(new java.awt.Dimension(180, 55));
@@ -2881,7 +2882,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
 
         searchPanel.add(searchProjectPanel);
 
-        definitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search for Definition", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, Constants.defaultFont)); // NOI18N
+        definitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search for Definition", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12))); // NOI18N
         definitionPanel.setMaximumSize(new java.awt.Dimension(180, 55));
         definitionPanel.setMinimumSize(new java.awt.Dimension(180, 55));
         definitionPanel.setPreferredSize(new java.awt.Dimension(180, 55));
@@ -2944,7 +2945,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
 
         outputTabbedPane.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
         outputTabbedPane.setAutoscrolls(true);
-        outputTabbedPane.setFont(Constants.defaultFont); // NOI18N
+        outputTabbedPane.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         outputTabbedPane.setMinimumSize(new java.awt.Dimension(31, 100));
         outputTabbedPane.setPreferredSize(new java.awt.Dimension(30, 150));
 
@@ -2978,10 +2979,10 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         mainMenuBar.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         fileMenu.setText(bundle.getString("MENU_FILE")); // NOI18N
-        fileMenu.setFont(Constants.defaultFont); // NOI18N
+        fileMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         newMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        newMenuItem.setFont(Constants.defaultFont); // NOI18N
+        newMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         newMenuItem.setText(bundle.getString("MENUITEM_NEW")); // NOI18N
         newMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2991,7 +2992,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         fileMenu.add(newMenuItem);
 
         openMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
-        openMenuItem.setFont(Constants.defaultFont); // NOI18N
+        openMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         openMenuItem.setText(bundle.getString("MENUITEM_OPEN")); // NOI18N
         openMenuItem.setToolTipText(bundle.getString("MENUITEM_OPEN_TOOLTIP")); // NOI18N
         openMenuItem.setName("Open"); // NOI18N
@@ -3004,7 +3005,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         fileMenu.add(jSeparator8);
 
         saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        saveMenuItem.setFont(Constants.defaultFont); // NOI18N
+        saveMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         saveMenuItem.setText(bundle.getString("MENUITEM_SAVE")); // NOI18N
         saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3013,7 +3014,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         fileMenu.add(saveMenuItem);
 
-        saveAsMenuItem.setFont(Constants.defaultFont); // NOI18N
+        saveAsMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         saveAsMenuItem.setText(bundle.getString("MENUITEM_SAVEAS")); // NOI18N
         saveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3023,7 +3024,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         fileMenu.add(saveAsMenuItem);
 
         saveAllMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        saveAllMenuItem.setFont(Constants.defaultFont); // NOI18N
+        saveAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         saveAllMenuItem.setText(bundle.getString("MENUITEM_SAVEALL")); // NOI18N
         saveAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3034,7 +3035,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         fileMenu.add(jSeparator10);
 
         closeMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
-        closeMenuItem.setFont(Constants.defaultFont); // NOI18N
+        closeMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         closeMenuItem.setText(bundle.getString("MENUITEM_CLOSE")); // NOI18N
         closeMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3043,7 +3044,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         fileMenu.add(closeMenuItem);
 
-        closeAllMenuItem.setFont(Constants.defaultFont); // NOI18N
+        closeAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         closeAllMenuItem.setText(bundle.getString("MENUITEM_CLOSEALL")); // NOI18N
         closeAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3054,10 +3055,10 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         fileMenu.add(jSeparator9);
 
         recentFilesMenu.setText(bundle.getString("MENUITEM_RECENTFILES")); // NOI18N
-        recentFilesMenu.setFont(Constants.defaultFont); // NOI18N
+        recentFilesMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         fileMenu.add(recentFilesMenu);
 
-        clearRecentFilesMenuItem.setFont(Constants.defaultFont); // NOI18N
+        clearRecentFilesMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         clearRecentFilesMenuItem.setText(bundle.getString("MENUITEM_CLEARRECENTFILES")); // NOI18N
         clearRecentFilesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3068,7 +3069,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         fileMenu.add(jSeparator1);
 
         printMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
-        printMenuItem.setFont(Constants.defaultFont); // NOI18N
+        printMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         printMenuItem.setText(bundle.getString("MENUITEM_PRINT")); // NOI18N
         printMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3079,7 +3080,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         fileMenu.add(jSeparator4);
 
         exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.ALT_MASK));
-        exitMenuItem.setFont(Constants.defaultFont); // NOI18N
+        exitMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         exitMenuItem.setText(bundle.getString("MENUITEM_EXIT")); // NOI18N
         exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3091,13 +3092,13 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         mainMenuBar.add(fileMenu);
 
         editMenu.setText(bundle.getString("MENU_EDIT")); // NOI18N
-        editMenu.setFont(Constants.defaultFont); // NOI18N
+        editMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
-        cutMenuItem.setFont(Constants.defaultFont); // NOI18N
+        cutMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         cutMenuItem.setText(bundle.getString("JFRAME_EDIT_CUT")); // NOI18N
         editMenu.add(cutMenuItem);
 
-        copyMenuItem.setFont(Constants.defaultFont); // NOI18N
+        copyMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         copyMenuItem.setText(bundle.getString("MENUITEM_COPY")); // NOI18N
         copyMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3106,13 +3107,13 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         editMenu.add(copyMenuItem);
 
-        pasteMenuItem.setFont(Constants.defaultFont); // NOI18N
+        pasteMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         pasteMenuItem.setText(bundle.getString("JFRAME_EDIT_PASTE")); // NOI18N
         editMenu.add(pasteMenuItem);
         editMenu.add(jSeparator11);
 
         searchMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, 0));
-        searchMenuItem.setFont(Constants.defaultFont); // NOI18N
+        searchMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         searchMenuItem.setText(bundle.getString("JFRAME_SEARCH")); // NOI18N
         searchMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3122,7 +3123,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         editMenu.add(searchMenuItem);
 
         searchAllMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.CTRL_MASK));
-        searchAllMenuItem.setFont(Constants.defaultFont); // NOI18N
+        searchAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         searchAllMenuItem.setText(bundle.getString("JFRAME_SEARCHALL")); // NOI18N
         searchAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3132,7 +3133,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         editMenu.add(searchAllMenuItem);
 
         replaceMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
-        replaceMenuItem.setFont(Constants.defaultFont); // NOI18N
+        replaceMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         replaceMenuItem.setText(bundle.getString("MENUITEM_REPLACE")); // NOI18N
         replaceMenuItem.setToolTipText(bundle.getString("MENUITEM_REPLACE_TOOLTIP")); // NOI18N
         replaceMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -3143,7 +3144,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         editMenu.add(replaceMenuItem);
 
         selectAllMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
-        selectAllMenuItem.setFont(Constants.defaultFont); // NOI18N
+        selectAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         selectAllMenuItem.setText(bundle.getString("MENUITEM_SELECTALL")); // NOI18N
         selectAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3152,7 +3153,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         editMenu.add(selectAllMenuItem);
 
-        clearAllMenuItem.setFont(Constants.defaultFont); // NOI18N
+        clearAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         clearAllMenuItem.setText(bundle.getString("MENUITEM_DELETEALL")); // NOI18N
         clearAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3163,7 +3164,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         editMenu.add(jSeparator16);
 
         commentSelectionMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PERIOD, java.awt.event.InputEvent.CTRL_MASK));
-        commentSelectionMenuItem.setFont(Constants.defaultFont); // NOI18N
+        commentSelectionMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         commentSelectionMenuItem.setText(bundle.getString("POPUPMENU_MENUITEM_COMMENT")); // NOI18N
         commentSelectionMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3173,7 +3174,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         editMenu.add(commentSelectionMenuItem);
 
         uncommentSelectionMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_COMMA, java.awt.event.InputEvent.CTRL_MASK));
-        uncommentSelectionMenuItem.setFont(Constants.defaultFont); // NOI18N
+        uncommentSelectionMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         uncommentSelectionMenuItem.setText(bundle.getString("JFRAME_EDIT_UNCOMMENT_SELECTION")); // NOI18N
         uncommentSelectionMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3182,7 +3183,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         editMenu.add(uncommentSelectionMenuItem);
 
-        tabRightMenuItem.setFont(Constants.defaultFont); // NOI18N
+        tabRightMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         tabRightMenuItem.setText(bundle.getString("MENUITEM_RIGHTSHIFT")); // NOI18N
         tabRightMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3191,7 +3192,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         editMenu.add(tabRightMenuItem);
 
-        tabLeftMenuItem.setFont(Constants.defaultFont); // NOI18N
+        tabLeftMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         tabLeftMenuItem.setText(bundle.getString("MENUITEM_LEFTSHIFT")); // NOI18N
         tabLeftMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3202,7 +3203,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         editMenu.add(jSeparator17);
 
         insertFileMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_MASK));
-        insertFileMenuItem.setFont(Constants.defaultFont); // NOI18N
+        insertFileMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         insertFileMenuItem.setText(bundle.getString("JFRAME_INSERT_FROM_FILE")); // NOI18N
         insertFileMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3211,7 +3212,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         editMenu.add(insertFileMenuItem);
 
-        insertSymbolMenuItem.setFont(Constants.defaultFont); // NOI18N
+        insertSymbolMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         insertSymbolMenuItem.setText(bundle.getString("JFRAME_INSERT_SYMBOL")); // NOI18N
         insertSymbolMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3221,7 +3222,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         editMenu.add(insertSymbolMenuItem);
 
         setBookmarkMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, java.awt.event.InputEvent.CTRL_MASK));
-        setBookmarkMenuItem.setFont(Constants.defaultFont); // NOI18N
+        setBookmarkMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         setBookmarkMenuItem.setText(bundle.getString("MENUITEM_SETBOOKMARK")); // NOI18N
         setBookmarkMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3231,7 +3232,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         editMenu.add(setBookmarkMenuItem);
 
         nextBookmarkMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
-        nextBookmarkMenuItem.setFont(Constants.defaultFont); // NOI18N
+        nextBookmarkMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         nextBookmarkMenuItem.setText(bundle.getString("MENUITEM_NEXTBOOKMARK")); // NOI18N
         nextBookmarkMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3240,7 +3241,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         editMenu.add(nextBookmarkMenuItem);
 
-        extractStringsMenuItem.setFont(Constants.defaultFont); // NOI18N
+        extractStringsMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         extractStringsMenuItem.setText("Extract Strings");
         extractStringsMenuItem.setToolTipText(bundle.getString("JFRAME_EXTRACT_STRINGS")); // NOI18N
         extractStringsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -3250,7 +3251,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         editMenu.add(extractStringsMenuItem);
 
-        translateMenuItem.setFont(Constants.defaultFont); // NOI18N
+        translateMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         translateMenuItem.setText("Translate Strings");
         translateMenuItem.setToolTipText(bundle.getString("JFRAME_TRANSLATE")); // NOI18N
         translateMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -3263,9 +3264,9 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         mainMenuBar.add(editMenu);
 
         viewMenu.setText(bundle.getString("MENU_VIEW")); // NOI18N
-        viewMenu.setFont(Constants.defaultFont); // NOI18N
+        viewMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
-        outputCheckBoxMenuItem.setFont(Constants.defaultFont); // NOI18N
+        outputCheckBoxMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         outputCheckBoxMenuItem.setSelected(true);
         outputCheckBoxMenuItem.setText(bundle.getString("CHECKBOX_OUTPUT")); // NOI18N
         outputCheckBoxMenuItem.setToolTipText(bundle.getString("CHECKBOX_OUTPUT_TOOLTIP")); // NOI18N
@@ -3276,7 +3277,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         viewMenu.add(outputCheckBoxMenuItem);
 
-        toolbarCheckBoxMenuItem.setFont(Constants.defaultFont); // NOI18N
+        toolbarCheckBoxMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         toolbarCheckBoxMenuItem.setSelected(true);
         toolbarCheckBoxMenuItem.setText(bundle.getString("CHECKBOX_JTOOLBAR")); // NOI18N
         toolbarCheckBoxMenuItem.setToolTipText(bundle.getString("CHECKBOX_JTOOLBAR_TOOLTIP")); // NOI18N
@@ -3287,7 +3288,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         viewMenu.add(toolbarCheckBoxMenuItem);
 
-        treeCheckBoxMenuItem.setFont(Constants.defaultFont); // NOI18N
+        treeCheckBoxMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         treeCheckBoxMenuItem.setSelected(true);
         treeCheckBoxMenuItem.setText(bundle.getString("CHECKBOX_JTREE")); // NOI18N
         treeCheckBoxMenuItem.setToolTipText(bundle.getString("CHECKBOX_JTREE_TOOLTIP")); // NOI18N
@@ -3299,7 +3300,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         viewMenu.add(treeCheckBoxMenuItem);
 
         toggleFullscreenCheckBoxMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
-        toggleFullscreenCheckBoxMenuItem.setFont(Constants.defaultFont); // NOI18N
+        toggleFullscreenCheckBoxMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         toggleFullscreenCheckBoxMenuItem.setText(bundle.getString("MENUITEM_TOGGLEFULLSCREEN")); // NOI18N
         toggleFullscreenCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3311,10 +3312,10 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         mainMenuBar.add(viewMenu);
 
         projectMenu.setText(bundle.getString("PROJECT_PROJECT")); // NOI18N
-        projectMenu.setFont(Constants.defaultFont); // NOI18N
+        projectMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         newProjectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.CTRL_MASK));
-        newProjectMenuItem.setFont(Constants.defaultFont); // NOI18N
+        newProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         newProjectMenuItem.setText(bundle.getString("PROJECT_NEW_PROJECT")); // NOI18N
         newProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3324,7 +3325,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         projectMenu.add(newProjectMenuItem);
 
         openProjectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, 0));
-        openProjectMenuItem.setFont(Constants.defaultFont); // NOI18N
+        openProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         openProjectMenuItem.setText(bundle.getString("PROJECT_OPEN_PROJECT")); // NOI18N
         openProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3333,7 +3334,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectMenu.add(openProjectMenuItem);
 
-        saveProjectMenuItem.setFont(Constants.defaultFont); // NOI18N
+        saveProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         saveProjectMenuItem.setText(bundle.getString("PROJECT_SAVE_PROJECT")); // NOI18N
         saveProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3342,7 +3343,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectMenu.add(saveProjectMenuItem);
 
-        closeProjectMenuItem.setFont(Constants.defaultFont); // NOI18N
+        closeProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         closeProjectMenuItem.setText(bundle.getString("PROJECT_CLOSE_PROJECT")); // NOI18N
         closeProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3352,7 +3353,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         projectMenu.add(closeProjectMenuItem);
         projectMenu.add(jSeparator14);
 
-        addNewToProjectMenuItem.setFont(Constants.defaultFont); // NOI18N
+        addNewToProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         addNewToProjectMenuItem.setText(bundle.getString("PROJECT_ADD_NEWFILE_TO_PROJECT")); // NOI18N
         addNewToProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3361,7 +3362,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectMenu.add(addNewToProjectMenuItem);
 
-        addFileToProjectMenuItem.setFont(Constants.defaultFont); // NOI18N
+        addFileToProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         addFileToProjectMenuItem.setText(bundle.getString("PROJECT_ADD_FILE_TO_PROJECT")); // NOI18N
         addFileToProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3370,7 +3371,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectMenu.add(addFileToProjectMenuItem);
 
-        removeFromProjectMenuItem.setFont(Constants.defaultFont); // NOI18N
+        removeFromProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         removeFromProjectMenuItem.setText(bundle.getString("PROJECT_POPUP_REMOVE")); // NOI18N
         removeFromProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3379,7 +3380,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectMenu.add(removeFromProjectMenuItem);
 
-        projectPropertiesMenuItem.setFont(Constants.defaultFont); // NOI18N
+        projectPropertiesMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         projectPropertiesMenuItem.setText("Project Properties");
         projectPropertiesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3388,7 +3389,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         projectMenu.add(projectPropertiesMenuItem);
 
-        projectSwitchesMenuItem.setFont(Constants.defaultFont); // NOI18N
+        projectSwitchesMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         projectSwitchesMenuItem.setText("Project Switches");
         projectSwitchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3398,7 +3399,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         projectMenu.add(projectSwitchesMenuItem);
         projectMenu.add(jSeparator5);
 
-        lastProjectMenuItem.setFont(Constants.defaultFont); // NOI18N
+        lastProjectMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         lastProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 lastProjectActionPerformed(evt);
@@ -3409,9 +3410,9 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         mainMenuBar.add(projectMenu);
 
         modeMenu.setText("Mode");
-        modeMenu.setFont(Constants.defaultFont); // NOI18N
+        modeMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
-        informModeCheckBoxMenuItem.setFont(Constants.defaultFont); // NOI18N
+        informModeCheckBoxMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         informModeCheckBoxMenuItem.setText("Inform Mode");
         informModeCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3420,7 +3421,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         modeMenu.add(informModeCheckBoxMenuItem);
 
-        glulxModeCheckBoxMenuItem.setFont(Constants.defaultFont); // NOI18N
+        glulxModeCheckBoxMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         glulxModeCheckBoxMenuItem.setText("Glulx Mode");
         glulxModeCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3432,10 +3433,10 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         mainMenuBar.add(modeMenu);
 
         buildMenu.setText(bundle.getString("MENU_BUILD")); // NOI18N
-        buildMenu.setFont(Constants.defaultFont); // NOI18N
+        buildMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         buildAllMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F9, 0));
-        buildAllMenuItem.setFont(Constants.defaultFont); // NOI18N
+        buildAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         buildAllMenuItem.setText(bundle.getString("MENUITEM_BUILDALL")); // NOI18N
         buildAllMenuItem.setToolTipText(bundle.getString("MENUITEM_BUILDALL_TOOLTIP")); // NOI18N
         buildAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -3445,7 +3446,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         buildMenu.add(buildAllMenuItem);
 
-        switchesMenuItem.setFont(Constants.defaultFont); // NOI18N
+        switchesMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         switchesMenuItem.setText(bundle.getString("MENUITEM_SWITCHES")); // NOI18N
         switchesMenuItem.setToolTipText(bundle.getString("MENUITEM_SWITCHES_TOOLTIP")); // NOI18N
         switchesMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -3457,7 +3458,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         buildMenu.add(jSeparator2);
 
         runMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F9, java.awt.event.InputEvent.CTRL_MASK));
-        runMenuItem.setFont(Constants.defaultFont); // NOI18N
+        runMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         runMenuItem.setText(bundle.getString("MENUITEM_RUN")); // NOI18N
         runMenuItem.setToolTipText(bundle.getString("MENUITEM_RUN_TOOLTIP")); // NOI18N
         runMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -3471,10 +3472,10 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
 
         glulxMenu.setText("Glulx");
         glulxMenu.setEnabled(false);
-        glulxMenu.setFont(Constants.defaultFont); // NOI18N
+        glulxMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         buildAllGlulxMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F12, 0));
-        buildAllGlulxMenuItem.setFont(Constants.defaultFont); // NOI18N
+        buildAllGlulxMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         buildAllGlulxMenuItem.setText(bundle.getString("MENUITEM_BUILD_ALL")); // NOI18N
         buildAllGlulxMenuItem.setToolTipText(bundle.getString("MENUITEM_BUILD_ALL_TOOLTIP")); // NOI18N
         buildAllGlulxMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -3485,7 +3486,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         glulxMenu.add(buildAllGlulxMenuItem);
         glulxMenu.add(jSeparator18);
 
-        makeResourceMenuItem.setFont(Constants.defaultFont); // NOI18N
+        makeResourceMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         makeResourceMenuItem.setText(bundle.getString("MENUITEM_MAKE_RES")); // NOI18N
         makeResourceMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3494,7 +3495,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         glulxMenu.add(makeResourceMenuItem);
 
-        compileMenuItem.setFont(Constants.defaultFont); // NOI18N
+        compileMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         compileMenuItem.setText(bundle.getString("MENUITEM_COMPILE_INF")); // NOI18N
         compileMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3504,7 +3505,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         glulxMenu.add(compileMenuItem);
 
         makeBlbMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F12, java.awt.event.InputEvent.CTRL_MASK));
-        makeBlbMenuItem.setFont(Constants.defaultFont); // NOI18N
+        makeBlbMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         makeBlbMenuItem.setText(bundle.getString("MENUITEM_MAKE_BLB")); // NOI18N
         makeBlbMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3515,7 +3516,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         glulxMenu.add(jSeparator15);
 
         runUlxMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
-        runUlxMenuItem.setFont(Constants.defaultFont); // NOI18N
+        runUlxMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         runUlxMenuItem.setText(bundle.getString("MENUITEM_RUN_ULX")); // NOI18N
         runUlxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3525,7 +3526,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         glulxMenu.add(runUlxMenuItem);
 
         runBlbMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, java.awt.event.InputEvent.CTRL_MASK));
-        runBlbMenuItem.setFont(Constants.defaultFont); // NOI18N
+        runBlbMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         runBlbMenuItem.setText(bundle.getString("MENUITEM_RUN_BLB")); // NOI18N
         runBlbMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3537,9 +3538,9 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         mainMenuBar.add(glulxMenu);
 
         optionsMenu.setText(bundle.getString("MENU_OPTIONS")); // NOI18N
-        optionsMenu.setFont(Constants.defaultFont); // NOI18N
+        optionsMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
-        configFileMenuItem.setFont(Constants.defaultFont); // NOI18N
+        configFileMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         configFileMenuItem.setText("Jif.cfg file");
         configFileMenuItem.setToolTipText("Edit configuration file for JIF");
         configFileMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -3549,7 +3550,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         optionsMenu.add(configFileMenuItem);
 
-        settingsMenuItem.setFont(Constants.defaultFont); // NOI18N
+        settingsMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         settingsMenuItem.setText(bundle.getString("JFRAME_SETTING")); // NOI18N
         settingsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3559,7 +3560,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         optionsMenu.add(settingsMenuItem);
         optionsMenu.add(jSeparator12);
 
-        garbageCollectionMenuItem.setFont(Constants.defaultFont); // NOI18N
+        garbageCollectionMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         garbageCollectionMenuItem.setText("Garbage Collector");
         garbageCollectionMenuItem.setToolTipText("Free unused object from the memory");
         garbageCollectionMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -3572,9 +3573,9 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         mainMenuBar.add(optionsMenu);
 
         helpMenu.setText(bundle.getString("MENU_HELP")); // NOI18N
-        helpMenu.setFont(Constants.defaultFont); // NOI18N
+        helpMenu.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
-        readMeMenuItem.setFont(Constants.defaultFont); // NOI18N
+        readMeMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         readMeMenuItem.setText(bundle.getString("README")); // NOI18N
         readMeMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3583,7 +3584,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         });
         helpMenu.add(readMeMenuItem);
 
-        changelogMenuItem.setFont(Constants.defaultFont); // NOI18N
+        changelogMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         changelogMenuItem.setText("Changelog");
         changelogMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3593,7 +3594,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         helpMenu.add(changelogMenuItem);
         helpMenu.add(jSeparator7);
 
-        aboutMenuItem.setFont(Constants.defaultFont); // NOI18N
+        aboutMenuItem.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         aboutMenuItem.setText(bundle.getString("ABOUTJIF")); // NOI18N
         aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
