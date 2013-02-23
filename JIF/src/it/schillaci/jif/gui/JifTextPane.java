@@ -147,7 +147,7 @@ public class JifTextPane extends JTextPane {
             if (file != null) {
                 editorKit.read(file, doc, 0);
             }
-        } catch (BadLocationException | IOException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         System.out.println("Tempo impiegato= "+(System.currentTimeMillis()-tempo1));

@@ -4335,7 +4335,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
 
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+        } catch (Exception e) {
             System.out.println("ERROR Can't set look & feel: " + e.getMessage());
         }
         new jFrame().setVisible(true);
@@ -4443,7 +4443,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
             JifDAO.save(file, configTextArea.getText());
             JifConfigurationDAO.reload(config);
             configurationPropertiesSaveMessage();
-        } catch (IOException | JifConfigurationException ex) {
+        } catch (Exception ex) {
             System.err.println("Unable to save configuration: " + ex.getMessage());
         }
     }
