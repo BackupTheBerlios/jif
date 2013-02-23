@@ -11,6 +11,7 @@ JIF 3.6 (Feb 2013)
 - [FIX] open changelog.txt now works
 - [FIX] changelog.txt and readme.txt has the caret's position set to zero
 - [FIX] default editor font is now Courier New,0,13
+- [FIX] new light gray color for the line numbers panel
 
 - [FIX] All configuration settings saved correctly
         * helped code check

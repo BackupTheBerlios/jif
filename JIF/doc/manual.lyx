@@ -60,15 +60,12 @@
 \begin_body
 
 \begin_layout Title
-JIF - a java editor for Inform
+JIF a java editor for Inform
 \end_layout
 
 \begin_layout Author
-Version 3.6 - Alessandro Schillaci 
-\end_layout
-
-\begin_layout Author
-© Copyright 2003-2013 
+Alessandro Schillaci - Peter F.
+ Piggott
 \end_layout
 
 \begin_layout Standard
@@ -96,8 +93,16 @@ Inform 7 has been developed with a new Integrated Editor but JIF can be
 \end_layout
 
 \begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 The project has started in the 2003 and now it's in a stable state for productio
-n.
+n, and the latest version is the 3.6 (Feb 2013).
+ This project is released under the GNU GPL Licence.
 \end_layout
 
 \begin_layout Standard
@@ -111,6 +116,13 @@ n.
 
 \series bold
 Main Features:
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -143,12 +155,16 @@ Switches Manager: customize your switches passed to compiler.
 \end_layout
 
 \begin_layout Section*
-Jif main configuration
+Configuration
 \end_layout
 
 \begin_layout Standard
-What's new? Jif has been improved, many bugs have been fixed and the configurati
-on management revised.
+What's new?
+\end_layout
+
+\begin_layout Standard
+Jif has been improved, many bugs have been fixed and the configuration managemen
+t revised.
  The main change is that now Jif configuration information is stored into
  a single configurations file.
  You can edit this file ("Jif.cfg") out of Jif and restart Jif to see your
@@ -159,10 +175,24 @@ on management revised.
 \end_layout
 
 \begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 For the Linux/Unix/MacOsX users: now Jif can load the configuration from
  a different file.
  Just pass a parameter to the VM to tell Jif which file it has to use as
  configuration file.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -173,8 +203,13 @@ E.G.
 \begin_layout Standard
 
 \series bold
-java -Duser.language=en -Duser.region=US -Djif.configuration=[NEWPATHFILE]
- -cp .
+java -Duser.language=en -Duser.region=US 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+-Djif.configuration=[NEWPATHFILE] -cp .
  -jar Jif.jar
 \end_layout
 
@@ -194,7 +229,7 @@ The flags
 \series bold
 -Duser.region=US
 \series default
- tell Jif to load the English version 
+ let Jif to load the English version 
 \end_layout
 
 \begin_layout Itemize
@@ -202,7 +237,7 @@ Tha flag
 \series bold
 -Djif.configuration
 \series default
- tells Jif to use [NEWPATHFILE] as configuration file (instead of 
+ lets Jif to use [NEWPATHFILE] as configuration file (instead of 
 \series bold
 JIF.cfg
 \series default
@@ -344,7 +379,7 @@ Ok, this should be self explained.
 \begin_layout Standard
 
 \series bold
-[ALTKEYS]<CHARACTER PRESSED WITH "ALT">,<CHARACTER/STRING TYPED>
+[ALTKEYS]<CHARACTER +"ALT">,<CHARACTER/STRING TYPED>
 \end_layout
 
 \begin_layout Standard
@@ -354,8 +389,7 @@ or
 \begin_layout Standard
 
 \series bold
-[EXECUTE]<CHARACTER PRESSED WITH "ALT">,<COMMAND LINE JIF WILL EXECUTE FOR
- YOU>
+[EXECUTE]<CHARACTER + "ALT">,<COMMAND TO EXECUTE>
 \end_layout
 
 \begin_layout Standard
@@ -424,13 +458,7 @@ Another example? Do you want to launch a pdf reader with the DM4 manual
 \series bold
 [EXECUTE]o,C:
 \backslash
-Program Files
-\backslash
-Adobe
-\backslash
 Acrobat 7.0
-\backslash
-Reader
 \backslash
 AcroRd32.exe C:
 \backslash
@@ -594,6 +622,13 @@ Note:
 \begin_layout Standard
 So take a look at the HELPEDCODE section and you will find that this is
  simpler than you think.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1283,7 +1318,13 @@ tools
 \backslash
 Blorb
 \backslash
-bres.exe [BLCPATH]C:
+bres.exe
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+[BLCPATH]C:
 \backslash
 Inform
 \backslash
@@ -1368,10 +1409,24 @@ These are the Libraries paths.
 \end_layout
 
 \begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 This is the path where Jif will put the compiled files.
  If you use the project management (this is recommended) the compiled files
  will be put in the project main directory.
  Be sure you've set this path in ANY CASE.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1415,6 +1470,13 @@ Do you use Frotz as Inform Interpreter? Ok.
 \end_layout
 
 \begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Yes, this is the most important path to set in the Jif.cfg file.
  The Inform compiler.
  You know what it is, don't you? If you don't, please take time to read
@@ -1428,6 +1490,13 @@ Don't use Jif until you understand the basic idea of what a "z-code" file
 \end_layout
 
 \begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 
 \series bold
 [BRESPATH] 
@@ -1437,6 +1506,13 @@ Don't use Jif until you understand the basic idea of what a "z-code" file
 
 \series bold
 [BLCPATH]
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1649,11 +1725,11 @@ From the 3.5 version of JIF (and above), the main application is released
 \end_layout
 
 \begin_layout Standard
-Since che 3.6 version, a Java Runtime 1.7 version is required.
+Since the 3.6 version, a Java Runtime 1.7 version is required.
 \end_layout
 
 \begin_layout Standard
-The same author released an 
+The same author has released an 
 \begin_inset Quotes eld
 \end_inset
 
