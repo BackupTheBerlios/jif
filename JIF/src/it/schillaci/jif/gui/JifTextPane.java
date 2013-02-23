@@ -131,15 +131,6 @@ public class JifTextPane extends JTextPane {
         // Add Mouse Listener for the right-mouse popup
         addMouseListener(popupListener);
 
-        addCaretListener(new CaretListener() {
-            @Override
-            public void caretUpdate(CaretEvent ce) {
-                int row = getCaretIndex();
-                int col = getCaretPosition() - getCaretElement().getStartOffset();
-                jframe.setRowCol(row, col);
-            }
-        });
-
         setEditorKit(editorKit);
         setDocument(doc);
     }

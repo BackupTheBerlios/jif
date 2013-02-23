@@ -56,7 +56,7 @@ public class Constants {
     /**
      * JIF Build
      */
-    public static final String BUILD = "20130222";
+    public static final String BUILD = "201302231420";
     
     /**
      * JIF Version

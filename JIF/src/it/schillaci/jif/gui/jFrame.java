@@ -557,7 +557,6 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         findTextField = new javax.swing.JTextField();
         findButton = new javax.swing.JButton();
         replaceButton = new javax.swing.JButton();
-        rowColTextField = new javax.swing.JTextField();
         mainSplitPane = new javax.swing.JSplitPane();
         upperSplitPane = new javax.swing.JSplitPane();
         leftTabbedPane = new javax.swing.JTabbedPane();
@@ -2754,15 +2753,6 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
             }
         });
         jToolBarCommon.add(replaceButton);
-
-        rowColTextField.setEditable(false);
-        rowColTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        rowColTextField.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        rowColTextField.setDisabledTextColor(new java.awt.Color(212, 208, 200));
-        rowColTextField.setMaximumSize(new java.awt.Dimension(100, 29));
-        rowColTextField.setMinimumSize(new java.awt.Dimension(50, 20));
-        rowColTextField.setPreferredSize(new java.awt.Dimension(50, 19));
-        jToolBarCommon.add(rowColTextField);
 
         toolbarPanel.add(jToolBarCommon, java.awt.BorderLayout.NORTH);
 
@@ -5615,6 +5605,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
     void outputInit() {
         outputClear();
         config.setOutputVisible(true);
+        adjustSplit();
     }
     
     void outputMouse(MouseEvent evt) {
@@ -5991,6 +5982,7 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         // Last Project opened
         config.setLastProject(projectPath.getAbsolutePath());
         
+        adjustSplit();
     }
 
     private void projectOpenDialog() {
@@ -6758,6 +6750,8 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         } catch (IOException ex) {
             System.err.println("Build all: " + ex.getMessage());
         }
+        
+        adjustSplit();
     }
 
     private void compilerMissingMessage(String path) {
@@ -7876,12 +7870,6 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
         return project.isMain(fileName);
     }
     
-    // --- Row / Column
-    
-    void setRowCol(int row, int col) {
-        rowColTextField.setText((row+1)+" | "+(col+1));
-    }
-    
     // --- Switches
     
     Map getSwitches() {
@@ -8226,7 +8214,6 @@ public class jFrame extends JFrame implements JifConfigurationObserver, JifProje
     private javax.swing.JButton replaceReplaceButton;
     private javax.swing.JLabel replaceReplaceLabel;
     private javax.swing.JTextField replaceReplaceTextField;
-    protected javax.swing.JTextField rowColTextField;
     private javax.swing.JMenuItem runBlbMenuItem;
     private javax.swing.JButton runButton;
     private javax.swing.JMenuItem runMenuItem;
