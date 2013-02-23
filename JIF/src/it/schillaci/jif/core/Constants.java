@@ -93,6 +93,4 @@ public class Constants {
      */
     public static final String fileFormat = "ISO-8859-1";
     
-    public static final Font defaultFont = new java.awt.Font("Thaoma", 0, 13);
-    
 }
