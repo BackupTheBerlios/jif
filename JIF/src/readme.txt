@@ -1,10 +1,10 @@
 _____________________________________________________________________________________________
                        >>>>>>> JIF - a java editor for Inform <<<<<<<
-                                       Version 3.5 
-                          Â© Copyright 2003-2011 Alessandro Schillaci
+                                       Version 3.6
+                          © Copyright 2003-2013 Alessandro Schillaci
 _____________________________________________________________________________________________
 
->>> Last Update of this document: 2011-09-03 <<<
+>>> Last Update of this document: 2013-02-22 <<<
 
 >>> [ Shortcuts  ]__________________________________________________________________
       ^^^^^^^^^
@@ -56,6 +56,8 @@ CTRL+F12                Make blb
 
 Right Button (mouse)    Menu Popup 1 (from the Text Editor)
                         Menu Popup 2 (from the Project file list)
+
+
 
 >>> [ Jif Configuration and other stuff ]___________________________________________
       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -204,7 +206,7 @@ So take a look at the HELPEDCODE section and you will find that this is simpler 
 >>> [ [MAPPING] Section ]___________________________________________
       ^^^^^^^^^^^^^^^^^
 
-So, what about the ZCODE characters? I mean the "@`e" that stands for Ã¨ and so on.
+So, what about the ZCODE characters? I mean the "@`e" that stands for "è" and so on.
 If you want to write a game which is compatible with most of the Inform Interpreters (zcode),
 you should use these special characters. Jif can manage this for you.
 
@@ -212,13 +214,13 @@ you should use these special characters. Jif can manage this for you.
 Let's take a look at the MAPPING section.
 
 ...
-[MAPPING]Ã©,@'e
-[MAPPING]Ã¨,@`e
-[MAPPING]Ã ,@`a
-[MAPPING]Ã¬,@`i
+[MAPPING]é,@'e
+[MAPPING]è,@`e
+[MAPPING]à,@`a
+[MAPPING]ì,@`i
 ...
 
-Nothing hard here. It is all linear. If you press the "Ã¨" character, for example, Jif will type
+Nothing hard here. It is all linear. If you press the "è" character, for example, Jif will type
 the ZCODE special characters "@'e" into the main textarea, at the current cursor position.
 
 
@@ -234,8 +236,8 @@ Let's look at the actual configuration entries.
 
 ...
 [MENU][Class]*
-[MENU][Class]Generic Class,Class CLASS_NAME Â§has ATTRIBUTE;
-[MENU][Class]Room Class,Class RoomÂ§  has  light;
+[MENU][Class]Generic Class,Class CLASS_NAME §has ATTRIBUTE;
+[MENU][Class]Room Class,Class Room§  has  light;
 ...
 
 The first line is to define a new Menu: you'll see "Class" as a menu name.
@@ -259,7 +261,7 @@ Insert new
     |
     |______.....    
 
-Note that the "Â§" character is converted into an enter command (Just as if the user had pressed 
+Note that the "§" character is converted into an enter command (Just as if the user had pressed 
 the "Enter" key). Do you want to see an example in action? Yes, I guess, you want to.
 
 The right format for the definition of a new menu is:
@@ -274,7 +276,7 @@ Let's create a new menu: "NPC" and create a new menu item.
 Open the "Jif.cfg" file. Go to the MENU Section and append this:
 
 [MENU][NPC]*
-[MENU][NPC]Nick,NPC nick "Nick"Â§    with name 'nick',Â§  before [;],Â§    after[;],Â§  has male proper;  
+[MENU][NPC]Nick,NPC nick "Nick"§    with name 'nick',§  before [;],§    after[;],§  has male proper;  
 
 Ok. Finished.
 Go to the current open TextArea and click on the right mouse button.
@@ -346,11 +348,6 @@ sensitive, as you probably know). So you can write the keywords in any case:
 absent or Absent or AbSeNt or ABSENT
 
 
-
-
-
-
-
 Jif will treat them all the same and colour them as an attribute. But you only need to add one
 entry in the Jif.cfg file:
 
@@ -362,18 +359,18 @@ entry in the Jif.cfg file:
 
 This section is like the [ALTKEYS] one, but that Jif will show a Symbols List to choose from.
 You can add anything you like, maybe something you don't use frequently in your inform code or
-just keys that don't exist in you keyboard layout like @<<,@>>,Ã¤,Ã ,Ã¡,Ã¢,Ã£,Ã¥ and so on.
+just keys that don't exist in you keyboard layout like @<<,@>>,ä,à,á,â,ã,å and so on.
 
 The format is the same:
 ....
 [SYMBOLS]@<<
 [SYMBOLS]@>>
-[SYMBOLS]Ã¤
-[SYMBOLS]Ã 
-[SYMBOLS]Ã¡
-[SYMBOLS]Ã¢
-[SYMBOLS]Ã£
-[SYMBOLS]Ã¥
+[SYMBOLS]ä
+[SYMBOLS]à
+[SYMBOLS]á
+[SYMBOLS]â
+[SYMBOLS]ã
+[SYMBOLS]å
 ....
 
 You can add a new "symbol", save and click on the Symbols list Button (on the toolbar) to see
@@ -479,9 +476,13 @@ Warning!!! Do not edit this section by hand. Use the configuration Panel.
 >>> [Install JIF and other components]_________________________________________________________
 
 * Install JIF
-  - win32  systems: run the setup exe installer (a new icon will appear in your desktop)
-  - MaxOsX systems: double click on Jif.jar file
-  - Linux  systems: edit/run the sh file and run it
+From the 3.5 version of JIF (and above), the main application is released in the 
+JAR format. To install it, simply double-click on the JIF.jar file.
+
+Since che 3.6 version, a Java Runtime 1.7 version is required.
+
+The same author released an ?Inform Pack?: a collections of Inform/Glulx tools 
+pre-configured to work. (see http://www.slade.altervista.org)
  
 * Download and point JIF to the Inform compiler, 
   from http://www.inform-fiction.org/software/current.html 
@@ -500,7 +501,7 @@ Warning!!! Do not edit this section by hand. Use the configuration Panel.
 
 >>> [Copyright and License]____________________________________________________________________
 
-Copyright (C) 2003-2005  Alessandro Schillaci
+Copyright (C) 2003-2013  Alessandro Schillaci
 
 WeB   : http://www.slade.altervista.org/
 e-m@il: silver.slade@tiscali.it
@@ -521,6 +522,8 @@ along with Jif; if not, write to the Free Software
 
 >>> [Credits]__________________________________________________________________________________
 
+A special thank goes to Peter F. Piggott for his constant help to improve JIF.
+
 JIF Development:
 
     * Alessandro Schillaci
@@ -534,7 +537,7 @@ Contributors:
     * Baltasar G. Perez-Schofield
     * Christof Menear
     * Giles Boutel
-    * Javier San JosÃ¨
+    * Javier San Josè
     * David Moreno
     * Eric Forgeot
     * Max Kalus
@@ -555,7 +558,7 @@ Third part components:
 _____________________________________________________________________________________________
                       Web:      http://www.slade.altervista.org/   
                     Project:  http://developer.berlios.de/projects/jif/
+                     Email:    silver.slade@tiscalinet.it 
 
-                      silver.slade@tiscalinet.it (Alessandro Schillaci)
-                        luisfernandez@gmail.com    (Luis Fernandez)
+                                (Alessandro Schillaci)
 _____________________________________________________________________________________________
