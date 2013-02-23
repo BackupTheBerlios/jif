@@ -6,6 +6,20 @@ ________________________________________________________________________________
 
 >>> Last Update of this document: 2013-02-22 <<<
 
+>>> [ Overview ]___________________________________________________________________
+      ^^^^^^^^^
+
+JIF is an Integrated Development Environment (IDE), written entirely in Java, for the creation 
+of text adventures based on Graham Nelson's Inform standard. With JIF it's possible to edit,
+compile and run a text adventure in the z-code and glulx formats.
+
+Inform 7 has been developed with a new Integrated Editor but JIF can be used in any 
+Inform 6 or 7 Environments
+
+The project has started in the 2003 and now it's in a stable state for production, and the 
+latest version is the 3.6 (Feb 2013). This project is released under the GNU GPL Licence.
+
+
 >>> [ Shortcuts  ]__________________________________________________________________
       ^^^^^^^^^
 Edit Mode:

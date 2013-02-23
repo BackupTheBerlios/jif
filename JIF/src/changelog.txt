@@ -6,7 +6,11 @@
 
 JIF 3.6 (Feb 2013)
 ==================
-- [FIX] new Constant (defaultFont) for the GUI
+- [FIX] new Font for the GUI (Dialog, 12)
+- [FIX] adjustSplit method to limit console's dimension
+- [FIX] open changelog.txt now works
+- [FIX] changelog.txt and readme.txt has the caret's position set to zero
+- [FIX] default editor font is now Courier New,0,13
 
 - [FIX] All configuration settings saved correctly
         * helped code check
