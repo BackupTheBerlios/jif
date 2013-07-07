@@ -3,6 +3,12 @@
 [NF]  New Feature
 [FIX] Bug Fixed
 
+JIF 3.6.1 (TBD 2013)
+==================
+- [FIX] Using standard Java Metal look (return to the origins)
+- [FIX] fixed configuration dialog under linux (some buttons aren't visible)
+- [FIX] fixed different font from Dialog,12 (popup menu)
+
 
 JIF 3.6 (Feb 2013)
 ==================

@@ -32,9 +32,6 @@ package it.schillaci.jif.core;
  *
  */
 
-import java.awt.Font;
-import java.io.File;
-
 /**
  * General Class with some constants
  * @author Alessandro Schillaci
@@ -51,12 +48,12 @@ public class Constants {
     /**
      * JIF Version
      */
-    public static final String VERSION = "3.6";
+    public static final String VERSION = "3.6.1";
     
     /**
      * JIF Build
      */
-    public static final String BUILD = "201302231420";
+    public static final String BUILD = "201307272020";
     
     /**
      * JIF Version
